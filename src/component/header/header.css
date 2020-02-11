@@ -1,0 +1,11 @@
+.header {
+    border-radius: 0  0 15px 15px;
+    box-shadow: 0 .1em 0.6em rgba(0,0,0,.3);
+}
+
+.header h1 {
+    font-weight: 300;
+    font-size: 24px;
+    margin: 0 1em;
+    line-height: 50px;
+}
