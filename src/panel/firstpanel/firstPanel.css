@@ -1,0 +1,25 @@
+.first-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.big-title {
+    font-size: 25px;
+    font-weight: 300;
+    line-height: 40px;
+    margin: 0;
+    text-align: center;
+    color: #f76372;
+}
+
+.blob-container {
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 .1em 0.6em rgba(0,0,0,.3);
+}
+
+.title {
+    line-height: 30px;
+    text-align: center;
+    color: #b6afbe;
+}
+
