@@ -1,6 +1,6 @@
 .first-panel {
-    display: flex;
-    flex-direction: column;
+    
+    /* height: 100vh; */
 }
 
 .big-title {
@@ -12,9 +12,13 @@
     color: #f76372;
 }
 
-.blob-container {
+.content-container {
     border-radius: 15px 15px 0 0;
-    box-shadow: 0 .1em 0.6em rgba(0,0,0,.3);
+    box-shadow: 0 -5px 5px rgba(0,0,0,.3);
+    height: calc(100vh - 62px);
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
 }
 
 .title {
@@ -23,3 +27,70 @@
     color: #b6afbe;
 }
 
+.search-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.search-input {
+    background: none;
+    color: #5a6674;
+    width: 12vw;
+    height: 30px;
+    border: none;
+    appearance: none;
+    outline: none;
+}
+
+.input-outline {
+    width: 13vw;
+    display: flex;
+    justify-content: flex-end;
+    border-radius: 40px;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.input-outline:focus-within {
+    box-shadow: 0 3px 4px rgba(0, 0, 0, 0.15);
+}
+
+.search-icon {
+    position: absolute;
+    right: 30px;
+    top: 6px;
+}
+
+.search-icon svg {
+    fill: #f77683;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 18vh;
+}
+
+.first-panel .btn {
+    height: 30px;
+    width: 13vw;
+    border: 0;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 100;
+    overflow: hidden;
+    position: relative;
+    background-image: linear-gradient(to right, #f67351, #f65062);
+    color: #fff;
+    margin: 5px 0;
+}
+
+.first-panel .btn-delete {
+    background: #fff!important;
+    color: #000;
+}
