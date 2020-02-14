@@ -89,3 +89,8 @@
     background: #fff!important;
     color: #000;
 }
+
+/* for axis of blobs */
+.custome-axis .domain {
+    stroke: transparent;
+}

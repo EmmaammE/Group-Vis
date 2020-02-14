@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import * as d3 from 'd3'
 import { createBlob } from '../../util/path'
+import Axis from './Axis';
 
 // the width of svg is 2*BOX_WIDTH
 const BOX_WIDTH = 250;
 const INNER_RADIUS = 60;
 const OUTER_RADIUS = 100;
+const SLIDER_HEIGHT = 130;
 
 const defualtStyle = {
   border: "none",
   fill: "url(#gradient)",
-  opacity: 0.7,
+  opacity: 0.5,
   strokeDasharray: "none"
 }
 
@@ -85,15 +87,29 @@ class Blobs extends React.Component {
     super(props);
     this.state = {
       // TODO get the number of the group
-      blobs: [800, 500, 200],
+      blobs: [1000, 500, 200],
+      // TODO 获得blob的层数
+      layers: 3,
+      handlePos: 235,
       xScale: d3.scaleBand()
         .range([0, 2 * Math.PI])    
         .align(Math.PI * 5 / 180)                  
         .domain( fakeData.map(function(d) { return d.name; }) ),
       yScale: d3.scaleLinear() 
         .range([0, OUTER_RADIUS - INNER_RADIUS])
-        .domain([0,80])
+        .domain([0,80]),
+      rangeScale: d3.scaleLinear()
+        .domain([0, 3])
+        .range([160 + SLIDER_HEIGHT, 190])
+        .clamp(true)
     }
+
+    this.$slider = React.createRef();
+    this.$handle = React.createRef();
+  }
+
+  componentDidMount() {
+    this.initDrag();
   }
 
   getRadius(r) {
@@ -102,19 +118,50 @@ class Blobs extends React.Component {
     return scale(r);
   }
 
-  initScale() {
-    let xScale = d3.scaleBand()
-      .range([0, 2 * Math.PI])    
-      .align(Math.PI * 5 / 180)                  
-      .domain( fakeData.map(function(d) { return d.name; }) );
+  initDrag() {
+    let slider = d3.select(this.$slider.current);
+    let that = this;
 
-    let yScale = d3.scaleOrdinal() 
-      .range([INNER_RADIUS, OUTER_RADIUS])
-      .domain([0,50])
+    let drag = d3.drag()
+      .on('start.interrupt', function () {
+          console.log('interrupt');
+          slider.interrupt();
+      }).on('start drag', function () {
+          that.dragged(d3.event.y);
+      });
+    slider.call(drag);
+  }
 
-    this.setState({
-      xScale, yScale
-    })
+  dragged = (value) => {
+    let { rangeScale, layers } = this.state;
+    let rangeValues = d3.range(0, layers, 1).concat(layers);
+
+    let y = rangeScale.invert(value), index = null, midPoint, cy;
+
+    // console.log('[invoke dragged]', value, rangeValues, y);
+    for (let i = 0; i < rangeValues.length - 1; i++) {
+      if (y >= rangeValues[i] && y <= rangeValues[i + 1]) {
+        index = i;
+        break;
+      }
+    }
+    midPoint = (rangeValues[index] + rangeValues[index + 1]) / 2;
+    if (y < midPoint) {
+      cy = rangeScale(rangeValues[index]);
+    } else {
+      cy = rangeScale(rangeValues[index + 1]);
+    }
+
+    d3.select(this.$handle.current)
+      .transition()
+      .duration(500)
+      .ease(d3.easeCubicInOut)
+      .attr("y", cy)
+      .on("end",() =>
+        this.setState({
+          handlePos: cy
+        })
+      );
   }
 
   pathCreator(d) {
@@ -129,8 +176,8 @@ class Blobs extends React.Component {
   }
 
   render() {
-    let { blobs } = this.state;
-    // console.log(this.state.xScale())
+    let { blobs, handlePos, rangeScale, layers } = this.state;
+
     return (
       <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -147,15 +194,31 @@ class Blobs extends React.Component {
         }
 
         <g transform={`translate(${BOX_WIDTH},${BOX_WIDTH})`}>
-          <circle r={10} fill="#f00"></circle>
-          <g transform={`translate(-5,-40)`}>
-            <rect style={{borderRadius:'10px'}} width="10" height="80" fill="#000"></rect>
-          </g>
           {
             fakeData.map((data,i) => {
               return <path id={data.name} key={`rect-${i}}`} d={this.pathCreator(data)()} style={rectStyle}></path>
             })
           }
+        </g>
+
+        <g className="slider" ref={this.$slider}>
+          <rect
+            className="slider-overlay"
+            x="246" y="185" rx="2" ry="2"
+            width="8" height={SLIDER_HEIGHT} fill="#000"
+          />
+          <rect 
+            className="slider-handle"
+            ref = {this.$handle}
+            x="227.5" y={handlePos} rx="10" ry="10" width="44" height="18" fill="#fff" 
+            style = {{cursor:'pointer'}}
+          />
+          <Axis
+            translate="translate(246, 0)"
+            scale={rangeScale}
+            orient="left"
+            ticks = {layers+1}
+          /> 
         </g>
       </svg>
     );
