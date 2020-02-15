@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 const BOX_WIDTH = 250;
-const RADIUS = 120;
+const RADIUS = 100;
 
 const petalPath = [
     'M0,0',
@@ -9,7 +9,7 @@ const petalPath = [
     "C-40,100 -50,50 0,0"
 ]
 
-function Petal({number, color='#7483a9'}) {
+function Petal({number, title, color='#7483a9'}) {
     const [arr, setArr] = useState([]);
 
     useEffect(() => {
@@ -23,14 +23,18 @@ function Petal({number, color='#7483a9'}) {
     return (
         <g>
             {arr.map((angle, index) => (
-                <path 
-                    key={'petal-'+index} 
-                    transform={'translate(' + [BOX_WIDTH, BOX_WIDTH] + ') rotate(' + [angle] + ') scale(1.5)'}
-                    d ={petalPath}
-                    fill = {color}
-                    // stroke = "black"
-                    style = {{mask: "url(#mask-stripe)"}}
-                />
+                <g transform={'translate(' + [BOX_WIDTH, BOX_WIDTH] + ')'} key={'petal-'+index}>
+                    <g transform={`rotate(${angle}) scale(1.5)`}>
+                        <path 
+                            key={'petal-'+index} 
+                            d ={petalPath}
+                            fill = {color}
+                            style = {{mask: "url(#mask-stripe)"}}
+                        />
+                        <line x1="0" y1="102" x2="0" y2="128" stroke="black" />
+                    </g>
+                    <text x="-40" y="0" transform={`translate(${200*Math.cos((angle+90)*Math.PI/180)},${200*Math.sin((angle+90)*Math.PI/180)})`}>Property-{index}</text>
+                </g>
             ))}
         </g>
     )
@@ -40,6 +44,8 @@ class Flower extends React.Component {
 
 
     render() {
+        // TODO 获得要展示的属性值
+        let {number} = this.props;
         // the number of petals
         return (
             <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +67,7 @@ class Flower extends React.Component {
                         />
                     </mask>      
                 </defs>
-                <Petal number={7} />
+                <Petal number={number} />
                 <circle cx="250" cy="250" r={RADIUS} fill="white" />
             </svg>
         )
