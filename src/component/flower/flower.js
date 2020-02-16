@@ -24,16 +24,16 @@ function Petal({number, title, color='#7483a9'}) {
         <g>
             {arr.map((angle, index) => (
                 <g transform={'translate(' + [BOX_WIDTH, BOX_WIDTH] + ')'} key={'petal-'+index}>
-                    <g transform={`rotate(${angle}) scale(1.5)`}>
+                    <g transform={`rotate(${angle}) scale(1.2)`}>
                         <path 
                             key={'petal-'+index} 
                             d ={petalPath}
                             fill = {color}
                             style = {{mask: "url(#mask-stripe)"}}
                         />
-                        <line x1="0" y1="102" x2="0" y2="128" stroke="black" />
+                        <line x1="0" y1="102" x2="0" y2="114" stroke="black" strokeWidth="1px"/>
                     </g>
-                    <text x="-40" y="0" transform={`translate(${200*Math.cos((angle+90)*Math.PI/180)},${200*Math.sin((angle+90)*Math.PI/180)})`}>Property-{index}</text>
+                    <text x="-40" y="0" transform={`translate(${160*Math.cos((angle+90)*Math.PI/180)},${160*Math.sin((angle+90)*Math.PI/180)})`}>Property-{index}</text>
                 </g>
             ))}
         </g>
@@ -48,17 +48,13 @@ class Flower extends React.Component {
         let {number} = this.props;
         // the number of petals
         return (
-            <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
+            <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${1.7 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <filter id="filter" filterUnits="userSpaceOnUse" x="-5" y="-5" height="1000" width="1000">
-                        <feTurbulence baseFrequency="0.2" numOctaves="3" type="fractalNoise" />
-                        <feDisplacementMap  scale="8"  xChannelSelector="R" in="SourceGraphic" />
-                    </filter>
                     <pattern id="pattern-stripe" 
-                        width="100" height="2" 
+                        width="100" height="3" 
                         patternUnits="userSpaceOnUse"
                     >
-                        <rect width="100" height="1" transform="translate(0,0)" fill="white" style={{filter:"url(#filter)"}} ></rect>
+                        <rect width="100" height="1" transform="translate(0,0)" fill="white"></rect>
                     </pattern>
                     <mask id="mask-stripe">
                         <circle 

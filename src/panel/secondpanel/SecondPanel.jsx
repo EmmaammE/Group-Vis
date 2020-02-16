@@ -4,6 +4,12 @@ import Header from '../../component/header/Header';
 import Flower from '../../component/flower/flower';
 import CircleBtn from '../../component/button/circlebtn';
 
+import btn4 from '../../assets/list.svg';
+import btn3 from '../../assets/matrix.svg';
+import btn2 from '../../assets/topic.svg';
+import btn1 from '../../assets/map.svg';
+
+const btn_urls = [btn1,btn2,btn3,btn4]
 class SecondPanel extends React.Component {
     constructor(props) {
         super(props);
@@ -18,7 +24,7 @@ class SecondPanel extends React.Component {
             <div className="second-panel">
                 <Header title="Overview"></Header>
                 <div className="btn-container">
-                    <CircleBtn />
+                    {btn_urls.map(url=>(<CircleBtn key={url} url={url} />))}
                 </div>
                 {
                     grid.map((arr, i)=> {

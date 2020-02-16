@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import './selectedPanel.css'
+import './selectedPanel.css';
 
 function SelectedPanel({title, options = ["test1","test2"]}) {
   const [value, setValue] = useState(title);
 
   return (
     <div className="selected-panel">
-        <div className="divider">{title}</div>
+        <div className="divider"><p>{title}</p></div>
         <div className="select">
           <select>
             <option value="hide">{value}</option>

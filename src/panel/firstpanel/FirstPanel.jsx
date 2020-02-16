@@ -1,7 +1,9 @@
 import React from 'react';
-import './firstPanel.css'
+import './firstPanel.css';
+import logo from '../../assets/logo.svg';
+import slogo from '../../assets/search.svg';
 
-import Blobs from '../../component/blob/blob'
+import Blobs from '../../component/blob/blob';
 import SelectedPanel from '../../component/selectedPanel/selectedPanel';
 
 const dataSet = [
@@ -31,11 +33,13 @@ class FirstPanel extends React.Component {
         let { searchValue } = this.state;
         return (
             <div className="first-panel">
-                <h1 className="big-title">Group Vis</h1>
+                <h1 className="big-title">
+                    <img src={logo} alt="logo" />
+                </h1>
                 <div className="content-container">
-                    <div className="title">Overview</div>
+                    <div className="title"><p>Overview</p></div>
                         <Blobs />
-                        <div className="title">Control Panel</div>
+                        <div className="title"><p>Control Panel</p></div>
                         <div className="search-container">
                             <div className="input-outline">
                                 <input 
@@ -44,11 +48,8 @@ class FirstPanel extends React.Component {
                                     onChange = {this.onInputChange}
                                 />
                             </div>
-                            <span className="search-icon"> 
-                                <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-                                    <path d="M416 192C537.6 192 640 294.4 640 416S537.6 640 416 640 192 537.6 192 416 294.4 192 416 192M416 128C256 128 128 256 128 416S256 704 416 704 704 576 704 416 576 128 416 128L416 128z"></path>
-                                    <path d="M832 864c-6.4 0-19.2 0-25.6-6.4l-192-192c-12.8-12.8-12.8-32 0-44.8s32-12.8 44.8 0l192 192c12.8 12.8 12.8 32 0 44.8C851.2 864 838.4 864 832 864z"></path>
-                                </svg>
+                            <span className="search-icon">
+                                <img src={slogo} alt="search" /> 
                             </span>
                     </div>
                     {dataSet.map((datum, index) => (

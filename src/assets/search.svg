@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="15px" viewBox="0 0 16 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53 (72520) - https://sketchapp.com -->
+    <title>Combined Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="122.322885%" y1="95.125%" x2="-16.2219308%" y2="6.81970734%" id="linearGradient-1">
+            <stop stop-color="#FE5266" offset="0%"></stop>
+            <stop stop-color="#FE5465" offset="45.4825529%"></stop>
+            <stop stop-color="#FD7F54" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Desktop-HD" transform="translate(-1412.000000, -2120.000000)" stroke="url(#linearGradient-1)" stroke-width="1.50885488">
+            <g id="Group-34" transform="translate(1198.500000, 2112.000000)">
+                <g id="champ-recherche">
+                    <g id="Group-36" transform="translate(0.808000, 0.000000)">
+                        <path d="M223.255807,17.4833657 L227.632,21.7511155 L227.315848,22.176 L222.928,17.8968845 L223.022889,17.7693615 C222.099128,18.8228619 220.74324,19.488 219.232,19.488 C216.448485,19.488 214.192,17.2315151 214.192,14.448 C214.192,11.6644849 216.448485,9.408 219.232,9.408 C222.015515,9.408 224.272,11.6644849 224.272,14.448 C224.272,15.5877194 223.893696,16.6390812 223.255807,17.4833657 Z" id="Combined-Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

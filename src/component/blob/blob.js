@@ -182,8 +182,8 @@ class Blobs extends React.Component {
       <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="gradient">
-            <stop offset="5%" stopColor="#f7717a" />
-            <stop offset="95%" stopColor="#f88470" />
+            <stop offset="5%" stopColor="#f35366" />
+            <stop offset="95%" stopColor="#f37556" />
           </linearGradient>
         </defs>
         

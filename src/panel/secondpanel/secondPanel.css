@@ -1,5 +1,6 @@
 .second-panel {
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
+    overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -9,8 +10,8 @@
 .second-panel .btn-container {
     display: flex;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 36px;
+    right: 0;
 }
 
 .second-panel .grid-line {
@@ -21,6 +22,6 @@
 
 .second-panel .lines {
     position: absolute;
-    top: 0;
+    top: 75px;
     bottom: 0;
 }
