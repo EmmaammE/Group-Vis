@@ -1,6 +1,4 @@
 .second-panel {
-    /* overflow-y: scroll; */
-    overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -14,14 +12,33 @@
     right: 0;
 }
 
+.second-panel .content-panel {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
 .second-panel .grid-line {
     display: flex;
     justify-content: space-evenly;
-    /* border: 1px solid salmon; */
 }
 
 .second-panel .lines {
     position: absolute;
     top: 75px;
     bottom: 0;
+}
+
+/* 滚动条 */
+.content-panel::-webkit-scrollbar-track {
+    border: 1px solid #d3d3d3;
+    background-color: #F5F5F5;
+}
+
+.content-panel::-webkit-scrollbar {
+    width: 4px;
+    background-color: #F5F5F5;
+}
+
+.content-panel::-webkit-scrollbar-thumb {
+    background-color: #d3d3d3;  
 }
