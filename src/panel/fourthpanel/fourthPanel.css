@@ -1,0 +1,44 @@
+.fourth-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 24px);
+}
+.fourth-panel .timeLine-view{
+  position: relative;
+  height: 30%;
+  background-color: red;
+}
+.fourth-panel .lower-charts{
+  display: inline-block;
+  position: relative;
+  height: 70%;
+  background-color: aquamarine;
+}
+.fourth-panel .left-charts{
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
+  width: 60%;
+  height: 100%;
+  background-color: blue;
+}
+.fourth-panel .select-list{
+  display: inline-block;
+  vertical-align: top;
+  width: 40%;
+  height: 100%;
+  background-color: rgb(179, 253, 40);
+}
+
+.fourth-panel .matrix-view{
+  height: 50%;
+  width: 100%;
+  background-color: seagreen;
+}
+.fourth-panel .map-view{
+  height: 50%;
+  width: 100%;
+  background-color: rgb(238, 169, 20);
+}
+

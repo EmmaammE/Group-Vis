@@ -2,6 +2,8 @@ import React from 'react';
 import './App.css';
 import FirstPanel from './panel/firstpanel/FirstPanel';
 import SecondPanel from './panel/secondpanel/SecondPanel';
+import ThirdPanel from './panel/thirdpanel/ThirdPanel';
+import FourthPanel from './panel/fourthpanel/FourthPanel';
 
 function App() {
   return (
@@ -12,8 +14,12 @@ function App() {
       <div className="panel">
         <SecondPanel></SecondPanel>
       </div>
-      <div className="panel"></div>
-      <div className="panel"></div>
+      <div className="panel">
+        <ThirdPanel></ThirdPanel>
+      </div>
+      <div className="panel">
+        <FourthPanel></FourthPanel>
+      </div>
     </div>
   );
 }

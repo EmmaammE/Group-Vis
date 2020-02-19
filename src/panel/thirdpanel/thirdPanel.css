@@ -1,0 +1,29 @@
+.third-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 24px);
+}
+.third-panel .topicView-panel{
+  position: relative;
+  height: 60%;
+  background-color: red;
+}
+.third-panel .chart-panel{
+  display: inline-block;
+  height: 90%;
+  width: 90%;
+  background-color: aquamarine;
+}
+.third-panel .btn-container{
+  display: inline-block;
+  vertical-align: top;
+  background-color: blue;
+}
+.third-panel .xxxx-view{
+
+  display: inline-block;
+  vertical-align: top;
+  height: 35%;
+  background-color: rgb(179, 253, 40);
+}
