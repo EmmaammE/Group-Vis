@@ -14,8 +14,8 @@ class Map extends React.Component {
             .range([6,12]),
     };
     this.projection = d3.geoMercator()
-      .center([112, 29])
-      .scale(1000)
+      .center([110, 27])
+      .scale(860)
       .translate([BOX_WIDTH, BOX_HEIGHT]);
     this.path = d3.geoPath()
       .projection(this.projection);
@@ -52,7 +52,7 @@ class Map extends React.Component {
               />
             ))}
         </g>
-        <text x={40} y={200} fill="#999" fontSize="30px">Song</text>
+        <text x={80} y={200} fill="#999" fontSize="30px">Song</text>
       </svg>
     )
   }
