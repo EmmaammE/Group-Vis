@@ -114,7 +114,7 @@ class Blobs extends React.Component {
 
   getRadius(r) {
     // TODO get the max value of the group
-    let scale = d3.scaleLinear().domain([0, 1000]).range([OUTER_RADIUS+30, BOX_WIDTH]);
+    let scale = d3.scaleLinear().domain([0, 1000]).range([OUTER_RADIUS+30, BOX_WIDTH-15]);
     return scale(r);
   }
 
@@ -214,7 +214,7 @@ class Blobs extends React.Component {
             style = {{cursor:'pointer'}}
           />
           <Axis
-            translate="translate(246, 0)"
+            translate="translate(246, 9)"
             scale={rangeScale}
             orient="left"
             ticks = {layers+1}

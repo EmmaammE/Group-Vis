@@ -14,7 +14,7 @@
 }
 
 .geomap .container {
-    padding-left: 3vw;
+    padding: 10px;
 }
 /* for svg */
 .geomap svg {

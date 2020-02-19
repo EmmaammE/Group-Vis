@@ -24,7 +24,6 @@
   vertical-align: top;
   width: 57%;
   height: 100%;
-  /* background-color: blue; */
 }
 .fourth-panel .select-list{
   display: inline-block;
@@ -45,6 +44,6 @@
 .fourth-panel .map-view{
   height: 50%;
   width: 100%;
-  /* background-color: rgb(238, 169, 20); */
+  overflow: hidden;
 }
 

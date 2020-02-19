@@ -9,6 +9,7 @@ import btn4 from '../../assets/list.svg';
 import btn3 from '../../assets/matrix.svg';
 import btn2 from '../../assets/topic.svg';
 import btn1 from '../../assets/map.svg';
+import MapContainer from '../../component/map/MapContainer';
 
 const btn_urls = [btn1,btn2,btn3,btn4]
 
@@ -32,7 +33,7 @@ class FourthPanel extends React.Component {
             <div className ="matrix-view">matrix-view
               <Matrix></Matrix>
             </div>
-            <div className = "map-view">map-view</div>
+            <div className = "map-view"><MapContainer /></div>
           </div>
           <div className="select-list">select-list</div>
         </div>
