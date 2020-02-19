@@ -25,6 +25,7 @@ class Map extends React.Component {
 
   componentDidMount() {
     let node = this.$map.current;
+    // console.log()
     d3.select(node)
       .call(d3.zoom()
               .on("zoom", function(){

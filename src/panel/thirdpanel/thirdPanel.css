@@ -4,6 +4,7 @@
   flex-direction: column;
   height: calc(100vh - 24px);
 }
+
 .third-panel .topicView-panel{
   position: relative;
   height: 60%;
@@ -16,6 +17,7 @@
   background-color: aquamarine;
 }
 .third-panel .btn-container{
+  width:35px;
   display: inline-block;
   vertical-align: top;
   background-color: blue;

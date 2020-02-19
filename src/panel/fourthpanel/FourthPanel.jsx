@@ -2,6 +2,8 @@ import React from 'react';
 import './fourthPanel.css';
 import Header from '../../component/header/Header';
 import CircleBtn from '../../component/button/circlebtn';
+import Matrix from '../../component/matrixChart/Matrix';
+import TimeLineChart from '../../component/timeLineChart/TimeLineChart'
 
 import btn4 from '../../assets/list.svg';
 import btn3 from '../../assets/matrix.svg';
@@ -23,11 +25,13 @@ class FourthPanel extends React.Component {
       <div className="fourth-panel">
         <Header title = "Overview"></Header>
         <div className="timeLine-view">
-          timeLine-view
+          <TimeLineChart></TimeLineChart>
         </div>
         <div className="lower-charts">
           <div className="left-charts">
-            <div className ="matrix-view">matrix-view</div>
+            <div className ="matrix-view">matrix-view
+              <Matrix></Matrix>
+            </div>
             <div className = "map-view">map-view</div>
           </div>
           <div className="select-list">select-list</div>
