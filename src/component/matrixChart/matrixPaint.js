@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 export function MatrixPaint(options) {
-	var margin = {top: 50, right: 10, bottom: 10, left: 50},
+	var margin = {top: 60, right: 10, bottom: 10, left: 50},
 	    width = options.width-margin.left-margin.right,
 	    height = options.width-margin.top-margin.bottom,
 	    data = options.data,

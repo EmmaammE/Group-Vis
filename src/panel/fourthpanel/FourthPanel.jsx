@@ -3,7 +3,8 @@ import './fourthPanel.css';
 import Header from '../../component/header/Header';
 import CircleBtn from '../../component/button/circlebtn';
 import Matrix from '../../component/matrixChart/Matrix';
-import TimeLineChart from '../../component/timeLineChart/TimeLineChart'
+import TimeLineChart from '../../component/timeLineChart/TimeLineChart';
+import SelectList from '../../component/selectList/SelectList';
 
 import btn4 from '../../assets/list.svg';
 import btn3 from '../../assets/matrix.svg';
@@ -30,12 +31,14 @@ class FourthPanel extends React.Component {
         </div>
         <div className="lower-charts">
           <div className="left-charts">
-            <div className ="matrix-view">matrix-view
+            <div className ="matrix-view">
               <Matrix></Matrix>
             </div>
             <div className = "map-view"><MapContainer /></div>
           </div>
-          <div className="select-list">select-list</div>
+          <div className="select-list">
+            <SelectList></SelectList>
+          </div>
         </div>
       </div>
     )

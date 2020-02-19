@@ -2,6 +2,7 @@ import React from 'react';
 import './thirdPanel.css';
 import Header from '../../component/header/Header';
 import CircleBtn from '../../component/button/circlebtn';
+import TopicViewChart from '../../component/topicView/TopicViewChart'
 
 import btn4 from '../../assets/list.svg';
 import btn3 from '../../assets/matrix.svg';
@@ -24,7 +25,7 @@ class ThirdPanel extends React.Component {
         <Header title = "Topicview"></Header>
         <div className="topicView-panel">
           <div className="chart-panel">
-            chart-panel
+            <TopicViewChart></TopicViewChart>
           </div>
           <div className="btn-container">
               {btn_urls.map((url,i)=>(<CircleBtn key={url+'-'+i} url={url} />))}

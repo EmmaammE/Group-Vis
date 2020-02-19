@@ -26,12 +26,16 @@ class Matrix extends React.Component{
       data      : matrixData,
       labels    : labels,
       start_color : 'red',
-      end_color : 'blue'
+      end_color : 'rgb(3, 93, 195)'
     });
   }
   render(){
     return (
-      <div ref={this.$container} className="matrix-container"></div>
+      <div className="chart-wrapper">
+        <div className="title">People Matrix View</div>
+        <div ref={this.$container} className="matrix-container"></div>
+      </div>
+      
     )
   }
 }

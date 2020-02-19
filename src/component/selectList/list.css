@@ -1,0 +1,39 @@
+.listItem-out{
+  margin-top:5px;
+  margin-bottom: 5px;
+  margin-left:8%;
+  margin-right:4%;
+  margin: black;
+  position: relative;
+  width: 88%;
+  overflow: hidden;
+}
+
+.listItem-out .listItem-in{
+  font-size: 6px;
+  text-align: center;
+  border-bottom: solid 1px;
+  display: inline-block;
+  margin-right:2.5%;
+  overflow: hidden;
+}
+
+.listItem-out .listFirst{
+  width:11% ;
+}
+
+.listItem-out .listSecond{
+  width:11% ;
+}
+
+.listItem-out .listThird{
+  width:21% ;
+}
+
+.listItem-out .listFourth{
+  width:22% ;
+}
+
+.listItem-out .listFifth{
+  width:22% ;
+}

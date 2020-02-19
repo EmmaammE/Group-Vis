@@ -1,9 +1,9 @@
 import React from 'react';
 import * as d3 from 'd3';
-import './timeLineChart.css';
-import {TimeLine, circleData}from './timeLine'
+import './topicViewChart.css';
+import {TopicView, circleData}from './topicView'
 
-class TimeLineChart extends React.Component{
+class TopicViewChart extends React.Component{
   constructor(props){
     super(props);
     this.state = {
@@ -14,11 +14,10 @@ class TimeLineChart extends React.Component{
 
   componentDidMount(){
     let containerDom = this.$container.current;
-    // console.log("containerDomkkk",containerDom)
     let width = containerDom.clientWidth;
     let height = containerDom.clientHeight;
     console.log("height",height,width)
-    TimeLine({
+    TopicView({
       width:width,
       height:height,
       container : containerDom,
@@ -30,12 +29,12 @@ class TimeLineChart extends React.Component{
   render(){
     return (
       <div className="chart-wrapper">
-        <div className="title">Timeline View</div>
-        <div ref={this.$container} className="timeLine-container"></div>
+        <div className="title">Topic View</div>
+        <div ref={this.$container} className="topicViewChart-container"></div>
       </div>
       
     )
   }
 }
 
-export default TimeLineChart;
+export default TopicViewChart;

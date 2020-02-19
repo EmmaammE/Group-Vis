@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 export function TimeLine(options){
-  let margin = {top: 20, right: 20, bottom: 40, left: 20},
+  let margin = {top: 10, right: 20, bottom: 35, left: 20},
      width = options.width-margin.left-margin.right,
      height = options.height-margin.top-margin.bottom,
      data = options.data,
@@ -59,6 +59,7 @@ export function TimeLine(options){
      .attr("x2",width)
      .attr("y1",height/numrows)
      .attr("y2",height/numrows)
+     .attr("stroke-width","0.3px")
      .attr("stroke", "black")
 
  // 绘制文字
@@ -90,7 +91,7 @@ export function TimeLine(options){
 
  let xAxisBack = svg.append("rect")
      .style("width",width)
-     .style("height",30)
+     .style("height",20)
      .style("fill","#cccccc")
      .attr("transform",`translate(0,${height})`)
 
