@@ -4,7 +4,7 @@ import song from '../../assets/geojson/song.json';
 import {debounce} from '../../util/tools';
 
 const BOX_WIDTH = 250;
-const BOX_HEIGHT = 250;
+const BOX_HEIGHT = 213;
 
 class Map extends React.Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class Map extends React.Component {
             .range([6,12]),
     };
     this.projection = d3.geoMercator()
-      .center([110, 27])
+      .center([110, 31])
       .scale(860)
       .translate([BOX_WIDTH, BOX_HEIGHT]);
     this.path = d3.geoPath()
@@ -42,7 +42,7 @@ class Map extends React.Component {
     let path = this.path;
 
     return (
-      <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg">
         <g ref={this.$map}>
           {song.features.map((d,i) => (
               <path strokeWidth = "1"

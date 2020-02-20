@@ -1,10 +1,10 @@
 .geomap {
     position: relative;
+    overflow: hidden;
 }
 
 .title {
     font-size: 14px;
-    margin-top:10px;
     margin-left: 20px;
 }
 
@@ -16,8 +16,4 @@
 
 .geomap .container {
     padding: 10px;
-}
-/* for svg */
-.geomap svg {
-    fill: #fff;
 }
