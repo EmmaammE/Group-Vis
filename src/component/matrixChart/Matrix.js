@@ -2,6 +2,8 @@ import React from 'react';
 
 import './matrixChart.css';
 import { MatrixPaint , matrixData} from './matrixPaint'
+import MatrixButton from '../button/MatrixButton'
+import VerticalSlider from '../verticalSlider/VerticalSlider'
 
 // 暂时的假数据
 
@@ -30,10 +32,21 @@ class Matrix extends React.Component{
     });
   }
   render(){
+    const btnData = [{btnName:"comp",cName:""},
+        {btnName:"senti",cName:"choose_btn"},
+        {btnName:"quantity",cName:""}
+    ]
     return (
       <div className="chart-wrapper">
-        <div className="title">People Matrix View</div>
+        <div className="header-line">
+          <div className="title">People Matrix View</div>
+          <div>{btnData.map(v=>(
+            <MatrixButton key={v.btnName} btnName={v.btnName} cName={v.cName}></MatrixButton>))}
+          </div>
+        </div>
+        
         <div ref={this.$container} className="matrix-container"></div>
+        <VerticalSlider></VerticalSlider>
       </div>
       
     )

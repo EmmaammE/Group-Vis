@@ -1,0 +1,17 @@
+button{
+	background-color: white;
+	width: 60px;
+	height: 16px;
+	/* line-height:20px; */
+	border-radius: 8px;
+  border: 0.5px solid black;
+  font-size: 3px;
+  margin: 0 2px 0 2px;
+  overflow: hidden;
+}
+button:focus{
+	outline: none;
+}
+.choose_btn{
+	font-weight:bold;
+}

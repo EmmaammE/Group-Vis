@@ -1,0 +1,90 @@
+.axis text {
+  /* -webkit-text-size-adjust:none;  */
+  font: 12px sans-serif;
+  -webkit-transform: scale(0.7); 
+}
+
+.axis line, .axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.columnSlider{
+  /* -webkit-text-size-adjust:none;  */
+  font: 9px sans-serif;
+  
+  /* font-size:9px; */
+  -webkit-transform: scale(0.7); 
+  transform: scale(0.7);
+  position: absolute;
+  left:77%;
+  top:35%;
+  transform:rotate(90deg);
+  width: 150px;
+  height: 20px;
+}
+.columnSlider div{
+  display: inline-block;
+  vertical-align:top;
+}
+
+#cs_lable{
+  margin-bottom: 0;
+  padding-left:45%;
+/*background-color: red;*/
+}
+.sideNumber{
+padding-top: 30px;
+}
+
+#cs_theme{
+margin-top: 10px;
+/* padding-left:25%; */
+
+}
+.columnSlider .slider[orient=vertical]{
+/*transform:rotate(90deg);*/
+-webkit-appearance: none;
+width: 100px;
+height: 4px;
+border-radius: 2px;
+margin-left:0px;
+margin-top:0px;
+
+background: -webkit-linear-gradient(#bbbbbb, #bbbbbb) no-repeat #ffffff;
+border:0.5px solid #888888;
+background-size: 50% 100%;
+outline: none;
+opacity: 0.6;
+-webkit-transition: .2s;
+transition: opacity .2s;
+
+}
+
+.columnSlider .slider:hover {
+opacity: 1;
+}
+
+.columnSlider .slider::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 3px;
+height: 15px;
+/*border-radius: 50%;*/
+
+border:solid 2px #888888;
+color: white;
+background: #888888;
+cursor: pointer;
+}
+
+.columnSlider .slider::-moz-range-thumb {
+width: 25px;
+height: 25px;
+background: red;
+cursor: pointer;
+}
+
+
+

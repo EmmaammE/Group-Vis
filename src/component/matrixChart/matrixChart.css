@@ -5,3 +5,7 @@
   margin-left: 10px;
   /* background-color: springgreen; */
 }
+
+.header-line div{
+  display: inline-block;
+}

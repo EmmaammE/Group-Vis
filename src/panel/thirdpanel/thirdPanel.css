@@ -8,20 +8,17 @@
 .third-panel .topicView-panel{
   position: relative;
   height: 60%;
-  /* background-color: red; */
 }
 .third-panel .chart-panel{
   display: inline-block;
   position: relative;
   height: 95%;
   width: 90%;
-  /* background-color: aquamarine; */
 }
 .third-panel .btn-container{
   width:35px;
   display: inline-block;
   vertical-align: top;
-  /* background-color: blue; */
 }
 .third-panel .xxxx-view{
 
