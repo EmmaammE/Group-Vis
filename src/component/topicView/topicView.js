@@ -1,12 +1,11 @@
 import * as d3 from 'd3';
 
 export function TopicView(options){
-  let margin = {top: 90, right: 20, bottom: 10, left: 70},
+  let margin = {top: 90, right: 20, bottom: 50, left: 70},
    width = options.width-margin.left-margin.right,
    height = options.height-margin.top-margin.bottom,
    data = options.data,
    container = options.container,
-   // labelsData = options.labels,
    startColor = options.start_color,
    endColor = options.end_color;
 
@@ -15,8 +14,6 @@ export function TopicView(options){
    for(let i=0;i<n;i++){
        value.push("60")
    }
-
-   // console.log("dsfjslfjsklf,1")
      
    if(!data){
        throw new Error('please pass data')
@@ -45,7 +42,7 @@ export function TopicView(options){
        .range([0,height])
 
     let vScale = d3.scaleLinear()
-      .domain([0,n])
+      .domain([0,n-1])
       .range([0,height])
 
    let xScale = d3.scaleLinear()
@@ -95,7 +92,7 @@ export function TopicView(options){
    // let yAxis = d3.axisLeft(yScale).ticks(20).tickSize(0);
    // yAxis.tickValues(value)
 
-
+   //   绘制左侧数字
    let yValue = svg.append("g")
        .selectAll(".yValue")
        .data(value)
@@ -113,6 +110,90 @@ export function TopicView(options){
        .text((d,i)=>{
            return d
        })
+
+    //  自定义箭头
+    var defs = svg.append("defs");  
+  
+    var arrowMarker_r = defs.append("marker")  
+                            .attr("id","arrow_r")  
+                            .attr("markerUnits","strokeWidth")  
+                            .attr("markerWidth","12")  
+                            .attr("markerHeight","12")  
+                            .attr("viewBox","0 0 12 12")   
+                            .attr("refX","6")  
+                            .attr("refY","6")  
+                            .attr("orient","auto");  
+      
+    var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";  
+                              
+    arrowMarker_r.append("path")  
+                .attr("d",arrow_path)  
+                .attr("fill","red");  
+
+    var arrowMarker_b = defs.append("marker")  
+                            .attr("id","arrow_b")  
+                            .attr("markerUnits","strokeWidth")  
+                            .attr("markerWidth","12")  
+                            .attr("markerHeight","12")  
+                            .attr("viewBox","0 0 12 12")   
+                            .attr("refX","6")  
+                            .attr("refY","6")  
+                            .attr("orient","auto");  
+      
+                         
+    arrowMarker_b.append("path")  
+                .attr("d",arrow_path)  
+                .attr("fill","blue"); 
+
+    // 自定义颜色渐变
+    // 定义渐变色带，可以参考SVG的定义
+    var a = d3.rgb(250, 210, 209);    
+    var b = d3.rgb(255,0,0);    
+    var rLinerGradient = defs.append("linearGradient")
+                        .attr("id","rLinearColor")
+                        .attr("x1","0%")
+                        .attr("y1","0%")
+                        .attr("x2","100%")
+                        .attr("y2","0%");
+    var stop1 = rLinerGradient.append("stop")
+                        .attr("offset","0%")
+                        .style("stop-color",endColor);
+    var stop2 = rLinerGradient.append("stop")
+                        .attr("offset","100%")
+                        .style("stop-color",a.toString());
+
+    // 自定义颜色渐变
+    // 定义渐变色带，可以参考SVG的定义
+    var sColor = d3.rgb(210, 210, 250);   
+    var eColor = d3.rgb(0,0,255);   
+    var bLinerGradient = defs.append("linearGradient")
+                        .attr("id","bLinearColor")
+                        .attr("x1","0%")
+                        .attr("y1","0%")
+                        .attr("x2","100%")
+                        .attr("y2","0%");
+    var sStop = bLinerGradient.append("stop")
+                        .attr("offset","0%")
+                        .style("stop-color",startColor);
+    var eStop = bLinerGradient.append("stop")
+                        .attr("offset","100%")
+                        .style("stop-color",sColor.toString());
+    
+    let links = [[3,1,-1],[8,4,1],[12,6,-1]]
+
+    let link = svg.append("g")
+        .selectAll("path")
+        .data(links)
+        .join("path")
+        .attr("d",d=>{
+                let str = `M ${xScale(d[0])} ${height+10} Q ${(xScale(d[0])+xScale(d[1]))/2} ${height+35} ${xScale(d[1])+3} ${height+10}`
+                console.log("str",str)
+                return str
+            })
+        .attr("fill","none") 
+        .attr("stroke",d=>`url(#${d[2]>0?'r':'b'}LinearColor)`)
+        .attr("stroke-width",1)
+        .attr("marker-end",d=>`url(#arrow_${d[2]>0?'r':'b'})`)
 
 }
 
