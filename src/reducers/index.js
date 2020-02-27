@@ -1,10 +1,13 @@
-import {SET_STEP} from "../actions/types";
+import { combineReducers } from 'redux';
+import { step } from './step';
+import { person, year, dyasty, status, gender, topicData } from './data'
 
-export default function(state = {}, action) {
-    switch (action.type) {
-        case SET_STEP:
-            return {data: action.data};
-        default:
-            return state;
-    }
-}
+export default combineReducers({
+    step,
+    person,
+    year,
+    dyasty,
+    status,
+    gender,
+    topicData
+});
