@@ -17,11 +17,31 @@ class ListItem extends React.Component{
     const fifthValue =this.props.fifthValue?this.props.fifthValue:"¤";
     return(
       <div className="listItem-out">
-        <div className="listItem-in listFirst">{firstValue}</div>
-        <div className="listItem-in listSecond">{secondValue}</div>
-        <div className="listItem-in listThird">{thirdValue}</div>
-        <div className="listItem-in listFourth">{fourthValue}</div>
-        <div className="listItem-in listFifth">{fifthValue}</div>
+        <div className="listItem-in listFirst">
+          <div className="textItem">
+            {firstValue}
+          </div>
+        </div>
+        <div className="listItem-in listSecond">
+          <div className="textItem">
+            {secondValue}
+          </div>
+        </div>
+        <div className="listItem-in listThird">
+          <div className="textItem">
+             {thirdValue}
+          </div>
+        </div>
+        <div className="listItem-in listFourth">
+          <div className="textItem">
+            {fourthValue}
+          </div>
+        </div>
+        <div className="listItem-in listFifth">
+          <div className="textItem">
+            {fifthValue}
+          </div>
+        </div>
       </div>
     )
   }

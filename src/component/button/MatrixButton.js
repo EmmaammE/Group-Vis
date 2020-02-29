@@ -10,13 +10,13 @@ class MatrixButton extends React.Component{
     this.$container = React.createRef();
   }
 
-  componentDidMount(){
-    
-  }
 
   render(){
+    const cn = `matrixButton ${this.props.cName}`
     return (
-      <button className={this.props.cName}>{this.props.btnName}</button>
+      <button className={cn}>
+        {this.props.btnName}
+      </button>
     )
   }
 }

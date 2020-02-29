@@ -40,7 +40,7 @@ class Matrix extends React.Component{
       <div className="chart-wrapper">
         <div className="header-line">
           <div className="title">People Matrix View</div>
-          <div>{btnData.map(v=>(
+          <div className="mButtonContainer">{btnData.map(v=>(
             <MatrixButton key={v.btnName} btnName={v.btnName} cName={v.cName}></MatrixButton>))}
           </div>
         </div>

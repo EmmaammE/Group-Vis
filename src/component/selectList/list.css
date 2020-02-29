@@ -1,5 +1,5 @@
 .listItem-out{
-  margin-top:5px;
+  margin-top:4px;
   margin-bottom: 5px;
   margin-left:8%;
   margin-right:4%;
@@ -11,12 +11,24 @@
 
 .listItem-out .listItem-in{
   font-size: 6px;
+  /* transform: scale(0.9); */
   text-align: center;
   border-bottom: solid 1px;
-  padding-bottom: 5px;
+  padding-bottom: 4px;
   display: inline-block;
-  margin-right:2.5%;
+  margin-right:2%;
   overflow: hidden;
+}
+
+.listItem-in .textItem{ 
+  width: 90%;
+  text-indent: 0;
+  margin-left:-2px;
+  margin-right:-2px;
+  /* padding:0; */
+  /* margin:0; */
+  font-size: 12px;
+  transform: scale(0.75);
 }
 
 .listItem-out .listFirst{
@@ -28,7 +40,7 @@
 }
 
 .listItem-out .listThird{
-  width:21% ;
+  width:22% ;
 }
 
 .listItem-out .listFourth{
@@ -36,5 +48,5 @@
 }
 
 .listItem-out .listFifth{
-  width:22% ;
+  width:24% ;
 }

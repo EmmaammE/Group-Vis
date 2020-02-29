@@ -1,13 +1,13 @@
-button{
+.matrixButton{
 	background-color: white;
-	width: 60px;
-	height: 16px;
-	/* line-height:20px; */
+	width: 73px;
+	height: 18px;
 	border-radius: 8px;
   border: 0.5px solid black;
-  font-size: 3px;
-  margin: 0 2px 0 2px;
-  overflow: hidden;
+  font-size: 12px;
+	margin: 0 -4px 0 -4px;
+	transform: scale(0.85);
+	overflow: hidden;
 }
 button:focus{
 	outline: none;
