@@ -16,7 +16,7 @@ const petalPath = [
 /**
  * @param {Number} number: 花瓣的数量
  */
-function Flower ({number, marginWidth, title, _showUpLine, _selected, _hovered, color='#7483a9'}) {
+function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered, color='#7483a9'}) {
     const [arr, setArr] = useState([]);
 
     useEffect(() => {
@@ -54,7 +54,9 @@ function Flower ({number, marginWidth, title, _showUpLine, _selected, _hovered, 
                             />
                             <line x1="0" y1="102" x2="0" y2="114" stroke="black" strokeWidth="1px"/>
                         </g>
-                        <text x="-40" y="0" transform={`translate(${150*Math.cos((angle+90)*Math.PI/180)},${150*Math.sin((angle+90)*Math.PI/180)})`}>Property-{index}</text>
+                        <text x="-40" y="0" transform={`translate(${150*Math.cos((angle+90)*Math.PI/180)},${150*Math.sin((angle+90)*Math.PI/180)})`}>
+                            {titles && titles[index]}
+                        </text>
                     </g>
                 ))}
             </g>

@@ -116,6 +116,20 @@ class FirstPanel extends React.Component {
                         timeRange: [low, high],
                         dataSet
                     })
+
+                    let param = new FormData();
+                    // param.append("person_ids", JSON.stringify(Object.keys(data["Person"])))
+                    let person_ids = Object.keys(data["Person"])
+                    person_ids.forEach(e => {
+                        param.append("person_ids[]", e)
+                    })
+                    axios.post('/search_topics_by_person_ids/', param)
+                        .then(res => {
+                            if(res.data.is_success) {
+                                that.props.setTopicData(res.data)
+                            }
+                            console.log(res);
+                        })
                 }
                 
             })
@@ -149,7 +163,7 @@ class FirstPanel extends React.Component {
             })
         }
 
-        //TODO 获得参数
+        //TODO 待修改
         param.set('dynastie' , "宋");
         param.set('min_year', timeRange[0] || null);
         param.set('max_year', timeRange[1] || null);
@@ -161,26 +175,33 @@ class FirstPanel extends React.Component {
             high: timeRange[1]
         })
 
-        axios.post('/search_person_by_ranges/', param)
+        axios.post('/search_topics_by_person_ids/', param)
             .then(res => {
                 if(res.data.is_success) {
-                    that.props.setPerson(res.data.person_ids)
-                    
-                    let param = new FormData()
-                    param.set('person_ids', res.data.person_ids)
-
-                    axios.post('/search_topics_by_person_ids/', param)
-                        .then(res => {
-                            if(res.data.is_success) {
-                                that.props.setTopicData(res.data)
-                            }
-                            console.log(res);
-                        })
+                    that.props.setTopicData(res.data)
                 }
+                console.log(res);
             })
-            .catch(err => {
-                console.error(err);
-            })
+        // axios.post('/search_person_by_ranges/', param)
+        //     .then(res => {
+        //         if(res.data.is_success) {
+        //             that.props.setPerson(res.data.person_ids)
+                    
+        //             let param = new FormData()
+        //             param.set('person_ids', res.data.person_ids)
+
+        //             axios.post('/search_topics_by_person_ids/', param)
+        //                 .then(res => {
+        //                     if(res.data.is_success) {
+        //                         that.props.setTopicData(res.data)
+        //                     }
+        //                     console.log(res);
+        //                 })
+        //         }
+        //     })
+        //     .catch(err => {
+        //         console.error(err);
+        //     })
     }
     
     render() {
@@ -192,7 +213,7 @@ class FirstPanel extends React.Component {
                 </h1>
                 <div className="content-container">
                     <div className="title"><p>Overview</p></div>
-                        <Blobs />
+                        <Blobs blobs={Object.values(this.props.group).sort((a,b)=>a-b)}/>
                         <div className="title"><p>Control Panel</p></div>
                         <div className="search-container">
                             <div className="input-outline">
@@ -232,6 +253,13 @@ class FirstPanel extends React.Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+        step: state.step,
+        group: state.group
+    }
+}
+
 const mapDispatchToProps = (dispatch) => {
     return {
         setTopicData: data => dispatch(setTopicData(data)),
@@ -240,4 +268,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapDispatchToProps)(FirstPanel);
+export default connect(mapStateToProps, mapDispatchToProps)(FirstPanel);

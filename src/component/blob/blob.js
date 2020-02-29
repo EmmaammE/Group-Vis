@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as d3 from 'd3'
 import { createBlob } from '../../util/path'
 import Axis from './Axis';
+import { connect } from 'react-redux';
 
 // the width of svg is 2*BOX_WIDTH
 const BOX_WIDTH = 250;
@@ -87,7 +88,7 @@ class Blobs extends React.Component {
     super(props);
     this.state = {
       // TODO get the number of the group
-      blobs: [1000, 500, 200],
+      // blobs: [1000, 500, 200], 
       // TODO 获得blob的层数
       layers: 3,
       handlePos: 235,
@@ -114,7 +115,7 @@ class Blobs extends React.Component {
 
   getRadius(r) {
     // TODO get the max value of the group
-    let scale = d3.scaleLinear().domain([0, 1000]).range([OUTER_RADIUS+30, BOX_WIDTH-15]);
+    let scale = d3.scaleLinear().domain([200, 1000]).range([OUTER_RADIUS+40, BOX_WIDTH-15]);
     return scale(r);
   }
 
@@ -176,8 +177,8 @@ class Blobs extends React.Component {
   }
 
   render() {
-    let { blobs, handlePos, rangeScale, layers } = this.state;
-
+    let { handlePos, rangeScale, layers } = this.state;
+    let {blobs} = this.props;
     return (
       <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -201,28 +202,37 @@ class Blobs extends React.Component {
           }
         </g>
 
-        <g className="slider" ref={this.$slider}>
-          <rect
-            className="slider-overlay"
-            x="246" y="185" rx="2" ry="2"
-            width="8" height={SLIDER_HEIGHT} fill="#000"
-          />
-          <rect 
-            className="slider-handle"
-            ref = {this.$handle}
-            x="227.5" y={handlePos} rx="10" ry="10" width="44" height="18" fill="#fff" 
-            style = {{cursor:'pointer'}}
-          />
-          <Axis
-            translate="translate(246, 9)"
-            scale={rangeScale}
-            orient="left"
-            ticks = {layers+1}
-          /> 
-        </g>
+        {
+          blobs.length>0 && 
+          <g className="slider" ref={this.$slider}>
+            <rect
+              className="slider-overlay"
+              x="246" y="185" rx="2" ry="2"
+              width="8" height={SLIDER_HEIGHT} fill="#000"
+            />
+            <rect 
+              className="slider-handle"
+              ref = {this.$handle}
+              x="227.5" y={handlePos} rx="10" ry="10" width="44" height="18" fill="#fff" 
+              style = {{cursor:'pointer'}}
+            />
+            {/* <Axis
+              translate="translate(246, 9)"
+              scale={rangeScale}
+              orient="left"
+              ticks = {layers+1}
+            />  */}
+          </g>
+        }
       </svg>
     );
   }
 }
 
-export default Blobs;
+const mapStateToProps = (state) => {
+  return {
+    step: state.step
+  }
+}
+
+export default connect(mapStateToProps)(Blobs);

@@ -30,11 +30,12 @@ class FlowerContainer extends React.Component {
     }
 
     render() {
-        let {leaves,current,_showUpLine,_selected,_nextSelected,_hovered} = this.props;
+        let {leaves,current,_showUpLine,_selected,_nextSelected,_hovered,titles} = this.props;
         let {endpoints} = this.state;
 
         return (
-            <svg width="100%" height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
+            <svg width="100%" height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH}`} 
+                    xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <pattern id="pattern-stripe" 
                         width="100" height="3" 
@@ -56,6 +57,7 @@ class FlowerContainer extends React.Component {
                     Array(current).fill(null).map((arr, i) => (
                         <Flower 
                             marginWidth = {BOX_WIDTH*2*i} key={"flo-"+i} number={leaves[i]}
+                            titles = {titles}
                             _showUpLine = {_showUpLine}
                             _selected = {_selected===i}
                             _hovered = {_hovered===i}
