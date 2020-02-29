@@ -14,7 +14,7 @@ class MatrixButton extends React.Component{
   render(){
     const cn = `matrixButton ${this.props.cName}`
     return (
-      <button className={cn}>
+      <button className={cn} id={this.props.id}>
         {this.props.btnName}
       </button>
     )

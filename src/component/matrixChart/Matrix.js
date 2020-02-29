@@ -12,11 +12,25 @@ class Matrix extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-
+      btnClassName:["","choose_btn",""]
     }
     this.$container = React.createRef();
+    this.onhandleClick = this.onhandleClick.bind(this)
   }
 
+  onhandleClick(v){
+    let classList = v.target.className.split(" ")
+    let index = v.target.id.split("")[0]
+    // 如果点击的按钮不是当下选中的按钮
+    if(classList.indexOf("choose_btn")==-1){
+      v.target.className="choose_btn"
+      let tempClassName=["","",""]
+      tempClassName[index]="choose_btn"
+      this.setState({
+        btnClassName:tempClassName
+      })
+    }
+  }
   componentDidMount(){
     let containerDom = this.$container.current;
     let labels = ['SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie', 'SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie','SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie'];
@@ -32,16 +46,17 @@ class Matrix extends React.Component{
     });
   }
   render(){
-    const btnData = [{btnName:"comp",cName:""},
-        {btnName:"senti",cName:"choose_btn"},
-        {btnName:"quantity",cName:""}
+    const btnData = [{btnName:"comp"},
+        {btnName:"senti"},
+        {btnName:"quantity"}
     ]
     return (
       <div className="chart-wrapper">
         <div className="header-line">
           <div className="title">People Matrix View</div>
-          <div className="mButtonContainer">{btnData.map(v=>(
-            <MatrixButton key={v.btnName} btnName={v.btnName} cName={v.cName}></MatrixButton>))}
+          <div className="mButtonContainer" onClick={this.onhandleClick}>
+            {btnData.map((v,i)=>(
+              <MatrixButton key={v.btnName} id={`${i}_btn`}  btnName={v.btnName} cName={this.state.btnClassName[i]}></MatrixButton>))}
           </div>
         </div>
         
