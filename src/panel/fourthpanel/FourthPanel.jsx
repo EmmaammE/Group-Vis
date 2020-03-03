@@ -3,6 +3,9 @@ import './fourthPanel.css';
 import Header from '../../component/header/Header';
 import CircleBtn from '../../component/button/circlebtn';
 import Matrix from '../../component/matrixChart/Matrix';
+import TimeLine from '../../component/timeLine/TimeLine'
+
+import MatrixView from '../../component/matrix/matrixView/MatrixView'
 import TimeLineChart from '../../component/timeLineChart/TimeLineChart';
 import SelectList from '../../component/selectList/SelectList';
 
@@ -27,12 +30,14 @@ class FourthPanel extends React.Component {
       <div className="fourth-panel">
         <Header title = "Overview"></Header>
         <div className="timeLine-view">
-          <TimeLineChart></TimeLineChart>
+          <TimeLine></TimeLine>
+          {/* <TimeLineChart></TimeLineChart> */}
         </div>
         <div className="lower-charts">
           <div className="left-charts">
             <div className ="matrix-view">
-              <Matrix></Matrix>
+              <MatrixView></MatrixView>
+              {/* <Matrix></Matrix> */}
             </div>
             <div className = "map-view"><MapContainer /></div>
           </div>

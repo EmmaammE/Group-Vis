@@ -12,6 +12,7 @@ class Matrix extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      // val:0,
       btnClassName:["","choose_btn",""]
     }
     this.$container = React.createRef();
@@ -31,8 +32,13 @@ class Matrix extends React.Component{
       })
     }
   }
+  componentWillUpdate(){
+    let containerDom_u = this.$container.current;
+    console.log("update中",containerDom_u)
+  }
   componentDidMount(){
     let containerDom = this.$container.current;
+    console.log("did中",containerDom)
     let labels = ['SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie', 'SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie','SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie'];
     let width = Math.min(containerDom.clientWidth,containerDom.clientHeight)
 
@@ -50,6 +56,8 @@ class Matrix extends React.Component{
         {btnName:"senti"},
         {btnName:"quantity"}
     ]
+    let containerDom_r = this.$container.current;
+    console.log("render()中",containerDom_r)
     return (
       <div className="chart-wrapper">
         <div className="header-line">

@@ -1,0 +1,10 @@
+.matrix-container{
+  position: relative;
+  width: 100%;
+  height: 90%;
+  margin-left: 10px;
+}
+
+.header-line div{
+  display: inline-block;
+}
