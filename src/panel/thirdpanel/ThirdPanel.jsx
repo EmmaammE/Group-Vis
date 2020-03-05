@@ -8,6 +8,7 @@ import btn4 from '../../assets/list.svg';
 import btn3 from '../../assets/matrix.svg';
 import btn2 from '../../assets/topic.svg';
 import btn1 from '../../assets/map.svg';
+import DimensionContainer from '../../component/dimension/DimensionContainer';
 
 const btn_urls = [btn1,btn2,btn3,btn4]
 
@@ -34,7 +35,7 @@ class ThirdPanel extends React.Component {
 
         </div>
         <div className="xxxx-view">
-          xxxx-view
+          <DimensionContainer />
         </div>
       </div>
     )

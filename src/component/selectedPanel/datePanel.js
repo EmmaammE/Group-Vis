@@ -9,46 +9,76 @@ const style = {
 function DatePanel({title, setClicked, range = [0,0], options = []}) {
   const [expanded, setExpanded] = useState(false);
   const [step, setStep] = useState(0);
-  const [low, setLow] = useState(range[0]);
-  const [high, setHigh] = useState(range[1]);
+  const [showLow, setShowLow] = useState(range[0]);
+  const [showHigh, setShowHigh] = useState(range[1]);
 
   useEffect(() => {
-    setLow(options[0]);
-    setHigh(options[options.length-1]);
-  }, [options])
-
-  function clickLeft() {
-    setExpanded(!expanded);
-    setStep(1);
-  }
-
-  function clickRight() {
-    setExpanded(!expanded);
-    setStep(2);
-  }
+    setShowLow(range[0]);
+    setShowHigh(range[1]);
+  }, [range])
 
   function clickItem(value) {
     switch(step) {
       case 1:
-        if(value > high) {
+        if(value > showHigh) {
           alert("不合法");
         } else {
-          setLow(value);
-          setClicked(value, high);
+          setClicked(value, showHigh);
         }
         break;
       case 2:
-        if(value < low) {
+        if(value < showLow) {
           alert("不合法");
         } else {
-          setHigh(value);
-          setClicked(low, value);
+          setClicked(showLow, value);
         }
         break;
       default:
         console.log(value);
     }
     console.log(step, value);
+  }
+
+  function handleChange1(event) {
+    setShowLow(event.target.value)
+  }
+
+  function handleFocus1() {
+    setShowLow("")
+    if(options.length > 0) {
+      setExpanded(true);
+      setStep(1);
+    }
+  }
+
+  function handleBlur1() {
+    if(showLow === "") {
+      setShowLow(range[0])
+    } else {
+      setClicked(showLow, showHigh)
+    }
+    options.length > 0 && setExpanded(false);
+  }
+
+  function handleChange2(event) {
+    setShowHigh(event.target.value)
+  }
+
+  function handleFocus2() {
+    setShowHigh("")
+    if(options.length > 0) {
+      setExpanded(true);
+      setStep(2);
+    }
+  }
+
+  function handleBlur2() {
+    if(showHigh==="") {
+      setShowHigh(range[1])
+    } else {
+      setClicked(showLow, showHigh)
+    }
+    options.length > 0 && setExpanded(false);
   }
 
   return (
@@ -60,9 +90,15 @@ function DatePanel({title, setClicked, range = [0,0], options = []}) {
               className="dropdown__selected"
               style={options.length===0?{}:{}}
             >
-              <span className="range-block" onClick={clickLeft}>{low}</span>
+              <span className="range-block left">
+                <input value={showLow} onChange={handleChange1} 
+                  onFocus={handleFocus1} onBlur={handleBlur1}/>
+              </span>
               <span className="range-divider">-</span>
-              <span className="range-block" onClick={clickRight}>{high}</span>
+              <span className="range-block right">
+                <input value={showHigh} onChange={handleChange2} 
+                  onFocus={handleFocus2} onBlur={handleBlur2}/>
+              </span>
             </li>
             <svg
               className={["dropdown__arrow",expanded?"expanded":""].join(" ")}
@@ -80,7 +116,7 @@ function DatePanel({title, setClicked, range = [0,0], options = []}) {
                   options.map((option, index) => (
                     <li 
                       key={`option-${index}`} value={option}
-                      className={["dropdown__list-item",(option===low||option===high)?"checked":''].join(" ")}
+                      className={["dropdown__list-item",(option===range[0]||option===range[1])?"checked":''].join(" ")}
                       onClick = {() => clickItem(option)}
                     >{option}
                       <div className="item-control"></div>
