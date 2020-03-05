@@ -3,7 +3,6 @@ import './selectedPanel.css';
 
 function SelectedPanel({title, setClicked, clicked = [], options = []}) {
   const [expanded, setExpanded] = useState(false);
-  
   return (
     <div className="selected-panel">
         <div className="divider"><p>{title}</p></div>

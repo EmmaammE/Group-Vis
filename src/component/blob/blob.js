@@ -91,7 +91,8 @@ class Blobs extends React.Component {
       // blobs: [1000, 500, 200], 
       // TODO 获得blob的层数
       layers: 3,
-      handlePos: 235,
+      // 默认在最高值
+      handlePos: 190,
       xScale: d3.scaleBand()
         .range([0, 2 * Math.PI])    
         .align(Math.PI * 5 / 180)                  

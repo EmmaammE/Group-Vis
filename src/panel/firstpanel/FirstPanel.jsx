@@ -31,6 +31,7 @@ class FirstPanel extends React.Component {
         this.onClickSearch = this.onClickSearch.bind(this);
         this.setStatus = this.setStatus.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
+        this.onClickDelete =  this.onClickDelete.bind(this);
     }
 
     componentDidMount() {
@@ -38,7 +39,6 @@ class FirstPanel extends React.Component {
         let that = this;
         axios.post('/init_ranges/')
             .then(res => {
-                // console.log(res);
                     if(res.data.is_success === true) {
                         // 朝代和社会区分有初始值
                         dataSet[2].options = Object.values(res.data[dataSet[2].key]);
@@ -50,6 +50,10 @@ class FirstPanel extends React.Component {
                             dataSet,
                             clickStatus
                         })
+                    } else {
+                        if(res.data.bug) {
+                            console.error(res.data.bug)
+                        }
                     }
             })
             .catch(err => {
@@ -57,16 +61,24 @@ class FirstPanel extends React.Component {
             })
     }
 
+    // 选择框的click事件
     setStatus(name) {
         return index => {
             let {clickStatus} = this.state;
-            clickStatus[name][index] = !clickStatus[name][index];
+            if(index === 0) {
+                let size = clickStatus[name].length - 1;
+                clickStatus[name] = [!clickStatus[name][0], ...Array(size).fill(false)]
+            } else {
+                clickStatus[name][0] = false;
+                clickStatus[name][index] = !clickStatus[name][index];
+            }
             this.setState({
                 clickStatus
             })
         }
     }
 
+    // 选择时间
     setTimeRange(low, high) {
         this.setState({
           timeRange: [low, high]  
@@ -84,6 +96,7 @@ class FirstPanel extends React.Component {
     fetchRange() {
         let that = this;
         let {searchValue, clickStatus} = this.state;
+        let allPerson; // 存储所有相关人的person_id
 
         let bdata = new FormData();
         bdata.append('name', searchValue);
@@ -99,37 +112,36 @@ class FirstPanel extends React.Component {
                     // SECTION update dataSet
                     let {dataSet} = that.state, low, high;
                     dataSet.forEach(dset => {
-                        low = +year[0];
-                        high = +year.pop();
                         if(dset.key === 'Year') {
-                            dset.options = [];
-                            while(low <= high) {
-                                dset.options.push(low);
-                                low += 1;
+                            dset.options = [...year];
+                            if(year[0] === '0') {
+                                dset.options.shift();
                             }
+                            low = dset.options[0];
+                            high = year.pop();
                         } else {
-                            dset.options = ['全部', ...Object.values(data[dset.key])];
+                            if(dset.key === 'Person') {
+                                allPerson = Object.keys(data[dset.key])
+                            }
+                            if(dset.key !== 'Dynasty' && dset.key !== 'Gender') {
+                                dset.options = ['All', ...Object.values(data[dset.key])];
+                            } else {
+                                dset.options = [ ...Object.values(data[dset.key])];
+                            }
                         }
                         clickStatus[dset.key] = Array(dset.options.length).fill(false);
                     })
                     that.setState({
                         timeRange: [low, high],
-                        dataSet
+                        dataSet,
+                        allPerson,
+                        clickStatus
                     })
 
-                    let param = new FormData();
-                    // param.append("person_ids", JSON.stringify(Object.keys(data["Person"])))
-                    let person_ids = Object.keys(data["Person"])
-                    person_ids.forEach(e => {
-                        param.append("person_ids[]", e)
-                    })
-                    axios.post('/search_topics_by_person_ids/', param)
-                        .then(res => {
-                            if(res.data.is_success) {
-                                that.props.setTopicData(res.data)
-                            }
-                            console.log(res);
-                        })
+                } else {
+                    if(res.data.bug) {
+                        console.error(res.data.bug)
+                    }
                 }
                 
             })
@@ -137,71 +149,74 @@ class FirstPanel extends React.Component {
     }
 
     onClickSearch() {
+        // TODO 只根据朝代查询相关人信息
         let that = this;
         let param = new FormData();
-        // let {min_year, max_year, genders, status} = this.state;
-        let {clickStatus, timeRange, dataSet} = this.state;
-        let genders = [],  status = [];
 
-        if(clickStatus['Gender'][0]) {
-            genders = dataSet[4].options;
-        } else {
-            clickStatus['Gender'].forEach((e,i) =>{
-                if(e===true) {
-                    genders.push(dataSet[4].options[i])
-                }
-            })
+        let {clickStatus, timeRange, dataSet, allPerson} = this.state;
+        let input = [
+            {title: "Person", data: "person_ids[]", index:1},
+            {title: "Status", data: "status[]", index:3},
+            {title: "Gender", data: "genders[]", index:4}
+        ]
+        if(timeRange[0]!= '0' && timeRange[1]!= '0'){
+            param.append('min_year', timeRange[0]);
+            param.append('max_year', timeRange[1]);
         }
-
-        if(clickStatus['Status'][0]) {
-            status =  dataSet[3].options;
-        } else {
-            clickStatus['Status'].forEach((e,i) =>{
-                if(e===true) {
-                    status.push(dataSet[3].options[i])
+        input.forEach(e => {
+            if(clickStatus[e.title][0]) {
+                if(e.title === 'Person') {
+                    allPerson.forEach(e=>{
+                        param.append("person_ids[]",e)
+                    })
+                } else {
+                    dataSet[e.index].options.forEach((k,i)=> {
+                        if(i>0) param.append(e.data, k)
+                    })
                 }
-            })
-        }
-
-        //TODO 待修改
-        param.set('dynastie' , "宋");
-        param.set('min_year', timeRange[0] || null);
-        param.set('max_year', timeRange[1] || null);
-        param.set('genders', genders || null)
-        param.set('status', status || null)
-
+            } else {
+                clickStatus[e.title].forEach((k,i) => {
+                    if(k === true) {
+                        param.append(e.data, dataSet[e.index].options[i])
+                    }
+                })
+            }
+        })
+       
         this.props.setRange({
             low: timeRange[0],
             high: timeRange[1]
         })
-
-        axios.post('/search_topics_by_person_ids/', param)
+        axios.post('/filter_person_by_ranges/', param)
             .then(res => {
                 if(res.data.is_success) {
-                    that.props.setTopicData(res.data)
-                }
-                console.log(res);
-            })
-        // axios.post('/search_person_by_ranges/', param)
-        //     .then(res => {
-        //         if(res.data.is_success) {
-        //             that.props.setPerson(res.data.person_ids)
+                    that.props.setPerson(res.data.person_ids)
                     
-        //             let param = new FormData()
-        //             param.set('person_ids', res.data.person_ids)
+                    let param = new FormData()
+                    res.data.person_ids.forEach(e => {
+                        param.append("person_ids[]", e)
+                    })
 
-        //             axios.post('/search_topics_by_person_ids/', param)
-        //                 .then(res => {
-        //                     if(res.data.is_success) {
-        //                         that.props.setTopicData(res.data)
-        //                     }
-        //                     console.log(res);
-        //                 })
-        //         }
-        //     })
-        //     .catch(err => {
-        //         console.error(err);
-        //     })
+                    axios.post('/search_topics_by_person_ids/', param)
+                        .then(res => {
+                            if(res.data.is_success) {
+                                that.props.setTopicData(res.data)
+                            }
+                        })
+                }
+            })
+            .catch(err => {
+                console.error(err);
+            })
+    }
+
+    onClickDelete() {
+        let {clickStatus, timeRange} = this.state;
+        timeRange = [0,0];
+        for(let key in clickStatus) {
+            clickStatus[key] = Array(clickStatus[key].length).fill(false)
+        }
+        this.setState({clickStatus, timeRange})
     }
     
     render() {
@@ -245,7 +260,7 @@ class FirstPanel extends React.Component {
                     })}
                     <div className="btn-container">
                         <button className="btn" onClick={this.onClickSearch}>Search</button>
-                        <button className="btn btn-delete">Delete</button>
+                        <button className="btn btn-delete" onClick={this.onClickDelete}>Delete</button>
                     </div>
                 </div>
             </div>
