@@ -28,7 +28,7 @@ class TimeLine extends React.Component{
     let cData = circleData.map(v=>v.info)
     return (
       <div className="chart-wrapper">
-        <div className="title">Topic View</div>
+        <div className="title">Timeline View</div>
         <div ref={this.$container} className="timeLine-container">
           <svg width="100%" height="100%" viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
             <g transform={`translate(20,${margin.top})`}>
@@ -47,7 +47,7 @@ class TimeLine extends React.Component{
               <g transform={`translate(${margin.left},0)`} className="timeLine_circle_rows">
                 {
                   cData.map((v,i)=>(
-                    <g>
+                    <g key={`${v}_time_${i}`}>
                       <SeqCircles
                         key={`${v}_time_${i}`}
                         data={v}
@@ -78,6 +78,7 @@ class TimeLine extends React.Component{
                 {
                   lineData.map((v)=>(
                     <line 
+                      key={`markLines${v}`}
                       className="markLine"
                       x1={xScale(v)}
                       x2={xScale(v)}

@@ -1,0 +1,130 @@
+{
+    "all_topics": [
+        "\u7537",
+        "\u957f\u5b89",
+        "[\u4e3a\u5b98\u8005\uff1a\u6587]"
+    ],
+    "pmi_node": {
+        "\u7537": {
+            "\u7537": 0,
+            "\u957f\u5b89": 1.6671967465862927,
+            "[\u4e3a\u5b98\u8005\uff1a\u6587]": 1.6671967465862927
+        },
+        "\u957f\u5b89": {
+            "\u7537": 1.6671967465862927,
+            "\u957f\u5b89": 0,
+            "[\u4e3a\u5b98\u8005\uff1a\u6587]": 1.749083906058477
+        },
+        "[\u4e3a\u5b98\u8005\uff1a\u6587]": {
+            "\u7537": 1.6671967465862927,
+            "\u957f\u5b89": 1.7490839060584769,
+            "[\u4e3a\u5b98\u8005\uff1a\u6587]": 0
+        }
+    },
+    "topic2sentence_positions": {
+        "\u7537": {
+            "\u674e\u9022.GenderIs.\u7537": 0.0017088651899501651,
+            "\u5f20.GenderIs.\u7537": 0.032705677399566445,
+            "\u5e38\u886e.GenderIs.\u7537": -0.007483313697852364,
+            "\u738b.GenderIs.\u7537": -0.003747422806233693,
+            "\u738b\u68e8.GenderIs.\u7537": 0.0084947151712642,
+            "\u674e\u7174.GenderIs.\u7537": -0.0028941837557279653,
+            "\u6768\u5b88\u4fe1.GenderIs.\u7537": -0.01010358808108061,
+            "\u7a0b\u7426.GenderIs.\u7537": 0.0013034913620326037,
+            "\u6b27\u9633\u742e.GenderIs.\u7537": 0.002613429350769345,
+            "\u6768\u5149\u7ffc.GenderIs.\u7537": -0.0044552817103244,
+            "\u674e\u6e38.GenderIs.\u7537": -0.006345056858863763,
+            "\u738b\u9050.GenderIs.\u7537": -0.005462411488798666,
+            "\u6768\u73c2.GenderIs.\u7537": -0.008441810381138469,
+            "\u5f20\u8302\u5b97.GenderIs.\u7537": 0.002313323696444887,
+            "\u5e38\u5ba5.GenderIs.\u7537": -0.007260170229439296,
+            "\u5f20\u8302\u548c.GenderIs.\u7537": -0.007312947617898054,
+            "\u6768\u81b3.GenderIs.\u7537": -0.001279498401249571,
+            "\u6768\u590d\u606d.GenderIs.\u7537": -0.000595353714907434,
+            "\u738b\u5c45\u5ca9.GenderIs.\u7537": 0.05887273227729312,
+            "\u5510\u718a.GenderIs.\u7537": -0.0040897229541750615,
+            "\u90a2A.GenderIs.\u7537": -0.0019247271807195643,
+            "\u5b54\u7ee9.GenderIs.\u7537": -0.00548347365727167,
+            "\u7a0bB.GenderIs.\u7537": -0.00021897739923950344,
+            "\u90d1\u7941.GenderIs.\u7537": -0.010365433310827114,
+            "\u5f20\u5c71\u752b.GenderIs.\u7537": -0.0017474573710567565,
+            "\u8303\u9686.GenderIs.\u7537": 0.0002783404567962145,
+            "\u859b.GenderIs.\u7537": 0.001153804260625593,
+            "\u67f4\u8d53.GenderIs.\u7537": 0.021358214277520715,
+            "\u8303\u90c1.GenderIs.\u7537": -0.004640259182695715,
+            "\u9a6cA.GenderIs.\u7537": -0.0022508914814467077,
+            "\u674e\u76d6.GenderIs.\u7537": -0.003330928672232482,
+            "\u77f3.GenderIs.\u7537": -0.002871334551840089,
+            "\u82cf\u632f.GenderIs.\u7537": -0.00309376437486685,
+            "\u67f3\u5b97\u5143.GenderIs.\u7537": -0.005104796405284945,
+            "\u989c\u9550.GenderIs.\u7537": -0.01011200039706806,
+            "\u6c88B.GenderIs.\u7537": -0.004900231768947222,
+            "\u65b9\u53d6\u8ff0.GenderIs.\u7537": -0.005287555991077537
+        },
+        "\u957f\u5b89": {
+            "\u674e\u9022.AddrAssocIs.\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.020801264729531452,
+            "\u5f20.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.007520042389873999,
+            "\u5e38\u886e.AddrAssocIs.\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.01925935328072305,
+            "\u674e\u7174.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.018212197194001377,
+            "\u6768\u5b88\u4fe1.AddrAssocIs.\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": -0.00480180182659172,
+            "\u674e\u6e38.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": -0.14666563849603995,
+            "\u7a0b\u7426.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.02053000918281825,
+            "\u6768\u73c2.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": -0.02741091828307074,
+            "\u5f20\u8302\u5b97.AddrAssocIs.\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.023549107182447335,
+            "\u6768\u590d\u606d.AddrAssocIs.\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.013122211610343043,
+            "\u5e38\u5ba5.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.00841387897140174,
+            "\u5f20\u8302\u548c.AddrAssocIs.\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).\u7c4d\u8d2f(\u57fa\u672c\u5730\u5740).Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.011270567344799979,
+            "\u6768\u81b3.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.013450012055793603,
+            "\u8303\u9686.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.01583230947363388,
+            "\u674e\u76d6.AddrAssocIs.\u524d\u4f4f\u5730.\u524d\u4f4f\u5730.Where.\u957f\u5b89.\u957f\u5b89.AddrBelong.\u4eac\u5146\u5e9c": 0.006917405190334768
+        },
+        "[\u4e3a\u5b98\u8005\uff1a\u6587]": {
+            "\u5f20.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.02243414415577592,
+            "\u738b\u68e8.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.0027838691369513496,
+            "\u674e\u7174.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.022578441288449408,
+            "\u6768\u5b88\u4fe1.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.012371361137835662,
+            "\u6b27\u9633\u742e.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.03410182296710143,
+            "\u7a0b\u7426.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.008250326433435281,
+            "\u6768\u5149\u7ffc.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.013753574755920747,
+            "\u5e38\u5ba5.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.018234437831282285,
+            "\u738b\u9050.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.006519073699467598,
+            "\u5f20\u8302\u5b97.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": -0.03179718553546002,
+            "\u5f20\u8302\u548c.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.014997030963196979,
+            "\u6768\u73c2.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.014450969809752053,
+            "\u6768\u81b3.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.007062281628716114,
+            "\u6768\u590d\u606d.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": -0.010639561700228858,
+            "\u67f4\u8d53.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.002857324881838384,
+            "\u67f3\u5b97\u5143.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": -0.10747549112274805,
+            "\u989c\u9550.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.01722135211752934,
+            "\u77f3.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": -0.1389658511499136,
+            "\u82cf\u632f.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.019461517593303543,
+            "\u8303\u90c1.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.009026270819200606,
+            "\u90d1\u7941.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.006976585104822772,
+            "\u5b54\u7ee9.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.017981685785112205,
+            "\u5510\u718a.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.017530746106979914,
+            "\u674e\u76d6.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.0062970400401730735,
+            "\u738b\u5c45\u5ca9.StatusIs.[\u4e3a\u5b98\u8005\uff1a\u6587]": 0.013988233251505914
+        }
+    },
+    "label2topics": {
+        "Person": [],
+        "Dynasty": [],
+        "Year": [],
+        "Nianhao": [],
+        "Gender": [
+            "\u7537"
+        ],
+        "Association": [],
+        "Text": [],
+        "Addr": [
+            "\u957f\u5b89"
+        ],
+        "Office": [],
+        "Status": [
+            "[\u4e3a\u5b98\u8005\uff1a\u6587]"
+        ],
+        "Entry": [],
+        "Note": []
+    },
+    "is_success": true
+}

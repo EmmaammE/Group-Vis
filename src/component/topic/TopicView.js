@@ -1,7 +1,7 @@
 import React from 'react';
 import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
-import {scaleFactory,circleData,relationData} from './util';
+import {scaleFactory,circleData,relationData,handleData} from './util';
 import Arrow from'./Arrow'
 
 const WIDTH = 380;
@@ -20,12 +20,15 @@ class TopicView extends React.Component{
   componentDidMount(){
   }
   render(){
+
+    let topicData = handleData()
+    console.log("topicData",topicData)
     let margin={left:60,top:70,right:10,bottom:50}
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
-    const {yScale,xScale,colorMap,value,vScale} = scaleFactory(width,height,circleData,START_COLOR,END_COLOR)
-    let rLabels = circleData.map(v=>v.name)
-    let cData = circleData.map(v=>v.info)
+    let rLabels = topicData.labelData
+    let cData = topicData.cData
+    const {yScale,xScale,colorMap,value,vScale} = scaleFactory(width,height,cData,START_COLOR,END_COLOR)
     return (
       <div className="chart-wrapper">
         <div className="title">Topic View</div>
@@ -37,8 +40,8 @@ class TopicView extends React.Component{
                 translate={`(${margin.left},${margin.top*0.8})`}  
                 rowOrColumn = {true} 
                 data={rLabels} 
-                rotate={90}
-                anchor={"end"}
+                rotate={-90}
+                anchor={"start"}
                 xy={xScale}>
                 </Lable>
               <Lable 

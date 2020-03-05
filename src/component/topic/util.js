@@ -1,14 +1,46 @@
 import * as d3 from 'd3';
+import topicData from '../../assets/geojson/a.json';
+
+export function handleData(data){
+    console.log("topicData",topicData)
+    let labelData=[]
+    let label2topics=topicData.label2topics
+    for(let i in label2topics){
+        labelData.push(label2topics[i].length>0?label2topics[i][0]:i)
+    }
+    console.log("labelData",labelData)
+    let topicPos = topicData.topic2sentence_positions
+    let cData= labelData.map(v=>{
+        if(topicPos[v]){
+            let values =  Object.values(topicPos[v])
+            let keys = Object.keys(topicPos[v])
+            return  values.map((v,i)=>{
+                return {
+                    distance:v,
+                    value:v,
+                    discription:keys[i]
+                }
+            })
+        }else{
+            return []
+        }
+    })
+    return {labelData,cData}
+    // console.log("cData",cData)
+
+    // return JSON.parse(topicData)
+}
+
 
 export function scaleFactory(width,height,data,startColor,endColor){
   
   const numcols = data.length;
   
-  let maxValue = d3.max(data, function(layer) { return d3.max(layer.info, function(d) { return d.value; }); });
-  let minValue = d3.min(data, function(layer) { return d3.min(layer.info, function(d) { return d.value; }); });
+  let maxValue = d3.max(data, function(layer) { return d3.max(layer, function(d) { return d.value; }); });
+  let minValue = d3.min(data, function(layer) { return d3.min(layer, function(d) { return d.value; }); });
   
-  let maxDistance = d3.max(data, function(layer) { return d3.max(layer.info, function(d) { return d.distance; }); });
-   let minDistance = d3.min(data, function(layer) { return d3.min(layer.info, function(d) { return d.distance; }); });
+  let maxDistance = d3.max(data, function(layer) { return d3.max(layer, function(d) { return d.distance; }); });
+   let minDistance = d3.min(data, function(layer) { return d3.min(layer, function(d) { return d.distance; }); });
   
   var yScale = d3.scaleLinear()
   .domain([minDistance,maxDistance])
@@ -19,8 +51,9 @@ export function scaleFactory(width,height,data,startColor,endColor){
   .range([0,width])
 
   var colorMap = d3.scaleLinear()
-  .domain([minValue,0,maxValue])
-  .range([startColor,"white", endColor]);
+  .domain([minValue,minValue/2,0,maxValue/2,maxValue])
+  .range(["black","white", "black","white","black"]);
+//   .range([startColor,"white", endColor,"white",startColor]);
 
   let n = 30;
   let value = []
@@ -34,7 +67,7 @@ export function scaleFactory(width,height,data,startColor,endColor){
 
   return { yScale,xScale,colorMap,value,vScale}
 }
-export let relationData = [[3,1,-1],[8,4,1],[12,6,-1]]
+export let relationData = [[7,4,-1],[9,7,1]]
 
 export let circleData = [
   {name: "SuShi", info:[{distance:1,value:0.2,discription:"this is 1 discription"},
