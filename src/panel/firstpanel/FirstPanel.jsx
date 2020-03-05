@@ -200,6 +200,7 @@ class FirstPanel extends React.Component {
                     axios.post('/search_topics_by_person_ids/', param)
                         .then(res => {
                             if(res.data.is_success) {
+                                console.log("res.data",res.data)
                                 that.props.setTopicData(res.data)
                             }
                         })

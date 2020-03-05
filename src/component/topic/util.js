@@ -1,16 +1,23 @@
 import * as d3 from 'd3';
 import topicData from '../../assets/geojson/a.json';
+// import { lab, map } from 'd3';
 
 export function handleData(data){
-    console.log("topicData",topicData)
     let labelData=[]
-    let label2topics=topicData.label2topics
+    let label2topics=data.label2topics
+    let topicPos = data.topic2sentence_positions
+    let pmiNode = data.pmi_node
     for(let i in label2topics){
-        labelData.push(label2topics[i].length>0?label2topics[i][0]:i)
+        if(label2topics[i].length>0){
+            labelData = labelData.concat(label2topics[i])
+        }else{
+            labelData.push(i)
+        }
     }
-    console.log("labelData",labelData)
-    let topicPos = topicData.topic2sentence_positions
-    let cData= labelData.map(v=>{
+    let mapTopicToIndex = new Map()
+    
+    let cData= labelData.map((v,i)=>{
+        mapTopicToIndex[v]=i
         if(topicPos[v]){
             let values =  Object.values(topicPos[v])
             let keys = Object.keys(topicPos[v])
@@ -25,10 +32,18 @@ export function handleData(data){
             return []
         }
     })
-    return {labelData,cData}
-    // console.log("cData",cData)
+    let relationData = []
 
-    // return JSON.parse(topicData)
+    for(let i in pmiNode){
+        let node = pmiNode[i]
+        for(let j in node){
+            if(node[j]!=0&&mapTopicToIndex[i]>mapTopicToIndex[j]){
+                let value = node[j]>0?1:-1
+                relationData.push([mapTopicToIndex[i],mapTopicToIndex[j],value])
+            }
+        }
+    }
+    return {labelData,cData,relationData}
 }
 
 
@@ -67,7 +82,8 @@ export function scaleFactory(width,height,data,startColor,endColor){
 
   return { yScale,xScale,colorMap,value,vScale}
 }
-export let relationData = [[7,4,-1],[9,7,1]]
+export let relationData = []
+// export let relationData = [[7,4,-1],[9,7,1]]
 
 export let circleData = [
   {name: "SuShi", info:[{distance:1,value:0.2,discription:"this is 1 discription"},

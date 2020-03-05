@@ -1,8 +1,9 @@
 import React from 'react';
 import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
-import {scaleFactory,circleData,relationData,handleData} from './util';
+import {scaleFactory,handleData} from './util';
 import Arrow from'./Arrow'
+import { connect } from 'react-redux';
 
 const WIDTH = 380;
 const HEIGHT = 520;
@@ -20,14 +21,21 @@ class TopicView extends React.Component{
   componentDidMount(){
   }
   render(){
+    // console.log("topivView中：",this.props)
+    const data = {
+      label2topics:this.props.label2topics,
+      topic2sentence_positions:this.props.topic2sentence_positions,
+      pmi_node:this.props.pmi_node
+    }
 
-    let topicData = handleData()
-    console.log("topicData",topicData)
+    let topicData = handleData(data)
+    // console.log("topicView中，topicData",topicData)
     let margin={left:60,top:70,right:10,bottom:50}
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
     let rLabels = topicData.labelData
     let cData = topicData.cData
+    let relationData = topicData.relationData
     const {yScale,xScale,colorMap,value,vScale} = scaleFactory(width,height,cData,START_COLOR,END_COLOR)
     return (
       <div className="chart-wrapper">
@@ -85,4 +93,4 @@ class TopicView extends React.Component{
   }
 }
 
-export default TopicView;
+export default connect(state=>state.topicData)(TopicView);
