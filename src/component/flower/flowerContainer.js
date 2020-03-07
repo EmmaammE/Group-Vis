@@ -75,9 +75,9 @@ class FlowerContainer extends React.Component {
                     ))
                 }
                 <Dimension
-                    _width={50}
-                    _height={50}
-                    _margin = {"translate(200,200)"}
+                    _width={60}
+                    _height={60}
+                    _margin = {"translate(250,250)"}
                     data={Object.values(positions)}
                 />
             </svg>

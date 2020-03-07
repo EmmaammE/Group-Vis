@@ -1,5 +1,6 @@
 // 群体筛选的步骤数目
 export const SET_STEP = "SET_STEP";
+export const ADD_STEP = "ADD_STEP";
 /**
  * 设置每一步对应的,选中的group的数量
  * { step: num }

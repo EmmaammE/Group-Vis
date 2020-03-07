@@ -116,7 +116,7 @@ class Blobs extends React.Component {
 
   getRadius(r) {
     // TODO get the max value of the group
-    let scale = d3.scaleLinear().domain([200, 1000]).range([OUTER_RADIUS+40, BOX_WIDTH-15]);
+    let scale = d3.scaleLinear().domain([200, 50000]).range([OUTER_RADIUS+40, BOX_WIDTH-15]);
     return scale(r);
   }
 
@@ -179,7 +179,8 @@ class Blobs extends React.Component {
 
   render() {
     let { handlePos, rangeScale, layers } = this.state;
-    let {blobs} = this.props;
+    let { blobs } = this.props;
+
     return (
       <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -230,10 +231,11 @@ class Blobs extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    step: state.step
-  }
-}
+// const mapStateToProps = (state) => {
+//   return {
+//     group_: state.group
+//   }
+//   connect(mapStateToProps)();
+// }
 
-export default connect(mapStateToProps)(Blobs);
+export default Blobs;

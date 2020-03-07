@@ -7,21 +7,21 @@ const getScales = (width, height, data) => {
     let yScale = d3.scaleLinear().range([0, height])
         .domain(d3.extent(data, d => d["position"][1]));
 
-    console.log(xScale.domain(), yScale.domain());
+    // console.log(xScale.domain(), yScale.domain());
     return {xScale, yScale}
 }
 
 function Dimension({_width, _height, _margin, data = {}}) {
     const scales = useMemo(() => getScales(_width, _height, data), [_width, _height, data]);
 
-    console.log(_width, _height);
     return ( 
         <g transform={_margin}>
             {
                 data.map((d,i)=> {
                     return (
                         <circle key={'cir-'+i} r={3} fill="#efeff6" stroke="#bec0db" strokeWidth="1px"
-                            cx={scales.xScale( d["position"][0]*10)} cy={scales.yScale(d["position"][1])} />
+                            opacity = {0.4}
+                            cx={scales.xScale(d["position"][0])} cy={scales.yScale(d["position"][1])} />
                     )
                 })
             }
