@@ -17,7 +17,7 @@ function SelectedPanel({title, setClicked, clicked = [], options = []}) {
               {
                 options.map((val,i) => {
                   if(clicked[i]) {
-                    return (<span key={'icon-'+i} className="icon">{val}</span>)
+                    return (<span key={'icon-'+i} className="icon">{val[1]}</span>)
                   } else {
                     return null;
                   }
@@ -39,10 +39,10 @@ function SelectedPanel({title, setClicked, clicked = [], options = []}) {
                 {
                   options.map((option, index) => (
                     <li 
-                      key={`option-${index}`} value={option}
+                      key={`option-${index}`} value={option[1]}
                       className={["dropdown__list-item",clicked[index]?"checked":''].join(" ")}
                       onClick = {() => setClicked(index)}
-                    >{option}
+                    >{option[1]}
                       <div className="item-control"></div>
                     </li> 
                   ))

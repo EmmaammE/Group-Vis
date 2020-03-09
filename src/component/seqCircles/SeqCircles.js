@@ -4,8 +4,23 @@ class SeqCircles extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-
+      highColor:""
     }
+
+    this.handleMouseover = this.handleMouseover.bind(this)
+    this.handleMouseout = this.handleMouseout.bind(this)
+  }
+
+  handleMouseover(v){
+    let tempColor = v.target.getAttribute("fill")
+    this.setState({
+      highColor:tempColor
+    })
+    v.target.setAttribute("fill","yellow")
+  }
+
+  handleMouseout(v){
+    v.target.setAttribute("fill",this.state.highColor)
   }
 
   render(){
@@ -24,7 +39,8 @@ class SeqCircles extends React.Component{
               <circle
                 cx={rowOrColumn?xy(v.distance):0}
                 cy={rowOrColumn?0:xy(v.distance)}
-                
+                onMouseOver={this.handleMouseover}
+                onMouseOut={this.handleMouseout}
                 r = {4}
                 fill={colorMap(v.value)}
               >

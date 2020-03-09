@@ -8,7 +8,22 @@ class MatrixColumn extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      highColor:""
     }
+
+    this.handleMouseover = this.handleMouseover.bind(this)
+    this.handleMouseout = this.handleMouseout.bind(this)
+  }
+  handleMouseover(v){
+    let tempColor = v.target.getAttribute("fill")
+    this.setState({
+      highColor:tempColor
+    })
+    v.target.setAttribute("fill","yellow")
+  }
+
+  handleMouseout(v){
+    v.target.setAttribute("fill",this.state.highColor)
   }
 
   render(){
@@ -27,6 +42,8 @@ class MatrixColumn extends React.Component{
             // 换成颜色标尺
             fill={colorMap(data[i])}
             key={`rect_${i}`}
+            onMouseOver={this.handleMouseover}
+            onMouseOut={this.handleMouseout}
             className="cell">
           </rect>
         ))

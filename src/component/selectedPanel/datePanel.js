@@ -36,7 +36,6 @@ function DatePanel({title, setClicked, range = [0,0], options = []}) {
       default:
         console.log(value);
     }
-    console.log(step, value);
   }
 
   function handleChange1(event) {

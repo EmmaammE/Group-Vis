@@ -22,17 +22,18 @@ const genItem = (num,property) => ({
     next: -1,
     size: num,
     property: Array(num).fill(property),
-    selected: 0
+    selected: 0,
+    positions: []
 })
 const btn_urls = [btn1,btn2,btn3,btn4]
 
-const GRID_ITEM_TEMPLATE = {next:-1, size:0, property:[], selected:-1};
+const GRID_ITEM_TEMPLATE = {next:-1, size:0, property:[], selected: 0};
 class SecondPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             grid: [
-                // {next:-1, size:1, property:[4],selected:0},
+                // {next:-1, size:1, property:[4],selected:0, positions:[]},
                 // {next:-1, size:2, property:[8,9],selected:0},
                 // {next:4, size:3, property:[7,9,10],selected:2},
                 // {next:-1, size:4, property:[7,7,5,10],selected:2},
@@ -44,7 +45,6 @@ class SecondPanel extends React.Component {
 
     // toSelect
     toSelect() {
-        console.log('...');
         let num = parseInt(genData());
         let newGridItem = genItem(num,parseInt(random(6,9)));
         let {grid} = this.state;
@@ -57,18 +57,20 @@ class SecondPanel extends React.Component {
 
         this.props.setStep(num);
         let _a = grid.length-1
-        this.props.setGroup({[_a]:(10-_a)*100})
+        this.props.setGroup({[_a]:_a*200})
     }
 
     componentDidUpdate(prevProps){
         if(JSON.stringify(prevProps["all_topics"]) !== JSON.stringify(this.props["all_topics"])) {
             let {grid} = this.state;
-            let {all_topics} = this.props;
+            let {all_topics, positions} = this.props;
+            grid = []
             // 第一朵花
             if(grid.length === 0) {
                 grid.push({...GRID_ITEM_TEMPLATE, size:1, 
-                    property:[all_topics.length], titles:all_topics, positions: this.props.positions})
+                    property:[all_topics.length], titles:all_topics, positions: positions})
                 this.setState({grid})
+                this.props.setGroup({1: positions.length})
             }
         }
     }

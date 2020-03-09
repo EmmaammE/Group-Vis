@@ -12,8 +12,17 @@ class TimeLine extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-
     }
+    this.handleMouseover = this.handleMouseover.bind(this)
+    this.handleMouseout = this.handleMouseout.bind(this)
+  }
+
+  handleMouseover(v){
+    v.target.setAttribute("stroke","yellow")
+  }
+
+  handleMouseout(v){
+    v.target.setAttribute("stroke",END_COLOR)
   }
 
   componentDidMount(){
@@ -86,6 +95,8 @@ class TimeLine extends React.Component{
                       y2={height-5}
                       stroke={END_COLOR}
                       strokeDasharray={"1 1"}
+                      onMouseOver={this.handleMouseover}
+                      onMouseOut={this.handleMouseout}
                     >
                     </line>
                   ))

@@ -25,7 +25,6 @@ class Map extends React.Component {
 
   componentDidMount() {
     let node = this.$map.current;
-    // console.log()
     d3.select(node)
       .call(d3.zoom()
               .on("zoom", function(){
@@ -39,7 +38,9 @@ class Map extends React.Component {
   }
 
   render() {
-    let path = this.path;
+    let path = this.path,
+        projection = this.projection;
+    let {addr} = this.props;
 
     return (
       <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg">
@@ -52,6 +53,15 @@ class Map extends React.Component {
                 key={'fea-'+i}
               />
             ))}
+            <g>
+              {
+                addr && 
+                Object.values(addr).map((data, i) => (
+                  <circle key={'circle-'+i} r={5} fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
+                    transform={`translate(${projection([data[0]['x_coord'], data[0]['y_coord']])})`} />
+                ))
+              }
+            </g>
         </g>
         <text x={80} y={200} fill="#999" fontSize="30px">Song</text>
       </svg>

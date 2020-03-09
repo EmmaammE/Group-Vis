@@ -8,6 +8,7 @@ import SelectedPanel from '../../component/selectedPanel/selectedPanel';
 import {debounce} from '../../util/tools';
 import axios from 'axios';
 import { setPerson, setTopicData, setYear } from '../../actions/data';
+import { setGroup, addStep } from '../../actions/step';
 import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
 
@@ -16,6 +17,7 @@ class FirstPanel extends React.Component {
         super(props);
         this.state = {
             searchValue: "",
+            /* options：[[0,'All'],[id,data]] */
             dataSet: [
                 {key:'Year', title: 'Year', options: []},
                 {key:'Person', title: 'Related Person', options: []},
@@ -41,8 +43,8 @@ class FirstPanel extends React.Component {
             .then(res => {
                     if(res.data.is_success === true) {
                         // 朝代和社会区分有初始值
-                        dataSet[2].options = Object.values(res.data[dataSet[2].key]);
-                        dataSet[3].options = Object.values(res.data[dataSet[3].key]);
+                        dataSet[2].options = [[0,'All'],...Object.entries(res.data[dataSet[2].key])];
+                        dataSet[3].options = [[0,'All'],...Object.entries(res.data[dataSet[3].key])];
                         clickStatus[dataSet[2].key] = Array(dataSet[2].options.length).fill(false);
                         clickStatus[dataSet[3].key] = Array(dataSet[3].options.length).fill(false);
 
@@ -96,7 +98,6 @@ class FirstPanel extends React.Component {
     fetchRange() {
         let that = this;
         let {searchValue, clickStatus} = this.state;
-        let allPerson; // 存储所有相关人的person_id
 
         let bdata = new FormData();
         bdata.append('name', searchValue);
@@ -120,13 +121,10 @@ class FirstPanel extends React.Component {
                             low = dset.options[0];
                             high = year.pop();
                         } else {
-                            if(dset.key === 'Person') {
-                                allPerson = Object.keys(data[dset.key])
-                            }
                             if(dset.key !== 'Dynasty' && dset.key !== 'Gender') {
-                                dset.options = ['All', ...Object.values(data[dset.key])];
+                                dset.options = [[0,'All'], ...Object.entries(data[dset.key])];
                             } else {
-                                dset.options = [ ...Object.values(data[dset.key])];
+                                dset.options = [ ...Object.entries(data[dset.key])];
                             }
                         }
                         clickStatus[dset.key] = Array(dset.options.length).fill(false);
@@ -134,7 +132,6 @@ class FirstPanel extends React.Component {
                     that.setState({
                         timeRange: [low, high],
                         dataSet,
-                        allPerson,
                         clickStatus
                     })
 
@@ -149,13 +146,16 @@ class FirstPanel extends React.Component {
     }
 
     onClickSearch() {
-        // TODO 只根据朝代查询相关人信息
         let that = this;
+        let {step_ }= this.props;
         let param = new FormData();
 
-        let {clickStatus, timeRange, dataSet, allPerson} = this.state;
+        let {clickStatus, timeRange, dataSet } = this.state;
+        // input[i].title = dataSet[i+1].key ~ clickStates{title}
+        // index = i+1 留在这里，修改顺序后可以快点修改
         let input = [
             {title: "Person", data: "person_ids[]", index:1},
+            {title: "Dynasty", data: "dynasty_ids[]", index:2},
             {title: "Status", data: "status[]", index:3},
             {title: "Gender", data: "genders[]", index:4}
         ]
@@ -163,46 +163,54 @@ class FirstPanel extends React.Component {
             param.append('min_year', timeRange[0]);
             param.append('max_year', timeRange[1]);
         }
-        input.forEach(e => {
-            if(clickStatus[e.title][0]) {
-                if(e.title === 'Person') {
-                    allPerson.forEach(e=>{
-                        param.append("person_ids[]",e)
+
+        for(let i = 0; i < input.length; i++) {
+            let {title, data} = input[i];
+            if(clickStatus[title]!==undefined) {
+                if(clickStatus[title][0] && dataSet[i+1].options[0][1] === 'All') {
+                    dataSet[i+1].options.forEach((k,j)=> {
+                        // entries({id:name})
+                        j > 0 && param.append(data, k[0])
                     })
                 } else {
-                    dataSet[e.index].options.forEach((k,i)=> {
-                        if(i>0) param.append(e.data, k)
+                    clickStatus[title].forEach((k,j) => {
+                        k === true && param.append(data, dataSet[i+1].options[j][0])
                     })
                 }
-            } else {
-                clickStatus[e.title].forEach((k,i) => {
-                    if(k === true) {
-                        param.append(e.data, dataSet[e.index].options[i])
-                    }
-                })
             }
-        })
-       
-        this.props.setRange({
-            low: timeRange[0],
-            high: timeRange[1]
-        })
-        axios.post('/filter_person_by_ranges/', param)
+        }
+        // this.props.setRange({
+        //     low: timeRange[0],
+        //     high: timeRange[1]
+        // })
+        axios.post('/search_person_by_ranges/', param)
             .then(res => {
                 if(res.data.is_success) {
-                    that.props.setPerson(res.data.person_ids)
-                    
-                    let param = new FormData()
-                    res.data.person_ids.forEach(e => {
-                        param.append("person_ids[]", e)
-                    })
-
-                    axios.post('/search_topics_by_person_ids/', param)
-                        .then(res => {
-                            if(res.data.is_success) {
-                                that.props.setTopicData(res.data)
+                    let _size = Object.entries(res.data["Person"]).length;
+                    if( _size !== 0 || res.data["Person"].constructor !== Object) {
+                        let param = new FormData();
+                        // 超过1000个人好像有问题
+                        let i = 0;
+                        for(let _key in res.data["Person"]) {
+                            i++;
+                            if(i < 300) {
+                                param.append("person_ids[]", _key);
                             }
-                        })
+                        }
+                        console.log(i);
+                        axios.post('/search_topics_by_person_ids/', param)
+                            .then(response => {
+                                if(response.data.is_success) {
+                                    console.log("res.data",response.data);
+                                    that.props.setPerson(res.data["Person"])
+                                    that.props.setTopicData(response.data);
+                                    that.props.setGroup({[step_]: _size })
+                                    that.props.addStep();
+                                }
+                            })
+                    } else {
+                        alert('没有相关人');
+                    }
                 }
             })
             .catch(err => {
@@ -228,7 +236,7 @@ class FirstPanel extends React.Component {
                 </h1>
                 <div className="content-container">
                     <div className="title"><p>Overview</p></div>
-                        <Blobs blobs={Object.values(this.props.group).sort((a,b)=>a-b)}/>
+                        <Blobs blobs = {Object.values(this.props.group_)}/>
                         <div className="title"><p>Control Panel</p></div>
                         <div className="search-container">
                             <div className="input-outline">
@@ -270,8 +278,8 @@ class FirstPanel extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        step: state.step,
-        group: state.group
+        step_: state.step,
+        group_: state.group
     }
 }
 
@@ -279,7 +287,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         setTopicData: data => dispatch(setTopicData(data)),
         setPerson: data => dispatch(setPerson(data)),
-        setRange: data => dispatch(setYear(data))
+        setRange: data => dispatch(setYear(data)),
+        setGroup: data => dispatch(setGroup(data)),
+        addStep: () => dispatch(addStep())
     };
 };
 
