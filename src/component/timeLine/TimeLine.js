@@ -3,67 +3,121 @@ import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
 import {scaleFactory,circleData,lineData} from './util';
 import './timeLine.css'
+import * as d3 from 'd3';
 
 const WIDTH = 650;
 const HEIGHT = 220;
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
+let startLoc=[];
+let brushWidth;
+let brushHeight;
+let svgX ,svgY;
+let brushFlag=false;
 
 class TimeLine extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       tooltip:"tooltip",
-      visibility:"hidden",
-      x:"0",
-      y:"0",
+      tipVisibility:"hidden",
       changeX:"50",
       changeY:"50",
-      highRowLabel:3
+      highRowLabel:-1,
+      brushVisibility:"hidden",
+      brushTransX:0,
+      brushTransY:0,
+      brushWidth:0,
+      brushHeight:0
     }
     this.$container = React.createRef();
     this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
+    this.handleBrushMouseDown = this.handleBrushMouseDown.bind(this)
+    this.handleBrushMouseMove = this.handleBrushMouseMove.bind(this)
+    this.handleBrushMouseUp = this.handleBrushMouseUp.bind(this)
   }
 
   componentDidMount(){
     let container = this.$container.current
+    console.log("boundingClient",container.getBoundingClientRect())
     let currentX = container.getBoundingClientRect().x
     let currentY = container.getBoundingClientRect().y
-    this.setState({
-      x:currentX,
-      y:currentY
-    })
-    // console.log("container",currentX,currentY)
+    svgX=currentX
+    svgY=currentY
   }
-
   handleMouseenter(v){
     if(v.target.localName=="circle"){
-      // console.log("getbox",v.clientX,v.target.getBBox())
       let targetWidth = Number(v.target.getAttribute("width"));
-      let infos = v.target.getAttribute("info").split("_")
-      // console.log("infos",infos)
-      let xChange = v.clientX- this.state.x
-      let yChange = v.clientY- this.state.y-targetWidth*3;
+      let infos = v.target.getAttribute("info").split("_");
+      let xChange = v.clientX- svgX;
+      let yChange = v.clientY- svgY-targetWidth*3;
       
       this.setState({
         tooltip:infos[2],
-        visibility:"visible",
+        tipVisibility:"visible",
         changeX: xChange,
         changeY: yChange,
         highRowLabel:Number(infos[0])
       })
     }
   }
-
   handleMouseout(v){
     this.setState({
       tooltip:"",
-      visibility:"hidden",
+      tipVisibility:"hidden",
       highRowLabel:-1
     })
   }
 
+  // 下面三个函数为刷选框的监听函数
+  handleBrushMouseDown(v){
+    console.log("getbox",v.clientX,v.screenX,v.screenY)
+    startLoc = [v.clientX-svgX-2,v.clientY-svgY-3]
+    brushFlag=true
+    this.setState({
+      brushTransX:startLoc[0],
+      brushTransY:startLoc[1],
+      brushVisibility:"visible"
+    })
+  }
+  handleBrushMouseMove(v){
+    if(brushFlag){
+      let nowX = v.clientX-svgX-2
+      let nowY = v.clientY-svgY-3
+      brushWidth = nowX-startLoc[0]
+      brushHeight = nowY-startLoc[1]
+      if(brushWidth<0){
+        nowX = startLoc[0]+brushWidth
+        brushWidth=Math.abs(brushWidth)
+      }else{
+        nowX = startLoc[0]
+      }
+      if(brushHeight<0){
+        nowY = startLoc[1]+brushHeight
+        brushHeight = Math.abs(brushHeight)
+      }else{
+        nowY = startLoc[1]
+      }
+      this.setState({
+        brushTransX:nowX,
+        brushTransY:nowY,
+        brushWidth:brushWidth,
+        brushHeight:brushHeight
+      })
+    }
+  }
+  handleBrushMouseUp(v){
+    startLoc[0] = this.state.brushTransX
+    startLoc[1] = this.state.brushTransY
+    brushFlag=false
+    this.setState({
+      brushVisibility:"hidden",
+      brushWidth:0,
+      brushHeight:0
+    })
+
+  }
 
   render(){
     let margin={left:70,top:10,right:30,bottom:20}
@@ -76,11 +130,14 @@ class TimeLine extends React.Component{
     return (
       <div className="chart-wrapper">
         <div className="title">Timeline View</div>
-        <div ref={this.$container} className="timeLine-container">
+        <div className="timeLine-container">
           <svg width="100%" height="100%" 
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             ref={this.$container}
-            >
+            onMouseDown={this.handleBrushMouseDown}
+            onMouseMove={this.handleBrushMouseMove}
+            onMouseUp={this.handleBrushMouseUp}
+          >
             <g transform={`translate(20,${margin.top})`}>
               {/* 绘制左边标签 */}
               <g className="timeLine_Lables" >
@@ -170,7 +227,7 @@ class TimeLine extends React.Component{
               {/* 绘制tooltip */}
               <g 
                 transform = {`translate(${this.state.changeX},${this.state.changeY-margin.top*2})`}
-                visibility={this.state.visibility}
+                visibility={this.state.tipVisibility}
               >
                 <rect className="tooltip-g"
                   width="40"
@@ -192,6 +249,21 @@ class TimeLine extends React.Component{
                 >
                   {this.state.tooltip}
                 </text>
+              </g>
+              {/* 绘制刷选框 */}
+              <g
+                transform = {`translate(${this.state.brushTransX-20},${this.state.brushTransY-margin.top})`}
+                visibility={this.state.brushVisibility}
+              >
+                <rect
+                  className="brush"
+                  width={this.state.brushWidth}
+                  height={this.state.brushHeight}
+                  opacity="0.3"
+                  strokeWidth="1.5"
+                  stroke="red"
+                >
+                </rect>
               </g>
             </g>
           </svg>

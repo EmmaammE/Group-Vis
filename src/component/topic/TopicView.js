@@ -9,45 +9,54 @@ const WIDTH = 380;
 const HEIGHT = 520;
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
+let startLoc=[];
+let brushWidth;
+let brushHeight;
+let svgX ,svgY;
+let brushFlag=false;
 
 class TopicView extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       tooltip:"tooltip",
-      visibility:"hidden",
-      x:"0",
-      y:"0",
+      tipVisibility:"hidden",
       changeX:"50",
       changeY:"50",
-      highRowLabel:-1
+      highRowLabel:-1,
+      brushVisibility:"hidden",
+      brushTransX:0,
+      brushTransY:0,
+      brushWidth:0,
+      brushHeight:0
     }
     this.$container = React.createRef();
     this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
+    this.handleBrushMouseDown = this.handleBrushMouseDown.bind(this)
+    this.handleBrushMouseMove = this.handleBrushMouseMove.bind(this)
+    this.handleBrushMouseUp = this.handleBrushMouseUp.bind(this)
   }
 
   componentDidMount(){
     let container = this.$container.current
     let currentX = container.getBoundingClientRect().x
     let currentY = container.getBoundingClientRect().y
-    this.setState({
-      x:currentX,
-      y:currentY
-    })
+    svgX=currentX
+    svgY=currentY
   }
   handleMouseenter(v){
     if(v.target.localName=="circle"){
       let targetWidth = Number(v.target.getAttribute("width"));
       let infos = v.target.getAttribute("info").split("_")
       // console.log("info",infos);
-      let xChange = v.clientX- this.state.x
-      let yChange = v.clientY- this.state.y-targetWidth*3;
+      let xChange = v.clientX- svgX
+      let yChange = v.clientY- svgY -targetWidth*3;
       let displayInfo = Number(infos[2]).toFixed(5)
 
       this.setState({
         tooltip:displayInfo,
-        visibility:"visible",
+        tipVisibility:"visible",
         changeX: xChange,
         changeY: yChange,
         highRowLabel:Number(infos[0])
@@ -58,10 +67,57 @@ class TopicView extends React.Component{
   handleMouseout(v){
     this.setState({
       tooltip:"",
-      visibility:"hidden",
+      tipVisibility:"hidden",
       highRowLabel:-1
     })
   } 
+
+  // 下面三个函数为刷选框的监听函数
+  handleBrushMouseDown(v){
+    startLoc = [v.clientX-svgX-8,v.clientY-svgY]
+    brushFlag=true
+    this.setState({
+      brushTransX:startLoc[0],
+      brushTransY:startLoc[1],
+      brushVisibility:"visible"
+    })
+  }
+  handleBrushMouseMove(v){
+    if(brushFlag){
+      let nowX = v.clientX-svgX-8
+      let nowY = v.clientY-svgY
+      brushWidth = nowX-startLoc[0]
+      brushHeight = nowY-startLoc[1]
+      if(brushWidth<0){
+        nowX = startLoc[0]+brushWidth
+        brushWidth=Math.abs(brushWidth)
+      }else{
+        nowX = startLoc[0]
+      }
+      if(brushHeight<0){
+        nowY = startLoc[1]+ brushHeight
+        brushHeight = Math.abs(brushHeight)
+      }else{
+        nowY = startLoc[1]
+      }
+      this.setState({
+        brushTransX:nowX,
+        brushTransY:nowY,
+        brushWidth:brushWidth,
+        brushHeight:brushHeight
+      })
+    }
+  }
+  handleBrushMouseUp(v){
+    startLoc[0] = this.state.brushTransX
+    startLoc[1] = this.state.brushTransY
+    brushFlag=false
+    this.setState({
+      brushVisibility:"hidden",
+      brushWidth:0,
+      brushHeight:0
+    })
+  }
 
 
   render(){
@@ -83,7 +139,14 @@ class TopicView extends React.Component{
       <div className="chart-wrapper">
         <div className="title">Topic View</div>
         <div ref={this.$container} className="topicViewChart-container">
-          <svg ref={this.$container} width="95%" height="100%"  viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
+          <svg ref={this.$container} 
+            width="95%" 
+            height="100%"  
+            viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+            onMouseDown={this.handleBrushMouseDown}
+            onMouseMove={this.handleBrushMouseMove}
+            onMouseUp={this.handleBrushMouseUp}
+          >
             <g className="topic_Lables">
               <Lable 
                 key={`lable_row`} 
@@ -106,7 +169,6 @@ class TopicView extends React.Component{
               </Lable>
             </g>
             <g 
-
               transform={`translate(${margin.left},${margin.top})`} 
               className="topic_circle_columns"
               onMouseOver={this.handleMouseenter}
@@ -137,7 +199,7 @@ class TopicView extends React.Component{
             {/* 绘制tooltip */}
             <g 
                 transform = {`translate(${this.state.changeX},${this.state.changeY})`}
-                visibility={this.state.visibility}
+                visibility={this.state.tipVisibility}
               >
                 <rect className="tooltip-g"
                   width="50"
@@ -159,6 +221,21 @@ class TopicView extends React.Component{
                 >
                   {this.state.tooltip}
                 </text>
+              </g>
+            {/* 绘制刷选框 */}
+            <g
+                transform = {`translate(${this.state.brushTransX},${this.state.brushTransY})`}
+                visibility={this.state.brushVisibility}
+              >
+                <rect
+                  className="brush"
+                  width={this.state.brushWidth}
+                  height={this.state.brushHeight}
+                  opacity="0.3"
+                  strokeWidth="1.5"
+                  stroke="red"
+                >
+                </rect>
               </g>
           </svg>
         </div>

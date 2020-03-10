@@ -51,7 +51,7 @@ class MatrixView extends React.Component{
       let targetWidth = Number(v.target.getAttribute("width"));
       let infos = v.target.getAttribute("info").split("_")
       
-      console.log("infos",infos)
+      
       this.setState({
         tooltip:infos[2],
         visibility:"visible",
@@ -67,7 +67,7 @@ class MatrixView extends React.Component{
       tooltip:"change",
       visibility:"hidden",
       highRowLabel:-1,
-        highColLabel:-1
+      highColLabel:-1
     })
     // v.target.setAttribute("fill",this.state.tooltip)
   }

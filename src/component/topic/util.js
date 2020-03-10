@@ -2,8 +2,8 @@ import * as d3 from 'd3';
 import topicData from '../../assets/geojson/a.json';
 // import { lab, map } from 'd3';
 
-export function handleData(data){
-    // let data = topicData
+export function handleData(data1){
+    let data = topicData
     let labelData=[]
     let label2topics=data.label2topics
     let topicPos = data.topic2sentence_positions
