@@ -16,6 +16,7 @@ class Lable extends React.Component{
     const trans = this.props.translate
     const rotate = this.props.rotate
     const anchor = this.props.anchor
+    const highLable = this.props.highLable
     return (
       <g transform={`translate${trans}`}>
         {data.map((v,i)=>(
@@ -27,6 +28,7 @@ class Lable extends React.Component{
                 y={3}
                 fontSize="0.7em"
                 textAnchor={anchor}
+                fill={`${highLable==i?"red":"black"}`}
                 transform={`rotate(${rotate}) scale(0.8)`}
               >
                 {v}

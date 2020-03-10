@@ -2,6 +2,7 @@ import React from 'react';
 import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
 import {scaleFactory,circleData,lineData} from './util';
+import './timeLine.css'
 
 const WIDTH = 650;
 const HEIGHT = 220;
@@ -12,21 +13,58 @@ class TimeLine extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      tooltip:"tooltip",
+      visibility:"hidden",
+      x:"0",
+      y:"0",
+      changeX:"50",
+      changeY:"50",
+      highRowLabel:3
     }
-    this.handleMouseover = this.handleMouseover.bind(this)
+    this.$container = React.createRef();
+    this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
   }
 
-  handleMouseover(v){
-    v.target.setAttribute("stroke","yellow")
+  componentDidMount(){
+    let container = this.$container.current
+    let currentX = container.getBoundingClientRect().x
+    let currentY = container.getBoundingClientRect().y
+    this.setState({
+      x:currentX,
+      y:currentY
+    })
+    // console.log("container",currentX,currentY)
+  }
+
+  handleMouseenter(v){
+    if(v.target.localName=="circle"){
+      // console.log("getbox",v.clientX,v.target.getBBox())
+      let targetWidth = Number(v.target.getAttribute("width"));
+      let infos = v.target.getAttribute("info").split("_")
+      // console.log("infos",infos)
+      let xChange = v.clientX- this.state.x
+      let yChange = v.clientY- this.state.y-targetWidth*3;
+      
+      this.setState({
+        tooltip:infos[2],
+        visibility:"visible",
+        changeX: xChange,
+        changeY: yChange,
+        highRowLabel:Number(infos[0])
+      })
+    }
   }
 
   handleMouseout(v){
-    v.target.setAttribute("stroke",END_COLOR)
+    this.setState({
+      tooltip:"",
+      visibility:"hidden",
+      highRowLabel:-1
+    })
   }
 
-  componentDidMount(){
-  }
+
   render(){
     let margin={left:70,top:10,right:30,bottom:20}
     let width = WIDTH-margin.left-margin.right
@@ -39,7 +77,10 @@ class TimeLine extends React.Component{
       <div className="chart-wrapper">
         <div className="title">Timeline View</div>
         <div ref={this.$container} className="timeLine-container">
-          <svg width="100%" height="100%" viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
+          <svg width="100%" height="100%" 
+            viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+            ref={this.$container}
+            >
             <g transform={`translate(20,${margin.top})`}>
               {/* 绘制左边标签 */}
               <g className="timeLine_Lables" >
@@ -49,6 +90,7 @@ class TimeLine extends React.Component{
                   data={rLabels}
                   rotate={0}
                   anchor={"start"}
+                  highLable={this.state.highRowLabel}
                   xy={yScale}>
                 </Lable>
               </g>
@@ -56,7 +98,11 @@ class TimeLine extends React.Component{
               <g transform={`translate(${margin.left},0)`} className="timeLine_circle_rows">
                 {
                   cData.map((v,i)=>(
-                    <g key={`${v}_time_${i}`}>
+                    <g 
+                      key={`${v}_time_${i}`}
+                      onMouseEnter={this.handleMouseenter}
+                      onMouseOut = {this.handleMouseout}
+                      >
                       <SeqCircles
                         key={`${v}_time_${i}`}
                         data={v}
@@ -65,6 +111,7 @@ class TimeLine extends React.Component{
                         xy = {xScale}
                         index={i}
                         colorMap={colorMap}
+
                       >
                       </SeqCircles>
                       <line
@@ -88,15 +135,13 @@ class TimeLine extends React.Component{
                   lineData.map((v)=>(
                     <line 
                       key={`markLines${v}`}
-                      className="markLine"
+                      className="time_mark_line"
                       x1={xScale(v)}
                       x2={xScale(v)}
                       y1={0}
                       y2={height-5}
                       stroke={END_COLOR}
-                      strokeDasharray={"1 1"}
-                      onMouseOver={this.handleMouseover}
-                      onMouseOut={this.handleMouseout}
+                      strokeDasharray={"1.5 1.5"}
                     >
                     </line>
                   ))
@@ -121,6 +166,32 @@ class TimeLine extends React.Component{
                   rotate={0}
                   xy={tScale}>
                 </Lable>
+              </g>
+              {/* 绘制tooltip */}
+              <g 
+                transform = {`translate(${this.state.changeX},${this.state.changeY-margin.top*2})`}
+                visibility={this.state.visibility}
+              >
+                <rect className="tooltip-g"
+                  width="40"
+                  height="15" 
+                  opacity="0.5"
+                  stroke="red"
+                  strokeWidth="1"
+                  fill="#ffffff">
+                </rect>
+                <text 
+                  // transform = "scale(0.9)"
+                  fill="red"
+                  className="tooltip-rec"
+                  y="10"
+                  x="20"
+                  textAnchor="middle"
+                  z-index = "10"
+                  fontSize="0.65em"
+                >
+                  {this.state.tooltip}
+                </text>
               </g>
             </g>
           </svg>

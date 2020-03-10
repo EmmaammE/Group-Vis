@@ -13,6 +13,7 @@ class LeftLable extends React.Component{
     const t = rowOrColumn?-5:5
     const data = this.props.data
     const xy = this.props.xy
+    const highLable = this.props.highLable
     // transform={`translate(${l},${t})`} 
     return (
       <g className="matrix_lable" transform={`translate(${l},${t})`} >
@@ -27,6 +28,7 @@ class LeftLable extends React.Component{
                 fontSize="0.65em"
                 textAnchor="end"
                 transform="rotate(45) scale(0.9)"
+                fill={`${highLable==i?"red":"black"}`}
               >
                 {v}
               </text>

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import * as d3 from 'd3';
 
 // 暂时的假数据
 
@@ -15,10 +15,12 @@ class MatrixColumn extends React.Component{
     this.handleMouseout = this.handleMouseout.bind(this)
   }
   handleMouseover(v){
+
     let tempColor = v.target.getAttribute("fill")
     this.setState({
       highColor:tempColor
     })
+    // console.log("d3.event.layerX",v,v.target,v.clientX,v.target.clientX)
     v.target.setAttribute("fill","yellow")
   }
 
@@ -39,6 +41,7 @@ class MatrixColumn extends React.Component{
             width={xy.bandwidth()}
             height= {xy.bandwidth()}
             strokeWidth={0}
+            info={`${index}_${i}_${v}`}
             // 换成颜色标尺
             fill={colorMap(data[i])}
             key={`rect_${i}`}

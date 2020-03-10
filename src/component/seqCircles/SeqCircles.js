@@ -41,6 +41,7 @@ class SeqCircles extends React.Component{
                 cy={rowOrColumn?0:xy(v.distance)}
                 onMouseOver={this.handleMouseover}
                 onMouseOut={this.handleMouseout}
+                info={`${index}_${i}_${v.value}`}
                 r = {4}
                 fill={colorMap(v.value)}
               >
