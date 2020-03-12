@@ -30,8 +30,8 @@ class SeqCircles extends React.Component{
     const xy = this.props.xy
     const index = this.props.index
     const colorMap = this.props.colorMap
-   
-    
+    const r = this.props.r
+    const opacity = this.props.opacity
     return (
       <g  transform={`translate(${rowOrColumn?0:gxy(index)},${rowOrColumn?gxy(index):0})`}>
         {data.map((v,i)=>(
@@ -42,8 +42,10 @@ class SeqCircles extends React.Component{
                 onMouseOver={this.handleMouseover}
                 onMouseOut={this.handleMouseout}
                 info={`${index}_${i}_${v.value}`}
-                r = {4}
+                r = {r?r:5}
                 fill={colorMap(v.value)}
+                stroke="white"
+                opacity={opacity?opacity:1}
               >
               </circle>
             </g>

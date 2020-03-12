@@ -172,7 +172,7 @@ class MatrixView extends React.Component{
 
           </svg>
         </div>
-        <VerticalSlider></VerticalSlider>
+        {/* <VerticalSlider></VerticalSlider> */}
       </div>
       
     )

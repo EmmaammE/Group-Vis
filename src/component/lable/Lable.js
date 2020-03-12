@@ -1,5 +1,9 @@
 import React from 'react';
+import * as d3 from 'd3';
 
+
+
+let colorScheme = d3.schemeCategory10
 
 class Lable extends React.Component{
   constructor(props){
@@ -17,6 +21,8 @@ class Lable extends React.Component{
     const rotate = this.props.rotate
     const anchor = this.props.anchor
     const highLable = this.props.highLable
+    const fontSize = this.props.fontSize
+    const colorful = this.props.colorful
     return (
       <g transform={`translate${trans}`}>
         {data.map((v,i)=>(
@@ -26,9 +32,9 @@ class Lable extends React.Component{
               <text
                 x={0}
                 y={3}
-                fontSize="0.7em"
+                fontSize={fontSize?fontSize:"0.7em"}
                 textAnchor={anchor}
-                fill={`${highLable==i?"red":"black"}`}
+                fill={`${highLable==i?"red":(colorful?colorScheme[i]:"black")}`}
                 transform={`rotate(${rotate}) scale(0.8)`}
               >
                 {v}

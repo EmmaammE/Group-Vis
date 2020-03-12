@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import topicData from '../../assets/geojson/a.json';
-// import { lab, map } from 'd3';
 
 export function handleData(data1){
     let data = topicData
@@ -11,12 +10,14 @@ export function handleData(data1){
     for(let i in label2topics){
         if(label2topics[i].length>0){
             labelData = labelData.concat(label2topics[i])
-        }else{
-            labelData.push(i)
         }
+        // else{
+        //     labelData.push(i)
+        // }
     }
     let mapTopicToIndex = new Map()
-    
+    //花瓣滑块默认数据
+    let fData = new Array(labelData.length).fill(0.5)
     let cData= labelData.map((v,i)=>{
         mapTopicToIndex[v]=i
         if(topicPos[v]){
@@ -32,6 +33,7 @@ export function handleData(data1){
         }else{
             return []
         }
+        
     })
     let relationData = []
 
@@ -44,8 +46,10 @@ export function handleData(data1){
             }
         }
     }
-    return {labelData,cData,relationData}
+    return {labelData,cData,relationData,fData}
 }
+
+
 
 
 export function scaleFactory(width,height,data,startColor,endColor){
@@ -58,17 +62,30 @@ export function scaleFactory(width,height,data,startColor,endColor){
   let maxDistance = d3.max(data, function(layer) { return d3.max(layer, function(d) { return d.distance; }); });
    let minDistance = d3.min(data, function(layer) { return d3.min(layer, function(d) { return d.distance; }); });
   
-  var yScale = d3.scaleLinear()
-  .domain([minDistance,maxDistance])
-  .range([0,height])
-
   var xScale = d3.scaleLinear()
-  .domain([0,numcols])
+  .domain([minDistance,maxDistance])
   .range([0,width])
 
+  var xScaleR = d3.scaleLinear()
+  .domain([0,width])
+  .range([minDistance,maxDistance])
+  
+
+  var yScale = d3.scaleLinear()
+  .domain([0,numcols])
+  .range([0,height])
+
+  var yScaleR =  d3.scaleLinear()
+  .domain([0,height])
+  .range([0,numcols])
+
+//   var colorMap = d3.scaleLinear()
+//   .domain([minValue,minValue/2,0,maxValue/2,maxValue])
+//   .range(["black","white", "black","white","black"]);
+
   var colorMap = d3.scaleLinear()
-  .domain([minValue,minValue/2,0,maxValue/2,maxValue])
-  .range(["black","white", "black","white","black"]);
+  .domain([minValue,maxValue])
+  .range(["gray","gray"]);
 //   .range([startColor,"white", endColor,"white",startColor]);
 
   let n = 30;
@@ -81,10 +98,8 @@ export function scaleFactory(width,height,data,startColor,endColor){
       value.push("60")
   }
 
-  return { yScale,xScale,colorMap,value,vScale}
+  return { yScale,xScale,colorMap,value,vScale,yScaleR,xScaleR}
 }
-export let relationData = []
-// export let relationData = [[7,4,-1],[9,7,1]]
 
 export let circleData = [
   {name: "SuShi", info:[{distance:1,value:0.2,discription:"this is 1 discription"},

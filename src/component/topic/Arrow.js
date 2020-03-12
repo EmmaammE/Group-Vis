@@ -11,7 +11,8 @@ class Arrow extends React.Component{
 
   render(){
     const data = this.props.data
-    const xScale = this.props.xScale
+    const yScale = this.props.yScale
+    const height = this.props.height
     return (
       <g>
         <defs>
@@ -41,8 +42,8 @@ class Arrow extends React.Component{
             id="rLinearColor"
             x1="0%"
             y1="0%"
-            x2="100%"
-            y2="0%"
+            x2="0%"
+            y2="100%"
           >
             <stop offset="0%" stopColor="red"></stop>
             <stop offset="100%" stopColor="rgb(250,210,209)"></stop>
@@ -51,8 +52,8 @@ class Arrow extends React.Component{
             id="bLinearColor"
             x1="0%"
             y1="0%"
-            x2="100%"
-            y2="0%"
+            x2="0%"
+            y2="10%"
           >
             <stop offset="0%" stopColor="rgb(3,93,195)"></stop>
             <stop offset="100%" stopColor="rgb(210, 210, 250)"></stop>
@@ -62,7 +63,7 @@ class Arrow extends React.Component{
           {data.map((d)=>(
               <path
                 key={`${d}`}
-                d={`M ${xScale(d[0])} 10 Q ${(xScale(d[0])+xScale(d[1]))/2} 35 ${xScale(d[1])+3} 10`}
+                d={`M 10 ${yScale(d[0])} Q ${80*(yScale(d[0])-yScale(d[1]))/height} ${(yScale(d[0])+yScale(d[1]))/2}  10 ${yScale(d[1])+3}`}
                 fill="none"
                 stroke={`url(#${d[2]>0?'r':'b'}LinearColor)`}
                 strokeWidth="1"

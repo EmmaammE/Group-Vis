@@ -123,7 +123,9 @@ class TimeLine extends React.Component{
     let margin={left:70,top:10,right:30,bottom:20}
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
+    
     const {yScale,xScale,colorMap,timeData,tScale} = scaleFactory(width,height,circleData,START_COLOR,END_COLOR)
+    
     let rLabels = circleData.map(v=>v.name)
     let rownum = rLabels.length
     let cData = circleData.map(v=>v.info)

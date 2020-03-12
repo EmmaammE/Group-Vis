@@ -3,9 +3,16 @@ import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
 import {scaleFactory,handleData} from './util';
 import Arrow from'./Arrow'
+import './topicView.css'
+import FlowerLabel from '../flowerLabel/FlowerLabel'
+import RectSlider from '../rectSlider/RectSlider'
 import { connect } from 'react-redux';
+import VerticalSlider from '../verticalSlider/VerticalSlider';
 
-const WIDTH = 380;
+
+let margin={left:10,top:70,right:40,bottom:30}
+const WIDTH = 370;
+const LEFTWIDTH = 90;
 const HEIGHT = 520;
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
@@ -14,6 +21,8 @@ let brushWidth;
 let brushHeight;
 let svgX ,svgY;
 let brushFlag=false;
+let topicData=-1;
+let yScaleReverse,xScaleReverse;
 
 class TopicView extends React.Component{
   constructor(props){
@@ -33,6 +42,7 @@ class TopicView extends React.Component{
     this.$container = React.createRef();
     this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
+
     this.handleBrushMouseDown = this.handleBrushMouseDown.bind(this)
     this.handleBrushMouseMove = this.handleBrushMouseMove.bind(this)
     this.handleBrushMouseUp = this.handleBrushMouseUp.bind(this)
@@ -45,6 +55,8 @@ class TopicView extends React.Component{
     svgX=currentX
     svgY=currentY
   }
+
+  // 下面两个函数为hover之后弹出tooltip的事件处理函数
   handleMouseenter(v){
     if(v.target.localName=="circle"){
       let targetWidth = Number(v.target.getAttribute("width"));
@@ -63,7 +75,6 @@ class TopicView extends React.Component{
       })
     }
   }
-
   handleMouseout(v){
     this.setState({
       tooltip:"",
@@ -109,90 +120,145 @@ class TopicView extends React.Component{
     }
   }
   handleBrushMouseUp(v){
-    startLoc[0] = this.state.brushTransX
-    startLoc[1] = this.state.brushTransY
-    brushFlag=false
-    this.setState({
-      brushVisibility:"hidden",
-      brushWidth:0,
-      brushHeight:0
-    })
+    if(brushFlag){
+      startLoc[0] = this.state.brushTransX
+      startLoc[1] = this.state.brushTransY
+      brushFlag=false
+      this.setState({
+        brushVisibility:"hidden",
+        brushWidth:0,
+        brushHeight:0
+      })
+      topicData = brushFilter(topicData)
+      console.log("filter,topicData",topicData)
+    }
   }
 
 
-  render(){
-    const data = {
-      label2topics:this.props.label2topics,
-      topic2sentence_positions:this.props.topic2sentence_positions,
-      pmi_node:this.props.pmi_node
-    }
 
-    let topicData = handleData(data)
-    let margin={left:60,top:70,right:10,bottom:50}
+
+  render(){
+    if(topicData==-1){
+      let data = {
+        label2topics:this.props.label2topics,
+        topic2sentence_positions:this.props.topic2sentence_positions,
+        pmi_node:this.props.pmi_node
+      }
+      topicData = handleData(data)
+    }
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
     let rLabels = topicData.labelData
     let cData = topicData.cData
-    let relationData = topicData.relationData
-    const {yScale,xScale,colorMap,value,vScale} = scaleFactory(width,height,cData,START_COLOR,END_COLOR)
+    let relationData = topicData.relationData;
+    let fData = topicData.fData;
+    let rHeight = fData.length==0? 0: (height/fData.length).toFixed(0)
+    rHeight = rHeight>80?80:(rHeight<30?30:rHeight)
+    const {yScale,xScale,colorMap,value,vScale,yScaleR,xScaleR} = scaleFactory(width,height,cData,START_COLOR,END_COLOR)
+    yScaleReverse = yScaleR
+    xScaleReverse = xScaleR
     return (
       <div className="chart-wrapper">
         <div className="title">Topic View</div>
-        <div ref={this.$container} className="topicViewChart-container">
-          <svg ref={this.$container} 
-            width="95%" 
+        <div  className="topicViewChart-container">
+          <svg
+            left="0"
+            top="0"
+            width="12%" 
+            height="100%" 
+          >
+            {/* 绘制坐标轴文字 */}
+            <g className="topic_Lables" >
+              <Lable 
+                key={`lable_row`} 
+                translate={`(${LEFTWIDTH*0.5},${margin.top-10})`}  
+                rowOrColumn = {false} 
+                data={rLabels} 
+                rotate={45}
+                anchor={"end"}
+                highLable={this.state.highRowLabel}
+                fontSize={"0.8em"}
+                colorful={true}
+                xy={yScale}>
+                </Lable>
+            </g>
+            {/* 绘制花瓣 */}
+            <g
+              transform={`translate(${LEFTWIDTH*0.3},${margin.top})`} 
+              className="flower_Lables"
+            >
+              {
+                  fData.map((v,i)=>(
+                    <g className="flower_slider" 
+                      transform={`translate(0,${yScale(i)})`}
+                      key={`${v}_${i}`}
+                    >
+                      <FlowerLabel
+                      
+                      >
+                      </FlowerLabel>  
+                    </g>
+                  ))
+                }
+            </g>
+            {/* 绘制滑块 */}
+            {/* <g
+              transform={`translate(${LEFTWIDTH*0.7},${margin.top})`} 
+              className="rect_sliders"
+            >
+              {
+                  fData.map((v,i)=>(
+                      <RectSlider
+                        key={`rect_${v}_${i}`}
+                        value={v}
+                        index={i}
+                        yScale={yScale}
+                        height={rHeight}
+                      ></RectSlider>
+                  ))
+                }
+            </g> */}
+          </svg>
+          <svg 
+            ref={this.$container} 
+            width="88%" 
             height="100%"  
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             onMouseDown={this.handleBrushMouseDown}
             onMouseMove={this.handleBrushMouseMove}
             onMouseUp={this.handleBrushMouseUp}
           >
-            <g className="topic_Lables">
-              <Lable 
-                key={`lable_row`} 
-                translate={`(${margin.left},${margin.top*0.8})`}  
-                rowOrColumn = {true} 
-                data={rLabels} 
-                rotate={-90}
-                anchor={"start"}
-                highLable={this.state.highRowLabel}
-                xy={xScale}>
-                </Lable>
-              <Lable 
-                key={`lable_clolumn`} 
-                translate={`(${margin.left/2},${margin.top})`}  
-                owOrColumn = {false} 
-                data={value}
-                anchor={"end"}
-                rotate={0}
-                xy={vScale}>
-              </Lable>
-            </g>
+            {/* 绘制横向圆圈串 */}
             <g 
               transform={`translate(${margin.left},${margin.top})`} 
               className="topic_circle_columns"
               onMouseOver={this.handleMouseenter}
               onMouseOut = {this.handleMouseout}
+
             >
               {
                 cData.map((v,i)=>(
                   <SeqCircles
                     key={`${v}_${i}`}
                     data={v}
-                    rowOrColumn={false}
-                    gxy = {xScale}
-                    xy = {yScale}
+                    rowOrColumn={true}
+                    gxy = {yScale}
+                    xy = {xScale}
                     index={i}
                     colorMap={colorMap}
+                    opacity="0.5"
+                    r="6"
                   >
                   </SeqCircles>
                 ))
               }
             </g>
-            <g transform={`translate(${margin.left},${HEIGHT-margin.bottom})`}>
+            {/* 绘制箭头 */}
+            <g transform={`translate(${WIDTH-margin.right},${margin.top})`}>
               <Arrow
-                xScale={xScale}
+                yScale={yScale}
                 data={relationData}
+                height={HEIGHT-margin.top-margin.bottom}
               >
               </Arrow>
             </g>
@@ -238,6 +304,20 @@ class TopicView extends React.Component{
                 </rect>
               </g>
           </svg>
+          <div className = "slider_space">
+              {
+                fData.map((v,i)=>(
+                    <VerticalSlider
+                      key={`rect_${v}_${i}`}
+                      value={v}
+                      index={i}
+                      top={margin.top+yScale(i)-rHeight*0.5}
+                      yScale={yScale}
+                      height={rHeight}
+                    ></VerticalSlider>
+                ))
+              }
+          </div>
         </div>
       </div>
       
@@ -246,3 +326,49 @@ class TopicView extends React.Component{
 }
 
 export default connect(state=>state.topicData)(TopicView);
+
+function brushFilter(data){
+  //被选中的人名
+  let cPersons = []
+  // console.log("topicData",topicData)
+
+  let {cData,labelData,relationData,fData} = data
+
+  let x1 = xScaleReverse(startLoc[0]-margin.left)
+  
+  let x2 = xScaleReverse(startLoc[0]+brushWidth-margin.left)
+  
+  let y1 = yScaleReverse(startLoc[1]-margin.top)
+  y1 = Math.ceil(y1)
+  y1=y1>0?y1:0;
+  let y2 = yScaleReverse(startLoc[1]+brushHeight-margin.top)
+  y2 = Math.ceil(y2)
+  // console.log("x12,y12",x1,x2,y1,y2)
+  labelData =  labelData.slice(y1,y2)
+  cData = cData.slice(y1,y2)
+  fData = fData.slice(y1,y2)
+  let nRelationData=[]
+  relationData.map(v=>{
+    if(v[1]>=y1&&v[0]<y2){
+      v[0]-=y1
+      v[1]-=y1
+      nRelationData.push(v)
+    }
+  })
+  relationData = nRelationData
+
+
+  cData.map(topic=>{
+    let i =0;
+    while(i<topic.length){
+      //  去除超出范围的点
+      // console.log("distance...x1...x2",topic[i].distance,x1,x2)
+      if(topic[i].distance<x1||topic[i].distance>x2){
+        topic.splice(i,1)
+      }else{
+        i++;
+      }
+    }
+  })
+  return {cData,labelData,relationData,fData}
+}

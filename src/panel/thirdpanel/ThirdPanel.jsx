@@ -25,14 +25,13 @@ class ThirdPanel extends React.Component {
       <div className="third-panel">
         <Header title = "Topicview"></Header>
         <div className="topicView-panel">
+          <div className="btn-container">
+              {btn_urls.map((url,i)=>(<CircleBtn key={url+'-'+i} url={url} />))}
+          </div>
           <div className="chart-panel">
             <TopicView></TopicView>
             {/* <TopicViewChart></TopicViewChart> */}
           </div>
-          <div className="btn-container">
-              {btn_urls.map((url,i)=>(<CircleBtn key={url+'-'+i} url={url} />))}
-          </div>
-
         </div>
         <div className="xxxx-view">
           <DimensionContainer />
