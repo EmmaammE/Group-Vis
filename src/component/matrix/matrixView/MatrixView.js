@@ -3,8 +3,8 @@ import React from 'react';
 import './matrixView.css';
 import * as d3 from 'd3';
 import {  matrixData} from './tempData'
-import MatrixButton from '../../button/MatrixButton'
-import VerticalSlider from '../../verticalSlider/VerticalSlider'
+// import MatrixButton from '../../button/MatrixButton'
+// import VerticalSlider from '../../verticalSlider/VerticalSlider'
 import MatrixColumn from '../matrixColumn/MatrixColumn'
 import LeftLable from '../leftLable/LeftLable'
 import scaleFactory from '../util/util'
@@ -19,7 +19,6 @@ class MatrixView extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      btnClassName:["","choose_btn",""],
       tooltip:"tooltip",
       visibility:"hidden",
       x:"0",
@@ -29,7 +28,6 @@ class MatrixView extends React.Component{
       highColLabel:-1
     }
     this.$container = React.createRef();
-    this.onhandleClick = this.onhandleClick.bind(this)
     this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
   }
@@ -73,19 +71,7 @@ class MatrixView extends React.Component{
   }
 
 
-  onhandleClick(v){
-    let classList = v.target.className.split(" ")
-    let index = v.target.id.split("")[0]
-    // 如果点击的按钮不是当下选中的按钮
-    if(classList.indexOf("choose_btn")==-1){
-      v.target.className="choose_btn"
-      let tempClassName=["","",""]
-      tempClassName[index]="choose_btn"
-      this.setState({
-        btnClassName:tempClassName
-      })
-    }
-  }
+
   render(){
     // xy是比例尺，因为是方型所以，横竖方向使用一个
     // colorMap是颜色比例尺
@@ -106,10 +92,6 @@ class MatrixView extends React.Component{
       <div className="chart-wrapper">
         <div className="header-line">
           <div className="title">People Matrix View</div>
-          <div className="mButtonContainer" onClick={this.onhandleClick}>
-            {btnData.map((v,i)=>(
-              <MatrixButton key={v.btnName} id={`${i}_btn`}  btnName={v.btnName} cName={this.state.btnClassName[i]}></MatrixButton>))}
-          </div>
         </div>
         
         <div  className="matrix-container">

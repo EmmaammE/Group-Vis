@@ -16,13 +16,7 @@
   height: 95%;
   width: 100%;
 }
-.third-panel .btn-container{
-  top:0px;
-  right:5px;
-  display: flex;
-  position: absolute;
-  z-index:10;
-}
+
 .third-panel .xxxx-view{
 
   display: inline-block;

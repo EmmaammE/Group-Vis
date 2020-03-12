@@ -8,14 +8,28 @@ import FlowerLabel from '../flowerLabel/FlowerLabel'
 import RectSlider from '../rectSlider/RectSlider'
 import { connect } from 'react-redux';
 import VerticalSlider from '../verticalSlider/VerticalSlider';
+import MatrixButton from '../button/MatrixButton'
+import btn4 from '../../assets/list.svg';
+import btn3 from '../../assets/matrix.svg';
+import btn2 from '../../assets/topic.svg';
+import btn1 from '../../assets/map.svg';
+import CircleBtn from '../button/circlebtn';
 
+const btn_urls = [btn1,btn2,btn3,btn4]
 
+const btnData = [
+      {btnName:"Add"},
+      {btnName:"Minus"}
+    ]
+let addOrMinus = true;
 let margin={left:10,top:70,right:40,bottom:30}
 const WIDTH = 370;
 const LEFTWIDTH = 90;
 const HEIGHT = 520;
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
+
+let brushDatas=[];
 let startLoc=[];
 let brushWidth;
 let brushHeight;
@@ -28,6 +42,7 @@ class TopicView extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      btnClassName:["choose_btn",""],
       tooltip:"tooltip",
       tipVisibility:"hidden",
       changeX:"50",
@@ -46,6 +61,9 @@ class TopicView extends React.Component{
     this.handleBrushMouseDown = this.handleBrushMouseDown.bind(this)
     this.handleBrushMouseMove = this.handleBrushMouseMove.bind(this)
     this.handleBrushMouseUp = this.handleBrushMouseUp.bind(this)
+
+    this.handleSwitch =this.handleSwitch.bind(this)
+    this.handleApply =this.handleApply.bind(this)
   }
 
   componentDidMount(){
@@ -124,17 +142,49 @@ class TopicView extends React.Component{
       startLoc[0] = this.state.brushTransX
       startLoc[1] = this.state.brushTransY
       brushFlag=false
+      let singleBrushData = {
+        addOrMinus:addOrMinus,
+        brushTransX:this.state.brushTransX,
+        brushTransY:this.state.brushTransY,
+        brushWidth:brushWidth,
+        brushHeight:brushHeight
+      }
+      brushDatas.push(singleBrushData)
       this.setState({
         brushVisibility:"hidden",
         brushWidth:0,
         brushHeight:0
       })
-      topicData = brushFilter(topicData)
-      console.log("filter,topicData",topicData)
     }
   }
 
+  // 此为切换加选还是减选框的按钮事件函数
+  handleSwitch(v){
+    let classList = v.target.className.split(" ")
+    let index = v.target.id.split("")[0]
+    // 如果点击的按钮不是当下选中的按钮
+    if(classList.indexOf("choose_btn")==-1){
+      addOrMinus=!addOrMinus;
+      v.target.className="choose_btn"
+      let tempClassName=["",""]
+      tempClassName[index]="choose_btn"
+      this.setState({
+        btnClassName:tempClassName
+      })
+    }
+  }
 
+  // apply按钮的事件，将数据刷选的结果应用到topicView
+  handleApply(){
+    topicData = brushFilter(topicData)
+    console.log("filter,topicData",topicData)
+    brushDatas=[];
+    this.setState({
+      tooltip:"",
+      tipVisibility:"hidden",
+      highRowLabel:-1
+    })
+  }
 
 
   render(){
@@ -145,6 +195,7 @@ class TopicView extends React.Component{
         pmi_node:this.props.pmi_node
       }
       topicData = handleData(data)
+      console.log("topicData",topicData)
     }
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -160,6 +211,18 @@ class TopicView extends React.Component{
     return (
       <div className="chart-wrapper">
         <div className="title">Topic View</div>
+        <div  className="topic-buttons">
+          <div className="mButtonContainer" onClick={this.handleSwitch}>
+            {btnData.map((v,i)=>(
+              <MatrixButton key={v.btnName} id={`${i}_btn`}  btnName={v.btnName} cName={this.state.btnClassName[i]}></MatrixButton>))}
+          </div>
+          <div className="topic-apply" onClick={this.handleApply}>
+            <MatrixButton id="topic-apply-button"  btnName="apply" cName="topic-apply-button"></MatrixButton>
+          </div>
+          <div className="btn-container">
+              {btn_urls.map((url,i)=>(<CircleBtn key={url+'-'+i} url={url} />))}
+          </div>   
+        </div>
         <div  className="topicViewChart-container">
           <svg
             left="0"
@@ -288,21 +351,38 @@ class TopicView extends React.Component{
                   {this.state.tooltip}
                 </text>
               </g>
-            {/* 绘制刷选框 */}
-            <g
+            {/* 绘制已经存在的刷选框 */}
+            <g className="exsit-brush-rects">
+              {
+                brushDatas.map((v,i)=>(
+                  <rect
+                    key={`exsit-brush-${i}`}
+                    className="brush"
+                    transform = {`translate(${v.brushTransX},${v.brushTransY})`}
+                    width={v.brushWidth}
+                    height={v.brushHeight}
+                    opacity="0.1"
+                    strokeWidth="2"
+                    stroke={`${v.addOrMinus?"red":"blue"}`}
+                  >
+                  </rect>
+                 ))
+              }
+            </g>
+            {/* 绘制动态刷选框 */}
+            <g className="dynamic-brush-rect">
+              <rect
                 transform = {`translate(${this.state.brushTransX},${this.state.brushTransY})`}
                 visibility={this.state.brushVisibility}
+                className="brush"
+                width={this.state.brushWidth}
+                height={this.state.brushHeight}
+                opacity="0.2"
+                strokeWidth="3"
+                stroke={`${addOrMinus?"red":"blue"}`}
               >
-                <rect
-                  className="brush"
-                  width={this.state.brushWidth}
-                  height={this.state.brushHeight}
-                  opacity="0.3"
-                  strokeWidth="1.5"
-                  stroke="red"
-                >
-                </rect>
-              </g>
+              </rect>
+            </g>
           </svg>
           <div className = "slider_space">
               {
@@ -330,45 +410,97 @@ export default connect(state=>state.topicData)(TopicView);
 function brushFilter(data){
   //被选中的人名
   let cPersons = []
-  // console.log("topicData",topicData)
+  console.log("topicData",topicData)
 
   let {cData,labelData,relationData,fData} = data
-
-  let x1 = xScaleReverse(startLoc[0]-margin.left)
-  
-  let x2 = xScaleReverse(startLoc[0]+brushWidth-margin.left)
-  
-  let y1 = yScaleReverse(startLoc[1]-margin.top)
-  y1 = Math.ceil(y1)
-  y1=y1>0?y1:0;
-  let y2 = yScaleReverse(startLoc[1]+brushHeight-margin.top)
-  y2 = Math.ceil(y2)
-  // console.log("x12,y12",x1,x2,y1,y2)
-  labelData =  labelData.slice(y1,y2)
-  cData = cData.slice(y1,y2)
-  fData = fData.slice(y1,y2)
-  let nRelationData=[]
-  relationData.map(v=>{
-    if(v[1]>=y1&&v[0]<y2){
-      v[0]-=y1
-      v[1]-=y1
-      nRelationData.push(v)
-    }
+  // 数据先减掉不用的、然后再挑出要用的，返回
+  //  减的时候
+  //    锁定包含哪些横轴，然后去删掉范围内的数据
+  //  加的时候
+  //    当两个框有重合时需注意，加完这个框内的数据，要把原数据在框内的部分给删掉，这样就不会重复添加
+  brushDatas.sort((a,b)=>{
+    let aValue = a.addOrMinus?1:0;
+    let bValue = b.addOrMinus?1:0;
+    return aValue-bValue;
   })
-  relationData = nRelationData
+  // console.log("brushDatas",brushDatas);
+  let x1,x2,y1,y2
+  let newCirData=new Array(labelData.length)
+  for(let i=0;i<newCirData.length;i++){
+    newCirData[i]=[]
+  }
+  console.log("新建newCirData",newCirData)
+  for(let singleBrushData of brushDatas){
+    //将框选转换成相应横纵轴范围
+    x1 = xScaleReverse(singleBrushData.brushTransX-margin.left)
+    x2 = xScaleReverse(singleBrushData.brushTransX+singleBrushData.brushWidth-margin.left) 
+    y1 = yScaleReverse(singleBrushData.brushTransY-margin.top)
+    y1 = Math.ceil(y1)
+    y1=y1>0?y1:0;
+    y2 = yScaleReverse(singleBrushData.brushTransY+singleBrushData.brushHeight-margin.top)
+    y2 = Math.ceil(y2)
 
-
-  cData.map(topic=>{
-    let i =0;
-    while(i<topic.length){
-      //  去除超出范围的点
-      // console.log("distance...x1...x2",topic[i].distance,x1,x2)
-      if(topic[i].distance<x1||topic[i].distance>x2){
-        topic.splice(i,1)
-      }else{
-        i++;
+    if(!singleBrushData.addOrMinus){
+      // 减数据
+      for(let i=y1;i<y2;i++){
+        let j=0;
+        while(j<cData[i].length){
+          const dis = cData[i][j].distance
+          if(dis>x1&&dis<x2){
+            // 删掉该数据
+            cData[i].splice(j,1)
+          }else{
+            j++
+          }
+        }
+      }
+    }else{
+      for(let i=y1;i<y2;i++){
+        let j=0;
+        
+        while(j<cData[i].length){
+          const dis = cData[i][j].distance
+          if(dis>x1&&dis<x2){
+            //将该数据加入新数据集中
+            newCirData[i].push(cData[i][j])
+            // 删掉该数据
+            cData[i].splice(j,1)
+          }else{
+            j++
+          }
+        }
       }
     }
-  })
+  }
+  // console.log("newCirData",newCirData)
+  let deleteLable = []
+  for(let i=newCirData.length-1;i>=0;i--){
+    //该topic下，数据集为0
+    if(newCirData[i].length==0){
+      //记录要被删掉的label的序号
+      deleteLable.push(i)
+    }
+  }
+  console.log("delete",deleteLable);
+  // 删除空的label的相应的数据
+  for(let i of deleteLable){
+    newCirData.splice(i,1)
+    fData.splice(i,1)
+    labelData.splice(i,1)
+    let j=0;
+    while(j<relationData.length){
+      
+      let temp = relationData[j]
+      if(temp[0]==i||temp[1]==i){
+        relationData.splice(j,1)
+      }else{
+        j++
+      }
+    }
+  }
+  
+  cData = newCirData
+  
+  // console.log("{{{",{cData,labelData,relationData,fData})
   return {cData,labelData,relationData,fData}
 }
