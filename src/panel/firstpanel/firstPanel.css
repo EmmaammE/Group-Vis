@@ -46,7 +46,7 @@
 .search-input {
     background: none;
     color: #5a6674;
-    width: 12vw;
+    width: 11vw;
     height: 30px;
     border: none;
     appearance: none;
@@ -54,7 +54,7 @@
 }
 
 .input-outline {
-    width: 13vw;
+    width: 12vw;
     display: flex;
     justify-content: flex-end;
     border-radius: 40px;
@@ -81,7 +81,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 18vh;
+    margin: 10px 0;
+    min-height: 10vh;
 }
 
 .first-panel .btn {
@@ -105,6 +106,68 @@
     color: #000;
 }
 
+/* 切换panel */
+.first-panel .switch-panel {
+
+}
+
+.first-panel .panel-titles {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.first-panel .switch-title {
+    font-size: 12px;
+    cursor: pointer;
+    position: relative;
+}
+
+.first-panel .switch-title::after{
+    content:"";
+    height:2px;
+    width: 50%;
+    display:block;
+    position: absolute;
+    bottom: -2px;
+    left: 25%;
+    transition: all 300ms ease-in-out;
+}
+
+.first-panel .switch-title.active::after{
+    width:150%;
+    left: -25%;
+    background:linear-gradient(to right, #FFFFFF,#f77683,#FFFFFF);
+}
+
+/* panel-content */
+.first-panel .panel-content {
+    border-radius: 5px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 38vh;
+    border: 1px solid transparent;
+}
+
+.first-panel .panel-content.border {
+    border: 1px solid #b6afbe;
+}
+
+.panel-content ::-webkit-scrollbar {
+    height: 5px;
+}
+ 
+::-webkit-scrollbar-track {
+    background-color: #fbfbfb;
+    border-radius: 5px;
+    border: 1px solid #aaaaaa;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: #b6afbe; 
+}
+    
 /* for axis of blobs */
 .custome-axis .domain {
     stroke: transparent;

@@ -11,6 +11,7 @@ import { setPerson, setTopicData, setYear } from '../../actions/data';
 import { setGroup, addStep } from '../../actions/step';
 import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
+import PathContainer from '../../component/pathContainer/PathContainer';
 
 class FirstPanel extends React.Component {
     constructor(props) {
@@ -20,13 +21,14 @@ class FirstPanel extends React.Component {
             /* options：[[0,'All'],[id,data]] */
             dataSet: [
                 {key:'Year', title: 'Year', options: []},
-                {key:'Person', title: 'Related Person', options: []},
+                {key:'Person', title: 'Related People', options: []},
                 {key:'Dynasty', title: 'Dynasty', options: []},
                 {key:'Status', title: 'Status', options: []},
                 {key:'Gender', title: 'Gender', options: []}
             ],
             clickStatus: {},
-            timeRange: [0,0]
+            timeRange: [0,0],
+            _tabPanel: 2,
         }
 
         this.onInputChange = this.onInputChange.bind(this);
@@ -148,7 +150,6 @@ class FirstPanel extends React.Component {
     onClickSearch() {
         let that = this;
         let {step_ }= this.props;
-        let param = new FormData();
 
         let {clickStatus, timeRange, dataSet } = this.state;
         // input[i].title = dataSet[i+1].key ~ clickStates{title}
@@ -159,6 +160,8 @@ class FirstPanel extends React.Component {
             {title: "Status", data: "status[]", index:3},
             {title: "Gender", data: "genders[]", index:4}
         ]
+
+        let param = new FormData();
         if(timeRange[0]!= '0' && timeRange[1]!= '0'){
             param.append('min_year', timeRange[0]);
             param.append('max_year', timeRange[1]);
@@ -179,15 +182,28 @@ class FirstPanel extends React.Component {
                 }
             }
         }
-        // this.props.setRange({
-        //     low: timeRange[0],
-        //     high: timeRange[1]
-        // })
-        axios.post('/search_person_by_ranges/', param)
+
+        if([...param.keys()].length === 1 && param.has('person_ids[]')) {
+            axios.post('/search_topics_by_person_ids/', param)
+                .then(response => {
+                    if(response.data.is_success) {
+                        let people= param.getAll('person_ids[]')
+                        console.log("res.data",response.data);
+                        that.props.setPerson(people)
+                        that.props.setTopicData(response.data);
+                        that.props.setGroup({[step_]: people.length })
+                        that.props.addStep();
+                    }
+                })
+        } else {
+            axios.post('/search_person_by_ranges/', param)
             .then(res => {
                 if(res.data.is_success) {
                     let _size = Object.entries(res.data["Person"]).length;
                     if( _size !== 0 || res.data["Person"].constructor !== Object) {
+                        let that = this;
+                        let {step_ }= this.props;
+
                         let param = new FormData();
                         // 超过1000个人好像有问题
                         let i = 0;
@@ -216,6 +232,7 @@ class FirstPanel extends React.Component {
             .catch(err => {
                 console.error(err);
             })
+        }
     }
 
     onClickDelete() {
@@ -226,19 +243,35 @@ class FirstPanel extends React.Component {
         }
         this.setState({clickStatus, timeRange})
     }
-    
-    render() {
-        let { searchValue, dataSet, clickStatus, timeRange } = this.state;
-        return (
-            <div className="first-panel">
-                <h1 className="big-title">
-                    <img src={logo} alt="logo" />
-                </h1>
-                <div className="content-container">
-                    <div className="title"><p>Overview</p></div>
-                        <Blobs blobs = {Object.values(this.props.group_)}/>
-                        <div className="title"><p>Control Panel</p></div>
-                        <div className="search-container">
+
+    onSwitchPanel(index) {
+        this.setState({
+            _tabPanel: index
+        })
+    }
+
+    _renderPanel() {
+        let { _tabPanel,searchValue, dataSet, clickStatus, timeRange } = this.state;
+
+        const _titles = ["Person", "Condition", "Graph"];
+        let $titles = (
+            <div className="panel-titles">
+                {
+                    _titles.map((title,i) => (
+                        <span key={title} className={["switch-title",i===_tabPanel?"active":""].join(" ")}
+                            onClick = {() => this.onSwitchPanel(i)}
+                        >{title}</span>
+                    ))
+                }
+            </div>
+        )
+        switch(_tabPanel) {
+            case 0:
+                return (
+                    <div className="switch-panel">
+                        {$titles}
+                        <div className="panel-content border">
+                            <div className="search-container">
                             <div className="input-outline">
                                 <input 
                                     className = "search-input" 
@@ -249,23 +282,66 @@ class FirstPanel extends React.Component {
                             <span className="search-icon">
                                 <img src={slogo} alt="search" onClick = {()=>this.fetchRange()}/> 
                             </span>
+                            {/* <SelectedPanel 
+                                title={dataSet[1].title} clicked = {clickStatus[dataSet[1].key]}
+                                setClicked = {this.setStatus(dataSet[1].key)} options={dataSet[1].options}
+                            /> */}
+                        </div>
+                        </div>
                     </div>
-                    <DatePanel 
-                        title={dataSet[0].title}
-                        setClicked = {this.setTimeRange}
-                        range={timeRange} 
-                        options = {dataSet[0].options}
-                    />
-                    {dataSet.map((datum, index) => {
-                        if(index > 0) {
-                            return (<SelectedPanel 
-                                key={`datum-${index}`} title={datum.title} clicked = {clickStatus[datum.key]}
-                                setClicked = {this.setStatus(datum.key)} options={datum.options}
-                            />)
-                        } else {
-                            return null;
-                        }
-                    })}
+                )
+            case 1:
+                return (
+                    <div className="switch-panel">
+                        {$titles}
+                        <div className="panel-content">
+                        <DatePanel 
+                            title={dataSet[0].title}
+                            setClicked = {this.setTimeRange}
+                            range={timeRange} 
+                            options = {dataSet[0].options}
+                        />
+                        {dataSet.map((datum, index) => {
+                            if(index > 1) {
+                                return (<SelectedPanel 
+                                    key={`datum-${index}`} title={datum.title} clicked = {clickStatus[datum.key]}
+                                    setClicked = {this.setStatus(datum.key)} options={datum.options}
+                                />)
+                            } else {
+                                return null;
+                            }
+                        })}
+                        </div>
+                    </div>
+                )
+            case 2:
+                return (
+                    <div className="switch-panel">
+                        {$titles}
+                        <div className="panel-content border">
+                            <PathContainer />
+                        </div>
+                    </div>
+                )
+            default:
+                return null;
+        }
+    }
+    
+    render() {
+        return (
+            <div className="first-panel">
+                <h1 className="big-title">
+                    <img src={logo} alt="logo" />
+                </h1>
+                <div className="content-container">
+                    <div className="title"><p>Overview</p></div>
+                        <Blobs blobs = {Object.values(this.props.group_)}/>
+                    <div className="title"><p>Control Panel</p></div>
+                    
+                    {this._renderPanel()}
+
+                    {/* <PathContainer /> */}
                     <div className="btn-container">
                         <button className="btn" onClick={this.onClickSearch}>Search</button>
                         <button className="btn btn-delete" onClick={this.onClickDelete}>Delete</button>
