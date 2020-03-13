@@ -45,25 +45,25 @@ class Arrow extends React.Component{
             x2="0%"
             y2="100%"
           >
-            <stop offset="0%" stopColor="red"></stop>
-            <stop offset="100%" stopColor="rgb(250,210,209)"></stop>
+            <stop offset="0%" stopColor="rgb(250,210,209)"></stop>
+            <stop offset="100%" stopColor="red"></stop>
           </linearGradient>
           <linearGradient
             id="bLinearColor"
             x1="0%"
             y1="0%"
             x2="0%"
-            y2="10%"
+            y2="100%"
           >
-            <stop offset="0%" stopColor="rgb(3,93,195)"></stop>
-            <stop offset="100%" stopColor="rgb(210, 210, 250)"></stop>
+            <stop offset="0%" stopColor="rgb(210, 210, 250)"></stop>
+            <stop offset="100%" stopColor="rgb(3,93,195)"></stop>
           </linearGradient>
         </defs>
         <g>
           {data.map((d)=>(
               <path
                 key={`${d}`}
-                d={`M 10 ${yScale(d[0])} Q ${80*(yScale(d[0])-yScale(d[1]))/height} ${(yScale(d[0])+yScale(d[1]))/2}  10 ${yScale(d[1])+3}`}
+                d={`M 10 ${yScale(d[1])} Q ${80*(yScale(d[0])-yScale(d[1]))/height} ${(yScale(d[0])+yScale(d[1]))/2}  10 ${yScale(d[0])+3}`}
                 fill="none"
                 stroke={`url(#${d[2]>0?'r':'b'}LinearColor)`}
                 strokeWidth="1"

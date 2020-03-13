@@ -5,6 +5,22 @@
   overflow:hidden;
 }
 
+.topic-buttons{
+  position:absolute;
+  width: 75%;
+  right:5px;
+  top:0px;
+  display: flex;
+  align-items: center;
+  justify-content:space-around;
+  z-index: 10;
+}
+
+
+.topic-buttons .btn-container{
+  display: flex;
+}
+
 .topicViewChart-container{
   position: relative;
   width: 100%;
