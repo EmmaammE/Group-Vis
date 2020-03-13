@@ -4,6 +4,7 @@ import Header from '../../component/header/Header';
 import CircleBtn from '../../component/button/circlebtn';
 import FlowerContainer from '../../component/flower/flowerContainer';
 import { setStep, setGroup} from '../../actions/step';
+import { TOPICS, POSITIONS} from '../../util/name';
 import { connect } from 'react-redux';
 
 import btn4 from '../../assets/list.svg';
@@ -12,7 +13,7 @@ import btn2 from '../../assets/topic.svg';
 import btn1 from '../../assets/map.svg';
 
 const genData = () => {
-    return 1 + Math.random() * 8;
+    return 2 + Math.random() * 4;
 }
 
 function random(min, max) {
@@ -33,10 +34,10 @@ class SecondPanel extends React.Component {
         super(props);
         this.state = {
             grid: [
-                // {next:-1, size:1, property:[4],selected:0, positions:[]},
-                // {next:-1, size:2, property:[8,9],selected:0},
-                // {next:4, size:3, property:[7,9,10],selected:2},
-                // {next:-1, size:4, property:[7,7,5,10],selected:2},
+                // {next:-1, size:1, property:[8],selected:0, positions:[], titles: Array(8).fill(null).map((e,i)=>'topic-'+i)},
+                // {next:-1, size:2, property:[8,9],selected:0, positions:[]},
+                // {next:4, size:3, property:[7,9,10],selected:2, positions:[]},
+                // {next:-1, size:4, property:[7,7,5,10],selected:2, positions:[]},
             ],
             hoverIndex:[1,1]
         }
@@ -61,14 +62,16 @@ class SecondPanel extends React.Component {
     }
 
     componentDidUpdate(prevProps){
-        if(JSON.stringify(prevProps["all_topics"]) !== JSON.stringify(this.props["all_topics"])) {
+        if(this.props.all_topics!==JSON.stringify({})
+            && JSON.stringify(prevProps["all_topics"]) !== JSON.stringify(this.props["all_topics"])) {
             let {grid} = this.state;
             let {all_topics, positions} = this.props;
+            console.log(all_topics)
             grid = []
             // 第一朵花
             if(grid.length === 0) {
                 grid.push({...GRID_ITEM_TEMPLATE, size:1, 
-                    property:[all_topics.length], titles:all_topics, positions: positions})
+                    property:[all_topics.length], titles:all_topics.map(d=>d[1]), positions: positions})
                 this.setState({grid})
                 this.props.setGroup({1: positions.length})
             }
@@ -94,6 +97,7 @@ class SecondPanel extends React.Component {
                             <div className="grid-line" key={'line-'+i}>
                                 <FlowerContainer 
                                     leaves={item.property} current={item.size} next={item.next}
+                                    _ratio = {i===0?1:item.size/grid[i-1].size}
                                     _showUpLine = {i!==0}
                                     _selected = {item.selected}
                                     _nextSelected = {item.next!==-1 && grid[i+1].selected}
@@ -112,10 +116,13 @@ class SecondPanel extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+    // console.log(state.topicData.all_topics);
+    // console.log(state.topicData["all_topics"]);
+
     return {
-        all_topics: state.topicData["all_topics"],
+        all_topics: state.topicData[TOPICS],
         step: state.step,
-        positions: state.topicData["person2positions"]
+        positions: state.topicData[POSITIONS]
     }
 }
 

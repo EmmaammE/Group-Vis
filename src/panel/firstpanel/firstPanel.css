@@ -157,13 +157,17 @@
     height: 5px;
 }
  
-::-webkit-scrollbar-track {
+.panel-content ::-webkit-scrollbar-track {
     background-color: #fbfbfb;
     border-radius: 5px;
     border: 1px solid #aaaaaa;
 }
 
-::-webkit-scrollbar-thumb {
+.dropdown-list ::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel-content ::-webkit-scrollbar-thumb {
     border-radius: 5px;
     background: #b6afbe; 
 }
@@ -171,4 +175,20 @@
 /* for axis of blobs */
 .custome-axis .domain {
     stroke: transparent;
+}
+
+.dropdown-container {
+    width: 100%;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    transition: opacity 0.1s cubic-bezier(0, 0, 0.38, 0.9), max-height 0.5s cubic-bezier(0, 0, 0.38, 0.9);
+    max-height: 10vh;
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown-list {
+    max-width: 100%;
+    margin: 0 auto;
 }

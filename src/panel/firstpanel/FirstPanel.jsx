@@ -1,7 +1,9 @@
 import React from 'react';
 import './firstPanel.css';
+import 'react-virtualized/styles.css';
 import logo from '../../assets/logo.svg';
 import slogo from '../../assets/search.svg';
+import List from 'react-virtualized/dist/commonjs/List';
 
 import Blobs from '../../component/blob/blob';
 import SelectedPanel from '../../component/selectedPanel/selectedPanel';
@@ -13,6 +15,7 @@ import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
 import PathContainer from '../../component/pathContainer/PathContainer';
 
+const ALL_SIGN = "all";
 class FirstPanel extends React.Component {
     constructor(props) {
         super(props);
@@ -28,7 +31,7 @@ class FirstPanel extends React.Component {
             ],
             clickStatus: {},
             timeRange: [0,0],
-            _tabPanel: 2,
+            _tabPanel: 1,
         }
 
         this.onInputChange = this.onInputChange.bind(this);
@@ -38,6 +41,66 @@ class FirstPanel extends React.Component {
         this.onClickDelete =  this.onClickDelete.bind(this);
     }
 
+    tool_handleItem(data, type) {
+        let {KEY} = this.props;
+        let arr = [];
+
+        if(type === 1) {
+            arr.push([0, ALL_SIGN])
+        }
+        for(let _key in data) {
+            arr.push([_key, data[_key][KEY]])
+        }
+        return arr;
+    }
+
+    async fetchTopics(param) {
+        let response = await axios.post('/search_topics_by_person_ids/', param);
+        let {KEY} = this.props;
+        if(response.data.is_success) {
+
+            // 处理node_dict and edge_dict, 将name修改一下
+            let temp = {"node_dict":{}, "edge_dict":{}, "all_topics":[]};
+            for(let _key in response.data["node_dict"]) {
+                temp.node_dict[_key] = {
+                    "name": response.data["node_dict"][_key][KEY],
+                    "label": response.data["node_dict"][_key]["label"]
+                }
+            }
+            for(let _key in response.data["edge_dict"]) {
+                temp.edge_dict[_key] = {
+                    "name": response.data["edge_dict"][_key][KEY],
+                    "label": response.data["edge_dict"][_key]["label"] 
+                }
+            }
+
+            let count = {};
+            for(let _key in response.data["topic_id2sentence_id2position1d"]) {
+                let _data = response.data["node_dict"][_key]
+                let count_key;
+                // 如果name en_name都为None: label
+                if(_data["name"] === "None" && _data["en_name"] === "None") {
+                    count_key =  _data["label"]
+                } else if(_data[KEY] === "None") {
+                    count_key = _data["name"]
+                } else {
+                    count_key = _data[KEY]
+                }
+                temp.all_topics.push([_key, count_key]);
+                if(count[count_key] === undefined) {
+                    count[count_key] = 1;
+                } else {
+                    count[count_key] += 1;
+                }
+            }
+            temp.all_topics.sort((a,b) => count[b]-count[a])
+            console.log(count);
+            return {...temp, ...response.data}
+        } else {
+            return null
+        }
+    }
+    
     componentDidMount() {
         let {dataSet, clickStatus} = this.state;
         let that = this;
@@ -45,8 +108,8 @@ class FirstPanel extends React.Component {
             .then(res => {
                     if(res.data.is_success === true) {
                         // 朝代和社会区分有初始值
-                        dataSet[2].options = [[0,'All'],...Object.entries(res.data[dataSet[2].key])];
-                        dataSet[3].options = [[0,'All'],...Object.entries(res.data[dataSet[3].key])];
+                        dataSet[2].options = that.tool_handleItem(res.data[dataSet[2].key],1);
+                        dataSet[3].options = that.tool_handleItem(res.data[dataSet[3].key],1);
                         clickStatus[dataSet[2].key] = Array(dataSet[2].options.length).fill(false);
                         clickStatus[dataSet[3].key] = Array(dataSet[3].options.length).fill(false);
 
@@ -65,15 +128,20 @@ class FirstPanel extends React.Component {
             })
     }
 
-    // 选择框的click事件
+    // 选择框的click事件 TODO 修改调用
     setStatus(name) {
-        return index => {
+        return (index, is_all) => {
             let {clickStatus} = this.state;
-            if(index === 0) {
+
+            if(is_all && index === 0) {
+                // 选择了"选择全部"选项
                 let size = clickStatus[name].length - 1;
                 clickStatus[name] = [!clickStatus[name][0], ...Array(size).fill(false)]
             } else {
-                clickStatus[name][0] = false;
+                if(is_all) {
+                    // 有"选择全部"选项， 但选择了其他选项
+                    clickStatus[name][0] = false;
+                }
                 clickStatus[name][index] = !clickStatus[name][index];
             }
             this.setState({
@@ -100,7 +168,7 @@ class FirstPanel extends React.Component {
     fetchRange() {
         let that = this;
         let {searchValue, clickStatus} = this.state;
-
+        
         let bdata = new FormData();
         bdata.append('name', searchValue);
 
@@ -109,24 +177,30 @@ class FirstPanel extends React.Component {
             .then(res => {
                 if (res.data.is_success) {
                     let {data} = res;
-                    let year = Object.values(data["Year"])
-                        .sort((a,b) => a-b);
-                    
+                  
+                    let year = [];
+                    for(let _key in data["Year"]) {
+                        if(data["Year"][_key]["name"]!=="None" 
+                        && data["Year"][_key]["name"]!=="0") {
+                            year.push(+data["Year"][_key]["name"]);
+                        }
+                    }
+                    year = year.sort((a,b) => a-b)
                     // SECTION update dataSet
                     let {dataSet} = that.state, low, high;
                     dataSet.forEach(dset => {
                         if(dset.key === 'Year') {
                             dset.options = [...year];
-                            if(year[0] === '0') {
+                            if(year[0] === 0) {
                                 dset.options.shift();
                             }
                             low = dset.options[0];
                             high = year.pop();
                         } else {
                             if(dset.key !== 'Dynasty' && dset.key !== 'Gender') {
-                                dset.options = [[0,'All'], ...Object.entries(data[dset.key])];
+                                dset.options = that.tool_handleItem(data[dset.key],1)
                             } else {
-                                dset.options = [ ...Object.entries(data[dset.key])];
+                                dset.options = that.tool_handleItem(data[dset.key],0)
                             }
                         }
                         clickStatus[dset.key] = Array(dset.options.length).fill(false);
@@ -147,11 +221,28 @@ class FirstPanel extends React.Component {
             .catch((error) => console.error(error))
     }
 
+    // appendParam:  {title: "Person", data: "person_ids[]", index:1},
+    tool_appendParam(input_item, param) {
+        let {clickStatus, dataSet} = this.state;
+        let {title, data, index} = input_item;
+        if(clickStatus[title]!==undefined) {
+            if(clickStatus[title][0] && dataSet[index].options[0][1]===ALL_SIGN) {
+                dataSet[index].options.forEach((k,j)=>{
+                    // entries({id: name})
+                    j > 0 && param.append(data, k[0])
+                })
+            } else {
+                clickStatus[title].forEach((k,j)=> {
+                    k && param.append(data, dataSet[index].options[j][0])
+                })
+            }        
+        }
+    }
+
     onClickSearch() {
         let that = this;
-        let {step_ }= this.props;
-
-        let {clickStatus, timeRange, dataSet } = this.state;
+        let {step_, KEY}= this.props;
+        let {timeRange, _tabPanel} = this.state;
         // input[i].title = dataSet[i+1].key ~ clickStates{title}
         // index = i+1 留在这里，修改顺序后可以快点修改
         let input = [
@@ -162,76 +253,70 @@ class FirstPanel extends React.Component {
         ]
 
         let param = new FormData();
-        if(timeRange[0]!= '0' && timeRange[1]!= '0'){
-            param.append('min_year', timeRange[0]);
-            param.append('max_year', timeRange[1]);
-        }
-
-        for(let i = 0; i < input.length; i++) {
-            let {title, data} = input[i];
-            if(clickStatus[title]!==undefined) {
-                if(clickStatus[title][0] && dataSet[i+1].options[0][1] === 'All') {
-                    dataSet[i+1].options.forEach((k,j)=> {
-                        // entries({id:name})
-                        j > 0 && param.append(data, k[0])
-                    })
-                } else {
-                    clickStatus[title].forEach((k,j) => {
-                        k === true && param.append(data, dataSet[i+1].options[j][0])
-                    })
-                }
-            }
-        }
-
-        if([...param.keys()].length === 1 && param.has('person_ids[]')) {
-            axios.post('/search_topics_by_person_ids/', param)
-                .then(response => {
-                    if(response.data.is_success) {
-                        let people= param.getAll('person_ids[]')
-                        console.log("res.data",response.data);
-                        that.props.setPerson(people)
-                        that.props.setTopicData(response.data);
-                        that.props.setGroup({[step_]: people.length })
-                        that.props.addStep();
-                    }
-                })
-        } else {
-            axios.post('/search_person_by_ranges/', param)
-            .then(res => {
-                if(res.data.is_success) {
-                    let _size = Object.entries(res.data["Person"]).length;
-                    if( _size !== 0 || res.data["Person"].constructor !== Object) {
-                        let that = this;
-                        let {step_ }= this.props;
-
-                        let param = new FormData();
-                        // 超过1000个人好像有问题
-                        let i = 0;
-                        for(let _key in res.data["Person"]) {
-                            i++;
-                            if(i < 300) {
-                                param.append("person_ids[]", _key);
-                            }
+        switch(_tabPanel) {
+            case 0:
+                this.tool_appendParam(input[0],param);
+                
+                this.fetchTopics(param)
+                    .then(topicData => {
+                        if(topicData!==null) {
+                            let people = param.getAll('person_ids[]')
+                            this.props.setPerson(people)
+                            this.props.setTopicData(topicData)
+                            this.props.setGroup({[step_]: people.length })
+                            this.props.addStep();
                         }
-                        console.log(i);
-                        axios.post('/search_topics_by_person_ids/', param)
-                            .then(response => {
-                                if(response.data.is_success) {
-                                    console.log("res.data",response.data);
+                    })
+                    .catch(err => {
+                        console.error(err)
+                    })
+                break;
+            case 1:
+                if(timeRange[0]!== 0 && timeRange[1]!== 0){
+                    param.append('min_year', timeRange[0]);
+                    param.append('max_year', timeRange[1]);
+                }
+        
+                for(let i = 0; i < input.length; i++) {
+                    this.tool_appendParam(input[i], param);
+                }
+
+                axios.post('/search_person_by_ranges/', param)
+                    .then(res => {
+                        if(res.data.is_success) {
+                            let _size = Object.entries(res.data["Person"]).length;
+                            if( _size !== 0 || res.data["Person"].constructor !== Object) {
+                                let that = this;
+                                let {step_ }= this.props;
+
+                                let param = new FormData();
+                                let i = 0;
+                                let arr = [];
+                                for(let _key in res.data["Person"]) {
+                                    i++;
+                                    if(i < 6) {
+                                        param.append("person_ids[]", _key);
+                                        arr.push(_key)
+                                    }
+                                }
+                                let topicData = that.fetchRange(param);
+                                if(topicData!==null) {
                                     that.props.setPerson(res.data["Person"])
-                                    that.props.setTopicData(response.data);
+                                    that.props.setTopicData(topicData);
                                     that.props.setGroup({[step_]: _size })
                                     that.props.addStep();
                                 }
-                            })
-                    } else {
-                        alert('没有相关人');
-                    }
-                }
-            })
-            .catch(err => {
-                console.error(err);
-            })
+                            } else {
+                                alert('没有相关人');
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                    })
+                break;
+            default:
+                console.log(_tabPanel);
         }
     }
 
@@ -248,6 +333,21 @@ class FirstPanel extends React.Component {
         this.setState({
             _tabPanel: index
         })
+    }
+
+    _renderRow({index, key, style}) {
+        let {dataSet} = this.state;
+        return (
+            <div 
+                key={key} value={dataSet[1].options[index][1]}
+                style = {style}
+                className={"dropdown__list-item"}
+                onClick = {() => this.setStatus('Person')(index)}
+            >
+                <input type="checkbox" />
+                {index === 0 ?'Selected all  ': dataSet[1].options[index][1]}
+            </div>   
+        )
     }
 
     _renderPanel() {
@@ -272,21 +372,42 @@ class FirstPanel extends React.Component {
                         {$titles}
                         <div className="panel-content border">
                             <div className="search-container">
-                            <div className="input-outline">
-                                <input 
-                                    className = "search-input" 
-                                    value = {searchValue} 
-                                    onChange = {this.onInputChange}
-                                />
+                                <div className="input-outline">
+                                    <input 
+                                        className = "search-input" 
+                                        value = {searchValue} 
+                                        onChange = {this.onInputChange}
+                                    />
+                                </div>
+                                <span className="search-icon" onClick = {()=>this.fetchRange()}>
+                                    <img src={slogo} alt="search" /> 
+                                </span>
                             </div>
-                            <span className="search-icon">
-                                <img src={slogo} alt="search" onClick = {()=>this.fetchRange()}/> 
-                            </span>
                             {/* <SelectedPanel 
                                 title={dataSet[1].title} clicked = {clickStatus[dataSet[1].key]}
                                 setClicked = {this.setStatus(dataSet[1].key)} options={dataSet[1].options}
                             /> */}
-                        </div>
+                            {/* <ul className="dropdown-container"> */}
+                            <List
+                                width={180}
+                                height={400}
+                                rowHeight={30}
+                                className = "dropdown-list"
+                                rowRenderer={this._renderRow.bind(this)}
+                                rowCount={dataSet[1].options.length} 
+                            />
+                            {/* {
+                                dataSet[1].options.map((option, index) => (
+                                    <li 
+                                        key={`option-${index}`} value={option[1]}
+                                        className={"dropdown__list-item"}
+                                    >
+                                    <input type="checkbox" />
+                                        {index === 0 ?'Selected all  ': option[1]}
+                                    </li> 
+                                ))
+                            } */}
+                            {/* </ul> */}
                         </div>
                     </div>
                 )
@@ -327,7 +448,7 @@ class FirstPanel extends React.Component {
                 return null;
         }
     }
-    
+
     render() {
         return (
             <div className="first-panel">
@@ -355,7 +476,8 @@ class FirstPanel extends React.Component {
 const mapStateToProps = (state) => {
     return {
         step_: state.step,
-        group_: state.group
+        group_: state.group,
+        KEY: state.KEY
     }
 }
 

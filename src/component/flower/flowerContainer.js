@@ -31,7 +31,7 @@ class FlowerContainer extends React.Component {
     }
 
     render() {
-        let {leaves,current,_showUpLine,_selected,_nextSelected,_hovered,titles,positions} = this.props;
+        let {leaves,current,_showUpLine,_selected,_nextSelected,_hovered,titles,positions,_ratio} = this.props;
         let {endpoints} = this.state;
 
         return (
@@ -62,6 +62,7 @@ class FlowerContainer extends React.Component {
                             _showUpLine = {_showUpLine}
                             _selected = {_selected===i}
                             _hovered = {_hovered===i}
+                            _ratio = {_ratio}
                         />
                     ))
                 }
@@ -69,8 +70,8 @@ class FlowerContainer extends React.Component {
                     endpoints.map((point, i) => (
                         <path 
                             key={'con-'+i} d={`M${BOX_WIDTH*(2*_selected+1)} 360 v10 L${point},${2*BOX_WIDTH}`} 
-                            fill = "transparent" stroke="black"
-                            strokeDasharray = {_nextSelected===i?"":"5 6"}
+                            strokeDasharray = {_nextSelected===i?'none':8}
+                            fill = "transparent" stroke = "black"
                         /> 
                     ))
                 }

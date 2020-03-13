@@ -1,6 +1,7 @@
 import React from "react";
 import Dimension from "./Dimension";
 import { connect } from "react-redux";
+import { POSITIONS } from "../../util/name";
 
 class DimensionContainer extends React.Component {
     render() {
@@ -26,7 +27,7 @@ class DimensionContainer extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        positions: state.topicData["person2positions"]
+        positions: state.topicData[POSITIONS]
     };
 };
 

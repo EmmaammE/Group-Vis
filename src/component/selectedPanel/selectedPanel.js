@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './selectedPanel.css';
 
-function SelectedPanel({title, setClicked, clicked = [], options = []}) {
+// _type === 1： 第一个元素是all； 
+function SelectedPanel({title, _type, setClicked, clicked = [], options = []}) {
   const [expanded, setExpanded] = useState(false);
+
   return (
     <div className="selected-panel">
         <div className="divider"><p>{title}</p></div>
@@ -17,7 +19,10 @@ function SelectedPanel({title, setClicked, clicked = [], options = []}) {
               {
                 options.map((val,i) => {
                   if(clicked[i]) {
-                    return (<span key={'icon-'+i} className="icon">{val[1]}</span>)
+                    return (<span key={'icon-'+i} className="icon" onClick={(event) => {
+                      event.stopPropagation();
+                      setClicked(i)
+                    }}>{val[1]}</span>)
                   } else {
                     return null;
                   }
@@ -40,15 +45,20 @@ function SelectedPanel({title, setClicked, clicked = [], options = []}) {
                   options.map((option, index) => (
                     <li 
                       key={`option-${index}`} value={option[1]}
-                      className={["dropdown__list-item",clicked[index]?"checked":''].join(" ")}
+                      className={"dropdown__list-item"}
                       onClick = {() => setClicked(index)}
-                    >{option[1]}
-                      <div className="item-control"></div>
+                    >
+                      <input type="checkbox" checked={clicked[index]} />
+                      {index === 0 && option[0]==='all'?'Selected all  ': option[1]}
                     </li> 
                   ))
                 }
+               
               </ul>
             </li>
+            <li className="dropdown__mask" onMouseOut={()=>{
+                  setExpanded(false);
+                }}></li>
           </ul>
     </div>
   );

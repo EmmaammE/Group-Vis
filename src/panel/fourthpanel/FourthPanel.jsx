@@ -8,14 +8,7 @@ import TimeLine from '../../component/timeLine/TimeLine'
 import MatrixView from '../../component/matrix/matrixView/MatrixView'
 import TimeLineChart from '../../component/timeLineChart/TimeLineChart';
 import SelectList from '../../component/selectList/SelectList';
-
-import btn4 from '../../assets/list.svg';
-import btn3 from '../../assets/matrix.svg';
-import btn2 from '../../assets/topic.svg';
-import btn1 from '../../assets/map.svg';
 import MapContainer from '../../component/map/MapContainer';
-
-const btn_urls = [btn1,btn2,btn3,btn4]
 
 class FourthPanel extends React.Component {
   constructor(props) {

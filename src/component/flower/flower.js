@@ -16,7 +16,7 @@ const petalPath = [
 /**
  * @param {Number} number: 花瓣的数量
  */
-function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered, color='#7483a9'}) {
+function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered, _ratio, color='#7483a9'}) {
     const [arr, setArr] = useState([]);
 
     useEffect(() => {
@@ -29,14 +29,13 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered,
 
     return (
         <g transform={"translate("+marginWidth+",0)"}>
-            { _showUpLine && <line x1={BOX_WIDTH} y1="0" x2={BOX_WIDTH} y2="40" 
-                stroke="black" strokeWidth="2px" strokeDasharray = {_selected?"":"5 6"} />}
+            { _showUpLine && <path d={`M${BOX_WIDTH} 0 v40}`} 
+               fill = "transparent" stroke = "black"
+               strokeWidth={_ratio} strokeDasharray = {_selected?'none':_ratio*8} />}
             { _hovered === true &&
                 <g> 
                     <path d={`M ${BOX_WIDTH},${BOX_WIDTH-OFFSET} m0,-${OUTER_RADIUS} a ${OUTER_RADIUS},${OUTER_RADIUS},0,1,0,1,0 Z
-                            m 0 ${OUTER_RADIUS-INNER_RADIUS} a ${INNER_RADIUS}, ${INNER_RADIUS},0,1,1,-1,0 Z`} fill="#f17381" 
-                            // stoke ="#7b7b7b" 
-                            />
+                            m 0 ${OUTER_RADIUS-INNER_RADIUS} a ${INNER_RADIUS}, ${INNER_RADIUS},0,1,1,-1,0 Z`} fill="#f17381" />
                     <path d={`M ${BOX_WIDTH},${BOX_WIDTH-OFFSET} m0,-${OUTER_RADIUS} a ${OUTER_RADIUS},${OUTER_RADIUS},0,1,0,1,0 Z
                             m 0 ${OUTER_RADIUS-INNER_RADIUS} a ${INNER_RADIUS}, ${INNER_RADIUS},0,1,1,-1,0 Z`} 
                             fill="#f17381" filter="url('#dropshadow')"/>
@@ -52,7 +51,7 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered,
                                 fill = {color}
                                 style = {{mask: "url(#mask-stripe)"}}
                             />
-                            <line x1="0" y1="102" x2="0" y2="114" stroke="black" strokeWidth="1px"/>
+                            <line x1="0" y1="102" x2="0" y2="114" stroke="black" />
                         </g>
                         <text x="-40" y="0" transform={`translate(${150*Math.cos((angle+90)*Math.PI/180)},${150*Math.sin((angle+90)*Math.PI/180)})`}>
                             {titles && titles[index]}

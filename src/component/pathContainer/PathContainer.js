@@ -24,9 +24,7 @@ function Rect({label, x, y, _draglink, _onCreated,_onLink, cb_over, cb_down}) {
         <g  ref = {$rect} onMouseOver={cb_over}>
             <rect width={2*RECT_WIDTH} height={2*RECT_HEIGHT} fill="#fbfbfb" stroke="#aaaaaa" 
                 x = {x} y={y} rx={RADIUS} ry={RADIUS} cursor="pointer" /> 
-            <circle cx={x+RECT_WIDTH} cy={y} r={RADIUS} stroke="#aaa" fill="#fbfbfb" />
             <text x={x+RECT_WIDTH} y={y+RECT_HEIGHT} dominantBaseline="middle" textAnchor="middle">{label}</text>
-            <circle cx={x+RECT_WIDTH} cy={y+2*RECT_HEIGHT} r={RADIUS} stroke="#aaa" fill="#fbfbfb" />
         </g>
     )
 }
@@ -44,6 +42,8 @@ class PathContainer extends React.Component {
             // 是否开始画连接了
             _draglink: false,
             _created: -1,
+            // 上一次创建时的x坐标
+            _x: 0,
             d: '',
         }
         this.$rects = React.createRef();
@@ -53,17 +53,22 @@ class PathContainer extends React.Component {
     }
     
     handleScroll() {
-        let {_created, rects} = this.state;
-        console.log('scroll');
+        let {_created, _x, rects} = this.state;
         if(_created!==-1) {
-            if(rects.length>1 && rects[rects.length-1][0]===temp_rects[_created][0] 
-                && rects[rects.length-1][1]===temp_rects[_created][1]) {
-                rects.pop();
+        console.log('scroll',_created,rects,temp_rects);
+
+            if(rects.length > 0) {
+                let _p = rects.length - 1;
+                if( rects[_p][0]=== _x && rects[_p][1]===temp_rects[_created][1]) {
+                        console.log('clear');
+                    rects.pop();
+
+                    this.setState({
+                        _created: -1,
+                        rects
+                    },()=>console.log('.'))
+                }
             }
-            this.setState({
-                _created: -1,
-                rects
-            })
         }
     }
 
@@ -103,16 +108,17 @@ class PathContainer extends React.Component {
     }
 
     _handleRectOver(index) {
-        let {_created, rects} = this.state;
+        let {_created, rects, _x} = this.state;
         if(_created === -1 || index !== _created) {
             if(index!==_created) {
                 // 有rect没有移动
-                if(rects.length>1 && rects[rects.length-1][0]===temp_rects[index][0] 
+                if(rects.length>1 && rects[rects.length-1][0]===_x
                     && rects[rects.length-1][1]===temp_rects[index][1]) {
+                        console.log('clear');
                     rects.pop();
                 }
             } 
-            console.log('created   ',index,'  index');
+            let this_x = temp_rects[index][0] - this.$temp_rects.current.scrollLeft+20;
             rects.push([
                 temp_rects[index][0] - this.$temp_rects.current.scrollLeft+20,
                 temp_rects[index][1], 
@@ -121,6 +127,7 @@ class PathContainer extends React.Component {
             this.setState({
                 _created: index,
                 _draglink: false,
+                _x: this_x,
                 rects
             })
         } 
@@ -134,14 +141,8 @@ class PathContainer extends React.Component {
                 <svg width="100%" height="100%" viewBox="0 0 300 400"
                     xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <marker id="end-arrow" viewBox="0 -10 20 20" refX="6" markerWidth="8" markerHeight="8" orient="auto">
-                            <path d="M0,-10L20,0L0,10" fill="transparent" stroke="#aaa"></path>
-                        </marker>
-                    </defs>
-                    <defs>
-                        <marker id="start-arrow" viewBox="0 -10 20 20" refX="4" markerWidth="5" markerHeight="5" orient="auto">
-                            {/* <path d="M20,-10L0,0L20,10" fill="#000"></path> */}
-                            <circle r={RADIUS} stroke="#aaa" fill="#fbfbfb" />
+                        <marker id="start-arrow" viewBox="-6 -6 6 6" markerWidth="12" markerHeight="12" orient="auto">
+                            <circle r={RADIUS} stroke="#aaa" fill="transparent" />
                         </marker>
                     </defs>
                     
@@ -174,7 +175,7 @@ class PathContainer extends React.Component {
                         ))
                     }
                     </g> 
-                    <circle r={5} onClick={()=>this.setState({_draglink: true})}></circle>
+                    <circle cx={270} cy={80} r={5} onClick={()=>this.setState({_draglink: true})}></circle>
                     
                     <path stroke="black" fill="transparent" d={d} markerEnd='url(#end-arrow)'
                         markerStart="url(#start-arrow)"
