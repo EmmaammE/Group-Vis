@@ -6,6 +6,7 @@ import { POSITIONS } from "../../util/name";
 class DimensionContainer extends React.Component {
     render() {
         let { positions } = this.props;
+        console.log(positions);
         if (positions === undefined) {
             return <div></div>;
         }
@@ -26,9 +27,10 @@ class DimensionContainer extends React.Component {
 }
 
 const mapStateToProps = state => {
+    let step = state.otherStep["6"];
     return {
-        positions: state.topicData[POSITIONS]
-    };
-};
+        positions: state.group[step] && state.group[step][POSITIONS]
+    }
+}
 
-export default connect(mapStateToProps)(DimensionContainer);
+export default connect(mapStateToProps)(DimensionContainer); 

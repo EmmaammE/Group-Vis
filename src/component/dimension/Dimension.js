@@ -20,7 +20,7 @@ function Dimension({_width, _height, _margin, data = {}}) {
                 data.map((d,i)=> {
                     return (
                         <circle key={'cir-'+i} r={3} fill="#efeff6" stroke="#bec0db" strokeWidth="1px"
-                            opacity = {0.4}
+                            // opacity = {0.4}
                             cx={scales.xScale(d[0])} cy={scales.yScale(d[1])} />
                     )
                 })

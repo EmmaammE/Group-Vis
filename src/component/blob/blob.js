@@ -192,7 +192,7 @@ class Blobs extends React.Component {
         
         {
           blobs.map((r, i) => (
-            <Blob key={`blob-${i}`} radius={this.getRadius(r)} />
+            r !== undefined && <Blob key={`blob-${i}`} radius={this.getRadius(r)} />
           ))
         }
 
