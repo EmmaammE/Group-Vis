@@ -1,6 +1,7 @@
 import React from 'react';
 import './list.css';
 import ListItem from './ListItem'
+import { connect } from 'react-redux';
 
 const data = [
   {
@@ -72,4 +73,11 @@ class SelectList extends React.Component{
   }
 }
 
-export default SelectList;
+
+const mapStateToProps = (state)=>({
+  selectListView:state.SelectListView
+})
+
+
+
+export default connect(mapStateToProps)(SelectList);

@@ -8,6 +8,9 @@ import {  matrixData} from './tempData'
 import MatrixColumn from '../matrixColumn/MatrixColumn'
 import LeftLable from '../leftLable/LeftLable'
 import scaleFactory from '../util/util'
+import { connect } from 'react-redux';
+
+
 // import 
 // 暂时的假数据
 const WIDTH = 270;
@@ -75,7 +78,7 @@ class MatrixView extends React.Component{
   render(){
     // xy是比例尺，因为是方型所以，横竖方向使用一个
     // colorMap是颜色比例尺
-    let margin={left:50,top:50,right:10,bottom:20}
+    let margin={left:40,top:50,right:10,bottom:20}
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
     const {xy,colorMap}=scaleFactory(width,matrixData,START_COLOR,END_COLOR)
@@ -96,7 +99,8 @@ class MatrixView extends React.Component{
         
         <div  className="matrix-container">
           <svg width="100%" height="100%" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={this.$container}>
-            <g transform="translate(-50,0)">
+            <g transform="translate(-10,0)">
+              {/* 绘制坐标轴 */}
               <g className="matrix_lables" transform={`translate(${margin.left},${margin.top})`} >
                 <LeftLable 
                   key={`lable_row`} 
@@ -113,6 +117,7 @@ class MatrixView extends React.Component{
                   highLable={this.state.highColLabel}
                 ></LeftLable>
               </g>
+              {/* 绘制矩形块 */}
               <g 
                 className="matrix_columns" 
                 transform={`translate(${margin.left},${margin.top})`}
@@ -125,6 +130,7 @@ class MatrixView extends React.Component{
                   ))
                 }
               </g >
+              {/* 绘制tooltip */}
               <g 
                 transform = {`translate(${tipX},${tipY})`}
                 visibility={this.state.visibility}
@@ -151,7 +157,6 @@ class MatrixView extends React.Component{
                 </text>
               </g>
             </g>
-
           </svg>
         </div>
         {/* <VerticalSlider></VerticalSlider> */}
@@ -161,4 +166,9 @@ class MatrixView extends React.Component{
   }
 }
 
-export default MatrixView;
+const mapStateToProps = (state)=>({
+  matrixView:state.matrixView
+})
+
+
+export default connect(mapStateToProps)(MatrixView);

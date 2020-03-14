@@ -3,6 +3,7 @@ import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
 import {scaleFactory,circleData,lineData} from './util';
 import './timeLine.css'
+import { connect } from 'react-redux';
 import * as d3 from 'd3';
 
 const WIDTH = 650;
@@ -276,4 +277,10 @@ class TimeLine extends React.Component{
   }
 }
 
-export default TimeLine;
+const mapStateToProps = (state)=>({
+  timeLineView:state.timeLineView
+})
+
+
+
+export default connect(mapStateToProps)(TimeLine);

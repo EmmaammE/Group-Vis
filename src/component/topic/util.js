@@ -1,8 +1,11 @@
 import * as d3 from 'd3';
+import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
 
 export function handleData(data1){
     let data = topicData
+    console.log("exampleData",exampleData)
+    console.log("topicData",topicData)
     let labelData=[]
     let label2topics=data.label2topics
     let topicPos = data.topic2sentence_positions
@@ -19,6 +22,10 @@ export function handleData(data1){
     //花瓣滑块默认数据
     let fData = new Array(labelData.length).fill(0.5)
     let cData= labelData.map((v,i)=>{
+        fData[i] = {
+            topic:v,
+            value:0.5
+        }
         mapTopicToIndex[v]=i
         if(topicPos[v]){
             let values =  Object.values(topicPos[v])

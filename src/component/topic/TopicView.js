@@ -14,6 +14,11 @@ import btn3 from '../../assets/matrix.svg';
 import btn2 from '../../assets/topic.svg';
 import btn1 from '../../assets/map.svg';
 import CircleBtn from '../button/circlebtn';
+import {updateTopicView} from '../../redux/topicView.redux.js'
+import {initTopicWeight} from '../../redux/topicWeight.redux.js'
+import {updateTimeLine} from '../../redux/timeLine.redux.js'
+import {updateMatrix} from '../../redux/matrixView.redux.js'
+import {updateSelectList} from '../../redux/selectList.redux.js'
 
 const btn_urls = [btn1,btn2,btn3,btn4]
 
@@ -189,6 +194,7 @@ class TopicView extends React.Component{
 
   render(){
     if(topicData==-1){
+      console.log("propsdata",this.props)
       let data = {
         label2topics:this.props.label2topics,
         topic2sentence_positions:this.props.topic2sentence_positions,
@@ -389,7 +395,8 @@ class TopicView extends React.Component{
                 fData.map((v,i)=>(
                     <VerticalSlider
                       key={`rect_${v}_${i}`}
-                      value={v}
+                      value={v.value}
+                      topic = {v.topic}
                       index={i}
                       top={margin.top+yScale(i)-rHeight*0.5}
                       yScale={yScale}
@@ -405,7 +412,21 @@ class TopicView extends React.Component{
   }
 }
 
-export default connect(state=>state.topicData)(TopicView);
+const mapStateToProps = (state)=>({
+  topicView:state.topicView,
+  topicWeight:state.topicWeight
+})
+
+
+const mapDispatchToProps = {
+  updateTopicView,
+  initTopicWeight,
+  updateSelectList,
+  updateMatrix,
+  updateTimeLine
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(TopicView);
 
 function brushFilter(data){
   //被选中的人名

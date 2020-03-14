@@ -23,13 +23,13 @@
   display: inline-block;
   position: relative;
   vertical-align: top;
-  width: 57%;
+  width: 50%;
   height: 100%;
 }
 .fourth-panel .select-list{
   display: inline-block;
   vertical-align: top;
-  width: 40%;
+  width: 47%;
   height: 100%;
   border-left: solid  #ebebeb 5px;
   /* background-color: rgb(179, 253, 40); */

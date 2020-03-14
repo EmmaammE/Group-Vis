@@ -58,7 +58,7 @@ class FirstPanel extends React.Component {
         let response = await axios.post('/search_topics_by_person_ids/', param);
         let {KEY} = this.props;
         if(response.data.is_success) {
-
+            console.log("responseData",response.data)
             // 处理node_dict and edge_dict, 将name修改一下
             let temp = {"node_dict":{}, "edge_dict":{}, "all_topics":[]};
             for(let _key in response.data["node_dict"]) {
@@ -94,7 +94,7 @@ class FirstPanel extends React.Component {
                 }
             }
             temp.all_topics.sort((a,b) => count[b]-count[a])
-            console.log(count);
+            console.log("count",count,{...temp, ...response.data});
             return {...temp, ...response.data}
         } else {
             return null
@@ -259,6 +259,7 @@ class FirstPanel extends React.Component {
                 
                 this.fetchTopics(param)
                     .then(topicData => {
+                        console.log("fetchTopics,topicData",topicData)
                         if(topicData!==null) {
                             let people = param.getAll('person_ids[]')
                             this.props.setPerson(people)
