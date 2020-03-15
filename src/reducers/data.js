@@ -4,7 +4,8 @@ import {
     SET_GENDER,
     SET_STATUS,
     SET_YEAR,
-    SET_TOPIC_RELATED_DATA
+    SET_TOPIC_RELATED_DATA,
+    SET_DICT
 } from '../actions/types';
 
 export function person(state = {}, action) {
@@ -60,6 +61,15 @@ export function topicData(state = {}, action) {
     switch(action.type) {
         case SET_TOPIC_RELATED_DATA:
             return action.data;
+        default:
+            return state;
+    }
+}
+
+export function dict(state = {}, action) {
+    switch(action.type) {
+        case SET_DICT:
+            return Object.assign(state, action.data)
         default:
             return state;
     }

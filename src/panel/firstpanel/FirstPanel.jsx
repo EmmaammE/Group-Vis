@@ -7,13 +7,11 @@ import List from 'react-virtualized/dist/commonjs/List';
 
 import Blobs from '../../component/blob/blob';
 import SelectedPanel from '../../component/selectedPanel/selectedPanel';
-import {debounce} from '../../util/tools';
 import axios from 'axios';
-import { setPerson, setTopicData, setYear } from '../../actions/data';
-import { setGroup, addStep } from '../../actions/step';
 import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
 import PathContainer from '../../component/pathContainer/PathContainer';
+import { fetchTopicData, setOtherStep } from '../../actions/step';
 
 const ALL_SIGN = "all";
 class FirstPanel extends React.Component {
@@ -54,53 +52,6 @@ class FirstPanel extends React.Component {
         return arr;
     }
 
-    async fetchTopics(param) {
-        let response = await axios.post('/search_topics_by_person_ids/', param);
-        let {KEY} = this.props;
-        if(response.data.is_success) {
-            console.log("responseData",response.data)
-            // 处理node_dict and edge_dict, 将name修改一下
-            let temp = {"node_dict":{}, "edge_dict":{}, "all_topics":[]};
-            for(let _key in response.data["node_dict"]) {
-                temp.node_dict[_key] = {
-                    "name": response.data["node_dict"][_key][KEY],
-                    "label": response.data["node_dict"][_key]["label"]
-                }
-            }
-            for(let _key in response.data["edge_dict"]) {
-                temp.edge_dict[_key] = {
-                    "name": response.data["edge_dict"][_key][KEY],
-                    "label": response.data["edge_dict"][_key]["label"] 
-                }
-            }
-
-            let count = {};
-            for(let _key in response.data["topic_id2sentence_id2position1d"]) {
-                let _data = response.data["node_dict"][_key]
-                let count_key;
-                // 如果name en_name都为None: label
-                if(_data["name"] === "None" && _data["en_name"] === "None") {
-                    count_key =  _data["label"]
-                } else if(_data[KEY] === "None") {
-                    count_key = _data["name"]
-                } else {
-                    count_key = _data[KEY]
-                }
-                temp.all_topics.push([_key, count_key]);
-                if(count[count_key] === undefined) {
-                    count[count_key] = 1;
-                } else {
-                    count[count_key] += 1;
-                }
-            }
-            temp.all_topics.sort((a,b) => count[b]-count[a])
-            console.log("count",count,{...temp, ...response.data});
-            return {...temp, ...response.data}
-        } else {
-            return null
-        }
-    }
-    
     componentDidMount() {
         let {dataSet, clickStatus} = this.state;
         let that = this;
@@ -240,8 +191,7 @@ class FirstPanel extends React.Component {
     }
 
     onClickSearch() {
-        let that = this;
-        let {step_, KEY}= this.props;
+        let {KEY, fetchTopicData, setOtherStep}= this.props;
         let {timeRange, _tabPanel} = this.state;
         // input[i].title = dataSet[i+1].key ~ clickStates{title}
         // index = i+1 留在这里，修改顺序后可以快点修改
@@ -256,21 +206,13 @@ class FirstPanel extends React.Component {
         switch(_tabPanel) {
             case 0:
                 this.tool_appendParam(input[0],param);
-                
-                this.fetchTopics(param)
-                    .then(topicData => {
-                        console.log("fetchTopics,topicData",topicData)
-                        if(topicData!==null) {
-                            let people = param.getAll('person_ids[]')
-                            this.props.setPerson(people)
-                            this.props.setTopicData(topicData)
-                            this.props.setGroup({[step_]: people.length })
-                            this.props.addStep();
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err)
-                    })
+                fetchTopicData(param, KEY, 1);
+
+                // for(let i=6; i<=10; i++){
+                //     setOtherStep(i)
+                // }
+                setOtherStep(6)
+                setOtherStep(9)
                 break;
             case 1:
                 if(timeRange[0]!== 0 && timeRange[1]!== 0){
@@ -287,25 +229,19 @@ class FirstPanel extends React.Component {
                         if(res.data.is_success) {
                             let _size = Object.entries(res.data["Person"]).length;
                             if( _size !== 0 || res.data["Person"].constructor !== Object) {
-                                let that = this;
-                                let {step_ }= this.props;
-
                                 let param = new FormData();
                                 let i = 0;
                                 let arr = [];
                                 for(let _key in res.data["Person"]) {
-                                    i++;
+                                    i++; //因为现在数据太多了可能failed,暂时只查六个人
                                     if(i < 6) {
                                         param.append("person_ids[]", _key);
                                         arr.push(_key)
                                     }
                                 }
-                                let topicData = that.fetchRange(param);
-                                if(topicData!==null) {
-                                    that.props.setPerson(res.data["Person"])
-                                    that.props.setTopicData(topicData);
-                                    that.props.setGroup({[step_]: _size })
-                                    that.props.addStep();
+                                fetchTopicData(param, KEY, 1);
+                                for(let i=6; i<=10; i++){
+                                    setOtherStep(i)
                                 }
                             } else {
                                 alert('没有相关人');
@@ -384,12 +320,7 @@ class FirstPanel extends React.Component {
                                     <img src={slogo} alt="search" /> 
                                 </span>
                             </div>
-                            {/* <SelectedPanel 
-                                title={dataSet[1].title} clicked = {clickStatus[dataSet[1].key]}
-                                setClicked = {this.setStatus(dataSet[1].key)} options={dataSet[1].options}
-                            /> */}
-                            {/* <ul className="dropdown-container"> */}
-                            <List
+                             <List
                                 width={180}
                                 height={400}
                                 rowHeight={30}
@@ -397,18 +328,6 @@ class FirstPanel extends React.Component {
                                 rowRenderer={this._renderRow.bind(this)}
                                 rowCount={dataSet[1].options.length} 
                             />
-                            {/* {
-                                dataSet[1].options.map((option, index) => (
-                                    <li 
-                                        key={`option-${index}`} value={option[1]}
-                                        className={"dropdown__list-item"}
-                                    >
-                                    <input type="checkbox" />
-                                        {index === 0 ?'Selected all  ': option[1]}
-                                    </li> 
-                                ))
-                            } */}
-                            {/* </ul> */}
                         </div>
                     </div>
                 )
@@ -463,7 +382,6 @@ class FirstPanel extends React.Component {
                     
                     {this._renderPanel()}
 
-                    {/* <PathContainer /> */}
                     <div className="btn-container">
                         <button className="btn" onClick={this.onClickSearch}>Search</button>
                         <button className="btn btn-delete" onClick={this.onClickDelete}>Delete</button>
@@ -476,19 +394,16 @@ class FirstPanel extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        step_: state.step,
-        group_: state.group,
+        group_: Object.values(state.group).map(d=>d['people'].length),
         KEY: state.KEY
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setTopicData: data => dispatch(setTopicData(data)),
-        setPerson: data => dispatch(setPerson(data)),
-        setRange: data => dispatch(setYear(data)),
-        setGroup: data => dispatch(setGroup(data)),
-        addStep: () => dispatch(addStep())
+        // 入口，所以只作为第一步
+        fetchTopicData: (param, key) => dispatch(fetchTopicData(param, key, 1)),
+        setOtherStep: key => dispatch(setOtherStep(key, 1))
     };
 };
 

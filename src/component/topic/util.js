@@ -2,10 +2,22 @@ import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
 
+export function smallize(data,n){
+    // let len = 
+    let i = 0;
+    // console.log("")
+    while(i<data.length){
+        if(data[i][0]>=n||data[i][1]>=n){
+            data.splice(i,1)
+        }else{
+            i++
+        }
+    }
+}
 export function handleData(data1){
     let data = topicData
-    console.log("exampleData",exampleData)
-    console.log("topicData",topicData)
+    // console.log("exampleData",exampleData)
+    // console.log("topicData",topicData)
     let labelData=[]
     let label2topics=data.label2topics
     let topicPos = data.topic2sentence_positions

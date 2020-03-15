@@ -1,7 +1,7 @@
 import React from 'react';
 import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
-import {scaleFactory,handleData} from './util';
+import {scaleFactory,handleData,smallize} from './util';
 import Arrow from'./Arrow'
 import './topicView.css'
 import FlowerLabel from '../flowerLabel/FlowerLabel'
@@ -27,10 +27,10 @@ const btnData = [
       {btnName:"Minus"}
     ]
 let addOrMinus = true;
-let margin={left:10,top:70,right:40,bottom:30}
+let margin={left:10,top:50,right:40,bottom:30}
 const WIDTH = 370;
 const LEFTWIDTH = 90;
-const HEIGHT = 520;
+const HEIGHT = 540;
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
 
@@ -87,7 +87,7 @@ class TopicView extends React.Component{
       // console.log("info",infos);
       let xChange = v.clientX- svgX
       let yChange = v.clientY- svgY -targetWidth*3;
-      let displayInfo = Number(infos[2]).toFixed(5)
+      let displayInfo = `${Number(infos[1]).toFixed(4)}_${infos[2]}`
 
       this.setState({
         tooltip:displayInfo,
@@ -182,7 +182,7 @@ class TopicView extends React.Component{
   // apply按钮的事件，将数据刷选的结果应用到topicView
   handleApply(){
     topicData = brushFilter(topicData)
-    console.log("filter,topicData",topicData)
+    // console.log("filter,topicData",topicData)
     brushDatas=[];
     this.setState({
       tooltip:"",
@@ -193,24 +193,27 @@ class TopicView extends React.Component{
 
 
   render(){
-    if(topicData==-1){
-      console.log("propsdata",this.props)
-      let data = {
-        label2topics:this.props.label2topics,
-        topic2sentence_positions:this.props.topic2sentence_positions,
-        pmi_node:this.props.pmi_node
-      }
-      topicData = handleData(data)
-      console.log("topicData",topicData)
-    }
-    let width = WIDTH-margin.left-margin.right
-    let height = HEIGHT -margin.top-margin.bottom
+
+    topicData = this.props.topicView
+    // 截取一部分数据
+    topicData.labelData= topicData.labelData.slice(0,8)
+    topicData.cData = topicData.cData.slice(0,8)
+    topicData.fData = topicData.fData.slice(0,8)
+    smallize(topicData.relationData,8)
+
     let rLabels = topicData.labelData
     let cData = topicData.cData
     let relationData = topicData.relationData;
     let fData = topicData.fData;
-    let rHeight = fData.length==0? 0: (height/fData.length).toFixed(0)
-    rHeight = rHeight>80?80:(rHeight<30?30:rHeight)
+    // console.log("topicData",topicData)
+
+    let width = WIDTH-margin.left-margin.right
+    let height = HEIGHT -margin.top-margin.bottom
+   
+    
+    // console.log("smallize(fData)",relationData)
+    let rHeight = fData.length==0 ? 0: (height/fData.length).toFixed(0)
+    rHeight = rHeight>50?50:(rHeight<25?25:rHeight)
     const {yScale,xScale,colorMap,value,vScale,yScaleR,xScaleR} = scaleFactory(width,height,cData,START_COLOR,END_COLOR)
     yScaleReverse = yScaleR
     xScaleReverse = xScaleR
@@ -308,7 +311,7 @@ class TopicView extends React.Component{
               {
                 cData.map((v,i)=>(
                   <SeqCircles
-                    key={`${v}_${i}`}
+                    key={`seqCircles_topic_${i}`}
                     data={v}
                     rowOrColumn={true}
                     gxy = {yScale}
@@ -450,7 +453,6 @@ function brushFilter(data){
   for(let i=0;i<newCirData.length;i++){
     newCirData[i]=[]
   }
-  console.log("新建newCirData",newCirData)
   for(let singleBrushData of brushDatas){
     //将框选转换成相应横纵轴范围
     x1 = xScaleReverse(singleBrushData.brushTransX-margin.left)
@@ -494,6 +496,7 @@ function brushFilter(data){
     }
   }
   // console.log("newCirData",newCirData)
+  // 从大到小去统计应该删掉的topic
   let deleteLable = []
   for(let i=newCirData.length-1;i>=0;i--){
     //该topic下，数据集为0
@@ -502,7 +505,7 @@ function brushFilter(data){
       deleteLable.push(i)
     }
   }
-  console.log("delete",deleteLable);
+  // console.log("delete",deleteLable);
   // 删除空的label的相应的数据
   for(let i of deleteLable){
     newCirData.splice(i,1)
@@ -510,8 +513,14 @@ function brushFilter(data){
     labelData.splice(i,1)
     let j=0;
     while(j<relationData.length){
-      
       let temp = relationData[j]
+      // 在被删除坐标之前的往前挪一位
+      if(temp[0]>i){
+        temp[0]-=1
+      }
+      if(temp[1]>i){
+        temp[1]-=1
+      }
       if(temp[0]==i||temp[1]==i){
         relationData.splice(j,1)
       }else{
@@ -522,6 +531,5 @@ function brushFilter(data){
   
   cData = newCirData
   
-  // console.log("{{{",{cData,labelData,relationData,fData})
   return {cData,labelData,relationData,fData}
 }

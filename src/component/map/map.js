@@ -1,6 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import song from '../../assets/geojson/song.json';
+// import ming from '../../assets/geojson/ming_1391.json';
 import {debounce} from '../../util/tools';
 
 const BOX_WIDTH = 250;
@@ -53,17 +54,29 @@ class Map extends React.Component {
                 key={'fea-'+i}
               />
             ))}
+            {/* {ming.features.map((d,i) => (
+              <path strokeWidth = "1"
+                stroke = {d.properties["H_PROVINCE"]==="Jingshi"?'#999':'#bbb'}
+                fill = {d.properties["H_PROVINCE"]==="Jingshi"?'#efefef':'#fff'}
+                d={path(d)}
+                key={'fea-'+i}
+              />
+            ))} */}
             <g>
               {
                 addr && 
-                Object.values(addr).map((data, i) => (
-                  <circle key={'circle-'+i} r={5} fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
-                    transform={`translate(${projection([data[0]['x_coord'], data[0]['y_coord']])})`} />
-                ))
+                Object.values(addr).map((data, i) => {
+
+                  let $circle = data.map((d,j) => (
+                    <circle key={'cir-'+i+' '+j} r={5} fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
+                      transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
+                  ))
+                  return $circle;
+                })
               }
             </g>
         </g>
-        <text x={80} y={200} fill="#999" fontSize="30px">Song</text>
+        {/* <text x={80} y={200} fill="#999" fontSize="30px">Song</text> */}
       </svg>
     )
   }

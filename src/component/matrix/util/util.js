@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 export default function scaleFactory(width,data,startColor,endColor){
   
+  // console.log("numcols",data)
   const numcols = data.length;
   
   var maxValue = d3.max(data, function(layer) { return d3.max(layer, function(d) { return d; }); });
@@ -17,7 +18,7 @@ export default function scaleFactory(width,data,startColor,endColor){
 
   var colorMap = d3.scaleLinear()
   .domain([minValue,0,maxValue])
-  .range([startColor,"white", endColor]);
+  .range([startColor,"#dddddd", endColor]);
 
   return { xy,colorMap}
 }

@@ -2,7 +2,8 @@
 
 const UPDATEMATRIX='UPDATEMATRIX'
 const initState={
-
+  matrixData:[],
+  matrixPerson:[]
 }
 
 export function matrixView(state=initState,action){

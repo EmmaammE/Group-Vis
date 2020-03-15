@@ -3,7 +3,7 @@ import './secondPanel.css'
 import Header from '../../component/header/Header';
 import CircleBtn from '../../component/button/circlebtn';
 import FlowerContainer from '../../component/flower/flowerContainer';
-import { setStep, setGroup} from '../../actions/step';
+import { addStep} from '../../actions/step';
 import { TOPICS, POSITIONS} from '../../util/name';
 import { connect } from 'react-redux';
 
@@ -62,19 +62,16 @@ class SecondPanel extends React.Component {
     }
 
     componentDidUpdate(prevProps){
-        if(this.props.all_topics!==JSON.stringify({})
-            && JSON.stringify(prevProps["all_topics"]) !== JSON.stringify(this.props["all_topics"])) {
+        if(prevProps.step !== this.props.step) {
             let {grid} = this.state;
-            let {all_topics, positions} = this.props;
-            console.log(all_topics)
-            grid = []
-            // 第一朵花
-            if(grid.length === 0) {
-                grid.push({...GRID_ITEM_TEMPLATE, size:1, 
-                    property:[all_topics.length], titles:all_topics.map(d=>d[1]), positions: positions})
-                this.setState({grid})
-                this.props.setGroup({1: positions.length})
-            }
+            let {group} = this.props;
+            // TODO: ❀和grid序号的映射
+        
+            // 暂定8片花瓣
+            let titles = group[1][TOPICS].slice(0,8).map(d=>d[1]);
+            grid.push({...GRID_ITEM_TEMPLATE, size:1, 
+                    property:[titles.length], titles: titles, positions: Object.values(group[1][POSITIONS])})
+            this.setState({grid})
         }
     }
 
@@ -116,20 +113,15 @@ class SecondPanel extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    // console.log(state.topicData.all_topics);
-    // console.log(state.topicData["all_topics"]);
-
     return {
-        all_topics: state.topicData[TOPICS],
         step: state.step,
-        positions: state.topicData[POSITIONS]
+        group: state.group
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setStep: step => dispatch(setStep(step)),
-        setGroup: group => dispatch(setGroup(group))
+        addStep: () => dispatch(addStep())
     }
 }
 

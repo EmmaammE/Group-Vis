@@ -1,7 +1,7 @@
 
 const UPDATESELECTLIST='UPDATESELECTLIST'
 const initState={
-
+  selectListData:[]
 }
 
 export function selectListView(state=initState,action){

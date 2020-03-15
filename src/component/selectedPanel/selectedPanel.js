@@ -48,7 +48,7 @@ function SelectedPanel({title, _type, setClicked, clicked = [], options = []}) {
                       className={"dropdown__list-item"}
                       onClick = {() => setClicked(index)}
                     >
-                      <input type="checkbox" checked={clicked[index]} />
+                      <input type="checkbox" checked={clicked[index]} readOnly/>
                       {index === 0 && option[0]==='all'?'Selected all  ': option[1]}
                     </li> 
                   ))

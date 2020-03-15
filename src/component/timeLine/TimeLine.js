@@ -41,7 +41,7 @@ class TimeLine extends React.Component{
 
   componentDidMount(){
     let container = this.$container.current
-    console.log("boundingClient",container.getBoundingClientRect())
+    // console.log("boundingClient",container.getBoundingClientRect())
     let currentX = container.getBoundingClientRect().x
     let currentY = container.getBoundingClientRect().y
     svgX=currentX
@@ -73,7 +73,7 @@ class TimeLine extends React.Component{
 
   // 下面三个函数为刷选框的监听函数
   handleBrushMouseDown(v){
-    console.log("getbox",v.clientX,v.screenX,v.screenY)
+    // console.log("getbox",v.clientX,v.screenX,v.screenY)
     startLoc = [v.clientX-svgX-2,v.clientY-svgY-3]
     brushFlag=true
     this.setState({

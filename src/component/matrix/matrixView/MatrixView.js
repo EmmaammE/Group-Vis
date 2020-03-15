@@ -2,7 +2,7 @@ import React from 'react';
 
 import './matrixView.css';
 import * as d3 from 'd3';
-import {  matrixData} from './tempData'
+// import {  matrixData} from './tempData'
 // import MatrixButton from '../../button/MatrixButton'
 // import VerticalSlider from '../../verticalSlider/VerticalSlider'
 import MatrixColumn from '../matrixColumn/MatrixColumn'
@@ -76,21 +76,20 @@ class MatrixView extends React.Component{
 
 
   render(){
+   
+    let matrixData = this.props.matrixView.matrixData
+    let labels = this.props.matrixView.matrixPerson
     // xy是比例尺，因为是方型所以，横竖方向使用一个
     // colorMap是颜色比例尺
     let margin={left:40,top:50,right:10,bottom:20}
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
     const {xy,colorMap}=scaleFactory(width,matrixData,START_COLOR,END_COLOR)
-    const btnData = [{btnName:"comp"},
-        {btnName:"senti"},
-        {btnName:"quantity"}
-    ]
     let tipX = margin.left+xy(this.state.highRowLabel)+this.state.targetWidth
-    let tipY = margin.top+xy(this.state.highColLabel)-this.state.targetWidth*2
+    let tipY = margin.top+xy(this.state.highColLabel)
     tipX = tipX ? tipX:0;
     tipY = tipY ? tipY:0;
-    let labels = ['SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie', 'SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie','SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie'];
+    // let labels = ['SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie', 'SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie','SuShi', 'WangAnshi', 'SuZhe', 'OuYangxiu', 'ZhengXie'];
     return (
       <div className="chart-wrapper">
         <div className="header-line">
@@ -153,7 +152,7 @@ class MatrixView extends React.Component{
                   textAnchor="middle"
                   fontSize="0.65em"
                 >
-                  {this.state.tooltip}
+                  {`count:${this.state.tooltip}`}
                 </text>
               </g>
             </g>

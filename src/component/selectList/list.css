@@ -6,7 +6,7 @@
   margin: black;
   position: relative;
   width: 88%;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .listItem-out .listItem-in{
@@ -29,6 +29,7 @@
   /* margin:0; */
   font-size: 12px;
   transform: scale(0.75);
+  white-space: nowrap;
 }
 
 .listItem-out .listFirst{
@@ -50,3 +51,23 @@
 .listItem-out .listFifth{
   width:24% ;
 }
+.selectList-container{
+  height:95%;
+  overflow-y: scroll;
+  overflow-x:hidden;
+}
+/* 滚动条 */
+.selectList-container::-webkit-scrollbar-track {
+  border: 1px solid #d3d3d3;
+  background-color: #F5F5F5;
+}
+
+.selectList-container::-webkit-scrollbar {
+  width: 4px;
+  background-color: #F5F5F5;
+}
+
+.selectList-container::-webkit-scrollbar-thumb {
+  background-color: #d3d3d3;  
+}
+

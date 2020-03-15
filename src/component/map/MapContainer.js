@@ -4,29 +4,30 @@ import Map from './map';
 import legend from '../../assets/img/legendmap.png';
 import { connect } from 'react-redux';
 import axios from 'axios';
-
+// import {data} from '../../data/ming'
 class MapContainer extends React.Component {
     state = {
         addr: {}
     }
 
     componentDidUpdate(prevProps) {
-        let {person_} = this.props;
-        if(JSON.stringify(prevProps.person_)!==JSON.stringify(person_)) {
+        let {people} = this.props;
+        if(JSON.stringify(prevProps.people)!==JSON.stringify(people)) {
             let that = this;
             let param = new FormData();
-            for(let _key in person_) {
+            for(let _key in people) {
                 param.append("person_ids[]", _key);
             }
             axios.post('/search_address_by_person_ids/', param)
-                .then(response => {
-                    if(response.data.is_success) {
+                .then(res => {
+                    if(res.data.is_success) {
+                        console.log(res.data);
                         that.setState({
-                            addr: response.data["Addr"]
+                            addr: res.data["Addr"]
                         })
                     } else {
-                        if(response.data.bug) {
-                            console.error(response.data.bug);
+                        if(res.data.bug) {
+                            console.error(res.data.bug);
                         }
                     }
                 })
@@ -46,9 +47,10 @@ class MapContainer extends React.Component {
 
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
+    let step = state.otherStep["9"];
     return {
-       person_: state.person
+        people: state.group[step] && state.group[step]["people"]
     }
 }
 

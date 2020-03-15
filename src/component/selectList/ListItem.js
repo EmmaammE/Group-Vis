@@ -9,7 +9,7 @@ class ListItem extends React.Component{
     }
   }
   render(){
-    console.log("props",this.props)
+    // console.log("props",this.props)
     const firstValue = this.props.firstValue?this.props.firstValue:"¤";
     const secondValue =this.props.secondValue?this.props.secondValue:"¤";
     const thirdValue =this.props.thirdValue?this.props.thirdValue:"¤";

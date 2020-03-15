@@ -14,7 +14,7 @@ class VerticalSlider extends React.Component{
   }
 
   componentDidMount(){
-    console.log("this.props.input***",this.props)
+    // console.log("this.props.input***",this.props)
     // let slider = this.$container.current;
     // // let csLable = this.$lable.current;
     // slider.addEventListener('input', function(e) {
@@ -72,4 +72,4 @@ class VerticalSlider extends React.Component{
   }
 }
 
-export default connect(()=>{},{updateTopicWeight})(VerticalSlider);
+export default connect(()=>({}),{updateTopicWeight})(VerticalSlider);
