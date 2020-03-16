@@ -1,31 +1,36 @@
 import * as d3 from 'd3';
 
-export function scaleFactory(width,height,data,startColor,endColor){
+export function scaleFactory(width,height,tLabelData,tCircleData,startColor,endColor){
   
-  const numcols = data.length;
+  let xScale,yScale,colorMap,timeData,aScale,tScale;
+  const numcols = tLabelData.length;
+
+  if(numcols==0){
+    return { yScale,xScale,colorMap,timeData,tScale}
+  }
   
-  let maxValue = d3.max(data, function(layer) { return d3.max(layer.info, function(d) { return d.value; }); });
-  let minValue = d3.min(data, function(layer) { return d3.min(layer.info, function(d) { return d.value; }); });
+  let maxValue = d3.max(tCircleData, function(layer) { return d3.max(layer, function(d) { return d.distance; }); });
+  let minValue = d3.min(tCircleData, function(layer) { return d3.min(layer, function(d) { return d.distance; }); });
   
-  let maxDistance = d3.max(data, function(layer) { return d3.max(layer.info, function(d) { return d.distance; }); });
-   let minDistance = d3.min(data, function(layer) { return d3.min(layer.info, function(d) { return d.distance; }); });
+  let maxDistance = d3.max(tCircleData, function(layer) { return d3.max(layer, function(d) { return d.distance; }); });
+  let minDistance = d3.min(tCircleData, function(layer) { return d3.min(layer, function(d) { return d.distance; }); });
   
-  var xScale = d3.scaleLinear()
+  xScale = d3.scaleLinear()
     .domain([minDistance,maxDistance])
     .range([0,width])
 
-  var yScale = d3.scaleLinear()
+  yScale = d3.scaleLinear()
     .domain([0,numcols])
     .range([0,height])
 
-  var colorMap = d3.scaleLinear()
-    .domain([minValue,0,maxValue])
-    .range([startColor,"white", endColor]);
+  colorMap = d3.scaleLinear()
+    .domain([minValue,maxValue])
+    .range([startColor, endColor]);
 
-  let n = 10;
-  let timeData = []
+  let n = 8;
+  timeData = []
 
-  let aScale = d3.scaleLinear()
+  aScale = d3.scaleLinear()
     .domain([0,n-1])
     .range([minDistance,maxDistance])
 
@@ -33,15 +38,23 @@ export function scaleFactory(width,height,data,startColor,endColor){
       timeData.push(aScale(i).toFixed(0))
   }
 
-  var tScale = d3.scaleLinear()
+  tScale = d3.scaleLinear()
     .domain([0,n-1])
     .range([0,width])
 
   return { yScale,xScale,colorMap,timeData,tScale}
 }
 
+export function sortTimeLineData(timeLineData){
+  let tLabelData = timeLineData.tLabelData
+  let tCircleData = timeLineData.tCircleData
+  tLabelData.sort((a,b)=>b.number-a.number)
+  tCircleData.sort((a,b)=>b.length-a.length)
+  return {tLabelData,tCircleData}
+}
+
 // 绘制相关性虚线
-export const lineData = [3,5,9]
+export const lineData = []
 
 export const circleData = [
   {name: "SuShi", info:[{distance:1,value:0.2,discription:"this is 1 discription"},

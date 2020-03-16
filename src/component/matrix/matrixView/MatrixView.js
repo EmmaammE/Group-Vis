@@ -7,7 +7,7 @@ import * as d3 from 'd3';
 // import VerticalSlider from '../../verticalSlider/VerticalSlider'
 import MatrixColumn from '../matrixColumn/MatrixColumn'
 import LeftLable from '../leftLable/LeftLable'
-import scaleFactory from '../util/util'
+import {scaleFactory,sortMatrixPerson} from '../util/util'
 import { connect } from 'react-redux';
 
 
@@ -76,9 +76,15 @@ class MatrixView extends React.Component{
 
 
   render(){
-   
-    let matrixData = this.props.matrixView.matrixData
-    let labels = this.props.matrixView.matrixPerson
+  
+    let sortedData;
+    if(this.props.matrixView.matrixPerson.length>0){
+      sortedData = sortMatrixPerson(this.props.matrixView)
+    }else{
+      sortedData = this.props.matrixView
+    }
+    let matrixData = sortedData.matrixData
+    let labels = sortedData.matrixPerson
     // xy是比例尺，因为是方型所以，横竖方向使用一个
     // colorMap是颜色比例尺
     let margin={left:40,top:50,right:10,bottom:20}

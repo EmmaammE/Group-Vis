@@ -43,7 +43,7 @@ class SeqCircles extends React.Component{
                 onMouseOut={this.handleMouseout}
                 info={`${index}_${v.distance}_${v.discription}`}
                 r = {r?r:5}
-                fill={colorMap(v.value)}
+                fill={"gray"}
                 stroke="white"
                 opacity={opacity?opacity:1}
               >

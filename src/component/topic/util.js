@@ -4,15 +4,20 @@ import topicData from '../../assets/geojson/a.json';
 
 export function smallize(data,n){
     // let len = 
+    console.log("smallise",data)
     let i = 0;
     // console.log("")
+    let newData = []
     while(i<data.length){
         if(data[i][0]>=n||data[i][1]>=n){
             data.splice(i,1)
         }else{
+            newData.push(data[i])
             i++
+
         }
     }
+    return newData
 }
 export function handleData(data1){
     let data = topicData

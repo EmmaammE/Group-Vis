@@ -193,19 +193,22 @@ class TopicView extends React.Component{
 
 
   render(){
-
-    topicData = this.props.topicView
+    // if(topicData==-1){
+      topicData = this.props.topicView
+      console.log("this.props.topicView",this.props.topicView)
+    // }
+    
     // 截取一部分数据
     topicData.labelData= topicData.labelData.slice(0,8)
     topicData.cData = topicData.cData.slice(0,8)
     topicData.fData = topicData.fData.slice(0,8)
-    smallize(topicData.relationData,8)
+    topicData.relationData = smallize(topicData.relationData,8)
 
     let rLabels = topicData.labelData
     let cData = topicData.cData
     let relationData = topicData.relationData;
     let fData = topicData.fData;
-    // console.log("topicData",topicData)
+    console.log("缩减后的topicData",topicData)
 
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -327,12 +330,16 @@ class TopicView extends React.Component{
             </g>
             {/* 绘制箭头 */}
             <g transform={`translate(${WIDTH-margin.right},${margin.top})`}>
-              <Arrow
-                yScale={yScale}
-                data={relationData}
-                height={HEIGHT-margin.top-margin.bottom}
-              >
-              </Arrow>
+              {
+                relationData.length==0?null:
+                <Arrow
+                  yScale={yScale}
+                  data={relationData}
+                  height={HEIGHT-margin.top-margin.bottom}
+                >
+                </Arrow>
+              }
+              
             </g>
             {/* 绘制tooltip */}
             <g 

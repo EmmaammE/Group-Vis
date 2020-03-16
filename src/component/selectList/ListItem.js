@@ -10,6 +10,7 @@ class ListItem extends React.Component{
   }
   render(){
     // console.log("props",this.props)
+    let data = this.props.data.join("")
     const firstValue = this.props.firstValue?this.props.firstValue:"¤";
     const secondValue =this.props.secondValue?this.props.secondValue:"¤";
     const thirdValue =this.props.thirdValue?this.props.thirdValue:"¤";
@@ -17,7 +18,13 @@ class ListItem extends React.Component{
     const fifthValue =this.props.fifthValue?this.props.fifthValue:"¤";
     return(
       <div className="listItem-out">
-        <div className="listItem-in listFirst">
+        <div className="listItem-out-middle">
+          <p className="listItem-line selectList-scrollbar">
+            {data}
+          </p >
+        </div>
+        
+        {/* <div className="listItem-in listFirst">
           <div className="textItem">
             {firstValue}
           </div>
@@ -41,7 +48,7 @@ class ListItem extends React.Component{
           <div className="textItem">
             {fifthValue}
           </div>
-        </div>
+        </div> */}
       </div>
     )
   }
