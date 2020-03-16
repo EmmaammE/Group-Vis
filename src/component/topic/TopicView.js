@@ -1,7 +1,7 @@
 import React from 'react';
 import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
-import {scaleFactory,handleData,smallize} from './util';
+import {scaleFactory,filterTimeLine,filterMatrixView,filterSelectList,deepClone,smallize} from './util';
 import Arrow from'./Arrow'
 import './topicView.css'
 import FlowerLabel from '../flowerLabel/FlowerLabel'
@@ -69,6 +69,10 @@ class TopicView extends React.Component{
 
     this.handleSwitch =this.handleSwitch.bind(this)
     this.handleApply =this.handleApply.bind(this)
+
+    this.handleClickSelectList = this.handleClickSelectList.bind(this)
+    this.handleClickMatrixView = this.handleClickMatrixView.bind(this)
+    this.handleClickTimeLine = this.handleClickTimeLine.bind(this)
   }
 
   componentDidMount(){
@@ -189,14 +193,34 @@ class TopicView extends React.Component{
       tipVisibility:"hidden",
       highRowLabel:-1
     })
+
+    let selectListData= filterSelectList(topicData.cData)
+    this.props.updateSelectList({selectListData})
+  }
+
+  // 右上角的四个按钮的 注册事件
+  //  selectList视图
+  handleClickSelectList(){
+    let selectListData= filterSelectList(topicData.cData)
+    this.props.updateSelectList({selectListData})
+  }
+  //  Matrix View视图
+  handleClickMatrixView(){
+    let matrixViewData = filterMatrixView()
+    this.props.updateMatrix(matrixViewData)
+  }
+  //  timeLine视图
+  handleClickTimeLine(){
+    let timeLineData = filterTimeLine()
+    this.props.updateTimeLine(timeLineData)
   }
 
 
   render(){
-    // if(topicData==-1){
-      topicData = this.props.topicView
-      console.log("this.props.topicView",this.props.topicView)
-    // }
+    if(topicData==-1||topicData.labelData.length==0){
+      topicData = deepClone(this.props.topicView)
+      // console.log("this.props.topicView",this.props.topicView)
+    }
     
     // 截取一部分数据
     topicData.labelData= topicData.labelData.slice(0,8)
@@ -208,7 +232,7 @@ class TopicView extends React.Component{
     let cData = topicData.cData
     let relationData = topicData.relationData;
     let fData = topicData.fData;
-    console.log("缩减后的topicData",topicData)
+    // console.log("缩减后的topicData",topicData)
 
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -487,7 +511,9 @@ function brushFilter(data){
     }else{
       for(let i=y1;i<y2;i++){
         let j=0;
-        
+        if(cData[i].length==undefined){
+          continue
+        }
         while(j<cData[i].length){
           const dis = cData[i][j].distance
           if(dis>x1&&dis<x2){
@@ -510,6 +536,7 @@ function brushFilter(data){
     if(newCirData[i].length==0){
       //记录要被删掉的label的序号
       deleteLable.push(i)
+      console.log("deleteLable",i)
     }
   }
   // console.log("delete",deleteLable);

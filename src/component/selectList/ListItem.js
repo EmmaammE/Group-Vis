@@ -10,12 +10,7 @@ class ListItem extends React.Component{
   }
   render(){
     // console.log("props",this.props)
-    let data = this.props.data.join("")
-    const firstValue = this.props.firstValue?this.props.firstValue:"¤";
-    const secondValue =this.props.secondValue?this.props.secondValue:"¤";
-    const thirdValue =this.props.thirdValue?this.props.thirdValue:"¤";
-    const fourthValue =this.props.fourthValue?this.props.fourthValue:"¤";
-    const fifthValue =this.props.fifthValue?this.props.fifthValue:"¤";
+    let data = this.props.data
     return(
       <div className="listItem-out">
         <div className="listItem-out-middle">

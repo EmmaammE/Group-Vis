@@ -184,8 +184,8 @@ export function fetchTopicData(param, KEY, step) {
                             })
 
                             // 统计select所需的数据
-                            selectListData[selectListIndex++] = discript
                             let discription = discript.join("-")
+                            selectListData[selectListIndex++] = discription
 
                             // 统计出timeLineView的时间数据
                             if(timeNumber>0&&time>0){

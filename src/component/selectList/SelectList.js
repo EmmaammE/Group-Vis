@@ -22,11 +22,6 @@ class SelectList extends React.Component{
               <ListItem 
                 data={v}
                 key={`ListItem${i}`}
-                firstValue={v[0]} 
-                secondValue ={v[1]}
-                thirdValue = {v[2]}
-                fourthValue = {v[3]}
-                fifthValue = {v[4]}
               ></ListItem>
              )
             )
