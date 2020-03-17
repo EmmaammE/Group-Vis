@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="43px" height="44px" viewBox="0 0 43 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53 (72520) - https://sketchapp.com -->
+    <title>Group 73</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-80.8%" y="-80.8%" width="261.5%" height="261.5%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.796078431   0 0 0 0 0.796078431   0 0 0 0 0.796078431  0 0 0 1 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <circle id="path-2" cx="13.2996885" cy="12.809596" r="12.6388889"></circle>
+        <filter x="-53.4%" y="-53.4%" width="206.8%" height="206.8%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0771059783 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-1853.000000, -1792.000000)">
+            <g id="Group-73" transform="translate(1861.000000, 1800.000000)">
+                <g id="Group-13" filter="url(#filter-1)">
+                    <g id="Oval-6">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    </g>
+                </g>
+                <g id="shujujuzhen" transform="translate(6.000000, 6.000000)" fill="#FE5266" fill-rule="nonzero">
+                    <path d="M2.1,2.15384615 L4.1475,2.15384615 L4.1475,4.25384615 L2.1,4.25384615 L2.1,2.15384615 Z M2.1,9.69230769 L4.1475,9.69230769 L4.1475,11.7923077 L2.1,11.7923077 L2.1,9.69230769 Z M2.1,5.92307692 L4.1475,5.92307692 L4.1475,8.02307692 L2.1,8.02307692 L2.1,5.92307692 Z M1.05,1.07692308 L1.56153846,1.07692308 C1.85892256,1.07692308 2.1,0.835845635 2.1,0.538461538 L2.1,0.538461538 C2.1,0.241077442 1.85892256,-5.46285722e-17 1.56153846,0 L0,0 L0,14 L1.56153846,14 C1.85892256,14 2.1,13.7589226 2.1,13.4615385 L2.1,13.4615385 C2.1,13.1641544 1.85892256,12.9230769 1.56153846,12.9230769 L1.05,12.9230769 L1.05,1.07692308 Z M10.5,2.15384615 L12.5475,2.15384615 L12.5475,4.25384615 L10.5,4.25384615 L10.5,2.15384615 Z M10.5,5.92307692 L12.5475,5.92307692 L12.5475,8.02307692 L10.5,8.02307692 L10.5,5.92307692 Z M13.1384615,1.07692308 L13.65,1.07692308 L13.65,12.9230769 L13.1384615,12.9230769 C12.8410774,12.9230769 12.6,13.1641544 12.6,13.4615385 L12.6,13.4615385 C12.6,13.7589226 12.8410774,14 13.1384615,14 L14.7,14 L14.7,0 L13.1384615,0 C12.8410774,5.46285722e-17 12.6,0.241077442 12.6,0.538461538 L12.6,0.538461538 C12.6,0.835845635 12.8410774,1.07692308 13.1384615,1.07692308 Z M6.3,2.15384615 L8.3475,2.15384615 L8.3475,4.25384615 L6.3,4.25384615 L6.3,2.15384615 Z M10.5,9.69230769 L12.5475,9.69230769 L12.5475,11.7923077 L10.5,11.7923077 L10.5,9.69230769 Z M6.3,5.92307692 L8.3475,5.92307692 L8.3475,8.02307692 L6.3,8.02307692 L6.3,5.92307692 Z M6.3,9.69230769 L8.3475,9.69230769 L8.3475,11.7923077 L6.3,11.7923077 L6.3,9.69230769 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

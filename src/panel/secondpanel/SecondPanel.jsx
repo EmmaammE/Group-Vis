@@ -3,14 +3,9 @@ import './secondPanel.css'
 import Header from '../../component/header/Header';
 import CircleBtn from '../../component/button/circlebtn';
 import FlowerContainer from '../../component/flower/flowerContainer';
-import { addStep} from '../../actions/step';
+import { addStep, setOtherStep} from '../../actions/step';
 import { TOPICS, POSITIONS} from '../../util/name';
 import { connect } from 'react-redux';
-
-import btn4 from '../../assets/list.svg';
-import btn3 from '../../assets/matrix.svg';
-import btn2 from '../../assets/topic.svg';
-import btn1 from '../../assets/map.svg';
 
 const genData = () => {
     return 2 + Math.random() * 4;
@@ -26,7 +21,6 @@ const genItem = (num,property) => ({
     selected: 0,
     positions: []
 })
-const btn_urls = [btn1,btn2,btn3,btn4]
 
 const GRID_ITEM_TEMPLATE = {next:-1, size:0, property:[], selected: 0};
 class SecondPanel extends React.Component {
@@ -39,9 +33,11 @@ class SecondPanel extends React.Component {
                 // {next:4, size:3, property:[7,9,10],selected:2, positions:[]},
                 // {next:-1, size:4, property:[7,7,5,10],selected:2, positions:[]},
             ],
-            hoverIndex:[1,1]
+            hoverIndex:[1,1],
+            btnStatus: [false, false, false, false]
         }
         this.toSelect = this.toSelect.bind(this);
+        this.clickBtn = this.clickBtn.bind(this);
     }   
 
     // toSelect
@@ -68,24 +64,36 @@ class SecondPanel extends React.Component {
             // TODO: ❀和grid序号的映射
         
             // 暂定8片花瓣
-            let titles = group[1][TOPICS].slice(0,8).map(d=>d[1]);
+            let titles = group[1][TOPICS].slice(0,8).map(arr => arr[1]);
             grid.push({...GRID_ITEM_TEMPLATE, size:1, 
-                    property:[titles.length], titles: titles, positions: Object.values(group[1][POSITIONS])})
+                    property:[titles.length], titles: titles, positions: group[1][POSITIONS]})
             this.setState({grid})
         }
     }
 
+    clickBtn(i) {
+        let { btnStatus, step } = this.state;
+        this.props.setOtherStep(7+i, 1);
+        btnStatus[i] = !btnStatus[i];
+
+        this.setState({
+            btnStatus
+        })
+    }
+
     render() {
         // let {grid,hoverIndex} = this.state;
-        let {grid} = this.state;
+        let {grid, btnStatus} = this.state;
         
         return (
             <div className="second-panel">
                 <Header title="Overview"></Header>
                 <div className="btn-container">
-                    {btn_urls.map(url=>(<CircleBtn key={url} url={url} />))}
-
-                    <div style={{background:'#f00'}}onClick={this.toSelect}>筛选</div>
+                    {btnStatus.map(
+                        (e,i) => (<CircleBtn key={'btn-'+i} type={i} active = {btnStatus[i]}
+                            onClick={() => this.clickBtn(i)} />)
+                    )}
+                    {/* <div style={{background:'#f00'}} onClick={this.toSelect}>筛选</div> */}
                 </div>
                 <div className="content-panel">
                 {
@@ -121,7 +129,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addStep: () => dispatch(addStep())
+        addStep: () => dispatch(addStep()),
+        setOtherStep: (key, step) => dispatch(setOtherStep(key, step))
     }
 }
 

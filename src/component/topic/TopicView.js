@@ -9,18 +9,12 @@ import RectSlider from '../rectSlider/RectSlider'
 import { connect } from 'react-redux';
 import VerticalSlider from '../verticalSlider/VerticalSlider';
 import MatrixButton from '../button/MatrixButton'
-import btn4 from '../../assets/list.svg';
-import btn3 from '../../assets/matrix.svg';
-import btn2 from '../../assets/topic.svg';
-import btn1 from '../../assets/map.svg';
 import CircleBtn from '../button/circlebtn';
 import {updateTopicView} from '../../redux/topicView.redux.js'
 import {initTopicWeight} from '../../redux/topicWeight.redux.js'
 import {updateTimeLine} from '../../redux/timeLine.redux.js'
 import {updateMatrix} from '../../redux/matrixView.redux.js'
 import {updateSelectList} from '../../redux/selectList.redux.js'
-
-const btn_urls = [btn1,btn2,btn3,btn4]
 
 const btnData = [
       {btnName:"Add"},
@@ -262,7 +256,11 @@ class TopicView extends React.Component{
             <MatrixButton id="topic-apply-button"  btnName="apply" cName="topic-apply-button"></MatrixButton>
           </div>
           <div className="btn-container">
-              {btn_urls.map((url,i)=>(<CircleBtn onClick={handleClick[i]} key={url+'-'+i} url={url} />))}
+              {/* {btn_urls.map((url,i)=>(<CircleBtn onClick={handleClick[i]} key={url+'-'+i} url={url} />))} */}
+              {
+                Array(4).fill(null).map((e,i)=>
+                (<CircleBtn key={'btn2-'+i} type={i} onClick={handleClick[i]} />))
+              }
           </div>   
         </div>
         <div  className="topicViewChart-container">

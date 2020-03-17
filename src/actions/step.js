@@ -65,30 +65,39 @@ export function fetchTopicData(param, KEY, step) {
                         }
                     }
             
+                    // 翻译topic_id
+                    res.data[TOPICS].forEach(id => {
+                        let idstring = id.join(" ");
+                        temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
+                    })
+                    console.log(temp[TOPICS]);
                     // 记录每个topic的次数
                     let count = {};
                     for(let _key in res.data[TOPIC_SENTENCE_POSITION]) {
-                        let count_key = temp[DICT][_key]
-                        temp[TOPICS].push([_key, count_key]);
-                        let length = Object.keys(res.data[TOPIC_SENTENCE_POSITION][_key]).length
-                        if(count[count_key] === undefined) {
-                            count[count_key] = length;
-                        } else {
-                            count[count_key] += length;
-                        }
+                        count[_key] = Object.keys(res.data[TOPIC_SENTENCE_POSITION][_key]).length;
                     }
 
-                    temp[TOPICS].sort((a,b) => count[b[1]]-count[a[1]])
+                    temp[TOPICS].sort((a,b) => count[b[0]]-count[a[0]])
                     
+                     // 地图查询的人
+                     let people = {};
+                     Object.keys(res.data[POSITIONS]).forEach(id => {
+                         people[id] = temp[DICT][id]
+                     })
+                     
+                     let _positions = {};
+                     Object.keys(res.data[POSITIONS]).forEach(id => {
+                         _positions[temp[DICT][id]] = res.data[POSITIONS][id]
+                     })
                     // 这里请求topic,设置相关的数据,分发不同的action
                     // 分发node和edge的映射
                     dispatch(setDict(temp[DICT]));
                     // 分发Overview更新需要的数据
                     dispatch(setGroup({[step]: {
                         // person_id []
-                        'people': Object.keys(res.data[POSITIONS]),
+                        'people': people,
                         [TOPIC_SENTENCE_POSITION]: res.data[TOPIC_SENTENCE_POSITION],
-                        [POSITIONS]: res.data[POSITIONS],
+                        [POSITIONS]: _positions,
                         [TOPICS]: temp[TOPICS]
                     }}))
                     dispatch(addStep())
@@ -126,7 +135,7 @@ export function fetchTopicData(param, KEY, step) {
                     let personToIndex = {}
                     let personIndex = 0
                     // topic中Person的那些人
-                    let persons = res.data[LABEL_2_TOPIC].Person
+                    // let persons = res.data[LABEL_2_TOPIC].Person
 
                     // for()
 

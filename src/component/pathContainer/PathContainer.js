@@ -335,7 +335,7 @@ class PathContainer extends React.Component {
                     </foreignObject>
                     <circle cx={270} cy={85} r={5} onClick={this._toggleLinkStatus}></circle>
 
-                    <g ref={this.$container} clip-path="url(#myClip)">
+                    <g ref={this.$container} clipPath="url(#myClip)">
                         <g> {
                             rects.map((rect,i) => (
                                 <Rect key={'rect-'+i} x={rect[0]} y={rect[1]} 

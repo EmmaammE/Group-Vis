@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import song from '../../assets/geojson/song.json';
 // import ming from '../../assets/geojson/ming_1391.json';
 import {debounce} from '../../util/tools';
+import Tooltip from '../tooltip/tooltip';
 
 const BOX_WIDTH = 250;
 const BOX_HEIGHT = 213;
@@ -13,6 +14,10 @@ class Map extends React.Component {
     this.state = {
       rScale: d3.scaleLinear()
             .range([6,12]),
+      tooltip: {
+        show: false,
+        data: {}
+      }
     };
     this.projection = d3.geoMercator()
       .center([110, 31])
@@ -22,6 +27,9 @@ class Map extends React.Component {
       .projection(this.projection);
 
     this.$map = React.createRef();
+    this.$container = React.createRef();
+    this.$tooltip = React.createRef();
+    this.showTooltip = this.showTooltip.bind(this);
   }
 
   componentDidMount() {
@@ -36,15 +44,40 @@ class Map extends React.Component {
                   .attr("transform",transform);
                 },100)(d3.event.transform)
               }))
+    //   var tool_tip = d3.tip()
+    //   .attr("class", "d3-tip")
+    //   .offset([-8, 0])
+    //   .html(function(d) { return "Radius: " + d; });
+    // svg.call(tool_tip);
+    // this.$container.call(d3.tip().offset([-8,0]));
+  }
+
+  showTooltip(data,coor) {
+    console.log(coor);
+
+    this.setState({
+      tooltip: {
+        show: true,
+        data: {
+          x: coor[0],
+          y: coor[1],
+          title: data
+        }
+      }
+    })
   }
 
   render() {
     let path = this.path,
         projection = this.projection;
     let {addr} = this.props;
+    let {tooltip} = this.state;
 
     return (
-      <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
+        style={{position:'relative'}}
+        ref = {this.$container}
+      >
         <g ref={this.$map}>
           {song.features.map((d,i) => (
               <path strokeWidth = "1"
@@ -62,13 +95,16 @@ class Map extends React.Component {
                 key={'fea-'+i}
               />
             ))} */}
+            {tooltip.show && <Tooltip width={2*BOX_WIDTH} height={2*BOX_HEIGHT} {...tooltip.data} />}
             <g>
               {
                 addr && 
-                Object.values(addr).map((data, i) => {
+                Object.entries(addr).map((data, i) => {
 
-                  let $circle = data.map((d,j) => (
+                  let $circle = data[1].map((d,j) => (
                     <circle key={'cir-'+i+' '+j} r={5} fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
+                      onMouseOver = {e => this.showTooltip(data[0],projection([d['x_coord'], d['y_coord']]))}
+                      onMouseOut = { () => this.setState({tooltip:{show: false}})}
                       transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
                   ))
                   return $circle;

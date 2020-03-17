@@ -54,7 +54,9 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered,
                             <line x1="0" y1="102" x2="0" y2="114" stroke="black" />
                         </g>
                         <text x="-40" y="0" transform={`translate(${150*Math.cos((angle+90)*Math.PI/180)},${150*Math.sin((angle+90)*Math.PI/180)})`}>
-                            {titles && titles[index]}
+                            {titles && titles[index].map((text, i) =>
+                                (<tspan x="-40" y={i*20} key={"t-"+i}>{text}</tspan>)
+                            )}
                         </text>
                     </g>
                 ))}

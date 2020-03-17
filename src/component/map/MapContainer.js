@@ -7,7 +7,9 @@ import axios from 'axios';
 // import {data} from '../../data/ming'
 class MapContainer extends React.Component {
     state = {
-        addr: {}
+        // addr: {
+        // "21": [{"x_coord": 106.631752, "y_coord": 30.47769, "address_name": "\u6e20\u6c5f"}], 
+        // "23": [{"x_coord": 108.631752, "y_coord": 32.47769, "address_name": "\u6e20\u6c5f"}]}
     }
 
     componentDidUpdate(prevProps) {
@@ -22,8 +24,12 @@ class MapContainer extends React.Component {
                 .then(res => {
                     if(res.data.is_success) {
                         console.log(res.data);
+                        let addr = {};
+                        for(let _data in res.data["Addr"]) {
+                            addr[people[_data]] = res.data["Addr"][_data];
+                        }
                         that.setState({
-                            addr: res.data["Addr"]
+                            addr: addr
                         })
                     } else {
                         if(res.data.bug) {
