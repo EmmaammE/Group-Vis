@@ -1,18 +1,56 @@
 import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
+export function filterTimeLine(data){
+    
+}
+export function filterMatrixView(data){
 
+}
+export function filterSelectList(cData){
+    let data = []
+    for(let singleData of cData){
+        for(let k of singleData){
+            data.push(k.discription)
+        }
+    }
+    return data
+}
+export function deepClone(Obj) {   
+    var buf;   
+    if (Obj instanceof Array) {   
+        buf = [];  //创建一个空的数组 
+        var i = Obj.length;   
+        while (i--) {   
+            buf[i] = deepClone(Obj[i]);   
+        }   
+        return buf;   
+    }else if (Obj instanceof Object){   
+        buf = {};  //创建一个空对象 
+        for (var k in Obj) {  //为这个对象添加新的属性 
+            buf[k] = deepClone(Obj[k]);   
+        }   
+        return buf;   
+    }else{   
+        return Obj;   
+    }   
+}  
 export function smallize(data,n){
     // let len = 
+    // console.log("smallise",data)
     let i = 0;
     // console.log("")
+    let newData = []
     while(i<data.length){
         if(data[i][0]>=n||data[i][1]>=n){
             data.splice(i,1)
         }else{
+            newData.push(data[i])
             i++
+
         }
     }
+    return newData
 }
 export function handleData(data1){
     let data = topicData

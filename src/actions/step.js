@@ -1,10 +1,11 @@
 import axios from "axios";
 import { setDict } from "../actions/data";
-import { TOPICS, DICT, POSITIONS, TOPIC_SENTENCE_POSITION,TOPIC_PMI, LABEL_2_TOPIC } from "../util/name";
+import { TOPICS, NODE_DICT,DICT, POSITIONS, TOPIC_SENTENCE_POSITION,TOPIC_PMI, LABEL_2_TOPIC } from "../util/name";
 import {SET_STEP, SET_GROUP, ADD_STEP } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix } from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
+import {updateTimeLine} from '../redux/timeLine.redux'
 
 export function setStep(step) {
     return {
@@ -99,7 +100,8 @@ export function fetchTopicData(param, KEY, step) {
                     //         "person_id2position2d": res.data["person_id2position2d"]
                     // 
 
-                    // 设置topicView所需相关数据
+                    
+                   console.log("返回的数据***",res.data,"temp***",temp);
                     
                    // 给topic建立从0到n的编号映射
                     let topicToIndex = {}
@@ -107,30 +109,36 @@ export function fetchTopicData(param, KEY, step) {
                         topicToIndex[v[0]] = i;
                     })
                    
+                    // 设置topicView所需相关数据
                     let labelData=[]
                     let cData =[]
                     let relationData=[] // topic相关性箭头数据
                     let fData = []  // 每个topic比重的数据
                     
-                    
-                    
                     let topicSentences = res.data[TOPIC_SENTENCE_POSITION]
                     let topicPmis = res.data[TOPIC_PMI]
+                    let nodeDict = res.data[NODE_DICT]
                     let topicPmiExist = {}
+
                     // matrixView需要的数据
                     let matrixData = []
                     let matrixPerson = []
                     let personToIndex = {}
+                    let personIndex = 0
+                    // topic中Person的那些人
                     let persons = res.data[LABEL_2_TOPIC].Person
-                    persons.forEach((v,i)=>{
-                        matrixData[i] = new Array(persons.length).fill(0)
-                        personToIndex[v] = i
-                        matrixPerson.push(temp[DICT][v])
-                    })
+
+                    // for()
 
                     // selectList 需要的数据
                     let selectListData = []
                     let selectListIndex = 0
+
+                    // timelineView需要的数据
+                    let tPersonIndex = 0;
+                    let tPersonToIndex={}
+                    let tLabelData= []
+                    let tCircleData = []
 
                     let tIndex = 0;
                     // 形成视图所需的数据
@@ -144,18 +152,67 @@ export function fetchTopicData(param, KEY, step) {
                         })
                         let topicSentence = topicSentences[v[0]]
                         let isPerson = personToIndex[v[0]]!=undefined?true:false
-                        // 遍历每个topic中的多个猫叔
+                        // 遍历每个topic中的多个描述
                         for(let vKey in topicSentence){
+                            // 描述中出现的人名的编号
                             let disPersons = []
+                            let timeNumber = 0
+                            let time=0
                             let discript = vKey.split(" ").map(vk=>{
-                                //一个描述中出现了人名
-                                if(personToIndex[vk]!=undefined){
+                                //一个描述片段，判断其是节点、且是人名的节点
+                                if(nodeDict[vk]!=undefined&&nodeDict[vk].label=='Person'){
+                                    // 之前没有统计过这个人
+                                    if(personToIndex[vk] == undefined){
+                                        matrixPerson.push({
+                                            personId:vk,
+                                            name:temp[DICT][vk],
+                                            number:0,
+                                            preIndex:personIndex
+                                        })
+                                        personToIndex[vk] = personIndex
+                                        matrixData[personIndex] = []
+                                        personIndex++
+                                    }
+                                    matrixPerson[personToIndex[vk]].number++
                                     disPersons.push(personToIndex[vk])
+                                }  
+                                if(nodeDict[vk]!=undefined&&nodeDict[vk].label=="Year"&&temp[DICT][vk]!="0"){
+                                    timeNumber++
+                                    time+=Number(temp[DICT][vk])
                                 }
                                 return temp[DICT][vk]
                             })
-                            selectListData[selectListIndex++] = discript
+
+                            // 统计select所需的数据
                             let discription = discript.join("-")
+                            selectListData[selectListIndex++] = discription
+
+                            // 统计出timeLineView的时间数据
+                            if(timeNumber>0&&time>0){
+                                time = Number(time/timeNumber).toFixed(0)
+                                time = Number(time)
+                                //遍历该描述中涉及到的人
+                                for(let i of disPersons){
+                                    // 如果该人还没有统计过
+                                    if(tPersonToIndex[matrixPerson[i].personId]==undefined){
+                                        tPersonToIndex[matrixPerson[i].personId] = tPersonIndex
+                                        tLabelData[tPersonIndex]={
+                                            name:matrixPerson[i].name,
+                                            number:0,
+                                            preIndex:tPersonIndex
+                                        }
+                                        tCircleData[tPersonIndex]=[]
+                                        tPersonIndex++
+                                    }
+                                    let index = tPersonToIndex[matrixPerson[i].personId]
+                                    tCircleData[index].push({
+                                        discription,
+                                        distance:time
+                                    })
+                                    tLabelData[index].number++    
+                                }
+                            }
+                            
 
                             let distance = topicSentence[vKey]
                             cData[tIndex].push({
@@ -165,10 +222,11 @@ export function fetchTopicData(param, KEY, step) {
                             //该描述中出现了两个以上人,统计MatrixView所需的数据
                             // console.log("dispersons***",disPersons)
                             if(disPersons.length>1){
-                                for(let i in disPersons){
-                                    for(let j in disPersons){
-                                        if(i!=j){
-                                            if(matrixData[i][j]!=undefined){
+                                for(let i of disPersons){
+                                    for(let j of disPersons){
+                                        // 采用i比j小的记录方式
+                                        if(i<j){
+                                            if(matrixData[i][j]==undefined){
                                                 matrixData[i][j]=1
                                             }else{
                                                matrixData[i][j]+=1 
@@ -177,6 +235,7 @@ export function fetchTopicData(param, KEY, step) {
                                     }
                                 }
                             }
+
                         }
 
                         let topicPmi = topicPmis[v[0]]
@@ -185,7 +244,6 @@ export function fetchTopicData(param, KEY, step) {
                             if(topicPmiExist[tKey]===undefined&&topicPmi[tKey]!=0){
                                 let kIndex = topicToIndex[tKey]
                                 relationData.push([Math.max(tIndex,kIndex), Math.min(tIndex,kIndex), topicPmi[tKey]])
-                                
                             }
                         }
                         // 标记该topic相关性的数据已经统计过了
@@ -194,10 +252,13 @@ export function fetchTopicData(param, KEY, step) {
                     }
                     let topicData = {labelData,cData,relationData,fData}
                     let matrixViewData = {matrixData,matrixPerson}
+                    let timeLineData = {tLabelData,tCircleData}
+
                     dispatch(updateTopicView(topicData));
                     dispatch(updateSelectList({selectListData}));
                     dispatch(updateMatrix(matrixViewData));
-                    console.log("step****右边视图的数据",topicData,selectListData,matrixViewData)
+                    dispatch(updateTimeLine(timeLineData))
+                    console.log("step****右边视图的数据",topicData,timeLineData,selectListData,matrixViewData)
                 } 
             })
             .catch(err => console.error(err))

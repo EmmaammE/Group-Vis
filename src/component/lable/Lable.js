@@ -15,6 +15,7 @@ class Lable extends React.Component{
 
   render(){
     const data = this.props.data
+    // console.log("label",data,this.props)
     const rowOrColumn=this.props.rowOrColumn
     const xy = this.props.xy
     const trans = this.props.translate

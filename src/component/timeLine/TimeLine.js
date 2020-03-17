@@ -1,7 +1,7 @@
 import React from 'react';
 import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
-import {scaleFactory,circleData,lineData} from './util';
+import {scaleFactory,sortTimeLineData,circleData,lineData} from './util';
 import './timeLine.css'
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
@@ -121,15 +121,21 @@ class TimeLine extends React.Component{
   }
 
   render(){
+    // console.log("sort--before",this.props.timeLineView)
+    let timeLineData = sortTimeLineData(this.props.timeLineView)
+    // console.log("timeLineData",timeLineData)
+    
+    let tLabelData = timeLineData.tLabelData.map(v=>v.name)
+    let tCircleData = timeLineData.tCircleData
+    
     let margin={left:70,top:10,right:30,bottom:20}
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
     
-    const {yScale,xScale,colorMap,timeData,tScale} = scaleFactory(width,height,circleData,START_COLOR,END_COLOR)
+    const {yScale,xScale,colorMap,timeData,tScale} = scaleFactory(width,height,tLabelData,tCircleData,START_COLOR,END_COLOR)
     
-    let rLabels = circleData.map(v=>v.name)
-    let rownum = rLabels.length
-    let cData = circleData.map(v=>v.info)
+    let rownum = tLabelData.length
+    // let cData = circleData.map(v=>v.info)
     return (
       <div className="chart-wrapper">
         <div className="title">Timeline View</div>
@@ -141,13 +147,14 @@ class TimeLine extends React.Component{
             onMouseMove={this.handleBrushMouseMove}
             onMouseUp={this.handleBrushMouseUp}
           >
-            <g transform={`translate(20,${margin.top})`}>
+            {rownum==0?null
+            :<g transform={`translate(20,${margin.top})`}>
               {/* 绘制左边标签 */}
               <g className="timeLine_Lables" >
                 <Lable  
                   translate={`(0,0)`}  
                   rowOrColumn = {false} 
-                  data={rLabels}
+                  data={tLabelData}
                   rotate={0}
                   anchor={"start"}
                   highLable={this.state.highRowLabel}
@@ -157,21 +164,21 @@ class TimeLine extends React.Component{
               {/* 绘制圆点及水平向分割线 */}
               <g transform={`translate(${margin.left},0)`} className="timeLine_circle_rows">
                 {
-                  cData.map((v,i)=>(
+                  tCircleData.map((v,i)=>(
                     <g 
-                      key={`${v}_time_${i}`}
+                      key={`Circle_time_${i}`}
                       onMouseEnter={this.handleMouseenter}
                       onMouseOut = {this.handleMouseout}
                       >
                       <SeqCircles
-                        key={`${v}_time_${i}`}
+                        key={`SeqCircles_time_${i}`}
                         data={v}
                         rowOrColumn={true}
                         gxy = {yScale}
                         xy = {xScale}
                         index={i}
+                        opacity="0.5"
                         colorMap={colorMap}
-
                       >
                       </SeqCircles>
                       <line
@@ -269,6 +276,7 @@ class TimeLine extends React.Component{
                 </rect>
               </g>
             </g>
+             }
           </svg>
         </div>
       </div>

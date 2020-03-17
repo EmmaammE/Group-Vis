@@ -1,17 +1,34 @@
 .listItem-out{
+  display: block;
   margin-top:4px;
   margin-bottom: 5px;
-  margin-left:8%;
+  margin-left:4%;
   margin-right:4%;
   margin: black;
   position: relative;
-  width: 88%;
-  /* overflow: hidden; */
+  /* white-space: normal; */
+  width: 92%;
+  min-width: 0px;
+  
 }
 
+.listItem-out .listItem-line{
+  padding-left:5px;
+  width: 100%;
+  height:25px;
+  font-size: 8px;
+  overflow-x: scroll;
+  overflow-y:hidden;
+  white-space: nowrap;
+  /* transform: scale(0.9); */
+  
+  /* border-bottom: solid 1px; */
+  
+}
+
+/*
 .listItem-out .listItem-in{
   font-size: 6px;
-  /* transform: scale(0.9); */
   text-align: center;
   border-bottom: solid 1px;
   padding-bottom: 4px;
@@ -25,8 +42,6 @@
   text-indent: 0;
   margin-left:-2px;
   margin-right:-2px;
-  /* padding:0; */
-  /* margin:0; */
   font-size: 12px;
   transform: scale(0.75);
   white-space: nowrap;
@@ -51,6 +66,9 @@
 .listItem-out .listFifth{
   width:24% ;
 }
+*/
+
+
 .selectList-container{
   height:95%;
   overflow-y: scroll;
@@ -63,11 +81,31 @@
 }
 
 .selectList-container::-webkit-scrollbar {
+  height:4px;
   width: 4px;
   background-color: #F5F5F5;
 }
 
 .selectList-container::-webkit-scrollbar-thumb {
+  background-color: #d3d3d3;  
+}
+
+/* 横向的滚动条 */
+
+.selectList-scrollbar::-webkit-scrollbar-track {
+  border-bottom: 1px solid #d3d3d3;
+  border-left:0px;
+  border-top:0px;
+  border-right:0px;
+  background-color: #F5F5F5;
+}
+
+.selectList-scrollbar::-webkit-scrollbar {
+  height:4px;
+  background-color: #F5F5F5;
+}
+
+.selectList-scrollbar::-webkit-scrollbar-thumb {
   background-color: #d3d3d3;  
 }
 

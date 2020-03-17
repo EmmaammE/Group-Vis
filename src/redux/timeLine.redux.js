@@ -1,6 +1,7 @@
 const UPDATETIMELINE='UPDATETIMELINE'
 const initState={
-
+  tLabelData :[],
+  tCircleData:[]
 }
 
 export function timeLineView(state=initState,action){
