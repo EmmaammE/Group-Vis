@@ -243,8 +243,8 @@ class TimeLine extends React.Component{
                   width="40"
                   height="15" 
                   opacity="0.5"
-                  stroke="red"
-                  strokeWidth="1"
+                  // stroke="red"
+                  // strokeWidth="1"
                   fill="#ffffff">
                 </rect>
                 <text 
@@ -253,7 +253,7 @@ class TimeLine extends React.Component{
                   className="tooltip-rec"
                   y="10"
                   x="20"
-                  textAnchor="middle"
+                  textAnchor="start"
                   z-index = "10"
                   fontSize="0.65em"
                 >

@@ -73,6 +73,7 @@ class TopicView extends React.Component{
     this.handleClickSelectList = this.handleClickSelectList.bind(this)
     this.handleClickMatrixView = this.handleClickMatrixView.bind(this)
     this.handleClickTimeLine = this.handleClickTimeLine.bind(this)
+    this.handleClickMapView = this.handleClickMapView.bind(this)
   }
 
   componentDidMount(){
@@ -186,16 +187,12 @@ class TopicView extends React.Component{
   // apply按钮的事件，将数据刷选的结果应用到topicView
   handleApply(){
     topicData = brushFilter(topicData)
-    // console.log("filter,topicData",topicData)
     brushDatas=[];
     this.setState({
       tooltip:"",
       tipVisibility:"hidden",
       highRowLabel:-1
     })
-
-    let selectListData= filterSelectList(topicData.cData)
-    this.props.updateSelectList({selectListData})
   }
 
   // 右上角的四个按钮的 注册事件
@@ -206,13 +203,18 @@ class TopicView extends React.Component{
   }
   //  Matrix View视图
   handleClickMatrixView(){
-    let matrixViewData = filterMatrixView()
+    let matrixViewData = filterMatrixView(topicData.cData)
     this.props.updateMatrix(matrixViewData)
   }
   //  timeLine视图
   handleClickTimeLine(){
-    let timeLineData = filterTimeLine()
+    let timeLineData = filterTimeLine(topicData.cData)
     this.props.updateTimeLine(timeLineData)
+  }
+
+  // mapView视图按钮
+  handleClickMapView(){
+    console.log("点击了mapView")
   }
 
 
@@ -237,7 +239,11 @@ class TopicView extends React.Component{
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
    
-    
+    let handleClick = []
+    handleClick.push(this.handleClickMapView)
+    handleClick.push(this.handleClickTimeLine)
+    handleClick.push(this.handleClickMatrixView)
+    handleClick.push(this.handleClickSelectList)
     // console.log("smallize(fData)",relationData)
     let rHeight = fData.length==0 ? 0: (height/fData.length).toFixed(0)
     rHeight = rHeight>50?50:(rHeight<25?25:rHeight)
@@ -256,7 +262,7 @@ class TopicView extends React.Component{
             <MatrixButton id="topic-apply-button"  btnName="apply" cName="topic-apply-button"></MatrixButton>
           </div>
           <div className="btn-container">
-              {btn_urls.map((url,i)=>(<CircleBtn key={url+'-'+i} url={url} />))}
+              {btn_urls.map((url,i)=>(<CircleBtn onClick={handleClick[i]} key={url+'-'+i} url={url} />))}
           </div>   
         </div>
         <div  className="topicViewChart-container">
@@ -464,8 +470,7 @@ export default connect(mapStateToProps,mapDispatchToProps)(TopicView);
 
 function brushFilter(data){
   //被选中的人名
-  let cPersons = []
-  console.log("topicData",topicData)
+  // console.log("topicData",topicData)
 
   let {cData,labelData,relationData,fData} = data
   // 数据先减掉不用的、然后再挑出要用的，返回
@@ -478,7 +483,6 @@ function brushFilter(data){
     let bValue = b.addOrMinus?1:0;
     return aValue-bValue;
   })
-  // console.log("brushDatas",brushDatas);
   let x1,x2,y1,y2
   let newCirData=new Array(labelData.length)
   for(let i=0;i<newCirData.length;i++){
@@ -528,7 +532,6 @@ function brushFilter(data){
       }
     }
   }
-  // console.log("newCirData",newCirData)
   // 从大到小去统计应该删掉的topic
   let deleteLable = []
   for(let i=newCirData.length-1;i>=0;i--){
@@ -536,10 +539,8 @@ function brushFilter(data){
     if(newCirData[i].length==0){
       //记录要被删掉的label的序号
       deleteLable.push(i)
-      console.log("deleteLable",i)
     }
   }
-  // console.log("delete",deleteLable);
   // 删除空的label的相应的数据
   for(let i of deleteLable){
     newCirData.splice(i,1)

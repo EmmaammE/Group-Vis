@@ -78,11 +78,8 @@ class MatrixView extends React.Component{
   render(){
   
     let sortedData;
-    if(this.props.matrixView.matrixPerson.length>0){
-      sortedData = sortMatrixPerson(this.props.matrixView)
-    }else{
-      sortedData = this.props.matrixView
-    }
+    sortedData = sortMatrixPerson(this.props.matrixView)
+    console.log("sortedData--matrixView",sortedData)
     let matrixData = sortedData.matrixData
     let labels = sortedData.matrixPerson
     // xy是比例尺，因为是方型所以，横竖方向使用一个
@@ -144,8 +141,8 @@ class MatrixView extends React.Component{
                   width="40"
                   height="15" 
                   opacity="0.5"
-                  stroke="red"
-                  strokeWidth="1"
+                  // stroke="red"
+                  // strokeWidth="1"
                   fill="#ffffff">
                 </rect>
                 <text 
