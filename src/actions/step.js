@@ -154,6 +154,8 @@ export function fetchTopicData(param, KEY, step) {
                         let isPerson = personToIndex[v[0]]!=undefined?true:false
                         // 遍历每个topic中的多个描述
                         for(let vKey in topicSentence){
+                            //记录该描述中出现过的人名,
+                            let sentencePersons = []
                             // 描述中出现的人名的编号
                             let disPersons = []
                             let timeNumber = 0
@@ -161,6 +163,7 @@ export function fetchTopicData(param, KEY, step) {
                             let discript = vKey.split(" ").map(vk=>{
                                 //一个描述片段，判断其是节点、且是人名的节点
                                 if(nodeDict[vk]!=undefined&&nodeDict[vk].label=='Person'){
+                                    sentencePersons.push(temp[DICT][vk])
                                     // 之前没有统计过这个人
                                     if(personToIndex[vk] == undefined){
                                         matrixPerson.push({
@@ -213,16 +216,11 @@ export function fetchTopicData(param, KEY, step) {
                                 }
                             }
                             
-
-                            let distance = topicSentence[vKey]
-                            cData[tIndex].push({
-                                distance,
-                                discription
-                            })
                             //该描述中出现了两个以上人,统计MatrixView所需的数据
                             // console.log("dispersons***",disPersons)
                             if(disPersons.length>1){
                                 for(let i of disPersons){
+                                    
                                     for(let j of disPersons){
                                         // 采用i比j小的记录方式
                                         if(i<j){
@@ -235,6 +233,14 @@ export function fetchTopicData(param, KEY, step) {
                                     }
                                 }
                             }
+
+                            let distance = topicSentence[vKey]
+                            cData[tIndex].push({
+                                distance,
+                                discription,
+                                persons:[...sentencePersons],
+                                time
+                            })
 
                         }
 
@@ -258,7 +264,7 @@ export function fetchTopicData(param, KEY, step) {
                     dispatch(updateSelectList({selectListData}));
                     dispatch(updateMatrix(matrixViewData));
                     dispatch(updateTimeLine(timeLineData))
-                    console.log("step****右边视图的数据",topicData,timeLineData,selectListData,matrixViewData)
+                    console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData)
                 } 
             })
             .catch(err => console.error(err))

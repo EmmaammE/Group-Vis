@@ -1,11 +1,78 @@
 import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
+
 export function filterTimeLine(data){
+    let personIndex = 0;
+    let personToIndex = {}
+    let tLabelData = []
+    let tCircleData=[]
+    for(let v of data){
+        for (let k of v){
+            if(k.time>0&&k.persons.length>0){
+                for(let h of k.persons){
+
+                    if(personToIndex[h]==undefined){
+                        personToIndex[h]=personIndex
+                        tLabelData[personIndex] = {
+                            name:h,
+                            number:0,
+                            preIndex:personIndex
+                        }
+                        tCircleData[personIndex] = []
+                        personIndex++
+                    }
+                    tCircleData[personToIndex[h]].push({
+                        discription:k.discription,
+                        distance:k.time
+                    })
+
+                }
+            }
+        }
+    }
+    return {tLabelData,tCircleData}
     
 }
 export function filterMatrixView(data){
-
+    let personIndex = 0;
+    let personToIndex = {}
+    let matrixPerson = []
+    let matrixData = []
+    for(let v of data){
+        for(let k of v){
+            if(k.persons.length>1){
+                for(let p of k.persons){
+                    if(personToIndex[p]==undefined){
+                        personToIndex[p] = personIndex
+                        matrixPerson[personIndex] = {
+                            name:p,
+                            number:0,
+                            preIndex:personIndex,
+                            newIndex:0
+                        }
+                        matrixData[personIndex]=[]
+                        personIndex++
+                    }
+                    matrixPerson[personToIndex[p]].number++
+                }
+                for(let i=0;i<k.persons.length;i++){
+                    for(let j=0;j<k.persons.length;j++){
+                        let a = personToIndex[k.persons[i]]
+                        let b = personToIndex[k.persons[j]]
+                        if(a<b){
+                            if(matrixData[a][b]==undefined){
+                                matrixData[a][b]=1
+                            }else{
+                               matrixData[a][b]+=1 
+                            }
+                        }
+                    }         
+                }
+            }
+        }
+    }
+    return {matrixData,matrixPerson}
 }
 export function filterSelectList(cData){
     let data = []

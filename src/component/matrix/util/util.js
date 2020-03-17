@@ -24,6 +24,9 @@ export function scaleFactory(width,data,startColor,endColor){
 }
 
 export function sortMatrixPerson(matrixView){
+  if(matrixView.matrixPerson.length==0){
+    return matrixView
+  }
   let matrixData = matrixView.matrixData
   let matrixPerson = matrixView.matrixPerson
   // if()
