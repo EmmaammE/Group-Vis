@@ -3,6 +3,12 @@ import Dimension from "./Dimension";
 import { connect } from "react-redux";
 import { POSITIONS } from "../../util/name";
 
+const style = {
+    position: 'relative',
+    display: 'flex',
+    height: '100%',
+    flexDirection: 'column'
+}
 class DimensionContainer extends React.Component {
 
     // componentDidUpdate(prevProps) {
@@ -15,11 +21,11 @@ class DimensionContainer extends React.Component {
         let { positions } = this.props;
         
         return (
-            <div style={{position: 'relative'}}>
+            <div style={style}>
                 <p className="title">XXX-View</p>
                 {
                     positions &&
-                    <svg viewBox={"0 0 340 300"} width={"340px"} height={"300px"}>
+                    <svg viewBox={"0 0 340 300"} style={{flex: 1}} >
                         <Dimension 
                             _width={250}
                             _height={250}
