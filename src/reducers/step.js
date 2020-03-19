@@ -35,7 +35,8 @@ export function otherStep(state={}, action) {
         case "8_SET_STEP" :
         case "9_SET_STEP" :
         case "10_SET_STEP" :
-            return Object.assign(state, {[action.type[0]]: action.data})
+            console.log('update', action);
+            return Object.assign({}, state, {[action.type[0]]: action.data})
         default:
             return state;
     }
