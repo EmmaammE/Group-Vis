@@ -6,21 +6,21 @@ import { POSITIONS } from "../../util/name";
 class DimensionContainer extends React.Component {
     render() {
         let { positions } = this.props;
-        console.log(positions);
-        if (positions === undefined) {
-            return <div></div>;
-        }
-
+        
         return (
-            <div>
-                <svg viewBox={"0 0 340 300"} width={"340px"} height={"300px"}>
-                    <Dimension
-                        _width={250}
-                        _height={250}
-                        _margin="translate(40,25)"
-                        data={Object.values(this.props.positions)}
-                    />
+            <div style={{position: 'relative'}}>
+                <p className="title">XXX-View</p>
+                {
+                    positions &&
+                    <svg viewBox={"0 0 340 300"} width={"340px"} height={"300px"}>
+                        <Dimension
+                            _width={250}
+                            _height={250}
+                            _margin="translate(40,25)"
+                            data={positions}
+                        />
                 </svg>
+                }
             </div>
         );
     }

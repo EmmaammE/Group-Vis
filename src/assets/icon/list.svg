@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="43px" height="45px" viewBox="0 0 43 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53 (72520) - https://sketchapp.com -->
+    <title>Group 74</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-80.8%" y="-84.0%" width="261.5%" height="268.0%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.796078431   0 0 0 0 0.796078431   0 0 0 0 0.796078431  0 0 0 1 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <ellipse id="path-2" cx="13.0978712" cy="12.5" rx="12.6388889" ry="12.5"></ellipse>
+        <filter x="-53.4%" y="-54.0%" width="206.8%" height="208.0%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="4.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0771059783 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-1888.000000, -1791.000000)">
+            <g id="Group-74" transform="translate(1896.000000, 1800.000000)">
+                <g id="Group-20" filter="url(#filter-1)">
+                    <g id="Oval-6">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    </g>
+                </g>
+                <g id="liebiao" transform="translate(7.000000, 7.000000)" fill="#FE5266" fill-rule="nonzero">
+                    <path d="M4.09573339,1.71161132 L11.5496795,1.71161132 C11.8685513,1.71161132 12.1270516,1.45617116 12.1270516,1.14107421 C12.1270516,0.825977268 11.8685513,0.570537107 11.5496795,0.570537107 L4.09573339,0.570537107 C3.7768616,0.570537107 3.51836128,0.825977268 3.51836128,1.14107421 C3.51836128,1.45617116 3.7768616,1.71161132 4.09573339,1.71161132 Z M4.095571,6.26194785 L11.5221641,6.26194785 C11.8410359,6.26194785 12.0995362,6.00650769 12.0995362,5.69141074 C12.0995362,5.3763138 11.8410359,5.12087363 11.5221641,5.12087363 L4.095571,5.12087363 C3.77669921,5.12087363 3.5181989,5.3763138 3.5181989,5.69141074 C3.5181989,6.00650769 3.77669921,6.26194785 4.095571,6.26194785 Z M11.5496795,9.6964386 L4.09573339,9.6964386 C3.7768616,9.6964386 3.51836128,9.95187876 3.51836128,10.2669757 C3.51836128,10.5820727 3.7768616,10.8375128 4.09573339,10.8375128 L11.5496795,10.8375128 C11.8685513,10.8375128 12.1270516,10.5820727 12.1270516,10.2669757 C12.1270516,9.95187876 11.8685513,9.6964386 11.5496795,9.6964386 L11.5496795,9.6964386 Z M3.64153152e-14,1.14107421 C3.69281247e-14,1.7712721 0.516996595,2.28214843 1.15474422,2.28214843 C1.79249184,2.28214843 2.30948843,1.7712721 2.30948843,1.14107421 C2.30948843,0.510876327 1.79249184,-1.50990331e-14 1.15474422,-1.50990331e-14 C0.516996595,-1.50990331e-14 3.69281247e-14,0.510876327 3.64153152e-14,1.14107421 Z M3.64153152e-14,5.68458213 C3.69281247e-14,6.31478001 0.516996595,6.82565634 1.15474422,6.82565634 C1.79249184,6.82565634 2.30948843,6.31478001 2.30948843,5.68458213 C2.30948843,5.05438424 1.79249184,4.54350791 1.15474422,4.54350791 C0.516996595,4.54350791 3.69281247e-14,5.05438424 3.64153152e-14,5.68458213 Z M3.64153152e-14,10.2637486 C3.69281247e-14,10.8939465 0.516996595,11.4048228 1.15474422,11.4048228 C1.79249184,11.4048228 2.30948843,10.8939465 2.30948843,10.2637486 C2.30948843,9.63355072 1.79249184,9.12267439 1.15474422,9.12267439 C0.516996595,9.12267439 3.69281247e-14,9.63355072 3.64153152e-14,10.2637486 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

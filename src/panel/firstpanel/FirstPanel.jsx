@@ -234,7 +234,7 @@ class FirstPanel extends React.Component {
                                 let arr = [];
                                 for(let _key in res.data["Person"]) {
                                     i++; //因为现在数据太多了可能failed,暂时只查六个人
-                                    if(i < 6) {
+                                    if(i < 101) {
                                         param.append("person_ids[]", _key);
                                         arr.push(_key)
                                     }
@@ -394,7 +394,7 @@ class FirstPanel extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        group_: Object.values(state.group).map(d=>d['people'].length),
+        group_: Object.values(state.group).map(d=>Object.keys(d['people']).length),
         KEY: state.KEY
     }
 }

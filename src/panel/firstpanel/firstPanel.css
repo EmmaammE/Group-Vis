@@ -107,10 +107,6 @@
 }
 
 /* 切换panel */
-.first-panel .switch-panel {
-
-}
-
 .first-panel .panel-titles {
     display: flex;
     justify-content: space-evenly;
