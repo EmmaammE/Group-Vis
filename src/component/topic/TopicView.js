@@ -1,7 +1,8 @@
 import React from 'react';
 import Lable from '../lable/Lable'
+import * as d3 from 'd3';
 import SeqCircles from '../seqCircles/SeqCircles'
-import {scaleFactory,filterTimeLine,filterMatrixView,filterSelectList,deepClone,smallize} from './util';
+import {scaleFactory,filterTimeLine,filterMatrixView,filterSelectList,deepClone,smallize, reduceRelationData,filterRelationData} from './util';
 import Arrow from'./Arrow'
 import './topicView.css'
 import FlowerLabel from '../flowerLabel/FlowerLabel'
@@ -27,10 +28,11 @@ const btnData = [
       {btnName:"Minus"}
     ]
 let addOrMinus = true;
-let margin={left:10,top:50,right:40,bottom:30}
-const WIDTH = 370;
+let margin={left:10,top:30,right:50,bottom:10}
+const WIDTH = 380;
 const LEFTWIDTH = 90;
-const HEIGHT = 540;
+// const HEIGHT = 540;
+const SINGAL_HEIGHT = 50
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
 
@@ -42,6 +44,7 @@ let svgX ,svgY;
 let brushFlag=false;
 let topicData=-1;
 let yScaleReverse,xScaleReverse;
+let xScaleT,yScaleT
 
 class TopicView extends React.Component{
   constructor(props){
@@ -77,11 +80,72 @@ class TopicView extends React.Component{
   }
 
   componentDidMount(){
+    const that = this
     let container = this.$container.current
-    let currentX = container.getBoundingClientRect().x
-    let currentY = container.getBoundingClientRect().y
-    svgX=currentX
-    svgY=currentY
+    let svg =  d3.select(container)
+    svg.on("mousedown",function(){
+      console.log("svg-mousedown",d3.event,d3.event.offsetX,d3.event.offsetY)
+      startLoc = [d3.event.offsetX-8,d3.event.offsetY]
+      brushFlag=true
+      that.setState({
+        brushTransX:startLoc[0],
+        brushTransY:startLoc[1],
+        brushVisibility:"visible"
+      })
+    })
+    svg.on("mousemove",function(){
+      // console.log("svg-mousemove",d3.event.layerX,d3.event.layerY)
+      if(brushFlag){
+        let nowX = d3.event.offsetX-8
+        let nowY = d3.event.offsetY
+        brushWidth = nowX-startLoc[0]
+        brushHeight = nowY-startLoc[1]
+        if(brushWidth<0){
+          nowX = startLoc[0]+brushWidth
+          brushWidth=Math.abs(brushWidth)
+        }else{
+          nowX = startLoc[0]
+        }
+        if(brushHeight<0){
+          nowY = startLoc[1]+ brushHeight
+          brushHeight = Math.abs(brushHeight)
+        }else{
+          nowY = startLoc[1]
+        }
+        that.setState({
+          brushTransX:nowX,
+          brushTransY:nowY,
+          brushWidth:brushWidth,
+          brushHeight:brushHeight
+        })
+      }
+    })
+    svg.on("mouseup",function(){
+      console.log("svg-mouseup",d3.event.offsetX,d3.event.offsetY)
+      if(brushFlag){
+        startLoc[0] = that.state.brushTransX
+        startLoc[1] = that.state.brushTransY
+        brushFlag=false
+        let singleBrushData = {
+          addOrMinus:addOrMinus,
+          brushTransX:that.state.brushTransX,
+          brushTransY:that.state.brushTransY,
+          brushWidth:brushWidth,
+          brushHeight:brushHeight
+        }
+        rectFilter(topicData,singleBrushData)
+        brushDatas.push(singleBrushData)
+        that.setState({
+          brushVisibility:"hidden",
+          brushWidth:0,
+          brushHeight:0
+        })
+      }
+    })
+    // let currentX = container.getBoundingClientRect().x
+    // let currentY = container.getBoundingClientRect().y
+    // svgX=currentX
+    // svgY=currentY
   }
 
   // 下面两个函数为hover之后弹出tooltip的事件处理函数
@@ -90,8 +154,10 @@ class TopicView extends React.Component{
       let targetWidth = Number(v.target.getAttribute("width"));
       let infos = v.target.getAttribute("info").split("_")
       // console.log("info",infos);
-      let xChange = v.clientX- svgX
-      let yChange = v.clientY- svgY -targetWidth*3;
+      // let xChange = v.clientX- svgX
+      let xChange = xScaleT(Number(infos[0]))+margin.left
+      // let yChange = v.clientY- svgY -targetWidth*3;
+      let yChange = yScaleT(Number(infos[1]))+margin.top
       let displayInfo = `${Number(infos[1]).toFixed(4)}_${infos[2]}`
 
       this.setState({
@@ -113,6 +179,7 @@ class TopicView extends React.Component{
 
   // 下面三个函数为刷选框的监听函数
   handleBrushMouseDown(v){
+    // console.log("mouse-down-vvvv-vvv",v,v.offsetX,v.target,v.target.getBBox())
     startLoc = [v.clientX-svgX-8,v.clientY-svgY]
     brushFlag=true
     this.setState({
@@ -148,6 +215,7 @@ class TopicView extends React.Component{
     }
   }
   handleBrushMouseUp(v){
+    console.log("mouse-up-vvvv-vvv",v,v.target,v.target.getBBox())
     if(brushFlag){
       startLoc[0] = this.state.brushTransX
       startLoc[1] = this.state.brushTransY
@@ -217,7 +285,6 @@ class TopicView extends React.Component{
     console.log("点击了mapView")
   }
 
-
   render(){
     if(topicData==-1||topicData.labelData.length==0){
       topicData = deepClone(this.props.topicView)
@@ -225,16 +292,27 @@ class TopicView extends React.Component{
     }
     
     // 截取一部分数据
-    topicData.labelData= topicData.labelData.slice(0,8)
-    topicData.cData = topicData.cData.slice(0,8)
-    topicData.fData = topicData.fData.slice(0,8)
-    topicData.relationData = smallize(topicData.relationData,8)
-
+    // topicData.labelData= topicData.labelData.slice(0,8)
+    // topicData.cData = topicData.cData.slice(0,8)
+    // topicData.fData = topicData.fData.slice(0,8)
+    // topicData.relationData = smallize(topicData.relationData,8)
+    
+    smallize(topicData.relationData,8)
+    topicData.relationData = reduceRelationData(topicData.relationData,8)
     let rLabels = topicData.labelData
     let cData = topicData.cData
     let relationData = topicData.relationData;
     let fData = topicData.fData;
-    // console.log("缩减后的topicData",topicData)
+    let HEIGHT = cData.length*SINGAL_HEIGHT+margin.top+margin.bottom
+    // let xNum = 40
+    // let backR = Number(WIDTH/xNum).toFixed(0)
+    // let yNum = Number(HEIGHT/backR).toFixed(0)
+    // let backRects = new Array(xNum)
+    // for(let i=0;i<xNum;i++){
+    //   backRects[i] = new Array(yNum).fill(0)
+    // }
+
+    // console.log("backRects",backRects)
 
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -245,9 +323,11 @@ class TopicView extends React.Component{
     handleClick.push(this.handleClickMatrixView)
     handleClick.push(this.handleClickSelectList)
     // console.log("smallize(fData)",relationData)
-    let rHeight = fData.length==0 ? 0: (height/fData.length).toFixed(0)
-    rHeight = rHeight>50?50:(rHeight<25?25:rHeight)
+    // let rHeight = fData.length==0 ? 0: (height/fData.length).toFixed(0)
+    let rHeight = SINGAL_HEIGHT*0.8
     const {yScale,xScale,colorMap,value,vScale,yScaleR,xScaleR} = scaleFactory(width,height,cData,START_COLOR,END_COLOR)
+    xScaleT = xScale
+    yScaleT = yScale
     yScaleReverse = yScaleR
     xScaleReverse = xScaleR
     return (
@@ -270,7 +350,7 @@ class TopicView extends React.Component{
             left="0"
             top="0"
             width="12%" 
-            height="100%" 
+            height={HEIGHT} 
           >
             {/* 绘制坐标轴文字 */}
             <g className="topic_Lables" >
@@ -327,12 +407,38 @@ class TopicView extends React.Component{
           <svg 
             ref={this.$container} 
             width="88%" 
-            height="100%"  
+            height={HEIGHT}  
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-            onMouseDown={this.handleBrushMouseDown}
-            onMouseMove={this.handleBrushMouseMove}
-            onMouseUp={this.handleBrushMouseUp}
+            // onMouseDown={this.handleBrushMouseDown}
+            // onMouseMove={this.handleBrushMouseMove}
+            // onMouseUp={this.handleBrushMouseUp}
           >
+            {/* 绘制底部的定位背景元素 */}
+            {/* <g>
+              {
+                backRects.map((v,i)=>(
+                  <g 
+                    className="backRect_group"
+                    key={`back_rect_group_${i}`}
+                    transform={`translate(${backR*i},0)`}
+                  >
+                    {
+                      v.map((k,j)=>(
+                        <rect
+                          key={`back_rect_${i}_${j}`}
+                          className="topic_back_rect"
+                          transform={`translate(0,${backR*j})`}
+                          width={backR}
+                          height={backR}
+                          fill="red"
+                        >
+                        </rect>
+                      ))
+                    }
+                  </g>
+                ))
+              }
+            </g> */}
             {/* 绘制横向圆圈串 */}
             <g 
               transform={`translate(${margin.left},${margin.top})`} 
@@ -365,7 +471,7 @@ class TopicView extends React.Component{
                 <Arrow
                   yScale={yScale}
                   data={relationData}
-                  height={HEIGHT-margin.top-margin.bottom}
+                  height={SINGAL_HEIGHT*8}
                 >
                 </Arrow>
               }
@@ -380,8 +486,8 @@ class TopicView extends React.Component{
                   width="50"
                   height="15" 
                   opacity="0.5"
-                  stroke="red"
-                  strokeWidth="1"
+                  // stroke="red"
+                  // strokeWidth="1"
                   fill="#ffffff">
                 </rect>
                 <text 
@@ -390,7 +496,7 @@ class TopicView extends React.Component{
                   className="tooltip-rec"
                   y="10"
                   x="25"
-                  textAnchor="middle"
+                  textAnchor="start"
                   z-index = "10"
                   fontSize="0.65em"
                 >
@@ -430,7 +536,7 @@ class TopicView extends React.Component{
               </rect>
             </g>
           </svg>
-          <div className = "slider_space">
+          <div className = "slider_space" transform={`translate(${0},${margin.top})`}>
               {
                 fData.map((v,i)=>(
                     <VerticalSlider
@@ -468,6 +574,51 @@ const mapDispatchToProps = {
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicView);
 
+function rectFilter(data,singleBrush){
+  let {addOrMinus,brushTransX,brushTransY,brushWidth,brushHeight} = singleBrush
+  let cData=data.cData
+  let x1,x2,y1,y2
+  //将框选转换成相应横纵轴范围
+  x1 = xScaleReverse(brushTransX-margin.left)
+  x2 = xScaleReverse(brushTransX+brushWidth-margin.left) 
+  y1 = yScaleReverse(brushTransY-margin.top)
+  y1 = Math.ceil(y1)
+  y1=y1>0?y1:0;
+  y2 = yScaleReverse(brushTransY+brushHeight-margin.top)
+  y2 = Math.ceil(y2)
+
+  if(!addOrMinus){
+    // 减数据
+    for(let i=y1;i<y2;i++){
+      let j=0;
+      while(j<cData[i].length){
+        const dis = cData[i][j].distance
+        if(dis>x1&&dis<x2){
+          // 删掉该数据
+          cData[i][j].isChoose = false
+        }
+        j++
+      }
+    }
+  }else{
+    // 加数据
+    for(let i=y1;i<y2;i++){
+      let j=0;
+      if(cData[i].length==undefined){
+        continue
+      }
+      while(j<cData[i].length){
+        const dis = cData[i][j].distance
+        if(dis>x1&&dis<x2){
+          // 删掉该数据
+          cData[i][j].isChoose = true
+        }
+        j++
+      }
+    }
+  }
+}
+
 function brushFilter(data){
   //被选中的人名
   // console.log("topicData",topicData)
@@ -478,57 +629,17 @@ function brushFilter(data){
   //    锁定包含哪些横轴，然后去删掉范围内的数据
   //  加的时候
   //    当两个框有重合时需注意，加完这个框内的数据，要把原数据在框内的部分给删掉，这样就不会重复添加
-  brushDatas.sort((a,b)=>{
-    let aValue = a.addOrMinus?1:0;
-    let bValue = b.addOrMinus?1:0;
-    return aValue-bValue;
-  })
-  let x1,x2,y1,y2
+ 
+  // let x1,x2,y1,y2
   let newCirData=new Array(labelData.length)
   for(let i=0;i<newCirData.length;i++){
     newCirData[i]=[]
   }
-  for(let singleBrushData of brushDatas){
-    //将框选转换成相应横纵轴范围
-    x1 = xScaleReverse(singleBrushData.brushTransX-margin.left)
-    x2 = xScaleReverse(singleBrushData.brushTransX+singleBrushData.brushWidth-margin.left) 
-    y1 = yScaleReverse(singleBrushData.brushTransY-margin.top)
-    y1 = Math.ceil(y1)
-    y1=y1>0?y1:0;
-    y2 = yScaleReverse(singleBrushData.brushTransY+singleBrushData.brushHeight-margin.top)
-    y2 = Math.ceil(y2)
-
-    if(!singleBrushData.addOrMinus){
-      // 减数据
-      for(let i=y1;i<y2;i++){
-        let j=0;
-        while(j<cData[i].length){
-          const dis = cData[i][j].distance
-          if(dis>x1&&dis<x2){
-            // 删掉该数据
-            cData[i].splice(j,1)
-          }else{
-            j++
-          }
-        }
-      }
-    }else{
-      for(let i=y1;i<y2;i++){
-        let j=0;
-        if(cData[i].length==undefined){
-          continue
-        }
-        while(j<cData[i].length){
-          const dis = cData[i][j].distance
-          if(dis>x1&&dis<x2){
-            //将该数据加入新数据集中
-            newCirData[i].push(cData[i][j])
-            // 删掉该数据
-            cData[i].splice(j,1)
-          }else{
-            j++
-          }
-        }
+  for(let i=0;i<cData.length;i++){
+    for(let j=0;j<cData[i].length;j++){
+      if(cData[i][j].isChoose){
+        cData[i][j].isChoose =false
+        newCirData[i].push(cData[i][j])
       }
     }
   }

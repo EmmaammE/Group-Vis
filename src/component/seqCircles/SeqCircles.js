@@ -35,20 +35,19 @@ class SeqCircles extends React.Component{
     return (
       <g  transform={`translate(${rowOrColumn?0:gxy(index)},${rowOrColumn?gxy(index):0})`}>
         {data.map((v,i)=>(
-            <g  key={`text_${i}`}>
               <circle
+                key={`text_${i}`}
                 cx={rowOrColumn?xy(v.distance):0}
                 cy={rowOrColumn?0:xy(v.distance)}
                 onMouseOver={this.handleMouseover}
                 onMouseOut={this.handleMouseout}
                 info={`${index}_${v.distance}_${v.discription}`}
                 r = {r?r:5}
-                fill={"gray"}
+                fill={v.isChoose?"red":"gray"}
                 stroke="white"
                 opacity={opacity?opacity:1}
               >
               </circle>
-            </g>
             
           ))
         }

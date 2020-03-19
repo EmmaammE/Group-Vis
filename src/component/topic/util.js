@@ -102,22 +102,23 @@ export function deepClone(Obj) {
         return Obj;   
     }   
 }  
+export function reduceRelationData(data,n){
+    data.sort((a,b)=>{
+        return b[2]-a[2]
+    })
+    console.log("filterRealataion",data)
+    return data.slice(0,n)
+}
 export function smallize(data,n){
-    // let len = 
-    // console.log("smallise",data)
     let i = 0;
-    // console.log("")
-    let newData = []
     while(i<data.length){
-        if(data[i][0]>=n||data[i][1]>=n){
+        //两个主题跨度超过n，不便于显示
+        if(data[i][0]-data[i][1]>=n){
             data.splice(i,1)
         }else{
-            newData.push(data[i])
             i++
-
         }
     }
-    return newData
 }
 export function handleData(data1){
     let data = topicData

@@ -79,7 +79,7 @@ class MatrixView extends React.Component{
   
     let sortedData;
     sortedData = sortMatrixPerson(this.props.matrixView)
-    console.log("sortedData--matrixView",sortedData)
+    // console.log("sortedData--matrixView",sortedData)
     let matrixData = sortedData.matrixData
     let labels = sortedData.matrixPerson
     // xy是比例尺，因为是方型所以，横竖方向使用一个

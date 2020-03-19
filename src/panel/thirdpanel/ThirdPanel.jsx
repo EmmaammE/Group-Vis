@@ -22,11 +22,8 @@ class ThirdPanel extends React.Component {
       <div className="third-panel">
         <Header title = "Topicview"></Header>
         <div className="topicView-panel">
-          
-          <div className="chart-panel">
             <TopicView></TopicView>
             {/* <TopicViewChart></TopicViewChart> */}
-          </div>
         </div>
         <div className="xxxx-view">
           <DimensionContainer />

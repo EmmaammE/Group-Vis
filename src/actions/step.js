@@ -239,7 +239,8 @@ export function fetchTopicData(param, KEY, step) {
                                 distance,
                                 discription,
                                 persons:[...sentencePersons],
-                                time
+                                time,
+                                isChoose:false
                             })
 
                         }

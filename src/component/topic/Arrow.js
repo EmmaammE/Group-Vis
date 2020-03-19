@@ -63,7 +63,7 @@ class Arrow extends React.Component{
           {data.map((d)=>(
               <path
                 key={`${d}`}
-                d={`M 10 ${yScale(d[1])} Q ${80*(yScale(d[0])-yScale(d[1]))/height} ${(yScale(d[0])+yScale(d[1]))/2}  10 ${yScale(d[0])+3}`}
+                d={`M 10 ${yScale(d[1])} Q ${50*(yScale(d[0])-yScale(d[1]))/height+10} ${(yScale(d[0])+yScale(d[1]))/2}  10 ${yScale(d[0])+3}`}
                 fill="none"
                 stroke={`url(#${d[2]>0?'r':'b'}LinearColor)`}
                 strokeWidth="1"

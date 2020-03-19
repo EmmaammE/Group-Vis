@@ -6,3 +6,34 @@
   stroke-width: 3;
   stroke:yellow;
 }
+
+.timeLine-container{
+  position: relative;
+  /* border:solid 0.1px; */
+  width: 98%;
+  height: 75%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.timeLine_underLabel{
+  overflow: hidden;
+  position: relative;
+  width: 98%;
+  height: 10%;
+}
+
+/* 滚动条 */
+.timeLine-container::-webkit-scrollbar-track {
+  border: 1px solid #d3d3d3;
+  background-color: #F5F5F5;
+}
+
+.timeLine-container::-webkit-scrollbar {
+  height:4px;
+  width: 4px;
+  background-color: #F5F5F5;
+}
+
+.timeLine-container::-webkit-scrollbar-thumb {
+  background-color: #d3d3d3;  
+}
