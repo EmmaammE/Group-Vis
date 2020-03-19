@@ -33,7 +33,7 @@ class SecondPanel extends React.Component {
                 // {next:4, size:3, property:[7,9,10],selected:2, positions:[]},
                 // {next:-1, size:4, property:[7,7,5,10],selected:2, positions:[]},
             ],
-            hoverIndex:[1,1],
+            hoverIndex:[0,0,0],
             btnStatus: [false, false, false, false],
             // step: [第几层，第几个]
             step2index:{1:[0,0]},
@@ -107,10 +107,11 @@ class SecondPanel extends React.Component {
     }
 
     clickBtn(i) {
-        let { btnStatus, step } = this.state;
-        this.props.setOtherStep(7+i, 1);
+        let { btnStatus, hoverIndex } = this.state;
+        // step为被选中的❀的step
+        this.props.setOtherStep(7+i, hoverIndex[2]);
         btnStatus[i] = !btnStatus[i];
-
+ 
         this.setState({
             btnStatus
         })
@@ -123,9 +124,10 @@ class SecondPanel extends React.Component {
         grid[thisIndex[0]].selected = thisIndex[1];
         
         this.props.setOtherStep(6, step);
-        console.log(step);
+        // console.log(step);
         this.setState({
-            grid
+            grid,
+            hoverIndex: [...thisIndex, step]
         })
     }
 

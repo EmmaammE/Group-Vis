@@ -1,16 +1,16 @@
 import React from "react";
 
-import btn4 from '../../assets/icon/list.svg';
-import btn3 from '../../assets/icon/matrix.svg';
-import btn2 from '../../assets/icon/topic.svg';
-import btn1 from '../../assets/icon/map.svg';
-import btn4_ from '../../assets/list.svg';
-import btn3_ from '../../assets/matrix.svg';
-import btn2_ from '../../assets/topic.svg';
-import btn1_ from '../../assets/map.svg';
-
-const btn_urls = [btn1,btn2,btn3,btn4]
-const btn_urls_ = [btn1_,btn2_,btn3_,btn4_]
+import list from '../../assets/icon/list.svg';
+import matrix from '../../assets/icon/matrix.svg';
+import topic from '../../assets/icon/topic.svg';
+import map from '../../assets/icon/map.svg';
+import list_ from '../../assets/list.svg';
+import matrix_ from '../../assets/matrix.svg';
+import topic_ from '../../assets/topic.svg';
+import map_ from '../../assets/map.svg';
+// 对应 7\8\9\10图的顺序
+const btn_urls = [topic,matrix,map,list]
+const btn_urls_ = [topic_,matrix_,map_,list_]
 
 const btnStyle = {
   margin: '0 -5px',

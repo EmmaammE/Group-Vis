@@ -234,15 +234,15 @@ class FirstPanel extends React.Component {
                                 let arr = [];
                                 for(let _key in res.data["Person"]) {
                                     i++; //因为现在数据太多了可能failed,暂时只查六个人
-                                    if(i < 101) {
+                                    // if(i < 101) {
                                         param.append("person_ids[]", _key);
                                         arr.push(_key)
-                                    }
+                                    // }
                                 }
                                 fetchTopicData(param, KEY, 1);
                                 for(let i=6; i<=10; i++){
                                     setOtherStep(i)
-                                }
+                                } 
                             } else {
                                 alert('没有相关人');
                             }

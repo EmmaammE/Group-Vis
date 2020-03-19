@@ -23,7 +23,7 @@ class MapContainer extends React.Component {
             axios.post('/search_address_by_person_ids/', param)
                 .then(res => {
                     if(res.data.is_success) {
-                        console.log(res.data);
+                        // console.log(res.data);
                         let addr = {};
                         for(let _data in res.data["Addr"]) {
                             addr[people[_data]] = res.data["Addr"][_data];
@@ -55,6 +55,7 @@ class MapContainer extends React.Component {
 
 const mapStateToProps = state => {
     let step = state.otherStep["9"];
+    // console.log(step);
     return {
         people: state.group[step] && state.group[step]["people"]
     }
