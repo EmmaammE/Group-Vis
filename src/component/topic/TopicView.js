@@ -477,7 +477,7 @@ class TopicView extends React.Component{
             </g>
             {/* 绘制tooltip */}
             <g 
-                transform = {`translate(${this.state.changeX},${this.state.changeY})`}
+                transform = {`translate(${this.state.changeX},${this.state.changeY+5})`}
                 visibility={this.state.tipVisibility}
               >
                 <rect className="tooltip-g"
@@ -494,7 +494,7 @@ class TopicView extends React.Component{
                   className="tooltip-rec"
                   y="10"
                   x="25"
-                  textAnchor="start"
+                  textAnchor="middle"
                   z-index = "10"
                   fontSize="0.65em"
                 >

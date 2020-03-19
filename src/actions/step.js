@@ -210,7 +210,7 @@ export function fetchTopicData(param, KEY, step) {
                                     singleExist[vk]=1
                                     sentencePersons.push(people[vk])
                                 }  
-                                if(nodeDict[vk]!=undefined&&nodeDict[vk].label=="Year"&&temp[DICT][vk]!="0"){
+                                if(nodeDict[vk]!=undefined&&nodeDict[vk].label=="Year"&&Number(temp[DICT][vk])>1){
                                     timeNumber++
                                     time+=Number(temp[DICT][vk])
                                 }
