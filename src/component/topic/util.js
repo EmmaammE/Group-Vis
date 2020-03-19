@@ -106,7 +106,7 @@ export function reduceRelationData(data,n){
     data.sort((a,b)=>{
         return b[2]-a[2]
     })
-    console.log("filterRealataion",data)
+    // console.log("filterRealataion",data)
     return data.slice(0,n)
 }
 export function smallize(data,n){
