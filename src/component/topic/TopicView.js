@@ -147,13 +147,13 @@ class TopicView extends React.Component{
     if(v.target.localName=="circle"){
       let targetWidth = Number(v.target.getAttribute("width"));
       let infos = v.target.getAttribute("info").split("_")
-      // console.log("info",infos);
+      
       // let xChange = v.clientX- svgX
-      let xChange = xScaleT(Number(infos[0]))+margin.left
+      let xChange = xScaleT(Number(infos[1]))+margin.left
       // let yChange = v.clientY- svgY -targetWidth*3;
-      let yChange = yScaleT(Number(infos[1]))+margin.top
+      let yChange = yScaleT(Number(infos[0]))+margin.top
       let displayInfo = `${Number(infos[1]).toFixed(4)}_${infos[2]}`
-
+      console.log("info",infos);
       this.setState({
         tooltip:displayInfo,
         tipVisibility:"visible",
@@ -292,7 +292,7 @@ class TopicView extends React.Component{
     // topicData.relationData = smallize(topicData.relationData,8)
     
     smallize(topicData.relationData,8)
-    topicData.relationData = reduceRelationData(topicData.relationData,8)
+    topicData.relationData = reduceRelationData(topicData.relationData,15)
     let rLabels = topicData.labelData
     let cData = topicData.cData
     let relationData = topicData.relationData;
@@ -477,7 +477,7 @@ class TopicView extends React.Component{
             </g>
             {/* 绘制tooltip */}
             <g 
-                transform = {`translate(${this.state.changeX},${this.state.changeY})`}
+                transform = {`translate(${this.state.changeX},${this.state.changeY+5})`}
                 visibility={this.state.tipVisibility}
               >
                 <rect className="tooltip-g"
@@ -494,7 +494,7 @@ class TopicView extends React.Component{
                   className="tooltip-rec"
                   y="10"
                   x="25"
-                  textAnchor="start"
+                  textAnchor="middle"
                   z-index = "10"
                   fontSize="0.65em"
                 >
