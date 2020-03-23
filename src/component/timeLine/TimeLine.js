@@ -124,7 +124,6 @@ class TimeLine extends React.Component{
   render(){
     // console.log("sort--before",this.props.timeLineView)
     let timeLineData = sortTimeLineData(this.props.timeLineView)
-    console.log("timeLineData",timeLineData)
     
     let tLabelData = timeLineData.tLabelData.map(v=>v.name)
     let tCircleData = timeLineData.tCircleData

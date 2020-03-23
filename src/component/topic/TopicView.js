@@ -185,7 +185,7 @@ class TopicView extends React.Component{
         index:index,
         weight:temp
       }
-      this.props.updateTopicWeight(data)
+      // this.props.updateTopicWeight(data)
 
 
 
