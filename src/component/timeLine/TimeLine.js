@@ -124,7 +124,7 @@ class TimeLine extends React.Component{
   render(){
     // console.log("sort--before",this.props.timeLineView)
     let timeLineData = sortTimeLineData(this.props.timeLineView)
-    // console.log("timeLineData",timeLineData)
+    console.log("timeLineData",timeLineData)
     
     let tLabelData = timeLineData.tLabelData.map(v=>v.name)
     let tCircleData = timeLineData.tCircleData
@@ -135,9 +135,13 @@ class TimeLine extends React.Component{
     let gHeight = SINGAL_HEIGHT*tLabelData.length
     gHeight = gHeight>height?gHeight:height
     
-    const {yScale,xScale,colorMap,timeData,tScale} = scaleFactory(width,gHeight,tLabelData,tCircleData,START_COLOR,END_COLOR)
-    
     let rownum = tLabelData.length
+    const {yScale,xScale,colorMap,timeData,tScale} = scaleFactory(width,gHeight,tLabelData,tCircleData,START_COLOR,END_COLOR)
+    let flag = false
+    if(rownum==0||!yScale){
+      flag = true
+    }
+    
     // let cData = circleData.map(v=>v.info)
     return (
       <div className="chart-wrapper">
@@ -150,7 +154,7 @@ class TimeLine extends React.Component{
             onMouseMove={this.handleBrushMouseMove}
             onMouseUp={this.handleBrushMouseUp}
           >
-            {rownum==0?null
+            {flag?null
             :<g transform={`translate(20,${margin.top})`}>
                 {/* 绘制左边标签 */}
                 <g className="timeLine_Lables" >

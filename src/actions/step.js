@@ -1,12 +1,19 @@
 import axios from "axios";
 import { setDict } from "../actions/data";
-import { TOPICS, NODE_DICT,DICT, POSITIONS, TOPIC_SENTENCE_POSITION,TOPIC_PMI, LABEL_2_TOPIC } from "../util/name";
+import { TOPICS,EDGE_DICT, NODE_DICT,DICT, POSITIONS, TOPIC_SENTENCE_POSITION,TOPIC_PMI, SENTENCE_DICT,LABEL_2_TOPIC } from "../util/name";
 import {SET_STEP, SET_GROUP, ADD_STEP } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix } from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
 import {updateTimeLine} from '../redux/timeLine.redux'
-
+import {genderTemplate,
+        familyTemplate,
+        socialDisTemplate,
+        titleTemplate,
+        relationTemplate,
+        locationTemplate,
+        beOfficeTemplate
+        } from '../util/tools.js'
 export function setStep(step) {
     return {
         type: SET_STEP,
@@ -123,10 +130,16 @@ export function fetchTopicData(param, KEY, step) {
                     let cData =[]
                     let relationData=[] // topic相关性箭头数据
                     let fData = []  // 每个topic比重的数据
-                    
+                    // 描述类别字典
                     let topicSentences = res.data[TOPIC_SENTENCE_POSITION]
                     let topicPmis = res.data[TOPIC_PMI]
+                    // 
+                    let sentenceLabel = res.data[SENTENCE_DICT]
                     let nodeDict = res.data[NODE_DICT]
+                    let nodeEdgeDict = {
+                        ...res.data[NODE_DICT],
+                        ...res.data[EDGE_DICT]
+                    }
                     let topicPmiExist = {}
 
                     // people建立了从id到人名的映射，
@@ -187,6 +200,7 @@ export function fetchTopicData(param, KEY, step) {
                         cData[tIndex] = []
                         
                         fData.push({
+                            id:v[0],
                             label:topicName,
                             weight:0.5
                         })
@@ -202,6 +216,37 @@ export function fetchTopicData(param, KEY, step) {
                             let disPersons = []
                             let timeNumber = 0
                             let time=0
+                            let senDiscription
+                            switch (sentenceLabel[vKey]) {
+                                case "性别":
+                                    senDiscription = genderTemplate(vKey,temp[DICT],nodeEdgeDict )
+                                    break;
+                                case "亲属":
+                                    senDiscription = familyTemplate(vKey,temp[DICT],nodeEdgeDict )
+                                    break;
+                                case "社会区分":
+                                    senDiscription = socialDisTemplate(vKey,temp[DICT],nodeEdgeDict )
+                                    break;
+                                case "官职":
+                                    senDiscription = titleTemplate(vKey,temp[DICT],nodeEdgeDict )
+                                    break;
+                                case "关系":
+                                    senDiscription = relationTemplate(vKey,temp[DICT],nodeEdgeDict )
+                                    break;
+                                case "地点事件":
+                                    senDiscription = locationTemplate(vKey,temp[DICT],nodeEdgeDict )
+                                    break;
+                                case "入仕":
+                                    senDiscription = beOfficeTemplate(vKey,temp[DICT],nodeEdgeDict )
+                                    break;
+                                default:
+                                    senDiscription = vKey.split(" ").map(vk=>temp[DICT][vk]).join('-')
+                                    break;
+                            }
+
+                          
+                            
+
                             let discript = vKey.split(" ").map(vk=>{
                                 //一个描述的单一片段，如果其是我们要搜索的人的话
                                 if(personToIndex[vk]!=undefined&&singleExist[vk]==undefined){
@@ -218,7 +263,8 @@ export function fetchTopicData(param, KEY, step) {
                             })
 
                             // 统计select所需的数据
-                            let discription = discript.join("-")
+                            // let discription = discript.join("-")
+                            let discription = senDiscription
                             selectListData[selectListIndex++] = discription
 
                             // 统计出timeLineView的时间数据

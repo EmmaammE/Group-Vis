@@ -11,3 +11,5 @@ export const TOPIC_SENTENCE_POSITION = "topic_id2sentence_id2position1d";
 export const TOPIC_PMI = "topic_pmi"
 
 export const NODE_DICT = "node_dict"
+export const EDGE_DICT = "edge_dict"
+export const SENTENCE_DICT = "all_sentence_dict"

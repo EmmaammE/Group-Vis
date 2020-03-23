@@ -1,5 +1,3 @@
-
-
 const INITTOPICWEIGHT = 'INITOPICWEIGHT'
 const UPDATETOPICWEIGHT = 'UPDATETOPICWEIGHT'
 const initState={
@@ -10,8 +8,9 @@ export function topicWeight(state=initState,action){
     case INITTOPICWEIGHT:
       return action.data;
     case UPDATETOPICWEIGHT:
-      const topic = action.data.type
-      return {...state,topic:action.data.value}
+      const index = action.data.index
+      state[index].weight = action.data.weight
+      return {...state}
     default:
       return state;
   }
@@ -24,3 +23,5 @@ export function updateTopicWeight(data){
 export function initTopicWeight(data){
   return {type:UPDATETOPICWEIGHT,data}
 }
+
+// export function 

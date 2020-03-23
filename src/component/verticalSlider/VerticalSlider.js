@@ -10,7 +10,7 @@ class VerticalSlider extends React.Component{
 
     }
     this.$container = React.createRef();
-    this.handleInput = this.handleInput.bind(this)
+    // this.handleInput = this.handleInput.bind(this)
   }
 
   componentDidMount(){
@@ -35,27 +35,28 @@ class VerticalSlider extends React.Component{
     // });
   }
 
-  handleInput(e){
-      let temp = e.target.value
-      const topic = e.target.getAttribute("topic")
-      // console.log("eeee",e,e.target,topic,temp)
-      // 填充滑块有值部分，backgound-size转化为驼峰命名的方法
-      e.target.style.backgroundSize = `${temp*100}% 100%`
-      // temp =temp-5
-      // temp=temp>0?temp:0
-      // csLable.style.marginLeft = `${temp*100}%`
-      const data = {
-        topic:topic,
-        value:temp
-      }
-      this.props.updateTopicWeight(data)
-  }
+  // handleInput(e){
+  //     let temp = e.target.value
+  //     const topic = e.target.getAttribute("topic")
+  //     // console.log("eeee",e,e.target,topic,temp)
+  //     // 填充滑块有值部分，backgound-size转化为驼峰命名的方法
+  //     e.target.style.backgroundSize = `${temp*100}% 100%`
+  //     // temp =temp-5
+  //     // temp=temp>0?temp:0
+  //     // csLable.style.marginLeft = `${temp*100}%`
+  //     const data = {
+  //       topic:topic,
+  //       value:temp
+  //     }
+  //     this.props.updateTopicWeight(data)
+  // }
   render(){
-    let value = this.props.value;
+    let weight = this.props.weight;
     let top = this.props.top;
     let width = this.props.height
     let topic = this.props.topic
-
+    let handleSliderInput = this.props.handleSliderInput
+    let index = this.props.index
     // console.log("value,top,height",value,top,width)
     let style={
       top:top,
@@ -65,7 +66,7 @@ class VerticalSlider extends React.Component{
     return (
       <div className="columnSlider" style={style}>
         {/* <p ref={this.$lable} id = "cs_lable">0.5</p> */}
-        <input onInput={this.handleInput} ref={this.$container} topic={topic} orient="vertical" id="reachWeight" type="range" min="0" max="1" step = '0.1' defaultValue={value} className="slider"/> 
+        <input onInput={handleSliderInput} ref={this.$container} index={index} orient="vertical" id="reachWeight" type="range" min="0" max="1" step = '0.1' defaultValue={weight} className="slider"/> 
         {/* <p id="cs_theme">ColumnSlider</p> */}
       </div>
     )

@@ -16,6 +16,7 @@ import {initTopicWeight} from '../../redux/topicWeight.redux.js'
 import {updateTimeLine} from '../../redux/timeLine.redux.js'
 import {updateMatrix} from '../../redux/matrixView.redux.js'
 import {updateSelectList} from '../../redux/selectList.redux.js'
+import {updateTopicWeight} from '../../redux/topicWeight.redux.js'
 
 const btnData = [
       {btnName:"Add"},
@@ -60,10 +61,8 @@ class TopicView extends React.Component{
     this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
 
-    this.handleBrushMouseDown = this.handleBrushMouseDown.bind(this)
-    this.handleBrushMouseMove = this.handleBrushMouseMove.bind(this)
-    this.handleBrushMouseUp = this.handleBrushMouseUp.bind(this)
-
+    this.handleSliderInput = this.handleSliderInput.bind(this)
+    
     this.handleSwitch =this.handleSwitch.bind(this)
     this.handleApply =this.handleApply.bind(this)
 
@@ -71,6 +70,8 @@ class TopicView extends React.Component{
     this.handleClickMatrixView = this.handleClickMatrixView.bind(this)
     this.handleClickTimeLine = this.handleClickTimeLine.bind(this)
     this.handleClickMapView = this.handleClickMapView.bind(this)
+    
+
   }
 
   componentDidMount(){
@@ -78,7 +79,7 @@ class TopicView extends React.Component{
     let container = this.$container.current
     let svg =  d3.select(container)
     svg.on("mousedown",function(){
-      console.log("svg-mousedown",d3.event,d3.event.offsetX,d3.event.offsetY)
+      console.log("svg-mousedown",d3.event.offsetX,d3.event.offsetY,d3.event)
       startLoc = [d3.event.offsetX-8,d3.event.offsetY]
       brushFlag=true
       that.setState({
@@ -153,7 +154,7 @@ class TopicView extends React.Component{
       // let yChange = v.clientY- svgY -targetWidth*3;
       let yChange = yScaleT(Number(infos[0]))+margin.top
       let displayInfo = `${Number(infos[1]).toFixed(4)}_${infos[2]}`
-      console.log("info",infos);
+      // console.log("info",infos);
       this.setState({
         tooltip:displayInfo,
         tipVisibility:"visible",
@@ -171,63 +172,23 @@ class TopicView extends React.Component{
     })
   } 
 
-  // 下面三个函数为刷选框的监听函数
-  handleBrushMouseDown(v){
-    // console.log("mouse-down-vvvv-vvv",v,v.offsetX,v.target,v.target.getBBox())
-    startLoc = [v.clientX-svgX-8,v.clientY-svgY]
-    brushFlag=true
-    this.setState({
-      brushTransX:startLoc[0],
-      brushTransY:startLoc[1],
-      brushVisibility:"visible"
-    })
-  }
-  handleBrushMouseMove(v){
-    if(brushFlag){
-      let nowX = v.clientX-svgX-8
-      let nowY = v.clientY-svgY
-      brushWidth = nowX-startLoc[0]
-      brushHeight = nowY-startLoc[1]
-      if(brushWidth<0){
-        nowX = startLoc[0]+brushWidth
-        brushWidth=Math.abs(brushWidth)
-      }else{
-        nowX = startLoc[0]
+  // 此为滑块调节的响应函数
+  handleSliderInput(e){
+      console.log("target:-------",e.target)
+      let temp = e.target.value
+      let index = e.target.index
+      const topic = e.target.getAttribute("topic")
+      // console.log("eeee",e,e.target,topic,temp)
+      // 填充滑块有值部分，backgound-size转化为驼峰命名的方法
+      e.target.style.backgroundSize = `${temp*100}% 100%`
+      const data = {
+        index:index,
+        weight:temp
       }
-      if(brushHeight<0){
-        nowY = startLoc[1]+ brushHeight
-        brushHeight = Math.abs(brushHeight)
-      }else{
-        nowY = startLoc[1]
-      }
-      this.setState({
-        brushTransX:nowX,
-        brushTransY:nowY,
-        brushWidth:brushWidth,
-        brushHeight:brushHeight
-      })
-    }
-  }
-  handleBrushMouseUp(v){
-    console.log("mouse-up-vvvv-vvv",v,v.target,v.target.getBBox())
-    if(brushFlag){
-      startLoc[0] = this.state.brushTransX
-      startLoc[1] = this.state.brushTransY
-      brushFlag=false
-      let singleBrushData = {
-        addOrMinus:addOrMinus,
-        brushTransX:this.state.brushTransX,
-        brushTransY:this.state.brushTransY,
-        brushWidth:brushWidth,
-        brushHeight:brushHeight
-      }
-      brushDatas.push(singleBrushData)
-      this.setState({
-        brushVisibility:"hidden",
-        brushWidth:0,
-        brushHeight:0
-      })
-    }
+      this.props.updateTopicWeight(data)
+
+
+
   }
 
   // 此为切换加选还是减选框的按钮事件函数
@@ -271,6 +232,7 @@ class TopicView extends React.Component{
   //  timeLine视图
   handleClickTimeLine(){
     let timeLineData = filterTimeLine(topicData.cData)
+    // console.log("handleClickTimeLine",topicData.cData,timeLineData)
     this.props.updateTimeLine(timeLineData)
   }
 
@@ -282,14 +244,9 @@ class TopicView extends React.Component{
   render(){
     if(topicData==-1||topicData.labelData.length==0){
       topicData = deepClone(this.props.topicView)
+      // topicData.fData = this.props.topicWeight
       // console.log("this.props.topicView",this.props.topicView)
     }
-    
-    // 截取一部分数据
-    // topicData.labelData= topicData.labelData.slice(0,8)
-    // topicData.cData = topicData.cData.slice(0,8)
-    // topicData.fData = topicData.fData.slice(0,8)
-    // topicData.relationData = smallize(topicData.relationData,8)
     
     smallize(topicData.relationData,8)
     topicData.relationData = reduceRelationData(topicData.relationData,15)
@@ -298,15 +255,6 @@ class TopicView extends React.Component{
     let relationData = topicData.relationData;
     let fData = topicData.fData;
     let HEIGHT = cData.length*SINGAL_HEIGHT+margin.top+margin.bottom
-    // let xNum = 40
-    // let backR = Number(WIDTH/xNum).toFixed(0)
-    // let yNum = Number(HEIGHT/backR).toFixed(0)
-    // let backRects = new Array(xNum)
-    // for(let i=0;i<xNum;i++){
-    //   backRects[i] = new Array(yNum).fill(0)
-    // }
-
-    // console.log("backRects",backRects)
 
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -316,8 +264,6 @@ class TopicView extends React.Component{
     handleClick.push(this.handleClickTimeLine)
     handleClick.push(this.handleClickMatrixView)
     handleClick.push(this.handleClickSelectList)
-    // console.log("smallize(fData)",relationData)
-    // let rHeight = fData.length==0 ? 0: (height/fData.length).toFixed(0)
     let rHeight = SINGAL_HEIGHT*0.8
     const {yScale,xScale,colorMap,value,vScale,yScaleR,xScaleR} = scaleFactory(width,height,cData,START_COLOR,END_COLOR)
     xScaleT = xScale
@@ -333,7 +279,7 @@ class TopicView extends React.Component{
               <MatrixButton key={v.btnName} id={`${i}_btn`}  btnName={v.btnName} cName={this.state.btnClassName[i]}></MatrixButton>))}
           </div>
           <div className="topic-apply" onClick={this.handleApply}>
-            <MatrixButton id="topic-apply-button"  btnName="apply" cName="topic-apply-button"></MatrixButton>
+            <MatrixButton id="topic-apply-button"  btnName="filter" cName="topic-apply-button"></MatrixButton>
           </div>
           <div className="btn-container">
               {/* {btn_urls.map((url,i)=>(<CircleBtn onClick={handleClick[i]} key={url+'-'+i} url={url} />))} */}
@@ -407,36 +353,10 @@ class TopicView extends React.Component{
             width="88%" 
             height={HEIGHT}  
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-            // onMouseDown={this.handleBrushMouseDown}
+            
             // onMouseMove={this.handleBrushMouseMove}
-            // onMouseUp={this.handleBrushMouseUp}
+            
           >
-            {/* 绘制底部的定位背景元素 */}
-            {/* <g>
-              {
-                backRects.map((v,i)=>(
-                  <g 
-                    className="backRect_group"
-                    key={`back_rect_group_${i}`}
-                    transform={`translate(${backR*i},0)`}
-                  >
-                    {
-                      v.map((k,j)=>(
-                        <rect
-                          key={`back_rect_${i}_${j}`}
-                          className="topic_back_rect"
-                          transform={`translate(0,${backR*j})`}
-                          width={backR}
-                          height={backR}
-                          fill="red"
-                        >
-                        </rect>
-                      ))
-                    }
-                  </g>
-                ))
-              }
-            </g> */}
             {/* 绘制横向圆圈串 */}
             <g 
               transform={`translate(${margin.left},${margin.top})`} 
@@ -539,12 +459,13 @@ class TopicView extends React.Component{
                 fData.map((v,i)=>(
                     <VerticalSlider
                       key={`rect_${v}_${i}`}
-                      value={v.value}
+                      weight={v.weight}
                       topic = {v.topic}
                       index={i}
                       top={margin.top+yScale(i)-rHeight*0.5}
                       yScale={yScale}
                       height={rHeight}
+                      handleSliderInput = {this.handleSliderInput}
                     ></VerticalSlider>
                 ))
               }
@@ -567,7 +488,8 @@ const mapDispatchToProps = {
   initTopicWeight,
   updateSelectList,
   updateMatrix,
-  updateTimeLine
+  updateTimeLine,
+  updateTopicWeight
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicView);

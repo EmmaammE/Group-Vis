@@ -13,10 +13,11 @@ import { connect } from 'react-redux';
 
 // import 
 // 暂时的假数据
-const WIDTH = 270;
-const HEIGHT = 270;
+let WIDTH = 270;
+let HEIGHT = 270;
 const START_COLOR = 'red'
 const END_COLOR = 'rgb(3,93,195)' 
+const SINGAL_HEIGHT = 25
 
 class MatrixView extends React.Component{
   constructor(props){
@@ -84,10 +85,17 @@ class MatrixView extends React.Component{
     let labels = sortedData.matrixPerson
     // xy是比例尺，因为是方型所以，横竖方向使用一个
     // colorMap是颜色比例尺
-    let margin={left:40,top:50,right:10,bottom:20}
-    let width = WIDTH-margin.left-margin.right
+    let margin={left:40,top:40,right:10,bottom:10}
+    
+    HEIGHT = labels.length*SINGAL_HEIGHT+margin.top+margin.bottom
+    if(HEIGHT>WIDTH){
+      WIDTH = HEIGHT>WIDTH? HEIGHT : WIDTH
+    }
+    HEIGHT = WIDTH
     let height = HEIGHT -margin.top-margin.bottom
-    const {xy,colorMap}=scaleFactory(width,matrixData,START_COLOR,END_COLOR)
+    let width = WIDTH-margin.left-margin.right
+
+    const {xy,colorMap}=scaleFactory(height,matrixData,START_COLOR,END_COLOR)
     let tipX = margin.left+xy(this.state.highRowLabel)+this.state.targetWidth
     let tipY = margin.top+xy(this.state.highColLabel)
     tipX = tipX ? tipX:0;
@@ -100,66 +108,70 @@ class MatrixView extends React.Component{
         </div>
         
         <div  className="matrix-container">
-          <svg width="100%" height="100%" viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={this.$container}>
-            <g transform="translate(-10,0)">
-              {/* 绘制坐标轴 */}
-              <g className="matrix_lables" transform={`translate(${margin.left},${margin.top})`} >
-                <LeftLable 
-                  key={`lable_row`} 
-                  rowOrColumn = {true} 
-                  data={labels} 
-                  xy={xy}
-                  highLable={this.state.highRowLabel}
-                ></LeftLable>
-                <LeftLable 
-                  key={`lable_column`} 
-                  rowOrColumn = {false} 
-                  data={labels} 
-                  xy={xy}
-                  highLable={this.state.highColLabel}
-                ></LeftLable>
-              </g>
-              {/* 绘制矩形块 */}
-              <g 
-                className="matrix_columns" 
-                transform={`translate(${margin.left},${margin.top})`}
-                onMouseEnter={this.handleMouseenter}
-                onMouseOut = {this.handleMouseout}
-              >
-                {
-                  matrixData.map((v,i)=>(
-                    <MatrixColumn data={v} index={i} xy={xy} colorMap={colorMap} key={i}></MatrixColumn>
-                  ))
-                }
-              </g >
-              {/* 绘制tooltip */}
-              <g 
-                transform = {`translate(${tipX},${tipY})`}
-                visibility={this.state.visibility}
-              >
-                <rect className="tooltip-g"
-                  width="40"
-                  height="15" 
-                  opacity="0.5"
-                  // stroke="red"
-                  // strokeWidth="1"
-                  fill="#ffffff">
-                </rect>
-                <text 
-                  // transform = "scale(0.9)"
-                  fill="red"
-                  className="tooltip-rec"
-                  y="10"
-                  x="20"
-                  z-index = "10"
-                  textAnchor="middle"
-                  fontSize="0.65em"
+          {
+            labels.length==0?"No Concerned People":
+            <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={this.$container}>
+              <g transform="translate(0,0)">
+                {/* 绘制坐标轴 */}
+                <g className="matrix_lables" transform={`translate(${margin.left},${margin.top})`} >
+                  <LeftLable 
+                    key={`lable_row`} 
+                    rowOrColumn = {true} 
+                    data={labels} 
+                    xy={xy}
+                    highLable={this.state.highRowLabel}
+                  ></LeftLable>
+                  <LeftLable 
+                    key={`lable_column`} 
+                    rowOrColumn = {false} 
+                    data={labels} 
+                    xy={xy}
+                    highLable={this.state.highColLabel}
+                  ></LeftLable>
+                </g>
+                {/* 绘制矩形块 */}
+                <g 
+                  className="matrix_columns" 
+                  transform={`translate(${margin.left},${margin.top})`}
+                  onMouseEnter={this.handleMouseenter}
+                  onMouseOut = {this.handleMouseout}
                 >
-                  {`count:${this.state.tooltip}`}
-                </text>
+                  {
+                    matrixData.map((v,i)=>(
+                      <MatrixColumn data={v} index={i} xy={xy} colorMap={colorMap} key={i}></MatrixColumn>
+                    ))
+                  }
+                </g >
+                {/* 绘制tooltip */}
+                <g 
+                  transform = {`translate(${tipX},${tipY})`}
+                  visibility={this.state.visibility}
+                >
+                  <rect className="tooltip-g"
+                    width="40"
+                    height="15" 
+                    opacity="0.5"
+                    // stroke="red"
+                    // strokeWidth="1"
+                    fill="#ffffff">
+                  </rect>
+                  <text 
+                    // transform = "scale(0.9)"
+                    fill="red"
+                    className="tooltip-rec"
+                    y="10"
+                    x="20"
+                    z-index = "10"
+                    textAnchor="middle"
+                    fontSize="0.65em"
+                  >
+                    {`count:${this.state.tooltip}`}
+                  </text>
+                </g>
               </g>
-            </g>
-          </svg>
+            </svg>
+          }
+          
         </div>
         {/* <VerticalSlider></VerticalSlider> */}
       </div>

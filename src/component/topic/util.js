@@ -7,11 +7,11 @@ export function filterTimeLine(data){
     let personToIndex = {}
     let tLabelData = []
     let tCircleData=[]
+    let tTopicExist = []
     for(let v of data){
         for (let k of v){
             if(k.time>0&&k.persons.length>0){
                 for(let h of k.persons){
-
                     if(personToIndex[h]==undefined){
                         personToIndex[h]=personIndex
                         tLabelData[personIndex] = {
@@ -20,13 +20,17 @@ export function filterTimeLine(data){
                             preIndex:personIndex
                         }
                         tCircleData[personIndex] = []
+                        tTopicExist[personIndex] = {}
                         personIndex++
                     }
-                    tCircleData[personToIndex[h]].push({
-                        discription:k.discription,
-                        distance:k.time
-                    })
-
+                    if(!tTopicExist[personToIndex[h]][k.discription]){
+                        tTopicExist[k.discription]=1
+                        tLabelData[personToIndex[h]].number++
+                        tCircleData[personToIndex[h]].push({
+                            discription:k.discription,
+                            distance:k.time
+                        })
+                    }
                 }
             }
         }
