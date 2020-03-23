@@ -25,9 +25,7 @@ class ThirdPanel extends React.Component {
             <TopicView></TopicView>
             {/* <TopicViewChart></TopicViewChart> */}
         </div>
-        <div className="xxxx-view">
-          <DimensionContainer />
-        </div>
+        <DimensionContainer />
       </div>
     )
   }

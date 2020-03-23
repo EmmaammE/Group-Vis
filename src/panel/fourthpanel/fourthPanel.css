@@ -1,25 +1,20 @@
 .fourth-panel {
-  position: relative;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 24px);
   user-select: none;
 }
 .fourth-panel .timeLine-view{
-  position: relative;
-  height: 30%;
+  height: 33vh;
   border-bottom: solid  #ebebeb 5px;
 }
 .fourth-panel .lower-charts{
   display: flex;
-  position: relative;
-  height: 70%;
+  overflow: hidden;
+  height: 59vh;
 }
 .fourth-panel .left-charts{
-  position: relative;
-  flex :1;
   width: 50%;
-  height: 100%;
 }
 .fourth-panel .select-list{
   flex : 1;
@@ -29,14 +24,6 @@
 }
 
 .fourth-panel .matrix-view{
-  position: relative;
   height: 50%;
-  width: 100%;
   border-bottom: solid  #ebebeb 5px;
 }
-.fourth-panel .map-view{
-  height: 50%;
-  width: 100%;
-  overflow: hidden;
-}
-

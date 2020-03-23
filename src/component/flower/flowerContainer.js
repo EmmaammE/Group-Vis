@@ -1,6 +1,5 @@
 import React from 'react';
 import Flower from './flower';
-import Dimension from '../dimension/Dimension';
 
 const BOX_WIDTH = 250;
 
@@ -31,7 +30,7 @@ class FlowerContainer extends React.Component {
     }
 
     render() {
-        let {leaves,current,_showUpLine,_selected,_nextSelected,_hovered,titles,positions,_ratio} = this.props;
+        let {leaves,current,_showUpLine,_selected,_nextSelected,_hovered,titles,positions,_ratio,step} = this.props;
         let {endpoints} = this.state;
 
         return (
@@ -63,6 +62,8 @@ class FlowerContainer extends React.Component {
                             _selected = {_selected===i}
                             _hovered = {_hovered===i}
                             _ratio = {_ratio}
+                            positions = {positions[i]}
+                            cb = {() => this.props.cb(step[i])}
                         />
                     ))
                 }
@@ -75,13 +76,6 @@ class FlowerContainer extends React.Component {
                         /> 
                     ))
                 }
-                <Dimension
-                    _width={60}
-                    _height={60}
-                    _margin = {"translate(250,250)"}
-                    data={positions}
-                    type = {1}
-                />
             </svg>
         )
     }

@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
     "d3": "^5.15.0",
+    "d3-lasso": "skokenes/d3-lasso",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",

@@ -22,7 +22,7 @@ const genItem = (num,property) => ({
     positions: []
 })
 
-const GRID_ITEM_TEMPLATE = {next:-1, size:0, property:[], selected: 0};
+const GRID_ITEM_TEMPLATE = {next:-1, size:0, property:[], selected: -1};
 class SecondPanel extends React.Component {
     constructor(props) {
         super(props);
@@ -33,11 +33,14 @@ class SecondPanel extends React.Component {
                 // {next:4, size:3, property:[7,9,10],selected:2, positions:[]},
                 // {next:-1, size:4, property:[7,7,5,10],selected:2, positions:[]},
             ],
-            hoverIndex:[1,1],
-            btnStatus: [false, false, false, false]
+            hoverIndex:[0,0,0],
+            btnStatus: [false, false, false, false],
+            // step: [第几层，第几个]
+            step2index:{1:[0,0]},
         }
         this.toSelect = this.toSelect.bind(this);
         this.clickBtn = this.clickBtn.bind(this);
+        this.clickFlower = this.clickFlower.bind(this);
     }   
 
     // toSelect
@@ -59,25 +62,72 @@ class SecondPanel extends React.Component {
 
     componentDidUpdate(prevProps){
         if(prevProps.step !== this.props.step) {
-            let {grid} = this.state;
-            let {group} = this.props;
+            let {grid,step2index} = this.state;
+            let {group, step} = this.props;
             // TODO: ❀和grid序号的映射
-        
-            // 暂定8片花瓣
-            let titles = group[1][TOPICS].slice(0,8).map(arr => arr[1]);
-            grid.push({...GRID_ITEM_TEMPLATE, size:1, 
-                    property:[titles.length], titles: titles, positions: group[1][POSITIONS]})
-            this.setState({grid})
+            if(grid.length === 0) {
+                // 暂定8片花瓣
+                let titles = group[1][TOPICS].slice(0,8).map(arr => arr[1]);
+                grid.push({...GRID_ITEM_TEMPLATE, size:1, selected: 0, step: [1],
+                        property:[titles.length], titles: titles, positions: [group[1][POSITIONS]]})
+                this.setState({grid})
+            } else {
+                
+                
+                let titles = group[step][TOPICS].slice(0,8).map(arr => arr[1]);
+
+                // 是否要进入下一层
+                let lastIndex = step2index[step-1];
+                if(lastIndex[0] === 0 ||grid[lastIndex[0]].selected!==-1) {
+                    grid[lastIndex[0]].next = 1;
+                    // 开始下一级
+                    grid.push({...GRID_ITEM_TEMPLATE, size:1, step: [step],
+                        property:[titles.length], titles: titles, positions: [group[step][POSITIONS]]});
+                    // step2index[step] = [1,0];
+                    step2index[step] = [lastIndex[0]+1, 0];
+                } else {
+                    grid[lastIndex[0]-1].next += 1;
+                    // 还是在这一层, 是这一层的第newIndex个
+                    let newIndex = lastIndex[1] + 1;
+                    step2index[step] = [lastIndex[0], newIndex];
+
+                    let _grid = grid[lastIndex[0]];
+                    _grid.size += 1;
+                    _grid.property.push(titles.length);
+                    _grid.titles = titles;
+                    _grid.positions.push(group[step][POSITIONS]);
+                    _grid.step.push(step);
+                }
+                this.setState({
+                    grid,
+                    step2index
+                })
+            }
         }
     }
 
     clickBtn(i) {
-        let { btnStatus, step } = this.state;
-        this.props.setOtherStep(7+i, 1);
+        let { btnStatus, hoverIndex } = this.state;
+        // step为被选中的❀的step
+        this.props.setOtherStep(7+i, hoverIndex[2]);
         btnStatus[i] = !btnStatus[i];
-
+ 
         this.setState({
             btnStatus
+        })
+    }
+
+    clickFlower(step) {
+        let thisIndex = this.state.step2index[step];
+        // 设置这一层的selected
+        let {grid} = this.state;
+        grid[thisIndex[0]].selected = thisIndex[1];
+        
+        this.props.setOtherStep(6, step);
+        // console.log(step);
+        this.setState({
+            grid,
+            hoverIndex: [...thisIndex, step]
         })
     }
 
@@ -108,6 +158,8 @@ class SecondPanel extends React.Component {
                                     _nextSelected = {item.next!==-1 && grid[i+1].selected}
                                     titles = {item.titles}
                                     positions = {item.positions}
+                                    step = {item.step}
+                                    cb = {this.clickFlower}
                                     // _hovered = {i===hoverIndex[0]?hoverIndex[1]:-1}
                                 />
                             </div>
@@ -123,7 +175,9 @@ class SecondPanel extends React.Component {
 const mapStateToProps = (state) => {
     return {
         step: state.step,
-        group: state.group
+        group: state.group,
+        // _selectedPerson: state.matrixView && state.matrixView["matrixPerson"],
+        // _peopleFrom6: state.people
     }
 }
 

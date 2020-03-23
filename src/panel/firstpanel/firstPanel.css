@@ -188,3 +188,11 @@
     max-width: 100%;
     margin: 0 auto;
 }
+
+.first-panel .item-container span {
+    border-bottom: 1px solid #fff;
+}
+
+.first-panel .item-container .first-item {
+    margin-right: 10px;
+}

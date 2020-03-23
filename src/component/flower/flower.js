@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Dimension from '../dimension/Dimension';
 
 const BOX_WIDTH = 250;
 const RADIUS = 100;
@@ -16,7 +17,7 @@ const petalPath = [
 /**
  * @param {Number} number: 花瓣的数量
  */
-function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered, _ratio, color='#7483a9'}) {
+function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions, _hovered, _ratio, cb,color='#7483a9'}) {
     const [arr, setArr] = useState([]);
 
     useEffect(() => {
@@ -29,9 +30,11 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered,
 
     return (
         <g transform={"translate("+marginWidth+",0)"}>
-            { _showUpLine && <path d={`M${BOX_WIDTH} 0 v40}`} 
-               fill = "transparent" stroke = "black"
-               strokeWidth={_ratio} strokeDasharray = {_selected?'none':_ratio*8} />}
+            { _showUpLine && 
+                <path d={`M${BOX_WIDTH} 0 v40`} 
+                    fill = "transparent" stroke = "black"
+                    strokeWidth={_ratio} strokeDasharray = {_selected?'none':_ratio*8} />
+            }
             { _hovered === true &&
                 <g> 
                     <path d={`M ${BOX_WIDTH},${BOX_WIDTH-OFFSET} m0,-${OUTER_RADIUS} a ${OUTER_RADIUS},${OUTER_RADIUS},0,1,0,1,0 Z
@@ -61,7 +64,14 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, _hovered,
                     </g>
                 ))}
             </g>
-            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="white" />
+            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="white" onClick={cb} />
+            <Dimension
+                _width={60}
+                _height={60}
+                _margin = {"translate(250,250)"}
+                data={positions}
+                type = {1}
+            />
         </g>
     )
 }
