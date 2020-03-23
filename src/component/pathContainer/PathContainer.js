@@ -1,5 +1,6 @@
-import React, { useEffect , useRef} from 'react';
+import React, { useEffect , useState, useRef} from 'react';
 import * as d3 from 'd3';
+import './path.css'
 import { PathHistory } from './pathHistory';
 import {debounce} from '../../util/tools';
 
@@ -7,8 +8,16 @@ const RECT_WIDTH  = 35;
 const RECT_HEIGHT = 15;
 const RADIUS = 5;
 
-function Rect({label, x, y, index, _draglink, _onCreated,_onLink, cb_over, cb_link_down, cb_rect_down}) {
+function Rect({label, x, y, index, _draglink, _onCreated,_onLink, cb_over, cb_link_down, cb_rect_down, type=0}) {
     const $rect = useRef(null);
+    const $input = useRef(null);
+    const [active, setActive] = useState(false);
+    const [value, setValue] = useState("");
+    const [_label, setLabel] = useState(label);
+
+    useEffect(() => {
+        setLabel(label)
+    }, [label])
 
     useEffect(()=> {
         if(_draglink===false) {
@@ -27,19 +36,75 @@ function Rect({label, x, y, index, _draglink, _onCreated,_onLink, cb_over, cb_li
         }
     }, [x, y, index, _draglink, _onLink, cb_link_down])
 
-    return (
-        <g  ref = {$rect} onMouseOver={cb_over}>
-            <rect width={2*RECT_WIDTH} height={2*RECT_HEIGHT} fill="#fbfbfb" stroke="#aaaaaa" 
-                x = {x} y={y} rx={RADIUS} ry={RADIUS} cursor="pointer" /> 
-            <text x={x+RECT_WIDTH} y={y+RECT_HEIGHT} 
-                dominantBaseline="middle" textAnchor="middle" style={{pointerEvents:'none'}}
-            >{label}</text>
-        </g>
-    )
+    function toggleInput() {
+        // console.log('click');
+        if(active) {
+            setActive(false);
+            $input.current.blur();
+            if(value!=="") {
+                setLabel(value)
+                setValue("")
+            }
+        } else {
+            setActive(true);
+            $input.current.focus();
+            setValue("");
+        }
+    }
+
+    function onInput(event) {
+        // console.log(event.target);
+        setValue(event.target.value);
+
+    }
+
+    switch(type) {
+        case 1:
+            return (
+                <g  ref = {$rect}>
+                    <rect width={2*RECT_WIDTH} height={2*RECT_HEIGHT} fill="#fbfbfb" stroke="#aaaaaa" 
+                        x = {x} y={y} rx={RADIUS} ry={RADIUS} cursor="pointer" /> 
+                    <foreignObject x={x} y={y-2*RECT_HEIGHT} width="150px" height={4*RECT_HEIGHT}>
+                        <div className={active?"input-action":"input-block"}  onClick={toggleInput}>
+                            <input className="effect-22" type="text" placeholder=""
+                                ref={$input}
+                                value={value} onChange={onInput}/>
+                            <label>{_label}</label>
+                            <span className="focus-bg"></span>
+                        </div>
+                    </foreignObject>
+                </g>
+                
+            )
+        case 2:
+            return (
+                <g  ref = {$rect}>
+                    <rect width={2*RECT_WIDTH} height={2*RECT_HEIGHT} fill="#fbfbfb" stroke="#aaaaaa" 
+                        x = {x} y={y} rx={RADIUS} ry={RADIUS} cursor="pointer" /> 
+                    <text x={x+RECT_WIDTH} y={y+RECT_HEIGHT} 
+                        style={{fontSize:'14px', pointerEvents:'none'}}
+                        dominantBaseline="middle" textAnchor="middle"
+                    >{label}</text>
+                </g>
+                
+            )
+        default:
+            return (
+                <g onMouseOver={cb_over}>
+                    <rect width={2*RECT_WIDTH} height={2*RECT_HEIGHT} fill="#fbfbfb" stroke="#aaaaaa" 
+                        x = {x} y={y} rx={RADIUS} ry={RADIUS} cursor="pointer" /> 
+                    <text x={x+RECT_WIDTH} y={y+RECT_HEIGHT} 
+                        style={{fontSize:'14px', pointerEvents:'none'}}
+                        dominantBaseline="middle" textAnchor="middle"
+                    >{label}</text>
+                </g>
+            )
+    }
+  
 }
 
-let temp_rects = ['Who','Event','Traget','Who','Event','Traget','Who','Event','Traget']
-    .map((e,i)=>[(RECT_WIDTH*2+10)*i, RECT_HEIGHT, e]);
+let temp_rects = ['Who','Input']
+    .map((e,i)=>[(RECT_WIDTH*2+10)*i+10, RECT_HEIGHT, e]);
 
 class PathContainer extends React.Component {
 
@@ -58,34 +123,13 @@ class PathContainer extends React.Component {
             pathHistory: new PathHistory()
         }
         // 供拖拽的节点label种类
-        this.$temp_rects = React.createRef();
         this.$container = React.createRef();
 
-        this.handleScroll = this.handleScroll.bind(this);
         this.rectDownFactory = this.rectDownFactory.bind(this);
         this.cbDownFactory = this.cbDownFactory.bind(this);
         this._onClickRedo = this._onClickRedo.bind(this);
         this._onClickUndo = this._onClickUndo.bind(this);
         this._toggleLinkStatus = this._toggleLinkStatus.bind(this);
-    }
-    
-    handleScroll() {
-        let {_created, _x, rects} = this.state;
-        if(_created!==-1) {
-
-            if(rects.length > 0) {
-                let _p = rects.length - 1;
-                if( rects[_p][0]=== _x && rects[_p][1]===temp_rects[_created][1]) {
-                        console.log('clear');
-                    rects.pop();
-
-                    this.setState({
-                        _created: -1,
-                        rects
-                    })
-                }
-            }
-        }
     }
 
     componentDidMount() {
@@ -178,23 +222,29 @@ class PathContainer extends React.Component {
             })
         } else {
             let {x,y,index} = d3.event.subject;
-            let {source_x, source_y, target_x, target_y} = 
+            if(x === rects[flag][0]+RECT_WIDTH && y === rects[flag][1]+RECT_HEIGHT) {
+                this.setState({
+                    d: ''
+                })
+            } else {
+                let {source_x, source_y, target_x, target_y} = 
                 this.tool_createLink(x,y,rects[flag][0], rects[flag][1])
 
-            rects_links[index] = {key: "source", link: links.length};
-            rects_links[flag] = {key: "target", link: links.length}
+                rects_links[index] = {key: "source", link: links.length};
+                rects_links[flag] = {key: "target", link: links.length}
 
-            links = [...links, {
-                source: [source_x, source_y],
-                target: [target_x, target_y]
-            }]
-            pathHistory.add(rects,links,rects_links)
-           
-            this.setState({
-                d: '',
-                links,
-                pathHistory
-            })
+                links = [...links, {
+                    source: [source_x, source_y],
+                    target: [target_x, target_y]
+                }]
+                pathHistory.add(rects,links,rects_links)
+            
+                this.setState({
+                    d: '',
+                    links,
+                    pathHistory
+                })
+            }
         }
     }
 
@@ -249,9 +299,9 @@ class PathContainer extends React.Component {
                     rects.pop();
                 }
             } 
-            let this_x = temp_rects[index][0] - this.$temp_rects.current.scrollLeft+20;
+            let this_x = temp_rects[index][0];
             rects.push([
-                temp_rects[index][0] - this.$temp_rects.current.scrollLeft+20,
+                temp_rects[index][0],
                 temp_rects[index][1], 
                 temp_rects[index][2]
             ])
@@ -310,24 +360,7 @@ class PathContainer extends React.Component {
                         <rect cx="18" cy="0" width="260" height="420" />
                     </clipPath>
                                         
-                    <foreignObject x="20" y="0" width="18vw" height={RECT_HEIGHT*5}>
-                        <div xmlns="http://www.w3.org/1999/xhtml" 
-                            ref={this.$temp_rects}
-                            onScroll = {this.handleScroll}
-                            style={{width:"17vw",height:`${RECT_HEIGHT*3+10}`,overflowX:'scroll',overflowY:'hidden'}}>
-                            <svg height={RECT_HEIGHT*3+10} width={temp_rects.length*(RECT_WIDTH*2+10)}> 
-                                {
-                                    temp_rects.map((rect,i) => (
-                                        <Rect key={'temp-'+i} x={rect[0]} y={rect[1]} label={rect[2]} 
-                                            cb_over = {()=>this._handleRectOver(i)}
-                                        />
-                                    ))
-                                }
-                            </svg>
-                        </div>
-                    </foreignObject>
-
-                    <foreignObject x="160" y="75" width="100px" height="50px">
+                    <foreignObject x="180" y="20" width="100px" height="50px">
                         <div xmlns="http://www.w3.org/1999/xhtml" style={{display:'flex'}}>
                             <button onClick={this._onClickUndo}>Undo</button>
                             <button onClick={this._onClickRedo}>Redo</button>
@@ -335,11 +368,25 @@ class PathContainer extends React.Component {
                     </foreignObject>
                     <circle cx={270} cy={85} r={5} onClick={this._toggleLinkStatus}></circle>
 
+                    <g>
+                    {
+                        temp_rects.map((rect,i) => (
+                            <Rect key={'temp-'+i} x={rect[0]} y={rect[1]} label={rect[2]}
+                                type={0}
+                                cb_over = {()=>this._handleRectOver(i)}
+                            />
+                        ))
+                    }
+                    </g>
+
+
                     <g ref={this.$container} clipPath="url(#myClip)">
+                        
                         <g> {
                             rects.map((rect,i) => (
                                 <Rect key={'rect-'+i} x={rect[0]} y={rect[1]} 
                                     label={rect[2]} index = {i}
+                                    type={rect[2]==="Who"?2:1}
                                     _draglink = {_draglink}
                                     _onCreated = {this.rectFactory(i)}
                                     _onLink = {this.linkFactory(i)}
