@@ -6,6 +6,8 @@ import './timeLine.css'
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
 
+
+
 const WIDTH = 650;
 const HEIGHT = 200;
 const SINGAL_HEIGHT = 30

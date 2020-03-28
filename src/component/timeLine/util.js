@@ -14,6 +14,7 @@ export function scaleFactory(width,height,tLabelData,tCircleData,startColor,endC
       flag = true
     }
   })
+
   if(flag==false){
     return { yScale,xScale,colorMap,timeData,tScale}
   }

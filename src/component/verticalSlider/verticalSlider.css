@@ -1,13 +1,6 @@
-/* .axis text {
-  font: 12px sans-serif;
-  -webkit-transform: scale(0.7); 
+.svg_slider_thumb{
+  cursor: pointer;
 }
-
-.axis line, .axis path {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-} */
 
 .columnSlider{
   width: 60px;

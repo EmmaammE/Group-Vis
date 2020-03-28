@@ -14,42 +14,8 @@ class VerticalSlider extends React.Component{
   }
 
   componentDidMount(){
-    // console.log("this.props.input***",this.props)
-    // let slider = this.$container.current;
-    // // let csLable = this.$lable.current;
-    // slider.addEventListener('input', function(e) {
-
-    //   // csLable.innerHTML = e.target.value;
-    //   let temp = e.target.value
-    //   // 填充滑块有值部分，backgound-size转化为驼峰命名的方法
-    //   slider.style.backgroundSize = `${temp*100}% 100%`
-    //   const topic = slider.style.topic
-    //   // temp =temp-5
-    //   // temp=temp>0?temp:0
-    //   // csLable.style.marginLeft = `${temp*100}%`
-    //   const data = {
-    //     topic:topic,
-    //     value:temp
-    //   }
-    //   this.props.updateTopicWeight(data)
-    // });
   }
 
-  // handleInput(e){
-  //     let temp = e.target.value
-  //     const topic = e.target.getAttribute("topic")
-  //     // console.log("eeee",e,e.target,topic,temp)
-  //     // 填充滑块有值部分，backgound-size转化为驼峰命名的方法
-  //     e.target.style.backgroundSize = `${temp*100}% 100%`
-  //     // temp =temp-5
-  //     // temp=temp>0?temp:0
-  //     // csLable.style.marginLeft = `${temp*100}%`
-  //     const data = {
-  //       topic:topic,
-  //       value:temp
-  //     }
-  //     this.props.updateTopicWeight(data)
-  // }
   render(){
     let weight = this.props.weight;
     let top = this.props.top;

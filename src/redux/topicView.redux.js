@@ -1,10 +1,5 @@
 const UPDATETOPICVIEW = 'UPDATETOPICVIEW'
-const initState={
-  cData:[],
-  labelData:[],
-  fData:[],
-  relationData:[]
-}
+const initState=[]
 // topicView的数据管理reducer
 export function topicView(state=initState,action){
   switch(action.type){
