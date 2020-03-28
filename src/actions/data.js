@@ -1,8 +1,6 @@
 import {
     SET_PERSON,
-    SET_DYNASTY,
-    SET_GENDER,
-    SET_STATUS,
+    SET_COUNTED_LAYER,
     SET_YEAR,
     SET_TOPIC_RELATED_DATA,
     SET_DICT
@@ -16,24 +14,10 @@ export function setPerson(person) {
     };
 }
 
-export function setDyasty(dynasty) {
+export function setCountedLayer(layer) {
     return {
-        type: SET_DYNASTY,
-        data: dynasty
-    };
-}
-
-export function setGender(gender) {
-    return {
-        type: SET_GENDER,
-        data: gender
-    };
-}
-
-export function setStatus(status) {
-    return {
-        type: SET_STATUS,
-        data: status
+        type: SET_COUNTED_LAYER,
+        data: layer
     };
 }
 

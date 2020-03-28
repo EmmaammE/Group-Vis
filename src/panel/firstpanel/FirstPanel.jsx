@@ -27,16 +27,16 @@ class FirstPanel extends React.Component {
                 { key: 'Status', title: 'Status', options: [] },
                 { key: 'Gender', title: 'Gender', options: [] }
             ],
-            clickStatus: {},
+            clickStatus: {'Gender':[false,false]},
             timeRange: [0, 0],
             _tabPanel: 2,
+            cypher: ''
         }
 
         this.onInputChange = this.onInputChange.bind(this);
         this.onClickSearch = this.onClickSearch.bind(this);
         this.setStatus = this.setStatus.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
-        this.onClickDelete = this.onClickDelete.bind(this);
     }
 
     tool_handleItem(data, type) {
@@ -50,9 +50,6 @@ class FirstPanel extends React.Component {
             // "Person", 有相关人的relation
             let entries = Object.entries(data)
             arr = entries.map((e, i) => {
-                // if (e[1]["relation"]) {
-                //     console.log(i, e[1][KEY]);
-                // }
                 return [e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]]
             })
         } else {
@@ -141,42 +138,13 @@ class FirstPanel extends React.Component {
                 if (res.data.is_success) {
                     let { data } = res;
 
-                    let year = [];
-                    for (let _key in data["Year"]) {
-                        if (data["Year"][_key]["name"] !== "None"
-                            && data["Year"][_key]["name"] !== "0") {
-                            year.push(+data["Year"][_key]["name"]);
-                        }
-                    }
-                    year = year.sort((a, b) => a - b)
                     // SECTION update dataSet
-                    let { dataSet } = that.state, low, high;
-                    dataSet.forEach(dset => {
-                        if (dset.key === 'Year') {
-                            dset.options = [...year];
-                            if (year[0] === 0) {
-                                dset.options.shift();
-                            }
-                            low = dset.options[0];
-                            high = year.pop();
-                        } else {
-                            switch (dset.key) {
-                                case 'Person':
-                                    dset.options = that.tool_handleItem(data[dset.key], 2)
-                                    break;
-                                case 'Dynasty':
-                                case 'Gender':
-                                    dset.options = that.tool_handleItem(data[dset.key], 0)
-                                    break;
-                                default:
-                                    dset.options = that.tool_handleItem(data[dset.key], 1)
-                                    break;
-                            }
-                        }
-                        clickStatus[dset.key] = Array(dset.options.length).fill(false);
-                    })
+                    let { dataSet } = that.state;
+
+                    dataSet[1].options =  that.tool_handleItem(data["Person"], 2)
+                    clickStatus["Person"] = Array(dataSet[1].options.length).fill(false);
+
                     that.setState({
-                        timeRange: [low, high],
                         dataSet,
                         clickStatus
                     })
@@ -209,6 +177,13 @@ class FirstPanel extends React.Component {
         }
     }
 
+    // 传给pathContainer
+    modify_cypher = cypher => {
+        this.setState({
+            cypher
+        })
+    }
+
     onClickSearch() {
         let { KEY, fetchTopicData, setOtherStep } = this.props;
         let { timeRange, _tabPanel } = this.state;
@@ -227,9 +202,6 @@ class FirstPanel extends React.Component {
                 this.tool_appendParam(input[0], param);
                 fetchTopicData(param, KEY, 1);
 
-                // for(let i=6; i<=10; i++){
-                //     setOtherStep(i)
-                // }
                 setOtherStep(6)
                 setOtherStep(9)
                 break;
@@ -271,18 +243,26 @@ class FirstPanel extends React.Component {
                         console.error(err);
                     })
                 break;
+            case 2:
+                let {cypher} = this.state;
+                // fetch
+                param.append('draws', cypher)
+                axios.post('/search_person_ids_by_draws/', param)
+                    .then(res => {
+                        if(res.data.is_success) {
+                            let _p = new FormData();
+                            res.data["person_ids"].forEach(id => {
+                                _p.append('person_ids[]', id);
+                            })
+                            fetchTopicData(_p, KEY, 1);
+                            setOtherStep(6);
+                            setOtherStep(9);
+                        }
+                    })
+                break;
             default:
                 console.log(_tabPanel);
         }
-    }
-
-    onClickDelete() {
-        let { clickStatus, timeRange } = this.state;
-        timeRange = [0, 0];
-        for (let key in clickStatus) {
-            clickStatus[key] = Array(clickStatus[key].length).fill(false)
-        }
-        this.setState({ clickStatus, timeRange })
     }
 
     onSwitchPanel(index) {
@@ -292,7 +272,7 @@ class FirstPanel extends React.Component {
     }
 
     _renderRow({ index, key, style }) {
-        let { dataSet } = this.state;
+        let { dataSet, clickStatus } = this.state;
         let $item;
         if (index === 0) {
             $item = 'Selected all  ';
@@ -306,10 +286,10 @@ class FirstPanel extends React.Component {
             <div
                 key={key} value={dataSet[1].options[index][1]}
                 style={style}
-                className={"dropdown__list-item"}
+                className={"person-dropdown dropdown__list-item"}
                 onClick={() => this.setStatus('Person')(index)}
             >
-                <input type="checkbox" />
+                <input type="checkbox" defaultChecked={clickStatus["Person"][index]} />
                 {$item}
             </div>
         )
@@ -349,7 +329,7 @@ class FirstPanel extends React.Component {
                                 </span>
                             </div>
                             <List
-                                width={180}
+                                width={220}
                                 height={400}
                                 rowHeight={30}
                                 className="dropdown-list"
@@ -388,7 +368,7 @@ class FirstPanel extends React.Component {
                     <div className="switch-panel">
                         {$titles}
                         <div className="panel-content border">
-                            <PathContainer />
+                            <PathContainer modify_cypher={this.modify_cypher} />
                         </div>
                     </div>
                 )
@@ -412,7 +392,6 @@ class FirstPanel extends React.Component {
 
                     <div className="btn-container">
                         <button className="btn" onClick={this.onClickSearch}>Search</button>
-                        <button className="btn btn-delete" onClick={this.onClickDelete}>Delete</button>
                     </div>
                 </div>
             </div>

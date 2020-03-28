@@ -46,7 +46,7 @@
 .search-input {
     background: none;
     color: #5a6674;
-    width: 11vw;
+    width: 90%;
     height: 30px;
     border: none;
     appearance: none;
@@ -54,7 +54,7 @@
 }
 
 .input-outline {
-    width: 12vw;
+    width: 90%;
     display: flex;
     justify-content: flex-end;
     border-radius: 40px;
@@ -189,10 +189,30 @@
     margin: 0 auto;
 }
 
-.first-panel .item-container span {
-    border-bottom: 1px solid #fff;
+.first-panel .item-container {
+    width: 90%;
+}
+.first-panel .item-container span::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 40%;
+    height: 1px;
+    background: #444;
+    left: 50%;
+}
+
+.first-panel .item-container .first-item::after {
+    left: 10px;
+    width: 35%;
 }
 
 .first-panel .item-container .first-item {
-    margin-right: 10px;
+    margin-right: 30px;
+    display: inline-block;
+    width: 35%;
+}
+
+.ReactVirtualized__List {
+    overflow: auto!important;
 }

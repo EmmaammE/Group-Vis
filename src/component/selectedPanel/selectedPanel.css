@@ -97,7 +97,7 @@
 .dropdown__list-item {
   font-family: Lato, sans-serif;
   color: #444444;
-  padding: 0 25px;
+  padding: 0 10px;
   transition: background-color 0.1s linear, color 0.1s linear;
   list-style-position: inside;
   white-space: nowrap;
@@ -113,6 +113,26 @@
 .dropdown__list-item:first-child {
   margin-top: 2px;
 }
+
+.dropdown__list-item:first-child::after {
+  content: '';
+  width: 90%;
+  height: 1px;
+  position: absolute;
+  background: #444;
+  top: 90%;
+}
+
+.person-dropdown.dropdown__list-item:hover,
+.person-dropdown.dropdown__list-item:focus {
+  background-color: #eee;
+  color: #000;
+}
+
+.person-dropdown.dropdown__list-item {
+  background: #fff;
+}
+
 .dropdown__list-item:hover,
 .dropdown__list-item:focus {
   background-color: #a3a3a3;

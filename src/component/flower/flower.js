@@ -57,7 +57,7 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
                             <line x1="0" y1="102" x2="0" y2="114" stroke="black" />
                         </g>
                         <text x="-40" y="0" transform={`translate(${150*Math.cos((angle+90)*Math.PI/180)},${150*Math.sin((angle+90)*Math.PI/180)})`}>
-                            {titles && titles[index].map((text, i) =>
+                            {titles && titles[index] && titles[index].map((text, i) =>
                                 (<tspan x="-40" y={i*20} key={"t-"+i}>{text}</tspan>)
                             )}
                         </text>
@@ -68,7 +68,7 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
             <Dimension
                 _width={60}
                 _height={60}
-                _margin = {"translate(250,250)"}
+                _margin = {"translate(220,220)"}
                 data={positions}
                 type = {1}
             />

@@ -1,8 +1,6 @@
 import {
     SET_PERSON,
-    SET_DYNASTY,
-    SET_GENDER,
-    SET_STATUS,
+    SET_COUNTED_LAYER,
     SET_YEAR,
     SET_TOPIC_RELATED_DATA,
     SET_DICT
@@ -17,27 +15,9 @@ export function person(state = {}, action) {
     }
 }
 
-export function dyasty(state = {}, action) {
+export function countedLayer(state = {}, action) {
     switch (action.type) {
-        case SET_DYNASTY:
-            return action.data;
-        default:
-            return state;
-    }
-}
-
-export function gender(state = {}, action) {
-    switch (action.type) {
-        case SET_GENDER:
-            return action.data;
-        default:
-            return state;
-    }
-}
-
-export function status(state = {}, action) {
-    switch (action.type) {
-        case SET_STATUS:
+        case SET_COUNTED_LAYER:
             return action.data;
         default:
             return state;

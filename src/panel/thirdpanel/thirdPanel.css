@@ -3,11 +3,9 @@
   flex-direction: column;
   height: calc(100vh - 24px);
   user-select: none;
+  overflow: hidden;
 }
 
 .third-panel .topicView-panel{
-  height: 60%;
-}
-.third-panel .xxxxView-panel{
-  height: 35%;
+  height: 60vh;
 }
