@@ -470,7 +470,8 @@ class TopicTreeMap extends React.Component{
 const mapStateToProps = (state)=>({
   topicView:state.topicView,
   topicWeight:state.topicWeight,
-  historyData:state.historyData
+  historyData:state.historyData,
+  step: state.otherStep["6"]
 })
 
 
@@ -570,7 +571,7 @@ function adjustTreeMapUI(that){
       ...that.props.historyData
     }
     
-    that.props.updateTopicLrs(param)
+    that.props.updateTopicLrs(param, that.props.step)
 
   },1000)
 }

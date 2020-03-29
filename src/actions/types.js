@@ -14,3 +14,4 @@ export const SET_YEAR = "SET_YEAR";
 export const SET_TOPIC_RELATED_DATA = "SET_TOPIC_RELATED_DATA";
 // 设置dict(node_dict edge_dict)
 export const SET_DICT = "SET_DICT";
+export const UPDATE_GROUP_DATA_BY_STEP_KEY = "UPDATE_GROUP_DATA_BY_STEP_KEY";

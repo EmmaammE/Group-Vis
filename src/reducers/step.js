@@ -1,4 +1,4 @@
-import {SET_STEP, ADD_STEP, SET_GROUP } from "../actions/types";
+import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "../actions/types";
 
 export function step(state=0, action) {
     switch (action.type) {
@@ -18,8 +18,17 @@ export function step(state=0, action) {
 export function group(state={}, action) {
     switch(action.type) {
         case SET_GROUP:
-            console.log("reducers--group",Object.assign(state,action.data))
-            return Object.assign(state,action.data);
+            return Object.assign({}, state, action.data);
+        case UPDATE_GROUP_DATA_BY_STEP_KEY:
+            let {step, key, data} = action;
+            try {
+                state[step][key] = data;
+                return Object.assign({}, state);
+                
+            } catch {
+                console.error('step,key无效', state, key, step);
+                break;
+            }
         default:
             return state;
     }

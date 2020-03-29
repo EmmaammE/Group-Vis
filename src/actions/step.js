@@ -8,16 +8,14 @@ import { TOPIC_LRS,
         TOPIC_PMI, 
         SENTENCE_DICT,
         PERSON_SENTENCE,
-        TOPIC_SENTENCE_VECTOR,
-        LABEL_2_TOPIC } from "../util/name";
-import {SET_STEP, SET_GROUP, ADD_STEP } from "./types";
+        TOPIC_SENTENCE_VECTOR } from "../util/name";
+import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix } from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
 import {updateTimeLine} from '../redux/timeLine.redux'
 import {initTopicWeight} from '../redux/topicWeight.redux'
 import {addHistoryData} from '../redux/history.redux'
-import {rectTree} from '../component/topicTreeMap/util'
 import {genderTemplate,
         familyTemplate,
         socialDisTemplate,
@@ -26,6 +24,7 @@ import {genderTemplate,
         locationTemplate,
         beOfficeTemplate,
         } from '../util/tools.js'
+
 export function setStep(step) {
     return {
         type: SET_STEP,
@@ -47,10 +46,19 @@ export function setGroup(group) {
 }
 
 export function setOtherStep(key, step) {
-    console.log(key + "_SET_STEP");
+    // console.log(key + "_SET_STEP");
     return {
         type: key + "_SET_STEP",
         data: step
+    }
+}
+
+export function updateGroupdata(key, step, data) {
+    return {
+        type: UPDATE_GROUP_DATA_BY_STEP_KEY,
+        data: {
+            step, key, data
+        }
     }
 }
 
@@ -103,17 +111,16 @@ export function fetchTopicData(param, KEY, step) {
                     // topic的排序按照他们的描述数量来排序
                     temp[TOPICS].sort((a,b) => count[b[0]]-count[a[0]])
                     
-                     // 地图查询的人
-                     let people = {};
-                     let _positions = {};
-                     Object.keys(res.data[POSITIONS]).forEach(id => {
+                    // 地图查询的人
+                    let people = {};
+                    let _positions = {};
+                    Object.keys(res.data[POSITIONS]).forEach(id => {
                         //  _positions[temp[DICT][id]] = res.data[POSITIONS][id]
                         people[id] = temp[DICT][id]
                         res.data[POSITIONS][id].push(id);
-                        _positions[id] = res.data[POSITIONS][id];
-                     })
-
-                     console.log("people",people)
+                        _positions[temp[DICT][id]] = res.data[POSITIONS][id];
+                    })
+                    // console.log(people, _positions);
                     // 这里请求topic,设置相关的数据,分发不同的action
                     // 分发node和edge的映射
                     dispatch(setDict(temp[DICT]));
