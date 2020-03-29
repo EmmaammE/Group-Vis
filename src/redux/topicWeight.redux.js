@@ -31,6 +31,7 @@ export function updateTopicLrs(param){
   return dispatch=>{
     axios.post('/adjust_topic_weights/',param)
       .then(res=>{
+        console.log("res.data----",res.data)
         if(res.data.is_success){
           console.log("updateTopicLrs",res.data)
         }
