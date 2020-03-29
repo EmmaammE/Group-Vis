@@ -3,6 +3,7 @@ import * as d3 from 'd3'
 import { createBlob } from '../../util/path'
 import Axis from './Axis';
 import { connect } from 'react-redux';
+import { setCountedLayer } from '../../actions/data';
 
 // the width of svg is 2*BOX_WIDTH
 const BOX_WIDTH = 250;
@@ -90,7 +91,7 @@ class Blobs extends React.Component {
       // TODO get the number of the group
       // blobs: [1000, 500, 200], 
       // TODO 获得blob的层数
-      layers: 3,
+      layers: props.layer,
       // 默认在最高值
       handlePos: 190,
       xScale: d3.scaleBand()
@@ -101,7 +102,7 @@ class Blobs extends React.Component {
         .range([0, OUTER_RADIUS - INNER_RADIUS])
         .domain([0,80]),
       rangeScale: d3.scaleLinear()
-        .domain([0, 3])
+        .domain([0, props.layer])
         .range([160 + SLIDER_HEIGHT, 190])
         .clamp(true)
     }
@@ -114,9 +115,21 @@ class Blobs extends React.Component {
     this.initDrag();
   }
 
+  componentDidUpdate(prevProps) {
+    if(this.props.layer !== prevProps.layer) {
+      let {rangeScale} = this.state;
+      rangeScale.domain([0, this.props.layer]);
+      this.setState({
+        rangeScale,
+        layers: this.props.layer
+      })
+      this.initDrag();
+    }
+  }
+
   getRadius(r) {
     // TODO get the max value of the group
-    let scale = d3.scaleLinear().domain([200, 50000]).range([OUTER_RADIUS+40, BOX_WIDTH-15]);
+    let scale = d3.scaleLinear().domain([200, 2000]).range([OUTER_RADIUS+40, BOX_WIDTH-15]);
     return scale(r);
   }
 
@@ -159,11 +172,12 @@ class Blobs extends React.Component {
       .duration(500)
       .ease(d3.easeCubicInOut)
       .attr("y", cy)
-      .on("end",() =>
+      .on("end",() => {
+        this.props.setCountedLayer(index);
         this.setState({
           handlePos: cy
         })
-      );
+      });
   }
 
   pathCreator(d) {
@@ -178,8 +192,8 @@ class Blobs extends React.Component {
   }
 
   render() {
-    let { handlePos, rangeScale, layers } = this.state;
-    let { blobs } = this.props;
+    let { handlePos,rangeScale} = this.state;
+    let { blobs,layer } = this.props;
 
     return (
       <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
@@ -218,12 +232,12 @@ class Blobs extends React.Component {
               x="227.5" y={handlePos} rx="10" ry="10" width="44" height="18" fill="#fff" 
               style = {{cursor:'pointer'}}
             />
-            {/* <Axis
+            <Axis
               translate="translate(246, 9)"
               scale={rangeScale}
               orient="left"
-              ticks = {layers+1}
-            />  */}
+              ticks = {layer+1}
+            /> 
           </g>
         }
       </svg>
@@ -231,11 +245,16 @@ class Blobs extends React.Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-//   return {
-//     group_: state.group
-//   }
-//   connect(mapStateToProps)();
-// }
+const mapStateToProps = (state) => {
+  return {
+    layer: state.step
+  }
+}
 
-export default Blobs;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setCountedLayer: layer => dispatch(setCountedLayer(layer))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Blobs);

@@ -7,25 +7,26 @@
 }
 
 .effect-22 {
+  margin-left: 10px;
   padding: 7px 0;
   border: 0;
   position: relative;
   background: transparent;
   outline: none;
-  width: 70px;
+  width: 100px;
   top: 30px;
   font-size: 14px;
 }
 
-.input-action  {
+.input-action {
   pointer-events: pointer;
   z-index: 2;
 }
- 
+
 .effect-22 ~ .focus-bg {
   position: absolute;
   left: 0;
-  top: 30px;
+  top: 40%;
   width: 0;
   height: 50%;
   background-color: transparent;
@@ -47,7 +48,7 @@
   text-align: center;
   position: absolute;
   left: 0px;
-  width: 48%;
+  width: 63%;
   top: 30px;
   transition: 0.3s;
   z-index: -1;
