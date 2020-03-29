@@ -20,14 +20,18 @@ export function group(state={}, action) {
         case SET_GROUP:
             return Object.assign({}, state, action.data);
         case UPDATE_GROUP_DATA_BY_STEP_KEY:
-            let {step, key, data} = action;
+            let {step, key, data} = action.data;
             try {
+                if(JSON.stringify(state[step][key]) === JSON.stringify(data)) {
+                    console.info(data)
+                    console.info('更新前后数据一样')
+                }
                 state[step][key] = data;
                 return Object.assign({}, state);
                 
             } catch {
-                console.error('step,key无效', state, key, step);
-                break;
+                console.error('step,key无效', state, action);
+                return state;
             }
         default:
             return state;
