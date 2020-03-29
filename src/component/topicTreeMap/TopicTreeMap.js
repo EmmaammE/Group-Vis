@@ -471,7 +471,8 @@ const mapStateToProps = (state)=>({
   topicView:state.topicView,
   topicWeight:state.topicWeight,
   historyData:state.historyData,
-  step: state.otherStep["6"]
+  step: state.otherStep["6"],
+  KEY: state.KEY,
 })
 
 
@@ -571,7 +572,7 @@ function adjustTreeMapUI(that){
       ...that.props.historyData
     }
     
-    that.props.updateTopicLrs(param, that.props.step)
+    that.props.updateTopicLrs(param, that.props.KEY, that.props.step)
 
   },1000)
 }

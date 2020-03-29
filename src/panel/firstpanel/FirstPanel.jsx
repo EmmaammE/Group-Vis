@@ -49,8 +49,8 @@ class FirstPanel extends React.Component {
         if (type === 2) {
             // "Person", 有相关人的relation
             let entries = Object.entries(data)
-            arr = entries.map((e, i) => {
-                return [e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]]
+            entries.forEach((e, i) => {
+                arr.push([e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]])
             })
         } else {
 
@@ -287,9 +287,9 @@ class FirstPanel extends React.Component {
                 key={key} value={dataSet[1].options[index][1]}
                 style={style}
                 className={"person-dropdown dropdown__list-item"}
-                onClick={() => this.setStatus('Person')(index)}
+                onClick={() => this.setStatus('Person')(index, true)}
             >
-                <input type="checkbox" defaultChecked={clickStatus["Person"][index]} />
+                <input type="checkbox" checked={clickStatus["Person"][index]} />
                 {$item}
             </div>
         )
@@ -385,7 +385,8 @@ class FirstPanel extends React.Component {
                 </h1>
                 <div className="content-container">
                     <div className="title"><p>Overview</p></div>
-                    <Blobs blobs={Object.values(this.props.group_)} />
+                    {/* <Blobs blobs={Object.values(this.props.group_)} /> */}
+                    <Blobs />
                     <div className="title"><p>Control Panel</p></div>
 
                     {this._renderPanel()}
@@ -401,7 +402,7 @@ class FirstPanel extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        group_: Object.values(state.group).map(d => Object.keys(d['people']).length),
+        // group_: Object.values(state.group).map(d => Object.keys(d['people']).length),
         KEY: state.KEY
     }
 }

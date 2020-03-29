@@ -29,7 +29,7 @@ export function initTopicWeight(data){
 
 // 更新topic的weight值，将值发现后端，获取新的数据
 export function updateTopicLrs(param, KEY, step){
-  console.log("updateTopicLrs----",param)
+  console.log("updateTopicLrs----",KEY, step)
   return dispatch=>{
     axios.post('/adjust_topic_weights/',param)
       .then(res=>{
@@ -42,7 +42,6 @@ export function updateTopicLrs(param, KEY, step){
               res.data[POSITIONS][id].push(id);
               _positions[res.data["person_dict"][id][KEY]] = res.data[POSITIONS][id];
             })
-
           dispatch(updateGroupdata(POSITIONS, step, _positions))
         }
       })
