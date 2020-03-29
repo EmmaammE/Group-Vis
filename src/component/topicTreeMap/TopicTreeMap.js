@@ -35,7 +35,7 @@ const btnData = [
 let addOrMinus = true;
 
 let margin={left:15,top:15,right:15,bottom:15}
-const WIDTH = 460;
+const WIDTH = 650;
 const HEIGHT = 480
 
 const LEFTWIDTH = 90;
@@ -469,7 +469,8 @@ class TopicTreeMap extends React.Component{
 
 const mapStateToProps = (state)=>({
   topicView:state.topicView,
-  topicWeight:state.topicWeight
+  topicWeight:state.topicWeight,
+  historyData:state.historyData
 })
 
 
@@ -551,16 +552,24 @@ function adjustTreeMapUI(that){
   console.log("拖拽结束");
   dragFlag = false
   
+  
   sliderTimer = setTimeout(function(){
     console.log("topicWeight",that.props,topicData[sliderIndex])
     // 更新布局
+
     topicData[sliderIndex].weight = that.props.topicWeight[sliderIndex]
     that.props.updateTopicView(topicData)
     // 向后端发起请求，更新降维图
-    let param= {}
+    let topic_weights= {}
     topicData.forEach((v,i)=>{
-      param[v.id] = sliderWeights[i]
+      topic_weights[v.id] = sliderWeights[i]
     })
+    console.log("that.props.historyData",that.props.historyData)
+    let param ={
+      topic_weights,
+      ...that.props.historyData
+    }
+    
     that.props.updateTopicLrs(param)
 
   },1000)

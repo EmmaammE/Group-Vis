@@ -41,6 +41,7 @@ class DimensionContainer extends React.Component {
 
 const mapStateToProps = state => {
     let step = state.otherStep["6"];
+    console.log()
     return {
         positions: state.group[step] && state.group[step][POSITIONS]
     }

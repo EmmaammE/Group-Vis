@@ -14,3 +14,6 @@ export const NODE_DICT = "node_dict"
 export const EDGE_DICT = "edge_dict"
 export const SENTENCE_DICT = "all_sentence_dict"
 export const TOPIC_LRS = "topic_id2lrs"
+
+export const PERSON_SENTENCE = "person_id2sentence_ids"
+export const TOPIC_SENTENCE_VECTOR = "topic_id2sentence_ids2vector"

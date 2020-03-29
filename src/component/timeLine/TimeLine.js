@@ -8,7 +8,7 @@ import * as d3 from 'd3';
 
 
 
-const WIDTH = 650;
+const WIDTH = 380;
 const HEIGHT = 200;
 const SINGAL_HEIGHT = 30
 const START_COLOR = 'rgb(3,93,195)'

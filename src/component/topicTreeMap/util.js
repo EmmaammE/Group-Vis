@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
 
+
+
 export function rectLeafScale(data,width,height){
     let maxX = d3.max(data,function(layer){return layer.x})
     let minX = d3.min(data,function(layer){return layer.x})

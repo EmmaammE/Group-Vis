@@ -18,6 +18,7 @@ export function step(state=0, action) {
 export function group(state={}, action) {
     switch(action.type) {
         case SET_GROUP:
+            console.log("reducers--group",Object.assign(state,action.data))
             return Object.assign(state,action.data);
         default:
             return state;

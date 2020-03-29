@@ -34,6 +34,10 @@ export function updateTopicLrs(param){
         console.log("res.data----",res.data)
         if(res.data.is_success){
           console.log("updateTopicLrs",res.data)
+          // 返回数据：person_id2position2d
+          // 返回的数据：person_dict
+          
+
         }
       })
   }

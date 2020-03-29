@@ -1,12 +1,22 @@
 import axios from "axios";
 import { setDict } from "../actions/data";
-import { TOPIC_LRS,TOPICS,EDGE_DICT, NODE_DICT,DICT, POSITIONS, TOPIC_SENTENCE_POSITION,TOPIC_PMI, SENTENCE_DICT,LABEL_2_TOPIC } from "../util/name";
+import { TOPIC_LRS,
+        TOPICS,EDGE_DICT, 
+        NODE_DICT,DICT, 
+        POSITIONS, 
+        TOPIC_SENTENCE_POSITION,
+        TOPIC_PMI, 
+        SENTENCE_DICT,
+        PERSON_SENTENCE,
+        TOPIC_SENTENCE_VECTOR,
+        LABEL_2_TOPIC } from "../util/name";
 import {SET_STEP, SET_GROUP, ADD_STEP } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix } from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
 import {updateTimeLine} from '../redux/timeLine.redux'
 import {initTopicWeight} from '../redux/topicWeight.redux'
+import {addHistoryData} from '../redux/history.redux'
 import {rectTree} from '../component/topicTreeMap/util'
 import {genderTemplate,
         familyTemplate,
@@ -109,7 +119,6 @@ export function fetchTopicData(param, KEY, step) {
                     dispatch(setDict(temp[DICT]));
                     // 分发Overview更新需要的数据
                     dispatch(setGroup({[step]: {
-                        // person_id []
                         'people': people,
                         [TOPIC_SENTENCE_POSITION]: res.data[TOPIC_SENTENCE_POSITION],
                         [POSITIONS]: _positions,
@@ -124,7 +133,12 @@ export function fetchTopicData(param, KEY, step) {
                     //         "person_id2position2d": res.data["person_id2position2d"]
                     // 
 
-                    
+                    // 更新降维图所需要的辅助数据
+                    dispatch(addHistoryData({
+                        [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
+                        [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
+                    }))
+
                    console.log("返回的数据***",res.data,"temp***",temp);
                     
                    // 给topic建立从0到n的编号映射

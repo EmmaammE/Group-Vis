@@ -4,6 +4,7 @@ import {topicView} from '../redux/topicView.redux'
 import {timeLineView} from '../redux/timeLine.redux'
 import {matrixView} from '../redux/matrixView.redux'
 import {selectListView} from '../redux/selectList.redux.js'
+import {historyData} from '../redux/history.redux.js'
 import { step, group, otherStep } from './step';
 import { person, year, countedLayer, topicData, dict } from './data'
 
@@ -26,5 +27,6 @@ export default combineReducers({
     timeLineView,
     matrixView,
     selectListView,
-    dict
+    dict,
+    historyData
 });
