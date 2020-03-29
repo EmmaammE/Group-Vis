@@ -194,7 +194,7 @@ class Blobs extends React.Component {
   render() {
     let { handlePos,rangeScale} = this.state;
     let { blobs,layer } = this.props;
-
+    console.log("blob",blobs)
     return (
       <svg width="100%" height="100%" viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_WIDTH}`} xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -205,7 +205,7 @@ class Blobs extends React.Component {
         </defs>
         
         {
-          blobs.map((r, i) => (
+          blobs&&blobs.map((r, i) => (
             r !== undefined && <Blob key={`blob-${i}`} radius={this.getRadius(r)} />
           ))
         }
@@ -219,7 +219,7 @@ class Blobs extends React.Component {
         </g>
 
         {
-          blobs.length>0 && 
+          blobs && 
           <g className="slider" ref={this.$slider}>
             <rect
               className="slider-overlay"

@@ -244,7 +244,8 @@ class TopicTreeMap extends React.Component{
 
   // apply按钮的事件，将数据刷选的结果应用到topicView
   handleApply(){
-    topicData = brushFilter(topicData)
+    let that = this
+    topicData = brushFilter(topicData,that)
     brushDatas=[];
     this.setState({
       tooltip:"",
@@ -276,7 +277,6 @@ class TopicTreeMap extends React.Component{
   }
 
   handleSliderMouseDown(e){
-    console.log("slider-down",e.target)
     startY = e.clientY
     sliderIndex =  Number(e.target.getAttribute("index"))
     // sliderWeights
@@ -316,7 +316,6 @@ class TopicTreeMap extends React.Component{
     if(topicData.length==0){
       topicData = deepClone(this.props.topicView)
     }
-    // console.log("this.props",this.props)
     let rectTreeData = []
     
     if(topicData.length>0){
@@ -324,7 +323,7 @@ class TopicTreeMap extends React.Component{
       sliderWeights = this.props.topicWeight     
     }
     
-    // console.log("sliderweights",sliderWeights)
+    console.log("topicData",topicData,rectTreeData,sliderWeights)
     
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -523,9 +522,12 @@ function rectFilter(data,singleBrush){
   }
 }
 
-function brushFilter(data){
+function brushFilter(topicData,that){
   //被选中的人名
   // console.log("topicData",topicData)
+  let data = deepClone(topicData)
+  let tempSliderWeights = [...that.props.topicWeight]
+  console.log("data-----tempSliderWeigts",data,tempSliderWeights)
   let i = 0
   while(i<data.length){
     let j=0
@@ -539,24 +541,31 @@ function brushFilter(data){
       }
     }
     if(cData.length == 0){
+      // 该topic为空了，则去掉该数据
       data.splice(i,1)
+      // 删除掉对应的topic比重数据 
+      tempSliderWeights.splice(i,1)
     }else{
       i++
     }
   }
-  
+  if(data.length===0){
+    //选择数据为0，则需要将topicWeight的reducer恢复到初始状态
+    tempSliderWeights = that.props.topicView.map(v=>v.weight)
+  }
+
+  console.log("data,tempSliderWeigts",data,tempSliderWeights)
+  that.props.initTopicWeight(tempSliderWeights)
   // cData = newCirData
-  
   return data
 }
 
 function adjustTreeMapUI(that){
-  console.log("拖拽结束");
+  // console.log("拖拽结束");
   dragFlag = false
   
   
   sliderTimer = setTimeout(function(){
-    console.log("topicWeight",that.props,topicData[sliderIndex])
     // 更新布局
 
     topicData[sliderIndex].weight = that.props.topicWeight[sliderIndex]
@@ -566,7 +575,6 @@ function adjustTreeMapUI(that){
     topicData.forEach((v,i)=>{
       topic_weights[v.id] = sliderWeights[i]
     })
-    console.log("that.props.historyData",that.props.historyData)
     let param ={
       topic_weights,
       ...that.props.historyData
