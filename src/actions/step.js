@@ -204,6 +204,8 @@ export function fetchTopicData(param, KEY, step) {
                         personIndex++
                     }
 
+                    
+
                     // selectList 需要的数据
                     let selectListData = []
                     let selectListIndex = 0
@@ -227,6 +229,7 @@ export function fetchTopicData(param, KEY, step) {
                             weight:topicLrs[v[0]]
                         })
 
+                        let topicPerson = new Set()
                         // 下是关于该topic的所有描述是对象。
                         let topicSentence = topicSentences[v[0]]
                         let isPerson = personToIndex[v[0]]!=undefined?true:false
@@ -305,7 +308,6 @@ export function fetchTopicData(param, KEY, step) {
                                           
                                     }
                                 }
-                                
                             }
                             
                             //该描述中出现了两个以上人,统计MatrixView所需的数据
@@ -326,6 +328,10 @@ export function fetchTopicData(param, KEY, step) {
                                 }
                             }
 
+                            disPersons.forEach(v=>{
+                                topicPerson.add(v)
+                            })
+                            
                             let distance = topicSentence[vKey]
                             cData.push({
                                 distance,
@@ -351,9 +357,11 @@ export function fetchTopicData(param, KEY, step) {
                             })
                             pmiIndex++
                         }
-                        // 标记该topic相关性的数据已经统计过了
+                        //  标记该topic相关性的数据已经统计过了
                         topicData[tIndex].cData = cData
                         topicData[tIndex].relationData = topicRelation
+                        //  占比
+                        topicData[tIndex].personRatio = Number((topicPerson.size/personIndex).toFixed(6))
                         tIndex++
                     }
                     // let topicData = {labelData,cData,relationData,fData}

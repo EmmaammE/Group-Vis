@@ -5,7 +5,7 @@ import Header from '../../component/header/Header';
 // import TopicViewChart from '../../component/topicView/TopicViewChart'
 // import TopicView from '../../component/topic/TopicView'
 import TopicTreeMap from '../../component/topicTreeMap/TopicTreeMap.js'
-
+import SelectList from '../../component/selectList/SelectList'
 import DimensionContainer from '../../component/dimension/DimensionContainer';
 
 
@@ -24,13 +24,15 @@ class ThirdPanel extends React.Component {
         <Header title = "Topicview"></Header>
         <div className="topicView-panel">
             <TopicTreeMap></TopicTreeMap>
-            {/* <TopicView></TopicView> */}
-            {/* <TopicViewChart></TopicViewChart> */}
         </div>
-        <div className="xxxxView-panel">
-          <DimensionContainer />
+        <div className="third-footer-panel">
+          <div className = "third-footer">
+            <DimensionContainer />
+          </div>
+          <div className = "third-footer">
+            <SelectList />
+          </div>
         </div>
-        
       </div>
     )
   }

@@ -184,6 +184,7 @@ class TopicTreeMap extends React.Component{
   // 下面两个函数为hover之后弹出tooltip的事件处理函数
   handleMouseenter(v){
     if(v.target.localName=="image"){
+      console.log("image--enter")
       let infos = v.target.getAttribute("info").split("_")
       let targetData = topicData[Number(infos[0])].cData[Number(infos[1])]
       let xChange = targetData.tx
@@ -221,9 +222,6 @@ class TopicTreeMap extends React.Component{
         weight:temp
       }
       // this.props.updateTopicWeight(data)
-
-
-
   }
 
   // 此为切换加选还是减选框的按钮事件函数
@@ -277,6 +275,7 @@ class TopicTreeMap extends React.Component{
   }
 
   handleSliderMouseDown(e){
+    console.log("slider-mouse-down")
     startY = e.clientY
     sliderIndex =  Number(e.target.getAttribute("index"))
     // sliderWeights
@@ -323,7 +322,7 @@ class TopicTreeMap extends React.Component{
       sliderWeights = this.props.topicWeight     
     }
     
-    console.log("topicData",topicData,rectTreeData,sliderWeights)
+    // console.log("topicData",topicData,rectTreeData,sliderWeights)
     
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -366,7 +365,7 @@ class TopicTreeMap extends React.Component{
               rectTreeData.length==0?null:
               rectTreeData.map((v,i)=>(
                 <g 
-                  onMouseEnter={this.handleMouseenter}
+                  onMouseOver={this.handleMouseenter}
                   onMouseOut = {this.handleMouseout}
                   key={`rectLeaf-${i}`} 
                   transform={`translate(${v.x0},${v.y0})`}
@@ -527,7 +526,6 @@ function brushFilter(topicData,that){
   // console.log("topicData",topicData)
   let data = deepClone(topicData)
   let tempSliderWeights = [...that.props.topicWeight]
-  console.log("data-----tempSliderWeigts",data,tempSliderWeights)
   let i = 0
   while(i<data.length){
     let j=0
@@ -554,7 +552,6 @@ function brushFilter(topicData,that){
     tempSliderWeights = that.props.topicView.map(v=>v.weight)
   }
 
-  console.log("data,tempSliderWeigts",data,tempSliderWeights)
   that.props.initTopicWeight(tempSliderWeights)
   // cData = newCirData
   return data

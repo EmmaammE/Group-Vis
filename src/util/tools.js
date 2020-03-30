@@ -10,6 +10,13 @@ export function debounce(func, wait) {
     }
 }
 
+// 根据一系列布尔值创建掩码
+export function createMask () {
+    var nMask = 0, nFlag = 0, nLen = arguments.length > 32 ? 32 : arguments.length;
+    for (nFlag; nFlag < nLen; nMask |= arguments[nFlag] << nFlag++);
+    return nMask;
+}
+
 export function genderTemplate(vKey,tempDict,nodeDict){
     let words = vKey.split(" ").map(vk=>tempDict[vk])
     if(words.length>3){

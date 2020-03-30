@@ -34,6 +34,8 @@ class RectLeaf extends React.Component{
     const data = this.props.data
     const width = this.props.width-margin.left-margin.right
     const height = this.props.height-margin.top-margin.bottom
+    const pHeight = Number((data.personRatio*this.props.height).toFixed(0))
+    const transHeight = this.props.height-pHeight
     const {xScale,yScale} = rectLeafScale(data.cData,width,height)
     // console.log("xScale,yScale",xScale,yScale)
     const parentPos= this.props.parentPos
@@ -49,6 +51,14 @@ class RectLeaf extends React.Component{
         strokeWidth = "0.5"
         width = {this.props.width}
         height= {this.props.height}  
+      >
+      </rect>
+      <rect
+        transform={`translate(0,${transHeight})`}
+        fill="red"
+        opacity="0.02"
+        width = {this.props.width}
+        height= {pHeight}  
       >
       </rect>
       <text  
@@ -80,7 +90,7 @@ class RectLeaf extends React.Component{
                 ry={rWidth/2+1}
                 width={rWidth+2} 
                 height = {rWidth+2} 
-                fill="white"
+                fill="none"
                 stroke={v.isChoose?"red":null}
                 strokeWidth = "0.5"
               >
