@@ -19,48 +19,7 @@ const getScales = (width, height, data) => {
     return { xScale, yScale, dataArr }
 }
 
-// function DimensionProvider({ _width, _height, _margin, data = {}, type = 0 }) {
-//     const scales = useMemo(() => getScales(_width, _height, data), [_width, _height, data]);
-//     const [tooltip, setTooltip] = useState({ x: 0, y: 0, title: '' });
-//     const [show, setShow] = useState(false);
-
-    
-//     function showTooltip(i, e) {
-//         setShow(true)
-//         setTooltip({
-//             x: e.nativeEvent.offsetX + 65 * type,
-//             y: e.nativeEvent.offsetY + 65 * type,
-//             title: scales.dataArr[i][0]
-//         })
-//     }
-
-    
-
-//     return (
-//         <>
-//             {show && <Tooltip {...tooltip} />}
-//             <rect width='20' height="10" fill="#f00" onClick={setPeople} />
-//             <g transform={_margin}}>
-//                 {
-//                     scales.dataArr.map((d, i) => {
-//                         return (
-//                             <circle key={'cir-' + i} r={3} fill="#efeff6" stroke="#bec0db" strokeWidth="1px"
-//                                 // opacity = {0.4}
-//                                 data={d[1][2]}
-//                                 style={{ cursor: 'pointer' }}
-//                                 onMouseOver={(e) => showTooltip(i, e)}
-//                                 onMouseOut={toggleShow}
-//                                 cx={scales.xScale(d[1][0])} cy={scales.yScale(d[1][1])} />
-//                         )
-//                     })
-//                 }
-//                 <rect ref={$rect} width="340" height="300" style={{ opacity: 0 }} />
-//             </g>
-//         </>
-//     )
-// }
-
-function Dimension({ _width, _height, _margin, data = {}, type = 0 }) {
+function Dimension({ _width, _height, _margin, selectedPeople = [], data = {}, type = 0 }) {
     const $container = useRef(null);
     const $rect = useRef(null);
     const scales = useMemo(() => getScales(_width, _height, data), [_width, _height, data]);
@@ -145,6 +104,7 @@ function Dimension({ _width, _height, _margin, data = {}, type = 0 }) {
         _setSelected({});
         _setPeople([]);
     }, [data])
+
     function toFetch() {
         let param = new FormData();
         let _temp  = {};
@@ -166,12 +126,13 @@ function Dimension({ _width, _height, _margin, data = {}, type = 0 }) {
             <g transform={_margin} ref={$container}>
                 {
                     scales.dataArr.map((d, i) => {
+                        let person_id = d[1][2];
                         return (
                             <circle key={'cir-' + i} r={3}  stroke="#bec0db" strokeWidth="1px"
                                 // opacity = {0.4}
-                                data={d[1][2]}
+                                data={person_id}
                                 fill={"#efeff6"}
-                                className={_selected[d[1][2]]?"been-selected":''}
+                                className={[_selected[person_id]?"been-selected":'', selectedPeople[person_id]?'topic-selected':''].join(" ")}
                                 style={{ cursor: 'pointer' }}
                                 onMouseOver={(e) => showTooltip(i, e)}
                                 onMouseOut={toggleShow}

@@ -2,6 +2,7 @@ import React from "react";
 import Dimension from "./Dimension";
 import { connect } from "react-redux";
 import { POSITIONS } from "../../util/name";
+import { setPerson } from "../../actions/data";
 
 const style = {
     position: 'relative',
@@ -11,18 +12,13 @@ const style = {
 }
 class DimensionContainer extends React.Component {
 
-    // componentDidUpdate(prevProps) {
-    //     // if(prevProps.position!==this.props.position) {
-    //     //     console.log('update');
-    //     // }
-    //     console.log(this.props);
-    // }
+ 
     render() {
-        let { positions } = this.props;
+        let { positions, selectedPeople } = this.props;
         
         return (
             <div style={style}>
-                <p className="title">XXX-View</p>
+                <p className="title">Reduced-dimension View</p>
                 {
                     positions &&
                     <svg viewBox={"0 0 340 300"} style={{flex: 1}} >
@@ -31,6 +27,7 @@ class DimensionContainer extends React.Component {
                             _height={250}
                             _margin="translate(40,25)"
                             data={positions}
+                            selectedPeople = {selectedPeople}
                         />
                 </svg>
                 }
@@ -41,10 +38,16 @@ class DimensionContainer extends React.Component {
 
 const mapStateToProps = state => {
     let step = state.otherStep["6"];
-    console.log()
     return {
+        selectedPeople: state.people,
         positions: state.group[step] && state.group[step][POSITIONS]
     }
 }
 
-export default connect(mapStateToProps)(DimensionContainer); 
+const mapDispatchToProps = dispatch => {
+    return {
+        setPerson: person => dispatch(setPerson(person))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DimensionContainer); 

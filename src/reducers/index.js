@@ -6,7 +6,7 @@ import {matrixView} from '../redux/matrixView.redux'
 import {selectListView} from '../redux/selectList.redux.js'
 import {historyData} from '../redux/history.redux.js'
 import { step, group, otherStep } from './step';
-import { person, year, countedLayer, topicData, dict } from './data'
+import { people, year, countedLayer, dict } from './data'
 
 // 设置语言， en_name对应接口中的数据键值
 function KEY(state="name") {
@@ -17,10 +17,9 @@ export default combineReducers({
     step,
     group,
     otherStep,
-    person,
+    people,
     year,
     countedLayer,
-    topicData,
     KEY,
     topicWeight,
     topicView,

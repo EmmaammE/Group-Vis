@@ -27,6 +27,7 @@ import {updateMatrix} from '../../redux/matrixView.redux.js'
 import {updateSelectList} from '../../redux/selectList.redux.js'
 import {updateTopicWeight,updateTopicLrs} from '../../redux/topicWeight.redux.js'
 import RectLeaf from './rectLeaf/RectLeaf'
+import { setPerson } from '../../actions/data'
 
 const btnData = [
       {btnName:"Add"},
@@ -172,11 +173,11 @@ class TopicTreeMap extends React.Component{
           brushTransX:0,
           brushTransY:0
         })
-        let personsIdArray = [...brushPersonsId]
-        console.log("personsIdArray",personsIdArray)
-        // personsIdArray即为刷选中的叙述中涉及到的人的id数组
-        //  这块可以高亮xxx-view的相关逻辑......
-
+        //  高亮xxx-view......
+        let personsIdObject = [...brushPersonsId]
+          .reduce((acc, e) => ({...acc, [e]:true}), {})
+          console.log(brushPersonsId);
+        that.props.setPerson(personsIdObject)
       }
     })
   }
@@ -259,6 +260,9 @@ class TopicTreeMap extends React.Component{
       tipVisibility:"hidden",
       highRowLabel:-1
     })
+
+    // 取消XXX-view所有高亮的人
+    this.props.setPerson({});
   }
 
   // 右上角的四个按钮的 注册事件
@@ -489,7 +493,8 @@ const mapDispatchToProps = {
   updateMatrix,
   updateTimeLine,
   updateTopicWeight,
-  updateTopicLrs
+  updateTopicLrs,
+  setPerson
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicTreeMap);

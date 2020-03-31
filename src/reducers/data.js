@@ -2,14 +2,13 @@ import {
     SET_PERSON,
     SET_COUNTED_LAYER,
     SET_YEAR,
-    SET_TOPIC_RELATED_DATA,
     SET_DICT
 } from '../actions/types';
 
-export function person(state = {}, action) {
+export function people(state = {}, action) {
     switch (action.type) {
         case SET_PERSON:
-            return action.data;
+            return Object.assign({}, action.data);
         default:
             return state;
     }
@@ -18,7 +17,7 @@ export function person(state = {}, action) {
 export function countedLayer(state = {}, action) {
     switch (action.type) {
         case SET_COUNTED_LAYER:
-            return action.data;
+            return Object.assign({}, state, action.data);
         default:
             return state;
     }
@@ -31,16 +30,7 @@ export function year(state = {
 }, action) {
     switch (action.type) {
         case SET_YEAR:
-            return action.data;
-        default:
-            return state;
-    }
-}
-
-export function topicData(state = {}, action) {
-    switch(action.type) {
-        case SET_TOPIC_RELATED_DATA:
-            return action.data;
+            return Object.assign({}, state, action.data);
         default:
             return state;
     }
@@ -49,7 +39,7 @@ export function topicData(state = {}, action) {
 export function dict(state = {}, action) {
     switch(action.type) {
         case SET_DICT:
-            return Object.assign(state, action.data)
+            return Object.assign({}, state, action.data)
         default:
             return state;
     }
