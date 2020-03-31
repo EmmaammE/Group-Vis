@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
 import PathContainer from '../../component/pathContainer/PathContainer';
 import { fetchTopicData, setOtherStep } from '../../actions/step';
+import { debounce } from '../../util/tools';
 
 const ALL_SIGN = "all";
 class FirstPanel extends React.Component {
@@ -29,12 +30,15 @@ class FirstPanel extends React.Component {
             ],
             clickStatus: {'Gender':[false,false]},
             timeRange: [0, 0],
-            _tabPanel: 2,
-            cypher: ''
+            _tabPanel: 1,
+            cypher: '',
+            $liTarget: null,
+            status: false,
         }
 
         this.onInputChange = this.onInputChange.bind(this);
         this.onClickSearch = this.onClickSearch.bind(this);
+        this.onMoveQuickSelect = this.onMoveQuickSelect.bind(this);
         this.setStatus = this.setStatus.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
     }
@@ -90,23 +94,46 @@ class FirstPanel extends React.Component {
 
     // 选择框的click事件 TODO 修改调用
     setStatus(name) {
-        return (index, is_all) => {
+        return (index, is_all, status) => {
             let { clickStatus } = this.state;
+            let _status;
+            // 如果是Person, click, 改变onEnter时的状态
+            if(status ===  undefined) {
+                if (is_all && index === 0) {
+                    // 选择了"选择全部"选项
+                    let _last = clickStatus[name][0];
 
-            if (is_all && index === 0) {
-                // 选择了"选择全部"选项
-                let size = clickStatus[name].length - 1;
-                clickStatus[name] = [!clickStatus[name][0], ...Array(size).fill(false)]
-            } else {
-                if (is_all) {
-                    // 有"选择全部"选项， 但选择了其他选项
-                    clickStatus[name][0] = false;
+                    clickStatus[name] = new Array(clickStatus[name].length).fill(!_last);
+                    _status = !_last;
+                } else {
+                    if (is_all) {
+                        // 有"选择全部"选项， 但选择了其他选项
+                        clickStatus[name][0] = false;
+                    }
+                    _status = clickStatus[name][index] = !clickStatus[name][index];
                 }
-                clickStatus[name][index] = !clickStatus[name][index];
+
+            } else {
+                if (is_all && index === 0) {
+                    clickStatus[name] = new Array(clickStatus[name].length).fill(status);
+                } else {
+                    if (is_all && status === false) {
+                        clickStatus[name][0] = false;
+                    }
+                    clickStatus[name][index] = status;
+                }
             }
-            this.setState({
-                clickStatus
-            })
+
+            if(name === 'Person' && _status !== undefined) {
+                this.setState({
+                    clickStatus,
+                    status: _status
+                })
+            } else {
+                this.setState({
+                    clickStatus
+                })
+            }
         }
     }
 
@@ -224,11 +251,11 @@ class FirstPanel extends React.Component {
                                 let i = 0;
                                 let arr = [];
                                 for (let _key in res.data["Person"]) {
-                                    i++;
-                                    if (i < 101) {
+                                    // i++;
+                                    // if (i < 101) {
                                         param.append("person_ids[]", _key);
                                         arr.push(_key)
-                                    }
+                                    // }
                                 }
                                 fetchTopicData(param, KEY, 1);
                                 for (let i = 6; i <= 10; i++) {
@@ -271,6 +298,20 @@ class FirstPanel extends React.Component {
         })
     }
 
+    onMoveQuickSelect(e){
+        // debounce((e) => {
+            // console.log(e);
+            let id = e.target.dataset.id;
+            let {status} = this.state;
+            this.setStatus('Person')(id, true, status)
+            // if(!e.id || e.id!==id) {
+            //     e.id = id;
+            //     this.setStatus('Person')(id, true);
+            // //     e.$liTarget = null;
+            // }
+        // }, 100)(e)
+    }
+
     _renderRow({ index, key, style }) {
         let { dataSet, clickStatus } = this.state;
         let $item;
@@ -286,10 +327,17 @@ class FirstPanel extends React.Component {
             <div
                 key={key} value={dataSet[1].options[index][1]}
                 style={style}
+                data-id = {index}
                 className={"person-dropdown dropdown__list-item"}
-                onClick={() => this.setStatus('Person')(index, true)}
+                onClick={() => {
+                    this.setStatus('Person')(index, true)
+                }}
+                onMouseEnter = {() => {
+                    let {status} = this.state;
+                    this.setStatus('Person')(index, true, status)
+                }}
             >
-                <input type="checkbox" checked={clickStatus["Person"][index]} />
+                <input type="checkbox" checked={clickStatus["Person"][index]} readOnly />
                 {$item}
             </div>
         )
@@ -328,14 +376,16 @@ class FirstPanel extends React.Component {
                                     <img src={slogo} alt="search" />
                                 </span>
                             </div>
-                            <List
-                                width={220}
-                                height={400}
-                                rowHeight={30}
-                                className="dropdown-list"
-                                rowRenderer={this._renderRow.bind(this)}
-                                rowCount={dataSet[1].options.length}
-                            />
+                            <div style={{height: '32vh', overflow: 'hidden'}}>
+                                <List
+                                    width={220}
+                                    height={250}
+                                    rowHeight={30}
+                                    className="dropdown-list"
+                                    rowRenderer={this._renderRow.bind(this)}
+                                    rowCount={dataSet[1].options.length}
+                                />
+                            </div>
                         </div>
                     </div>
                 )
@@ -354,7 +404,7 @@ class FirstPanel extends React.Component {
                                 if (index > 1) {
                                     return (<SelectedPanel
                                         key={`datum-${index}`} title={datum.title} clicked={clickStatus[datum.key]}
-                                        setClicked={this.setStatus(datum.key)} options={datum.options}
+                                        setClicked={this.setStatus(datum.key, true)} options={datum.options}
                                     />)
                                 } else {
                                     return null;

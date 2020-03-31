@@ -9,7 +9,8 @@ function SelectedPanel({title, _type, setClicked, clicked = [], options = []}) {
     <div className="selected-panel">
         <div className="divider"><p>{title}</p></div>
         <ul className="dropdown">
-            <li
+            <li className="dropdown__container">
+            <div
               role="button"
               aria-labelledby="dropdown-label"
               className="dropdown__selected"
@@ -28,6 +29,7 @@ function SelectedPanel({title, _type, setClicked, clicked = [], options = []}) {
                   }
                 })
               }
+            </div>
             </li>
             <svg
               className={["dropdown__arrow",expanded?"expanded":""].join(" ")}

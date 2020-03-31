@@ -41,6 +41,7 @@
     justify-content: center;
     align-items: center;
     margin: 10px 0;
+    height: 5vh;
 }
 
 .search-input {
@@ -68,7 +69,6 @@
 .search-icon {
     position: absolute;
     right: 30px;
-    top: 6px;
     cursor: pointer;
 }
 
@@ -159,7 +159,7 @@
     border: 1px solid #aaaaaa;
 }
 
-.dropdown-list ::-webkit-scrollbar {
+.panel-content ::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -208,11 +208,7 @@
 }
 
 .first-panel .item-container .first-item {
-    margin-right: 30px;
+    margin-right: 10px;
     display: inline-block;
     width: 35%;
-}
-
-.ReactVirtualized__List {
-    overflow: auto!important;
 }

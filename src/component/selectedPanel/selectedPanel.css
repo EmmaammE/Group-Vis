@@ -44,7 +44,7 @@
   border: 2px solid #e5e5e5;
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
-  width: 12vw;
+  width: 90%;
   height: 4vh;
   cursor: pointer;
   padding: 0;
@@ -114,7 +114,7 @@
   margin-top: 2px;
 }
 
-.dropdown__list-item:first-child::after {
+.person-dropdown:first-child::after {
   content: '';
   width: 90%;
   height: 1px;
@@ -139,6 +139,9 @@
   color: white;
 }
 
+.dropdown__container {
+  width: 83%;
+}
 .dropdown__selected {
   font-family: Lato, sans-serif;
   color: #444444;
@@ -149,6 +152,7 @@
   overflow-y: hidden;
   height: 4vh;
   line-height: 4vh;
+  width: 90%;
 }
 
 .dropdown__selected::before {
@@ -258,7 +262,7 @@
 }
 
 .date-panel .range-block {
-  width: 3vw;
+  width: 32%;
   position: relative;
 }
 
