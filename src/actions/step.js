@@ -66,17 +66,24 @@ export function updateGroupdata(key, step, data) {
 function updateGroupAndStep(step, data) {
     return dispatch => {
         batch(() => {
-            console.log(step);
+            // console.log(step);
             // 分发Overview更新需要的数据
-            dispatch(
-                setGroup({[step]: data})
-            )// step
-            dispatch(setStep(step+1))
+            dispatch(setGroup({[step]: data}))
+            dispatch(setStep(step))
         })
     }
 }
 
-export function fetchTopicData(param, KEY, step) {
+/**
+ * 
+ * @param {*} param 请求topicd的参数 formData
+ * @param {*} KEY 中英文 state.KEY
+ * @param {*} step 将要设置的step  !!!(current +1 )
+ * @param {*} type 
+ *              0：点击Search：更新所有视图的数据
+ *              1：点击Flower：更新topic|XXX-view数据
+ */
+export function fetchTopicData(param, KEY, step, type) {
     return dispatch => {
         axios.post('/search_topics_by_person_ids/', param)
             .then(res => {
@@ -115,7 +122,7 @@ export function fetchTopicData(param, KEY, step) {
                         topicId2Name[idstring] = id.map(_id => (temp[DICT][_id])).join('-')
                     }) 
 
-                    console.log(temp[TOPICS]);
+                    // console.log(temp[TOPICS]);
                     // 记录每个topic的次数
                     let count = {};
                     for(let _key in res.data[TOPIC_SENTENCE_POSITION]) {
@@ -135,27 +142,19 @@ export function fetchTopicData(param, KEY, step) {
                         _positions[temp[DICT][id]] = res.data[POSITIONS][id];
                     })
                     // console.log(people, _positions);
-                    // 这里请求topic,设置相关的数据,分发不同的action
-                    // 分发node和edge的映射
-                    dispatch(setDict(temp[DICT]));
+               
+                    // 分发node和edge的映射 NOTE 好像暂时不需要
+                    // dispatch(setDict(temp[DICT]));
                    
-                    updateGroupAndStep(step, 
-                        {
-                            'people': people,
-                            [TOPIC_SENTENCE_POSITION]: res.data[TOPIC_SENTENCE_POSITION],
-                            [POSITIONS]: _positions,
-                            [TOPICS]: temp[TOPICS]
-                        }
-                    )(dispatch)
-                    //  一些数据说明, 不用了可删掉
+                   
+                    //  接口数据说明
                     //         DICT(name.js) ：node_edge的dict
                     //         "label2topic_ids": res.data["label2topic_ids"],
                     //         "topic_id2sentence_id2position1d": res.data["topic_id2sentence_id2position1d"],
                     //         "topic_pmi": res.data["topic_pmi"],
                     //         "person_id2position2d": res.data["person_id2position2d"]
                     // 
-
-                    updateFourViews(dispatch,people,res,temp,topicId2Name)
+                    updateFourViews(dispatch,people,res,temp,topicId2Name,step,_positions,type)
    
                 } 
             })
@@ -175,15 +174,11 @@ export function fetchTopicData(param, KEY, step) {
  * 
 */
 
-export function updateFourViews(dispatch,people,res,temp,topicId2Name){
+export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _positions, type){
 
     console.log("返回的数据***",res.data,"temp***",temp);
 
-     // 更新降维图所需要的辅助数据
-     dispatch(addHistoryData({
-        [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
-        [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
-    }))
+     
 
     // 给topic建立从0到n的编号映射
     let topicToIndex = {}
@@ -411,81 +406,31 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name){
     console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData)
     topicData.sort((a,b)=>b.weight-a.weight)
     let sliderWeights = topicData.map(v=>v.weight)
-    dispatch(initTopicWeight(sliderWeights))
-    dispatch(updateTopicView(topicData));
-    dispatch(updateSelectList({selectListData}));
-    dispatch(updateMatrix(matrixViewData));
-    dispatch(updateTimeLine(timeLineData))
-}
 
+    // 更新group, step
+    updateGroupAndStep(step, 
+        {
+            "people": people,
+            [POSITIONS]: _positions,
+            [TOPICS]: temp[TOPICS],
+            "topicView": topicData,
+            "selectView": {selectListData},
+            "matrixView": matrixViewData,
+            "timelineView": timeLineData
+        }
+    )(dispatch)
 
-export function updateFlower(param, KEY, step) {
-    // 只更新图2的数据
-    return dispatch => {
-        axios.post('/search_topics_by_person_ids/', param)
-            .then(res => {
-                if(res.data.is_success) {
-                    // 处理node_dict and edge_dict, 将name修改一下
-                    // KEY是区别中英文的代表
-                    let temp = {[DICT]:{}, [TOPICS]:[]}
-                    // temp[DICT]中记录着从topic编号到topic名字的映射,以及从描述编号到描述文字的映射
-                    for(let _key in res.data["node_dict"]) {
-                        let _data = res.data["node_dict"][_key]
-                        if(_data["name"] === "None" && _data["en_name"] === "None") {
-                            temp[DICT][_key] =  _data["label"]
-                        } else if(_data[KEY] === "None") {
-                            temp[DICT][_key] = _data["name"]
-                        } else {
-                            temp[DICT][_key] = _data[KEY]
-                        }
-                    }
-                    
-                    for(let _key in res.data["edge_dict"]) {
-                        // 中文： edge的name 英文: edge的label
-                        if(res.data["edge_dict"]==="") {
-                            temp[DICT][_key] = res.data["edge_dict"][_key]["label"]
-                        } else {
-                            temp[DICT][_key] = res.data["edge_dict"][_key][KEY]
-                        }
-                    }
-            
-                    // 翻译topic_id
-                    res.data[TOPICS].forEach(id => {
-                        let idstring = id.join(" ");
-                        temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
-                    })
-                    console.log(temp[TOPICS]);
-                    // 记录每个topic的次数
-                    let count = {};
-                    for(let _key in res.data[TOPIC_SENTENCE_POSITION]) {
-                        count[_key] = Object.keys(res.data[TOPIC_SENTENCE_POSITION][_key]).length;
-                    }
-
-                    temp[TOPICS].sort((a,b) => count[b[0]]-count[a[0]])
-                    
-                     // 地图查询的人
-                     let people = {};
-                     Object.keys(res.data[POSITIONS]).forEach(id => {
-                         people[id] = temp[DICT][id]
-                     })
-                     
-                     let _positions = {};
-                     Object.keys(res.data[POSITIONS]).forEach(id => {
-                        res.data[POSITIONS][id].push(id);
-                        _positions[id] = res.data[POSITIONS][id];
-                     })
-
-                    // 分发Overview更新需要的数据
-                    dispatch(setGroup({[step+1]: {
-                        // person_id []
-                        'people': people,
-                        [TOPIC_SENTENCE_POSITION]: res.data[TOPIC_SENTENCE_POSITION],
-                        [POSITIONS]: _positions,
-                        [TOPICS]: temp[TOPICS]
-                    }}))
-                    dispatch(addStep())
-                } 
-            })
-            .catch(err => console.error(err))
-    }   
+    if(type === 0) {
+        // 更新降维图所需要的辅助数据
+        dispatch(addHistoryData({
+            [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
+            [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
+        }))
+        // 更新所有图
+        dispatch(initTopicWeight(sliderWeights))
+        dispatch(updateTopicView(topicData));
+        dispatch(updateSelectList({selectListData}));
+        dispatch(updateMatrix(matrixViewData));
+        dispatch(updateTimeLine(timeLineData))
+    }
 }

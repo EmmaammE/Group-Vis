@@ -4,7 +4,7 @@ import './lasso.css';
 import { lasso } from 'd3-lasso';
 import Tooltip from '../tooltip/tooltip';
 import { useDispatch, useSelector } from 'react-redux';
-import {fetchTopicData, updateFlower} from '../../actions/step';
+import {fetchTopicData} from '../../actions/step';
 
 const d3 = Object.assign(d3Base, { lasso });
 
@@ -32,7 +32,7 @@ function Dimension({ _width, _height, _margin, selectedPeople = [], data = {}, t
     const dispatch = useDispatch();
     const KEY = useSelector(state => state.KEY)
     const fetchTopic = useCallback(
-      (param, step) => dispatch(updateFlower(param, KEY, step)),
+      (param, step) => dispatch(fetchTopicData(param, KEY, step+1, 1)),
       [dispatch, KEY]
     )
     const _step = useSelector(state => state.step);

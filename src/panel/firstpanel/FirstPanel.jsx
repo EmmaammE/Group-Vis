@@ -460,7 +460,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         // 入口，所以只作为第一步
-        fetchTopicData: (param, key) => dispatch(fetchTopicData(param, key, 1)),
+        fetchTopicData: (param, key) => dispatch(fetchTopicData(param, key, 1, 0)),
         setOtherStep: key => dispatch(setOtherStep(key, 1))
     };
 };

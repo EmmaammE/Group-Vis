@@ -63,9 +63,11 @@ class FlowerContainer extends React.Component {
                             _hovered = {_hovered===i}
                             _ratio = {_ratio}
                             positions = {positions[i]}
-                            cb = {() => this.props.cb(step[i])}
+                            cb = {() => {
+                                this.props.cb(step[i])
+                            }}
                         />
-                    ))
+                    )) 
                 }
                 {
                     endpoints.map((point, i) => (
