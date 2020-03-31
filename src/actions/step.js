@@ -24,6 +24,7 @@ import {genderTemplate,
         locationTemplate,
         beOfficeTemplate,
         } from '../util/tools.js'
+import { batch } from "react-redux";
 
 export function setStep(step) {
     return {
@@ -62,6 +63,19 @@ export function updateGroupdata(key, step, data) {
     }
 }
 
+function updateGroupAndStep(step, data) {
+    return dispatch => {
+        batch(() => {
+            console.log(step);
+            // 分发Overview更新需要的数据
+            dispatch(
+                setGroup({[step]: data})
+            )// step
+            dispatch(setStep(step+1))
+        })
+    }
+}
+
 export function fetchTopicData(param, KEY, step) {
     return dispatch => {
         axios.post('/search_topics_by_person_ids/', param)
@@ -82,7 +96,6 @@ export function fetchTopicData(param, KEY, step) {
                         }
                     }
                     
-                    // 
                     for(let _key in res.data["edge_dict"]) {
                         // 中文： edge的name 英文: edge的label
                         if(res.data["edge_dict"]==="") {
@@ -125,14 +138,15 @@ export function fetchTopicData(param, KEY, step) {
                     // 这里请求topic,设置相关的数据,分发不同的action
                     // 分发node和edge的映射
                     dispatch(setDict(temp[DICT]));
-                    // 分发Overview更新需要的数据
-                    dispatch(setGroup({[step]: {
-                        'people': people,
-                        [TOPIC_SENTENCE_POSITION]: res.data[TOPIC_SENTENCE_POSITION],
-                        [POSITIONS]: _positions,
-                        [TOPICS]: temp[TOPICS]
-                    }}))
-                    dispatch(addStep())
+                   
+                    updateGroupAndStep(step, 
+                        {
+                            'people': people,
+                            [TOPIC_SENTENCE_POSITION]: res.data[TOPIC_SENTENCE_POSITION],
+                            [POSITIONS]: _positions,
+                            [TOPICS]: temp[TOPICS]
+                        }
+                    )(dispatch)
                     //  一些数据说明, 不用了可删掉
                     //         DICT(name.js) ：node_edge的dict
                     //         "label2topic_ids": res.data["label2topic_ids"],
