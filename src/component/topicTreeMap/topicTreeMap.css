@@ -47,12 +47,14 @@
 }
 
 .topicViewChart-container{
-  box-sizing: border-box;
+  box-sizing: content-box;
   position: relative;
-  top:20px;
-  padding:0px 10px 10px 10px;
-  width: 100%;
-  height: 90%;
+  margin-top:3%;
+  margin-left: 3%;
+  margin-right: 3%;
+  /* padding:0px 10px 10px 10px; */
+  width: 95%;
+  height: 95%;
   /* overflow-y: scroll; */
   /* overflow-x:hidden; */
 }

@@ -144,6 +144,33 @@ export function filterSelectList(data){
     }
     return newData
 }
+
+export function filterBrushSelectList(data){
+    let newData = []
+    for(let singleData of data){
+        for(let k of singleData.cData){
+            if(k.isChoose){
+                newData.push(k.discription)
+            }
+        }
+    }
+    return newData
+}
+
+export function filterMapView(data){
+    let mapViewData = {}
+    for(let singleData of data){
+        for(let k of singleData.cData){
+            k.personsId.forEach((v,i)=>{
+                if(!mapViewData[v]){
+                    mapViewData[v] = k.persons[i]
+                }
+            })
+        }
+    }
+    return mapViewData
+}
+
 export function deepClone(Obj) {   
     var buf;   
     if (Obj instanceof Array) {   

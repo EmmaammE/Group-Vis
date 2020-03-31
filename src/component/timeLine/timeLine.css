@@ -10,15 +10,19 @@
 .timeLine-container{
   position: relative;
   /* border:solid 0.1px; */
-  width: 98%;
-  height: 75%;
+  margin-left: 2%;
+  margin-right: 3%;
+  width: 95%;
+  height: 80%;
   overflow-x: hidden;
   overflow-y: auto;
 }
 .timeLine_underLabel{
   overflow: hidden;
   position: relative;
-  width: 98%;
+  margin-left: 2%;
+  margin-right: 3%;
+  width: 95%;
   height: 10%;
 }
 

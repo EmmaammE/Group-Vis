@@ -148,7 +148,7 @@ class TimeLine extends React.Component{
       <div className="chart-wrapper">
         <div className="title">Timeline View</div>
         <div className="timeLine-container">
-          <svg width={WIDTH} height={gHeight+margin.top+margin.bottom} 
+          <svg width="100%" height="100%" 
             viewBox={`0 0 ${WIDTH} ${gHeight}`}
             ref={this.$container}
             onMouseDown={this.handleBrushMouseDown}
@@ -268,7 +268,7 @@ class TimeLine extends React.Component{
           </svg>
         </div>
         <div className="timeLine_underLabel">
-          <svg width={WIDTH} height={margin.bottom} viewBox={`0 0 ${WIDTH} ${margin.bottom}`}>
+          <svg width="100%" height="100%" viewBox={`0 0 ${WIDTH} ${margin.bottom}`}>
             {rownum==0?null
             :<g transform={`translate(20,0)`}>
               {/* 绘制底下时间轴坐标 */}

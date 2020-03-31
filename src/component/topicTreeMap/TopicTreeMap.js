@@ -6,7 +6,8 @@ import {scaleFactory,
       filterTimeLine,
       filterMatrixView,
       filterSelectList,
-      // deepClone,
+      filterBrushSelectList,
+      filterMapView,
       smallize, 
       reduceRelationData,
       rectTree,
@@ -39,10 +40,9 @@ let addOrMinus = true;
 
 let margin={left:15,top:15,right:15,bottom:15}
 const WIDTH = 630;
-const HEIGHT = 480
+const HEIGHT = 500
 
 let brushPersons = {}
-let mapViewPersons = {}
 
 // const LEFTWIDTH = 90;
 // const HEIGHT = 540;
@@ -182,6 +182,11 @@ class TopicTreeMap extends React.Component{
           .reduce((acc, e) => ({...acc, [e]:true}), {})
         console.log("brushPersonsId",brushPersonsId);
         that.props.setPerson(personsIdObject)
+
+        // 挑出刷选的selectList
+        
+        let selectListData= filterBrushSelectList(topicData)
+        that.props.updateSelectList({selectListData})
       }
     })
   }
@@ -259,7 +264,6 @@ class TopicTreeMap extends React.Component{
     
 
     brushDatas=[]
-    mapViewPersons = {...brushPersons}
     brushPersons = {}
     this.setState({
       tooltip:"",
@@ -280,6 +284,7 @@ class TopicTreeMap extends React.Component{
   }
   //  Matrix View视图
   handleClickMatrixView(){
+    console.log("matrixView",topicData)
     let matrixViewData = filterMatrixView(topicData)
     this.props.updateMatrix(matrixViewData)
   }
@@ -293,6 +298,7 @@ class TopicTreeMap extends React.Component{
   handleClickMapView(){
     console.log("点击了mapView")
     let step = this.props.currentStep
+    let mapViewPersons = filterMapView(topicData)
     console.log("step,brusPersons",step,mapViewPersons)
     this.props.updateGroupdata("people",step,mapViewPersons)
 
@@ -376,11 +382,11 @@ class TopicTreeMap extends React.Component{
         </div>
         <div  className="topicViewChart-container">
           <svg
-            left="0"
-            top="0"
+            // left="0"
+            // top="0"
             ref={this.$container}
-            width={ WIDTH}
-            height={ HEIGHT} 
+            width={WIDTH}
+            height={HEIGHT}
             viewBox = {`0 0 ${WIDTH} ${HEIGHT}`}
           >
             {/* 绘制矩阵子集 */}
