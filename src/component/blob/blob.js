@@ -13,79 +13,6 @@ const INNER_RADIUS = 60;
 const OUTER_RADIUS = 100;
 const SLIDER_HEIGHT = 130;
 
-const defualtStyle = {
-  border: "none",
-  fill: "url(#gradient)",
-  opacity: 0.5,
-  strokeDasharray: "none"
-}
-
-const rectStyle = {
-  fill: "#fff"
-}
-
-// TODO 属性值
-let fakeData = [
-  {name:'item1', value: 30},
-  {name:'item2', value: 44},
-  {name:'item3', value: 45},
-  {name:'item4', value: 48},
-  {name:'item5', value: 50},
-  {name:'item6', value: 50},
-  {name:'item7', value: 50},
-  {name:'item8', value: 50},
-  {name:'item9', value: 50},
-  {name:'item10', value: 55},
-  {name:'item11', value: 55},
-  {name:'item12', value: 60},
-  {name:'item13', value: 70},
-  {name:'item14', value: 70},
-  {name:'item15', value: 67},
-  {name:'item16', value: 70},
-  {name:'item17', value: 72},
-  {name:'item18', value: 74},
-  {name:'item19', value: 78},
-  {name:'item20', value: 80},
-  {name:'item21', value: 50},
-]
-
-
-function random(min, max) {
-  return min + Math.random() * (max - min);
-}
-
-const generateCoordinates = (r) => {
-  let cors = [];
-  let deg = random(0, Math.PI * 2);
-  for (let i = 0; i < 3; i++) {
-    if (i === 1) {
-      deg = deg + Math.PI * 102 / 180;
-    } else if (i === 2) {
-      deg = deg + Math.PI * 129 / 180;
-    }
-
-    let x = BOX_WIDTH + r * Math.sin(deg);
-    let y = BOX_WIDTH + r * Math.cos(deg);
-    cors.push([x, y]);
-  }
-  cors.push(cors[0]);
-  cors.push(cors[1]);
-  cors.push(cors[2]);
-
-  return cors;
-}
-
-function Blob({ radius }) {
-  const [path, setPath] = useState("");
-
-  useEffect(() => {
-    let points = generateCoordinates(radius);
-    setPath(createBlob(points));
-  }, [radius])
-
-  return <path style={defualtStyle} d={path}></path>
-}
-
 class Blobs extends React.Component {
   constructor(props) {
     super(props);
@@ -97,10 +24,6 @@ class Blobs extends React.Component {
       layers: props.layer,
       // 默认在最高值
       handlePos: 190,
-      xScale: d3.scaleBand()
-        .range([0, 2 * Math.PI])    
-        .align(Math.PI * 5 / 180)                  
-        .domain( fakeData.map(function(d) { return d.name; }) ),
       yScale: d3.scaleLinear() 
         .range([0, OUTER_RADIUS - INNER_RADIUS])
         .domain([0,80]),
@@ -140,7 +63,6 @@ class Blobs extends React.Component {
       let {group} = this.props;
 
       // TODO 暂时只考虑32步以内
-
       let groupKeys = Object.keys(group);
       // 掩码数组的长度: 每一位对应Object.keys()得到的person_id数组集合是否包含该元素， 包含则为true
       let boolSize = groupKeys.length;
@@ -150,10 +72,12 @@ class Blobs extends React.Component {
       let keyIndex = 0;
       for(let key in group) {
         let person_ids = Object.keys(group[key]);
-        sets.push({
-          sets: [key],
-          size: person_ids.length
-        })
+        if(key!=='1') {
+          sets.push({
+            sets: [key],
+            size: person_ids.length
+          })
+        }
 
         // eslint-disable-next-line 
         person_ids.forEach(id => {
@@ -180,11 +104,11 @@ class Blobs extends React.Component {
         let maskString = Number(mask).toString(2);
         let _sets = [];
         for(let i=maskString.length-1; i>=0; i--) {
-          if(maskString[i] === '1') {
+          if(maskString[i] === '1' && groupKeys[i]!=='1') {
             _sets.push(groupKeys[i]);
           }
         }
-        if(_sets.length!==1) {
+        if(_sets.length>1) {
           sets.push({
             sets: _sets,
             size: maskCount[mask]
@@ -192,6 +116,9 @@ class Blobs extends React.Component {
         }
       }
       
+      sets.forEach(e => {
+        e.size = Math.sqrt(e.size)
+      })
       // let result = data.reduce((a, b) => a.filter(c => b.includes(c)));
       this.setState({
         sets
@@ -268,17 +195,6 @@ class Blobs extends React.Component {
       });
   }
 
-  pathCreator(d) {
-    let { xScale, yScale }= this.state;
-    return d3.arc()
-      .innerRadius(() => INNER_RADIUS + yScale(d.value))
-      .outerRadius(INNER_RADIUS + yScale(d.value) + 25)
-      .startAngle(function() { return xScale(d.name); })
-      .endAngle(function() { return xScale(d.name) + xScale.bandwidth()/3; })
-      .padAngle(0.01)
-      // .padRadius(INNER_RADIUS)
-  }
-
   render() {
     let { handlePos,rangeScale,sets} = this.state;
     let { layer } = this.props;
@@ -291,24 +207,10 @@ class Blobs extends React.Component {
             <stop offset="95%" stopColor="#f37556" />
           </linearGradient>
         </defs>
-        
-        {/* {
-          blobs.map((r, i) => (
-            r !== undefined && <Blob key={`blob-${i}`} radius={this.getRadius(r)} />
-          ))
-        } */}
 
         <foreignObject x="0" y="0" width="500" height="500" ref={this.$venn}>
         </foreignObject>
         
-        <g transform={`translate(${BOX_WIDTH},${BOX_WIDTH})`}>
-          {
-            fakeData.map((data,i) => {
-              return <path id={data.name} key={`rect-${i}}`} d={this.pathCreator(data)()} style={rectStyle}></path>
-            })
-          }
-        </g>
-
         {
           sets.length>0 && 
           <g className="slider" ref={this.$slider}>

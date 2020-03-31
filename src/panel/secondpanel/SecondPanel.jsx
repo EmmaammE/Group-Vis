@@ -41,44 +41,30 @@ class SecondPanel extends React.Component {
             gridHistory: new GridHistory(),
             gridLength: 0
         }
-        this.toSelect = this.toSelect.bind(this);
         this.clickBtn = this.clickBtn.bind(this);
         this.clickFlower = this.clickFlower.bind(this);
     }   
 
-    // toSelect
-    toSelect() {
-        let num = parseInt(genData());
-        let newGridItem = genItem(num,parseInt(random(6,9)));
-        let {grid} = this.state;
-        // hoverIndex[1]
-        grid[grid.length-1].next = num;
-        grid.push(newGridItem)
-        this.setState({
-            grid
-        })
-
-        this.props.setStep(num);
-        let _a = grid.length-1
-        this.props.setGroup({[_a]:_a*200})
-    }
-
     componentDidUpdate(prevProps){
-        if(prevProps.step !== this.props.step) {
+        if(JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
+        // if(prevProps.step !== this.props.step) {
             let {grid,step2index,gridHistory,gridLength} = this.state;
             let {group, step} = this.props;
-            let newGrid = grid.slice(0);
 
-            // TODO: ❀和grid序号的映射
-            if(grid.length === 0) {
+            try {
+                // TODO: ❀和grid序号的映射
+            if(grid.length === 0 || this.props.step === 1) {
+                console.log('update init');
                 // 暂定8片花瓣
                 let titles = group[1][TOPICS].slice(0,8).map(arr => arr[1]);
-                newGrid.push({...GRID_ITEM_TEMPLATE, size:1, selected: 0, step: [1],
-                        property:[titles.length], titles: titles, positions: [group[1][POSITIONS]]})
+                let newGrid = [({...GRID_ITEM_TEMPLATE, size:1, selected: 0, step: [1],
+                        property:[titles.length], titles: titles, positions: [group[1][POSITIONS]]})]
 
+                gridHistory = new GridHistory();
                 gridHistory.add(newGrid.slice(0));
                 this.setState({grid: newGrid, gridHistory, gridLength:1})
             } else {
+                let newGrid = grid.slice(0);
                 let titles = group[step][TOPICS].slice(0,8).map(arr => arr[1]);
 
                 // 是否要进入下一层
@@ -111,6 +97,9 @@ class SecondPanel extends React.Component {
                     gridHistory,
                     gridLength: gridLength+1
                 })
+            }
+            } catch {
+                console.log('...');
             }
         }
         
@@ -177,8 +166,7 @@ class SecondPanel extends React.Component {
     }
 
     render() {
-        // let {grid,hoverIndex} = this.state;
-        let {grid, btnStatus} = this.state;
+        let {grid, btnStatus, hoverIndex} = this.state;
         
         return (
             <div className="second-panel">
@@ -188,7 +176,6 @@ class SecondPanel extends React.Component {
                         (e,i) => (<CircleBtn key={'btn-'+i} type={i} active = {btnStatus[i]}
                             onClick={() => this.clickBtn(i)} />)
                     )}
-                    {/* <div style={{background:'#f00'}} onClick={this.toSelect}>筛选</div> */}
                 </div>
                 <div className="content-panel">
                 {
@@ -205,7 +192,7 @@ class SecondPanel extends React.Component {
                                     positions = {item.positions}
                                     step = {item.step}
                                     cb = {this.clickFlower}
-                                    // _hovered = {i===hoverIndex[0]?hoverIndex[1]:-1}
+                                    _hovered = {i===hoverIndex[0]?hoverIndex[1]:-1}
                                 />
                             </div>
                         )
