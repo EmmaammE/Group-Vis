@@ -25,8 +25,8 @@ class SvgSlider extends React.Component{
     let weight = this.props.weight;
     let width = this.props.width
     let height = this.props.height
-    weight= weight>60?60:weight
-    let sHeight = Number((height*(weight/60)).toFixed(0))
+    weight= weight>100?100:weight
+    let sHeight = Number((height*(weight/100)).toFixed(0))
     let index = this.props.index
     let handleMouseDown = this.props.onMouseDown
     let handleMouseMove = this.props.onMouseMove

@@ -1,11 +1,9 @@
 import React from 'react';
 import './fourthPanel.css';
 import Header from '../../component/header/Header';
-import Matrix from '../../component/matrixChart/Matrix';
 import TimeLine from '../../component/timeLine/TimeLine'
 
 import MatrixView from '../../component/matrix/matrixView/MatrixView'
-import TimeLineChart from '../../component/timeLineChart/TimeLineChart';
 import MapContainer from '../../component/map/MapContainer';
 
 class FourthPanel extends React.Component {

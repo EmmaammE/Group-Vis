@@ -35,7 +35,7 @@ const btnData = [
 let addOrMinus = true;
 
 let margin={left:15,top:15,right:15,bottom:15}
-const WIDTH = 650;
+const WIDTH = 630;
 const HEIGHT = 480
 
 const LEFTWIDTH = 90;
@@ -200,6 +200,7 @@ class TopicTreeMap extends React.Component{
       })
     }
   }
+
   handleMouseout(v){
     this.setState({
       tooltip:"",
@@ -244,6 +245,7 @@ class TopicTreeMap extends React.Component{
   handleApply(){
     let that = this
     topicData = brushFilter(topicData,that)
+
     brushDatas=[];
     this.setState({
       tooltip:"",
@@ -285,11 +287,10 @@ class TopicTreeMap extends React.Component{
     
   }
   handleSliderMouseMove(e){
-    
     if(dragFlag){
       let dis = Number((((e.clientY - startY)/sliderHeight)*60).toFixed(0))
       let temp = dis + startWeight
-      temp = temp>60?60:temp
+      temp = temp>100?100:temp
       temp = temp<0?0:temp
       this.props.updateTopicWeight({
         index:sliderIndex,
@@ -560,12 +561,10 @@ function brushFilter(topicData,that){
 function adjustTreeMapUI(that){
   // console.log("拖拽结束");
   dragFlag = false
-  
-  
   sliderTimer = setTimeout(function(){
     // 更新布局
-
     topicData[sliderIndex].weight = that.props.topicWeight[sliderIndex]
+    
     that.props.updateTopicView(topicData)
     // 向后端发起请求，更新降维图
     let topic_weights= {}
@@ -576,8 +575,6 @@ function adjustTreeMapUI(that){
       topic_weights,
       ...that.props.historyData
     }
-    
     that.props.updateTopicLrs(param, that.props.KEY, that.props.step)
-
   },1000)
 }
