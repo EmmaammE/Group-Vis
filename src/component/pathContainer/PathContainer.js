@@ -21,8 +21,6 @@ class PathContainer extends React.Component {
             rects_links: {},
             pathHistory: new PathHistory(),
 
-            // 是否开始画连接了
-            _draglink: false,
             _created: -1,
             // 上一次创建时的x坐标
             _x: 0,
@@ -39,7 +37,6 @@ class PathContainer extends React.Component {
         this.rectModifyLabel = this.rectModifyLabel.bind(this);
         this._onClickRedo = this._onClickRedo.bind(this);
         this._onClickUndo = this._onClickUndo.bind(this);
-        this._toggleLinkStatus = this._toggleLinkStatus.bind(this);
     }
 
     componentDidMount() {
@@ -105,12 +102,15 @@ class PathContainer extends React.Component {
 
             if (rects_links[index] !== undefined) {
                 // 该矩形绑定了link
-                let link = links[rects_links[index]["link"]];
-                let link_points = link[rects_links[index]["key"]];
-                links[rects_links[index]["link"]] = {
-                    ...link,
-                    ...{ [rects_links[index]["key"]]: [link_points[0] + d3.event.dx, link_points[1] + d3.event.dy] }
-                };
+                rects_links[index].forEach(_link => {
+                    let link = links[_link["link"]];
+                    let link_points = link[_link["key"]];
+
+                    links[_link["link"]] = {
+                        ...link,
+                        ...{[_link["key"]]: [link_points[0] + d3.event.dx, link_points[1] + d3.event.dy]}
+                    }
+                })
 
                 this.setState({
                     rects,
@@ -272,7 +272,6 @@ class PathContainer extends React.Component {
             
             this.setState({
                 _created: index,
-                _draglink: false,
                 _x: this_x,
                 rects,
                 who
@@ -302,15 +301,8 @@ class PathContainer extends React.Component {
         })
     }
 
-    _toggleLinkStatus() {
-        let { _draglink } = this.state;
-        this.setState({
-            _draglink: !_draglink
-        })
-    }
-
     render() {
-        let { rects, links, d, _draglink } = this.state
+        let { rects, links, d } = this.state
 
         return (
             <div>
@@ -332,7 +324,6 @@ class PathContainer extends React.Component {
                             <button onClick={this._onClickRedo}>Redo</button>
                         </div>
                     </foreignObject>
-                    <circle cx={270} cy={85} r={5} onClick={this._toggleLinkStatus}></circle>
 
                     <g>
                         {
@@ -351,7 +342,6 @@ class PathContainer extends React.Component {
                                 <RectContainer key={'rect-' + i} x={rect[0]} y={rect[1]}
                                     label={rect[2]} index={i}
                                     type={rect[2] === "Who" ? 2 : 1}
-                                    _draglink={_draglink}
                                     _onCreated={this.rectFactory(i)}
                                     _onLink={this.linkFactory(i)}
                                     cb_link_down={this.cbDownFactory}
