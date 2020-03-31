@@ -64,7 +64,8 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
                     </g>
                 ))}
             </g>
-            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="white" onClick={cb} />
+            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="white" />
+
             <Dimension
                 _width={60}
                 _height={60}
@@ -72,6 +73,7 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
                 data={positions}
                 type = {1}
             />
+            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="transparent" onClick={cb} />
         </g>
     )
 }

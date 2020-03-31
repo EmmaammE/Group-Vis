@@ -48,11 +48,11 @@ export function group(state={}, action) {
 export function otherStep(state={}, action) {
     switch(action.type) {
         case "6_SET_STEP" :
-        case "7_SET_STEP" :
-        case "8_SET_STEP" :
         case "9_SET_STEP" :
-        case "10_SET_STEP" :
-            console.info('update', action);
+        // case "7_SET_STEP" :
+        // case "8_SET_STEP" :
+        // case "10_SET_STEP" :
+            console.info('update', action); 
             return Object.assign({}, state, {[action.type[0]]: action.data})
         default:
             return state;
