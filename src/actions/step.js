@@ -261,6 +261,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name){
         for(let vKey in topicSentence){
             //记录该描述中出现过的人名
             let sentencePersons = []
+            let sentencePersonsId = []
             let singleExist ={}
             // 描述中出现的人名的编号
             let disPersons = []
@@ -301,6 +302,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name){
                     // 标志这个描述中，该人已经被统计过了
                     singleExist[vk]=1
                     sentencePersons.push(people[vk])
+                    sentencePersonsId.push(vk)
                 }  
                 if(nodeDict[vk]!=undefined&&nodeDict[vk].label=="Year"&&Number(temp[DICT][vk])>1){
                     timeNumber++
@@ -361,6 +363,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name){
                 distance,
                 discription,
                 persons:[...sentencePersons],
+                personsId:[...sentencePersonsId],
                 time,
                 isChoose:false,
                 x:distance[0],

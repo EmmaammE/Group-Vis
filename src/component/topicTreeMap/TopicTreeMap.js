@@ -38,21 +38,23 @@ let margin={left:15,top:15,right:15,bottom:15}
 const WIDTH = 630;
 const HEIGHT = 480
 
-const LEFTWIDTH = 90;
+let brushPersonsId = new Set()
+
+// const LEFTWIDTH = 90;
 // const HEIGHT = 540;
-const SINGAL_HEIGHT = 50
-const START_COLOR = 'rgb(3,93,195)'
-const END_COLOR = 'red' 
+// const SINGAL_HEIGHT = 50
+// const START_COLOR = 'rgb(3,93,195)'
+// const END_COLOR = 'red' 
 
 let brushDatas=[];
 let startLoc=[];
 let brushWidth;
 let brushHeight;
-let svgX ,svgY;
+// let svgX ,svgY;
 let brushFlag=false;
 let topicData=[];
-let yScaleReverse,xScaleReverse;
-let xScaleT,yScaleT
+// let yScaleReverse,xScaleReverse;
+// let xScaleT,yScaleT
 
 // let sliderWeights=[]
 let sliderHeight = 45
@@ -113,7 +115,7 @@ class TopicTreeMap extends React.Component{
     let svg =  d3.select(container)
     svg.on("mousedown",function(){
       if(!dragFlag&&d3.event.target.localName!="circle"){
-        console.log("svg-mousedown",d3.event.offsetX,d3.event.offsetY,d3.event)
+        // console.log("svg-mousedown",d3.event.offsetX,d3.event.offsetY,d3.event)
         startLoc = [d3.event.offsetX-8,d3.event.offsetY]
         brushFlag=true
         that.setState({
@@ -170,6 +172,11 @@ class TopicTreeMap extends React.Component{
           brushTransX:0,
           brushTransY:0
         })
+        let personsIdArray = [...brushPersonsId]
+        console.log("personsIdArray",personsIdArray)
+        // personsIdArray即为刷选中的叙述中涉及到的人的id数组
+        //  这块可以高亮xxx-view的相关逻辑......
+
       }
     })
   }
@@ -184,7 +191,6 @@ class TopicTreeMap extends React.Component{
   // 下面两个函数为hover之后弹出tooltip的事件处理函数
   handleMouseenter(v){
     if(v.target.localName=="image"){
-      console.log("image--enter")
       let infos = v.target.getAttribute("info").split("_")
       let targetData = topicData[Number(infos[0])].cData[Number(infos[1])]
       let xChange = targetData.tx
@@ -245,6 +251,7 @@ class TopicTreeMap extends React.Component{
   handleApply(){
     let that = this
     topicData = brushFilter(topicData,that)
+    
 
     brushDatas=[];
     this.setState({
@@ -508,6 +515,11 @@ function rectFilter(data,singleBrush){
         if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2){
           v.isChoose=false
         }
+        v.personsId.map(v=>{
+          if(brushPersonsId.has(v)){
+            brushPersonsId.delete(v)
+          }
+        })
       }
     }
   }else{
@@ -516,6 +528,12 @@ function rectFilter(data,singleBrush){
       for(let v of d.cData){
         if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2){
           v.isChoose=true
+          v.personsId.map(v=>{
+            if(!brushPersonsId.has(v)){
+              brushPersonsId.add(v)
+            }
+          })
+          
         }
       }
     }
@@ -523,6 +541,7 @@ function rectFilter(data,singleBrush){
 }
 
 function brushFilter(topicData,that){
+  brushPersonsId.clear()
   //被选中的人名
   // console.log("topicData",topicData)
   let data = deepClone(topicData)
@@ -536,6 +555,9 @@ function brushFilter(topicData,that){
         cData.splice(j,1)
       }else{
         cData[j].isChoose=false
+        cData[j].personsId.forEach(v=>{
+          brushPersonsId.add(v)
+        })
         j++
       }
     }
