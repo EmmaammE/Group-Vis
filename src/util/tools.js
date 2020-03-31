@@ -10,6 +10,27 @@ export function debounce(func, wait) {
     }
 }
 
+// 深拷贝函数
+export function deepClone(Obj) {   
+    var buf;   
+    if (Obj instanceof Array) {   
+        buf = [];  //创建一个空的数组 
+        var i = Obj.length;   
+        while (i--) {   
+            buf[i] = deepClone(Obj[i]);   
+        }   
+        return buf;   
+    }else if (Obj instanceof Object){   
+        buf = {};  //创建一个空对象 
+        for (var k in Obj) {  //为这个对象添加新的属性 
+            buf[k] = deepClone(Obj[k]);   
+        }   
+        return buf;   
+    }else{   
+        return Obj;   
+    }   
+}
+
 // 根据一系列布尔值创建掩码
 export function createMask () {
     var nMask = 0, nFlag = 0, nLen = arguments.length > 32 ? 32 : arguments.length;

@@ -1,5 +1,5 @@
 import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_STEP_2_LAYER } from "../actions/types";
-
+import {deepClone} from '../util/tools'
 export function step(state=0, action) {
     switch (action.type) {
         case SET_STEP:
@@ -28,8 +28,9 @@ export function group(state={}, action) {
                     console.info(data)
                     console.info('更新前后数据一样')
                 }
-                state[step][key] = data;
-                return Object.assign({}, state);
+                state[step][key] = {...data};
+                // return Object.assign({}, state);
+                return deepClone(state)
                 
             } catch {
                 console.error('step,key无效', state, action);

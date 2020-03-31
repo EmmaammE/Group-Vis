@@ -6,11 +6,12 @@ import {scaleFactory,
       filterTimeLine,
       filterMatrixView,
       filterSelectList,
-      deepClone,
+      // deepClone,
       smallize, 
       reduceRelationData,
       rectTree,
       filterRelationData} from './util';
+import {deepClone} from '../../util/tools'
 import Arrow from'./Arrow'
 import './topicTreeMap.css'
 import FlowerLabel from '../flowerLabel/FlowerLabel'
@@ -28,6 +29,7 @@ import {updateSelectList} from '../../redux/selectList.redux.js'
 import {updateTopicWeight,updateTopicLrs} from '../../redux/topicWeight.redux.js'
 import RectLeaf from './rectLeaf/RectLeaf'
 import { setPerson } from '../../actions/data'
+import {updateGroupdata} from '../../actions/step.js'
 
 const btnData = [
       {btnName:"Add"},
@@ -39,7 +41,8 @@ let margin={left:15,top:15,right:15,bottom:15}
 const WIDTH = 630;
 const HEIGHT = 480
 
-let brushPersonsId = new Set()
+let brushPersons = {}
+let mapViewPersons = {}
 
 // const LEFTWIDTH = 90;
 // const HEIGHT = 540;
@@ -174,9 +177,10 @@ class TopicTreeMap extends React.Component{
           brushTransY:0
         })
         //  高亮xxx-view......
+        let brushPersonsId = Object.keys(brushPersons)
         let personsIdObject = [...brushPersonsId]
           .reduce((acc, e) => ({...acc, [e]:true}), {})
-          console.log(brushPersonsId);
+        console.log("brushPersonsId",brushPersonsId);
         that.props.setPerson(personsIdObject)
       }
     })
@@ -254,7 +258,9 @@ class TopicTreeMap extends React.Component{
     topicData = brushFilter(topicData,that)
     
 
-    brushDatas=[];
+    brushDatas=[]
+    mapViewPersons = {...brushPersons}
+    brushPersons = {}
     this.setState({
       tooltip:"",
       tipVisibility:"hidden",
@@ -263,6 +269,7 @@ class TopicTreeMap extends React.Component{
 
     // 取消XXX-view所有高亮的人
     this.props.setPerson({});
+
   }
 
   // 右上角的四个按钮的 注册事件
@@ -285,6 +292,10 @@ class TopicTreeMap extends React.Component{
   // mapView视图按钮
   handleClickMapView(){
     console.log("点击了mapView")
+    let step = this.props.currentStep
+    console.log("step,brusPersons",step,mapViewPersons)
+    this.props.updateGroupdata("people",step,mapViewPersons)
+
   }
 
   handleSliderMouseDown(e){
@@ -482,6 +493,7 @@ const mapStateToProps = (state)=>({
   topicWeight:state.topicWeight,
   historyData:state.historyData,
   step: state.otherStep["6"],
+  currentStep:state.otherStep["9"],
   KEY: state.KEY,
 })
 
@@ -494,7 +506,8 @@ const mapDispatchToProps = {
   updateTimeLine,
   updateTopicWeight,
   updateTopicLrs,
-  setPerson
+  setPerson,
+  updateGroupdata
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicTreeMap);
@@ -519,12 +532,12 @@ function rectFilter(data,singleBrush){
       for(let v of d.cData){
         if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2){
           v.isChoose=false
+          v.personsId.map(vkey=>{
+            if(brushPersons[vkey]){
+              delete brushPersons[vkey]
+            }
+          })
         }
-        v.personsId.map(v=>{
-          if(brushPersonsId.has(v)){
-            brushPersonsId.delete(v)
-          }
-        })
       }
     }
   }else{
@@ -533,9 +546,9 @@ function rectFilter(data,singleBrush){
       for(let v of d.cData){
         if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2){
           v.isChoose=true
-          v.personsId.map(v=>{
-            if(!brushPersonsId.has(v)){
-              brushPersonsId.add(v)
+          v.personsId.map((vkey,i)=>{
+            if(!brushPersons[vkey]){
+              brushPersons[vkey] = v.persons[i]
             }
           })
           
@@ -546,7 +559,6 @@ function rectFilter(data,singleBrush){
 }
 
 function brushFilter(topicData,that){
-  brushPersonsId.clear()
   //被选中的人名
   // console.log("topicData",topicData)
   let data = deepClone(topicData)
@@ -560,9 +572,6 @@ function brushFilter(topicData,that){
         cData.splice(j,1)
       }else{
         cData[j].isChoose=false
-        cData[j].personsId.forEach(v=>{
-          brushPersonsId.add(v)
-        })
         j++
       }
     }
