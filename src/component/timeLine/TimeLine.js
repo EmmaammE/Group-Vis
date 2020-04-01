@@ -148,7 +148,7 @@ class TimeLine extends React.Component{
       <div className="chart-wrapper">
         <div className="title">Timeline View</div>
         <div className="timeLine-container">
-          <svg width="100%" height="100%" 
+          <svg width={WIDTH} height={gHeight} 
             viewBox={`0 0 ${WIDTH} ${gHeight}`}
             ref={this.$container}
             onMouseDown={this.handleBrushMouseDown}

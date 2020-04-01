@@ -110,7 +110,7 @@ class MatrixView extends React.Component{
         <div  className="matrix-container">
           {
             labels.length==0?"No Concerned People":
-            <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH+20} ${HEIGHT}`} ref={this.$container}>
+            <svg width={WIDTH+40} height={HEIGHT} viewBox={`0 0 ${WIDTH+40} ${HEIGHT}`} ref={this.$container}>
               <g transform="translate(0,0)">
                 {/* 绘制坐标轴 */}
                 <g className="matrix_lables" transform={`translate(${margin.left},${margin.top})`} >

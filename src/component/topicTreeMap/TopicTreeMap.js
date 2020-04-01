@@ -167,6 +167,8 @@ class TopicTreeMap extends React.Component{
           brushWidth:brushWidth,
           brushHeight:brushHeight
         }
+        brushWidth = 0
+        brushHeight = 0
         rectFilter(topicData,singleBrushData)
         brushDatas.push(singleBrushData)
         that.setState({
@@ -180,7 +182,7 @@ class TopicTreeMap extends React.Component{
         let brushPersonsId = Object.keys(brushPersons)
         let personsIdObject = [...brushPersonsId]
           .reduce((acc, e) => ({...acc, [e]:true}), {})
-        console.log("brushPersonsId",brushPersonsId);
+        // console.log("brushPersonsId",brushPersonsId);
         that.props.setPerson(personsIdObject)
 
         // 挑出刷选的selectList
@@ -261,8 +263,6 @@ class TopicTreeMap extends React.Component{
   handleApply(){
     let that = this
     topicData = brushFilter(topicData,that)
-    
-
     brushDatas=[]
     let filterPersons = {...brushPersons}
     brushPersons = {}
@@ -271,12 +271,12 @@ class TopicTreeMap extends React.Component{
       tipVisibility:"hidden",
       highRowLabel:-1
     })
-
     // 取消XXX-view所有高亮的人
     this.props.setPerson({});
-
-    // 
+    // filterPersons是刷选涉及到的人
     console.log("filterPersons",filterPersons)
+
+
   }
 
   // 右上角的四个按钮的 注册事件
@@ -287,7 +287,7 @@ class TopicTreeMap extends React.Component{
   }
   //  Matrix View视图
   handleClickMatrixView(){
-    console.log("matrixView",topicData)
+    // console.log("matrixView",topicData)
     let matrixViewData = filterMatrixView(topicData)
     this.props.updateMatrix(matrixViewData)
   }
@@ -299,16 +299,13 @@ class TopicTreeMap extends React.Component{
 
   // mapView视图按钮
   handleClickMapView(){
-    console.log("点击了mapView")
     let step = this.props.currentStep
     let mapViewPersons = filterMapView(topicData)
-    console.log("step,brusPersons",step,mapViewPersons)
     this.props.updateGroupdata("people",step,mapViewPersons)
 
   }
 
   handleSliderMouseDown(e){
-    console.log("slider-mouse-down")
     startY = e.clientY
     sliderIndex =  Number(e.target.getAttribute("index"))
     // sliderWeights
