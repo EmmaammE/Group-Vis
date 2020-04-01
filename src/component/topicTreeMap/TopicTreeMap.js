@@ -30,7 +30,7 @@ import {updateSelectList} from '../../redux/selectList.redux.js'
 import {updateTopicWeight,updateTopicLrs} from '../../redux/topicWeight.redux.js'
 import RectLeaf from './rectLeaf/RectLeaf'
 import { setPerson } from '../../actions/data'
-import {updateGroupdata} from '../../actions/step.js'
+import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
 
 const btnData = [
       {btnName:"Add"},
@@ -274,9 +274,12 @@ class TopicTreeMap extends React.Component{
     // 取消XXX-view所有高亮的人
     this.props.setPerson({});
     // filterPersons是刷选涉及到的人
-    console.log("filterPersons",filterPersons)
-
-
+    // ANCHOR create a new flower
+    let param = new FormData();
+    for(let key in filterPersons) {
+      param.append("person_ids[]", key);
+    }
+    this.props.fetchTopicData(param,this.props.KEY, this.props.latestStep+1,1)
   }
 
   // 右上角的四个按钮的 注册事件
@@ -501,6 +504,8 @@ const mapStateToProps = (state)=>({
   step: state.otherStep["6"],
   currentStep:state.otherStep["9"],
   KEY: state.KEY,
+  // 最新的step
+  latestStep: state.step,
 })
 
 
@@ -513,7 +518,8 @@ const mapDispatchToProps = {
   updateTopicWeight,
   updateTopicLrs,
   setPerson,
-  updateGroupdata
+  updateGroupdata,
+  fetchTopicData
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicTreeMap);
