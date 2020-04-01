@@ -68,7 +68,7 @@ export function socialDisTemplate(vKey,tempDict,nodeDict){
 export function titleTemplate(vKey,tempDict,nodeDict){
     let result 
     let yearIndex = -1
-    let nianHaoIndex = -1
+    let nianHaoIndex = []
     let officeBelongIndex =-1
     let postWayIndex =-1
     let addressIndex =-1
@@ -77,8 +77,8 @@ export function titleTemplate(vKey,tempDict,nodeDict){
         if(nodeDict[vk].label=="Year"&&yearIndex==-1){
             yearIndex = i
         }
-        if(nodeDict[vk].label=="Nianhao"&&nianHaoIndex==-1){
-            nianHaoIndex = i
+        if(nodeDict[vk].label=="Nianhao"){
+            nianHaoIndex.push(i)
         }
         if(nodeDict[vk].label=="OfficeBelong"&&officeBelongIndex==-1){
             officeBelongIndex = i 
@@ -94,8 +94,11 @@ export function titleTemplate(vKey,tempDict,nodeDict){
     })
     
     if(officeBelongIndex!=-1){
-        result = `${words[0]}于${(nianHaoIndex-2)?words[nianHaoIndex-2]:"xxxx"}年(年号:`
-        result+= `${nianHaoIndex?words[nianHaoIndex]:"xx"})，被授予${words[officeBelongIndex+1]}的${words[officeBelongIndex-1]}官职，`
+        result = `${words[0]}于`
+        nianHaoIndex.forEach(v=>{
+            result+=`${(v-2)?words[v-2]:"xxxx"}年(年号:${nianHaoIndex?words[v]:"xx"})，`
+        })
+        result+= `被授予${words[officeBelongIndex+1]}的${words[officeBelongIndex-1]}官职，`
         result+= `${postWayIndex?words[postWayIndex]:""}${postWayIndex?words[postWayIndex+1]:""},`
         result+= `${addressIndex?words[addressIndex]:""} ${(addressIndex+1)?words[addressIndex+1]:""},`
         result+= `${(words[addressIndex+2])?words[addressIndex+2]:""} ${(words[addressIndex+3])?words[addressIndex+3]:""}`
