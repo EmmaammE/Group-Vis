@@ -48,7 +48,8 @@ let brushDatas=[];
 let startLoc=[];
 let brushWidth;
 let brushHeight;
-// let svgX ,svgY;
+let svgWidth ,svgHeight;
+let svgRatio
 let brushFlag=false;
 let topicData=[];
 
@@ -66,6 +67,7 @@ let sliderWeights=[]
 let topicViewState
 
 class TopicTreeMap extends React.Component{
+
   constructor(props){
     super(props);
     
@@ -103,16 +105,18 @@ class TopicTreeMap extends React.Component{
   
   }
 
-
   componentDidMount(){
-    // this.setState({sliderWeights:topicData.map(v=>v.weight)})
     const that = this
     let container = this.$container.current
+    console.log("container",container.clientWidth,container.clientHeight)
+    svgWidth =  container.clientWidth
+    svgHeight = container.clientHeight
+    svgRatio = svgWidth/WIDTH < svgHeight/HEIGHT ? svgWidth/WIDTH : svgHeight/HEIGHT
     let svg =  d3.select(container)
     svg.on("mousedown",function(){
       if(!dragFlag&&d3.event.target.localName!="circle"){
         // console.log("svg-mousedown",d3.event.offsetX,d3.event.offsetY,d3.event)
-        startLoc = [d3.event.offsetX-8,d3.event.offsetY]
+        startLoc = [d3.event.offsetX/svgRatio,d3.event.offsetY/svgRatio]
         brushFlag=true
         that.setState({
           brushTransX:startLoc[0],
@@ -123,8 +127,8 @@ class TopicTreeMap extends React.Component{
     })
     svg.on("mousemove",function(){
       if(brushFlag){
-        let nowX = d3.event.offsetX-8
-        let nowY = d3.event.offsetY
+        let nowX = d3.event.offsetX/svgRatio
+        let nowY = d3.event.offsetY/svgRatio
         brushWidth = nowX-startLoc[0]
         brushHeight = nowY-startLoc[1]
         if(brushWidth<0){
@@ -329,7 +333,7 @@ class TopicTreeMap extends React.Component{
   
 
   render(){
-    // 当topicData0时，或者topicView变化时更新，
+    // 当topicData0时，或者this.props.topicView变化时更新，
     if(topicData.length==0||topicViewState!=this.props.topicView){
       topicViewState = this.props.topicView
       topicData = deepClone(this.props.topicView)
@@ -372,11 +376,9 @@ class TopicTreeMap extends React.Component{
         </div>
         <div  className="topicViewChart-container">
           <svg
-            // left="0"
-            // top="0"
             ref={this.$container}
-            width={WIDTH}
-            height={HEIGHT}
+            width="100%"
+            height="100%"
             viewBox = {`0 0 ${WIDTH} ${HEIGHT}`}
           >
             {/* 绘制矩阵子集 */}
