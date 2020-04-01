@@ -38,29 +38,35 @@ class FirstPanel extends React.Component {
 
         this.onInputChange = this.onInputChange.bind(this);
         this.onClickSearch = this.onClickSearch.bind(this);
-        this.onMoveQuickSelect = this.onMoveQuickSelect.bind(this);
         this.setStatus = this.setStatus.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
     }
 
     tool_handleItem(data, type) {
         let { KEY } = this.props;
+        let {searchValue} = this.state;
         let arr = [];
 
-        if (type !== 0) {
-            arr.push([0, ALL_SIGN])
-        }
+        
         if (type === 2) {
             // "Person", 有相关人的relation
             let entries = Object.entries(data)
-            entries.forEach((e, i) => {
-                arr.push([e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]])
+            entries.forEach(e => {
+                if(e[1][KEY] === searchValue) {
+                    arr.unshift([e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]])
+                } else {
+                    arr.push([e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]])
+                }
             })
         } else {
 
             for (let _key in data) {
                 arr.push([_key, data[_key][KEY]])
             }
+        }
+
+        if (type !== 0) {
+            arr.unshift([0, ALL_SIGN])
         }
         return arr;
     }
@@ -296,20 +302,6 @@ class FirstPanel extends React.Component {
         this.setState({
             _tabPanel: index
         })
-    }
-
-    onMoveQuickSelect(e){
-        // debounce((e) => {
-            // console.log(e);
-            let id = e.target.dataset.id;
-            let {status} = this.state;
-            this.setStatus('Person')(id, true, status)
-            // if(!e.id || e.id!==id) {
-            //     e.id = id;
-            //     this.setStatus('Person')(id, true);
-            // //     e.$liTarget = null;
-            // }
-        // }, 100)(e)
     }
 
     _renderRow({ index, key, style }) {
