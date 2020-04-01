@@ -66,6 +66,7 @@ class FlowerContainer extends React.Component {
                             cb = {() => {
                                 this.props.cb(step[i])
                             }}
+                            step = {step[i]}
                         />
                     )) 
                 }

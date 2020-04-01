@@ -2,7 +2,8 @@ import {
     SET_PERSON,
     SET_COUNTED_LAYER,
     SET_YEAR,
-    SET_DICT
+    SET_DICT,
+    SET_VENN_STEP
 } from '../actions/types';
 
 export function people(state = {}, action) {
@@ -23,6 +24,20 @@ export function countedLayer(state = {}, action) {
     }
 }
 
+export function vennstep(state = [], action) {
+    switch (action.type) {
+        case SET_VENN_STEP:
+            let { data } = action;
+            if (state.indexOf(data) === -1) {
+                return [...state, data]
+            } else {
+                return state.filter(val => val !== data)
+            }
+        default:
+            return state;
+    }
+}
+
 /*  year: 表示相关的年份范围 */
 export function year(state = {
     low: -9999,
@@ -37,7 +52,7 @@ export function year(state = {
 }
 
 export function dict(state = {}, action) {
-    switch(action.type) {
+    switch (action.type) {
         case SET_DICT:
             return Object.assign({}, state, action.data)
         default:

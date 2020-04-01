@@ -56,74 +56,73 @@ class Blobs extends React.Component {
 
       this.initDrag();
     }
-
-    if(JSON.stringify(this.props.group) !== JSON.stringify(prevProps.group)) {
-      // 更新韦恩图
-      let sets = [];
-      let {group} = this.props;
-
-      // TODO 暂时只考虑32步以内
-      let groupKeys = Object.keys(group);
-      // 掩码数组的长度: 每一位对应Object.keys()得到的person_id数组集合是否包含该元素， 包含则为true
-      let boolSize = groupKeys.length;
-      // 映射每一个person_id的掩码数组的状态
-      let count = {};
-      // 每个key对应掩码数组的下标
-      let keyIndex = 0;
-      for(let key in group) {
-        let person_ids = Object.keys(group[key]);
-        if(key!=='1') {
-          sets.push({
-            sets: [key],
-            size: person_ids.length
+    try{
+      if(this.props.vennStep.length!== prevProps.vennStep.length) {
+        // if(JSON.stringify(this.props.group) !== JSON.stringify(prevProps.group)) {
+          // 更新韦恩图
+          let sets = [];
+          let {group} = this.props;
+    
+          // TODO 暂时只考虑32步以内
+          let groupKeys = Object.keys(group);
+          // 掩码数组的长度: 每一位对应Object.keys()得到的person_id数组集合是否包含该元素， 包含则为true
+          let boolSize = groupKeys.length;
+          // 映射每一个person_id的掩码数组的状态
+          let count = {};
+          // 每个key对应掩码数组的下标
+          this.props.vennStep.forEach((key, keyIndex)=> {
+            let person_ids = Object.keys(group[key]);
+            sets.push({
+              sets: [key],
+              size: person_ids.length
+            })
+    
+            // eslint-disable-next-line 
+            person_ids.forEach(id => {
+              if(count[id] === undefined) {
+                count[id] = new Array(boolSize).fill(false);
+              }
+              count[id][keyIndex] = true;
+            })
+    
           })
-        }
-
-        // eslint-disable-next-line 
-        person_ids.forEach(id => {
-          if(count[id] === undefined) {
-            count[id] = new Array(boolSize).fill(false);
+          // 各元素掩码的集合 - mask: 元素的个数 
+          let maskCount = {}
+          for(let id in count) {
+            let mask = createMask(...count[id]);
+            if(maskCount[mask] === undefined) {
+              maskCount[mask] = 0;
+            }
+            maskCount[mask]++;
           }
-          count[id][keyIndex] = true;
-        })
-
-        keyIndex++;
-      }
-
-       // 各元素掩码的集合 - mask: 元素的个数 
-      let maskCount = {}
-      for(let id in count) {
-        let mask = createMask(...count[id]);
-        if(maskCount[mask] === undefined) {
-          maskCount[mask] = 0;
-        }
-        maskCount[mask]++;
-      }
-
-      for(let mask in maskCount) {
-        let maskString = Number(mask).toString(2);
-        let _sets = [];
-        for(let i=maskString.length-1; i>=0; i--) {
-          if(maskString[i] === '1' && groupKeys[i]!=='1') {
-            _sets.push(groupKeys[i]);
+    
+          for(let mask in maskCount) {
+            let maskString = Number(mask).toString(2);
+            let _sets = [];
+            for(let i=maskString.length-1; i>=0; i--) {
+              if(maskString[i] === '1') {
+                _sets.push(groupKeys[i]);
+              }
+            }
+            if(_sets.length>1) {
+              sets.push({
+                sets: _sets,
+                size: maskCount[mask]
+              })
+            }
           }
-        }
-        if(_sets.length>1) {
-          sets.push({
-            sets: _sets,
-            size: maskCount[mask]
+          
+          sets.forEach(e => {
+            e.size = Math.sqrt(e.size)
           })
+          // let result = data.reduce((a, b) => a.filter(c => b.includes(c)));
+          this.setState({
+            sets
+          })
+          this.initVene(sets)
         }
-      }
-      
-      sets.forEach(e => {
-        e.size = Math.sqrt(e.size)
-      })
-      // let result = data.reduce((a, b) => a.filter(c => b.includes(c)));
-      this.setState({
-        sets
-      })
-      this.initVene(sets)
+    }catch{
+
     }
   }
 
@@ -245,7 +244,8 @@ const mapStateToProps = (state) => {
   }
   return {
     layer: state.step,
-    group: _group
+    group: _group,
+    vennStep: state.vennstep
   }
 }
 

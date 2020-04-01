@@ -3,7 +3,8 @@ import {
     SET_COUNTED_LAYER,
     SET_YEAR,
     SET_DICT,
-    SET_STEP_2_LAYER
+    SET_STEP_2_LAYER,
+    SET_VENN_STEP
 } from './types';
 
 // topicView中brush的人， 即Reduced-View高亮的人
@@ -20,6 +21,13 @@ export function setCountedLayer(layer) {
         type: SET_COUNTED_LAYER,
         data: layer
     };
+}
+
+export function setVeenedStep(step) {
+    return {
+        type: SET_VENN_STEP,
+        data: step
+    }
 }
 
 export function setYear(year) {

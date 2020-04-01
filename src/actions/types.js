@@ -7,6 +7,7 @@ export const SET_GROUP = "SET_GROUP";
 // 设置每一步对应的图3需要的以及更新的数据
 export const SET_TOPICS = "SET_TOPICS";
 export const UPDATE_GROUP_DATA_BY_STEP_KEY = "UPDATE_GROUP_DATA_BY_STEP_KEY";
+export const SET_VENN_STEP = "SET_VENN_STEP";
 
 // data.js
 export const SET_PERSON = "SET_PERSON";

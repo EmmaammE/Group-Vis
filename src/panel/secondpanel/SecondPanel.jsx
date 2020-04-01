@@ -177,7 +177,8 @@ class SecondPanel extends React.Component {
         this.props.updateTopicView(this.props.group[step]["topicView"])
         this.setState({
             grid,
-            hoverIndex: [...thisIndex, step]
+            hoverIndex: [...thisIndex, step],
+            btnStatus: new Array(4).fill(false)
         })
     }
 
@@ -233,7 +234,7 @@ const mapDispatchToProps = (dispatch) => {
         addStep: () => dispatch(addStep()),
         setOtherStep: (key, step) => dispatch(setOtherStep(key, step)),
         updateTopicView: data => {
-            console.log('topic');
+            // console.log('topic');
             return dispatch(updateTopicView(data))
         },
         updateTimeLine: data => dispatch(updateTimeLine(data)),
