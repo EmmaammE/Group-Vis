@@ -44,12 +44,6 @@ const HEIGHT = 500
 
 let brushPersons = {}
 
-// const LEFTWIDTH = 90;
-// const HEIGHT = 540;
-// const SINGAL_HEIGHT = 50
-// const START_COLOR = 'rgb(3,93,195)'
-// const END_COLOR = 'red' 
-
 let brushDatas=[];
 let startLoc=[];
 let brushWidth;
@@ -57,10 +51,7 @@ let brushHeight;
 // let svgX ,svgY;
 let brushFlag=false;
 let topicData=[];
-// let yScaleReverse,xScaleReverse;
-// let xScaleT,yScaleT
 
-// let sliderWeights=[]
 let sliderHeight = 45
 let sliderWidth = 5
 let sliderIndex = -1
@@ -71,6 +62,8 @@ let sliderTimer = null
 let sliderMoveTimer  = null
 let updateFlag = false
 let sliderWeights=[]
+
+let topicViewState
 
 class TopicTreeMap extends React.Component{
   constructor(props){
@@ -87,8 +80,7 @@ class TopicTreeMap extends React.Component{
       brushTransX:0,
       brushTransY:0,
       brushWidth:0,
-      brushHeight:0,
-      sliderWeights:[]
+      brushHeight:0
     }
     this.$container = React.createRef();
     this.handleMouseenter = this.handleMouseenter.bind(this)
@@ -113,7 +105,7 @@ class TopicTreeMap extends React.Component{
 
 
   componentDidMount(){
-    this.setState({sliderWeights:topicData.map(v=>v.weight)})
+    // this.setState({sliderWeights:topicData.map(v=>v.weight)})
     const that = this
     let container = this.$container.current
     let svg =  d3.select(container)
@@ -191,13 +183,6 @@ class TopicTreeMap extends React.Component{
         that.props.updateSelectList({selectListData})
       }
     })
-  }
-  componentDidUpdate(){
-    // 当sliderWeights为0时才需要更新
-    if(topicData.length>0&&!updateFlag){
-      updateFlag = true
-      this.setState({sliderWeights:topicData.map(v=>v.weight)})
-    }
   }
 
   // 下面两个函数为hover之后弹出tooltip的事件处理函数
@@ -344,7 +329,9 @@ class TopicTreeMap extends React.Component{
   
 
   render(){
-    if(topicData.length==0){
+    // 当topicData0时，或者topicView变化时更新，
+    if(topicData.length==0||topicViewState!=this.props.topicView){
+      topicViewState = this.props.topicView
       topicData = deepClone(this.props.topicView)
     }
     let rectTreeData = []
