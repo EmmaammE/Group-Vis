@@ -1,10 +1,9 @@
-import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_STEP_2_LAYER } from "../actions/types";
+import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "../actions/types";
 import {deepClone} from '../util/tools'
 export function step(state=0, action) {
     switch (action.type) {
         case SET_STEP:
             state = action.data
-            console.log(state);
             return state;
         case ADD_STEP:
             return state + 1;
@@ -54,18 +53,6 @@ export function otherStep(state={}, action) {
         // case "10_SET_STEP" :
             console.info('update', action); 
             return Object.assign({}, state, {[action.type[0]]: action.data})
-        default:
-            return state;
-    }
-}
-
-/**
- * Object {step: layer}
- */
-export function step2layer(state={}, action) {
-    switch(action.type) {
-        case SET_STEP_2_LAYER:
-            return Object.assign({}, state, {[action.data.step]: action.data.layer})
         default:
             return state;
     }
