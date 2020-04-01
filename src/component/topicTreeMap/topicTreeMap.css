@@ -14,6 +14,7 @@
   align-items: center;
   justify-content:space-around;
   z-index: 10;
+  overflow-y: visible;
 }
 
 .reactLeaf_image{
@@ -49,11 +50,11 @@
 .topicViewChart-container{
   box-sizing: content-box;
   position: relative;
-  margin-top:3%;
+  margin-top:50px;
   margin-left: 3%;
   margin-right: 3%;
   /* padding:0px 10px 10px 10px; */
-  width: 95%;
+  width: 100%;
   height: 95%;
   /* overflow-y: scroll; */
   /* overflow-x:hidden; */

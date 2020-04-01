@@ -38,8 +38,8 @@ const btnData = [
     ]
 let addOrMinus = true;
 
-let margin={left:15,top:15,right:15,bottom:15}
-const WIDTH = 630;
+let margin={left:15,top:25,right:15,bottom:15}
+const WIDTH = 600;
 const HEIGHT = 500
 
 let brushPersons = {}
@@ -264,6 +264,7 @@ class TopicTreeMap extends React.Component{
     
 
     brushDatas=[]
+    let filterPersons = {...brushPersons}
     brushPersons = {}
     this.setState({
       tooltip:"",
@@ -274,6 +275,8 @@ class TopicTreeMap extends React.Component{
     // 取消XXX-view所有高亮的人
     this.props.setPerson({});
 
+    // 
+    console.log("filterPersons",filterPersons)
   }
 
   // 右上角的四个按钮的 注册事件
@@ -363,7 +366,7 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleClickSelectList)
     return (
       <div className="chart-wrapper">
-        <div className="title">Topic View</div>
+        {/* <div className="title">Topic View</div> */}
         <div  className="topic-buttons">
           <div className="mButtonContainer" onClick={this.handleSwitch}>
             {btnData.map((v,i)=>(

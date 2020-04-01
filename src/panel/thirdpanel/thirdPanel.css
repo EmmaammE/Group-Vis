@@ -1,20 +1,24 @@
 .third-panel {
   /* display: flex; */
   /* flex-direction: column; */
+  position: relative;
   height: calc(100vh - 24px);
   user-select: none;
   overflow: hidden;
 }
 
 .third-panel .topicView-panel{
+  width: 100%;
+  position: absolute;
+  top:0px;
   height: 60vh;
 }
 
 .third-panel .third-footer-panel{
-  position: relative;
+  position: absolute;
+  top:62%;
   width: 100%;
-  height: 35vh;
- 
+  height: 38vh;
   margin: 0;
   padding: 0;
 
@@ -24,7 +28,7 @@
   width: 50%;
   box-sizing: border-box;
   height: 100%;
-  padding:5px;
+  padding:10px;
   display: inline-block;
   vertical-align: top;
 }
