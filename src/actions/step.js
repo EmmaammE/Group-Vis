@@ -395,7 +395,6 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     let timeLineData = {tLabelData,tCircleData}
     console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData)
     topicData.sort((a,b)=>b.weight-a.weight)
-    let sliderWeights = topicData.map(v=>v.weight)
 
     // 更新group, step
     updateGroupAndStep(step, 
@@ -417,6 +416,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
         }))
         // 更新所有图
+        let sliderWeights = topicData.map(v=>v.weight)
         dispatch(initTopicWeight(sliderWeights))
         dispatch(updateTopicView(topicData));
         dispatch(updateSelectList({selectListData}));

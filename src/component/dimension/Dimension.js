@@ -5,6 +5,7 @@ import { lasso } from 'd3-lasso';
 import Tooltip from '../tooltip/tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import {fetchTopicData} from '../../actions/step';
+import * as d3Fisheye from 'd3-fisheye'
 
 const d3 = Object.assign(d3Base, { lasso });
 
@@ -18,6 +19,11 @@ const getScales = (width, height, data) => {
 
     return { xScale, yScale, dataArr }
 }
+
+let fisheye = d3Fisheye.radial()
+.radius(250)
+.distortion(4)
+.smoothing(0.5)
 
 function Dimension({ _width, _height, _margin, selectedPeople = [], data = {}, type = 0 }) {
     const $container = useRef(null);
@@ -52,7 +58,6 @@ function Dimension({ _width, _height, _margin, selectedPeople = [], data = {}, t
 
     useEffect(() => {
         if (type === 0) {
-            console.log();
             const _lasso = lasso()
                 .items(d3.select($container.current).selectAll('circle'))
                 .targetArea(d3.select($container.current))
@@ -99,6 +104,39 @@ function Dimension({ _width, _height, _margin, selectedPeople = [], data = {}, t
         }
     }, [type, _people])
 
+    useEffect(() => {
+        fisheye.focus([250, 250])
+        d3.select($container.current)
+            .on('mousemove', function() {
+                const mouse = d3.mouse(this);
+                fisheye.focus(mouse);
+                let arr = [];
+                d3.select($container.current).selectAll('circle')
+                    .each(function(e,i) {
+                        let $node = d3.select(this)
+                        let p = [$node.attr("datax"), $node.attr("datay")]
+                        arr.push(fisheye(p))
+                    })
+                    .transition()
+                    .duration(100)
+                    .attr('cx',(e,i)=>arr[i][0])
+                    .attr('cy',(e,i)=>arr[i][1])
+            })
+            .on('mouseout', function() {
+                fisheye.focus([250, 250]);
+                let arr = [];
+                d3.select($container.current).selectAll('circle')
+                    .each(function(e,i) {
+                        let $node = d3.select(this)
+                        let p = [$node.attr("datax"), $node.attr("datay")]
+                        arr.push(fisheye(p))
+                    })
+                    .transition()
+                    .duration(100)
+                    .attr('cx',(e,i)=>arr[i][0])
+                    .attr('cy',(e,i)=>arr[i][1])
+            });
+    }, [scales])
 
     useEffect(() => {
         _setSelected({});
@@ -127,6 +165,7 @@ function Dimension({ _width, _height, _margin, selectedPeople = [], data = {}, t
                 {
                     scales.dataArr.map((d, i) => {
                         let person_id = d[1][2];
+                        let points = fisheye([scales.xScale(d[1][0]), scales.yScale(d[1][1])]);
                         return (
                             <circle key={'cir-' + i} r={3}  stroke="#bec0db" strokeWidth="1px"
                                 // opacity = {0.4}
@@ -136,7 +175,9 @@ function Dimension({ _width, _height, _margin, selectedPeople = [], data = {}, t
                                 style={{ cursor: 'pointer' }}
                                 onMouseOver={(e) => showTooltip(i, e)}
                                 onMouseOut={toggleShow}
-                                cx={scales.xScale(d[1][0])} cy={scales.yScale(d[1][1])} />
+                                datax = {scales.xScale(d[1][0])}
+                                datay = {scales.yScale(d[1][1])}
+                                cx={points[0]} cy={points[1]} />
                         )
                     })
                 }
