@@ -6,7 +6,6 @@ import FlowerContainer from '../../component/flower/flowerContainer';
 import { addStep, setOtherStep } from '../../actions/step';
 import { TOPICS, POSITIONS } from '../../util/name';
 import { connect } from 'react-redux';
-import { GridHistory } from './gridHistory';
 import { updateTopicView } from '../../redux/topicView.redux';
 import { updateMatrix } from '../../redux/matrixView.redux';
 import { updateSelectList } from '../../redux/selectList.redux';
@@ -23,12 +22,12 @@ class SecondPanel extends React.Component {
                 // {next:4, size:3, property:[7,9,10],selected:2, positions:[]},
                 // {next:-1, size:4, property:[7,7,5,10],selected:2, positions:[]},
             ],
+            gridBack: {},
+            // [第几层， 第几个，step]
             hoverIndex: [0, 0, 0],
             btnStatus: [false, false, false, false],
             // step: [第几层，第几个]
             step2index: { 1: [0, 0] },
-            gridHistory: new GridHistory(),
-            gridLength: 0
         }
         this.clickBtn = this.clickBtn.bind(this);
         this.clickFlower = this.clickFlower.bind(this);
@@ -37,99 +36,60 @@ class SecondPanel extends React.Component {
     componentDidUpdate(prevProps) {
         if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
             // if(prevProps.step !== this.props.step) {
-            let { grid, step2index, gridHistory, gridLength } = this.state;
+            let { grid, step2index, hoverIndex} = this.state;
             let { group, step } = this.props;
 
-            // try {
-            // TODO: ❀和grid序号的映射
             if (grid.length === 0 || this.props.step === 1) {
                 // console.log('update init');
                 // 暂定8片花瓣
                 let titles = group[1][TOPICS].slice(0, 8).map(arr => arr[1]);
                 let newGrid = [({
                     ...GRID_ITEM_TEMPLATE, size: 1, selected: 0, step: [1],
-                    property: [titles.length], titles: titles, positions: [group[1][POSITIONS]]
+                    property: [titles.length], titles: [titles], positions: [group[1][POSITIONS]]
                 })]
 
-                gridHistory = new GridHistory();
-                gridHistory.add(newGrid.slice(0));
-                this.setState({ grid: newGrid, gridHistory, gridLength: 1 })
+                this.setState({ grid: newGrid })
             } else {
                 let newGrid = grid.slice(0);
                 let titles = group[step][TOPICS].slice(0, 8).map(arr => arr[1]);
 
-                // 是否要进入下一层
+                let currentLayer = hoverIndex[0]
                 let lastIndex = step2index[step - 1];
-                if (lastIndex[0] === 0 || grid[lastIndex[0]].selected !== -1) {
+                // 被选中的这朵❀没有下一层
+                if (currentLayer === grid.length-1) {
                     newGrid[lastIndex[0]].next = 1;
-                    // 开始下一级
                     newGrid.push({
                         ...GRID_ITEM_TEMPLATE, size: 1, step: [step],
-                        property: [titles.length], titles: titles, positions: [group[step][POSITIONS]]
+                        property: [titles.length], titles: [titles], positions: [group[step][POSITIONS]]
                     });
                     // step2index[step] = [1,0];
                     step2index[step] = [lastIndex[0] + 1, 0];
                 } else {
-                    newGrid[lastIndex[0] - 1].next += 1;
-                    // 还是在这一层, 是这一层的第newIndex个
-                    let newIndex = lastIndex[1] + 1;
-                    step2index[step] = [lastIndex[0], newIndex];
+                // 被选中的这朵❀有下一层
+                    // 新的❀是这一层的第newIndex个
+                    let newIndex = newGrid[currentLayer].next;
+                
+                    newGrid[currentLayer].next += 1;
 
-                    let _grid = newGrid[lastIndex[0]];
+                    step2index[step] = [currentLayer+1, newIndex];
+
+                    let _grid = newGrid[currentLayer+1];
                     _grid.size += 1;
                     _grid.property.push(titles.length);
-                    _grid.titles = titles;
+                    _grid.titles.push(titles) ;
                     _grid.positions.push(group[step][POSITIONS]);
                     _grid.step.push(step);
                 }
 
-                gridHistory.add(newGrid.slice(0));
                 this.setState({
                     grid: newGrid,
                     step2index,
-                    gridHistory,
-                    gridLength: gridLength + 1
                 })
             }
-            // } catch {
-            //     console.log('...');
-            // }
         }
 
         if (prevProps.countedLayer !== this.props.countedLayer) {
             this._updateCountedLayer();
-        }
-    }
-
-    _updateCountedLayer() {
-        // countedLayer: 现在保留的步数
-        let { countedLayer, step } = this.props;
-        let { gridHistory, gridLength } = this.state;
-        let remove = gridLength - countedLayer;
-        if (remove > 0) {
-            gridHistory.undo(remove);
-            console.log('undo:', remove);
-            // console.log(gridHistory.present);
-            let grid = gridHistory.present;
-            for (let i = 0; i < grid.length; i++) {
-                if (i + 1 >= grid.length) {
-                    // 没有下一个了
-                    grid[i].next = -1;
-                }
-                grid[i].size = grid[i].step.length;
-            }
-            this.setState({
-                grid,
-                gridHistory,
-                gridLength: gridLength - remove
-            })
-        } else {
-            gridHistory.redo(-remove);
-            this.setState({
-                grid: gridHistory.present,
-                gridHistory,
-                gridLength: gridLength + remove
-            })
         }
     }
 
@@ -169,7 +129,18 @@ class SecondPanel extends React.Component {
     clickFlower(step) {
         let thisIndex = this.state.step2index[step];
         // 设置这一层的selected
-        let { grid } = this.state;
+        let { grid, gridBack, hoverIndex } = this.state;
+
+        // 如果已经有了下一层
+        if(thisIndex[0] < grid.length-1) {
+            gridBack[hoverIndex[step]] = grid.slice(thisIndex[0]+1);
+            grid = grid.slice(0, hoverIndex[0]+1);
+        }
+        // 如果该🌼已有备份
+        if(gridBack[step]!==undefined) {
+            grid = [grid, ...gridBack[step]];
+        }
+        // 更新选中的序号
         grid[thisIndex[0]].selected = thisIndex[1];
         // 更新降维图
         this.props.setOtherStep(6, step);
