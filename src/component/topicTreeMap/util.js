@@ -4,7 +4,6 @@ import topicData from '../../assets/geojson/a.json';
 
 export function reduceOpacity(that){
     return new Promise((resolve,reject)=>{
-        console.log("reduceOpacity.---begin")
         let timeInterval
         if(that.state.opacity>0){
         timeInterval = setInterval(function(){
@@ -23,7 +22,6 @@ export function reduceOpacity(that){
   }
 
 export function addOpacity(that){
-    console.log("addOpacity.---begin")
     if(that.state.opacity<1){
         setTimeout(function(){
           that.setState((prevState)=>({

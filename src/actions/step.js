@@ -395,6 +395,15 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     let timeLineData = {tLabelData,tCircleData}
     console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData)
     topicData.sort((a,b)=>b.weight-a.weight)
+
+    while(topicData.length>10){
+        if(topicData[topicData.length-1].weight<=0.5){
+            topicData.splice(topicData.length-1,1)
+        }else{
+            break
+        }
+    }
+    
     let sliderWeights = topicData.map(v=>v.weight)
 
     // 更新group, step

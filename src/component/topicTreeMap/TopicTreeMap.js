@@ -602,8 +602,11 @@ function adjustTreeMapUI(that){
   sliderTimer = setTimeout(function(){
     // 更新布局
     topicData[sliderIndex].weight = that.props.topicWeight[sliderIndex]
-    
+    // 重新对topicData进行排序
+    topicData.sort((a,b)=>b.weight-a.weight)
+    let tempWeights = topicData.map(v=>v.weight)
     that.props.updateTopicView(topicData)
+    that.props.initTopicWeight(tempWeights)
     // 向后端发起请求，更新降维图
     let topic_weights= {}
     topicData.forEach((v,i)=>{
@@ -619,7 +622,6 @@ function adjustTreeMapUI(that){
 
 function filterChangeEffect(that){
   return new Promise((resolve,reject)=>{
-    console.log("filterChangeEffect.---begin")
 
     topicData = brushFilter(topicData,that)
     brushDatas=[]

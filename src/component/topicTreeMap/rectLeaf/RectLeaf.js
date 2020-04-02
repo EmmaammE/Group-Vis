@@ -68,6 +68,8 @@ class RectLeaf extends React.Component{
         textAnchor="start"
         fontSize="0.65em"
         transform="scale(0.85)"
+        width = {this.props.width}
+        overflow="hidden"
         // zindex = "10"
       > 
         {data.label}
