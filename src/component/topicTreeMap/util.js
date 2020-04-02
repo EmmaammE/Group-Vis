@@ -2,7 +2,39 @@ import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
 
+export function reduceOpacity(that){
+    return new Promise((resolve,reject)=>{
+        console.log("reduceOpacity.---begin")
+        let timeInterval
+        if(that.state.opacity>0){
+        timeInterval = setInterval(function(){
+            that.setState((prevState)=>({
+            opacity:prevState.opacity-0.1
+            }),()=>{
+            console.log("reduceOpacity.",that.state.opacity)
+            })
+            if(that.state.opacity<0){
+                clearInterval(timeInterval)
+                resolve()
+            }
+        },50)
+        }
+    })
+  }
 
+export function addOpacity(that){
+    console.log("addOpacity.---begin")
+    if(that.state.opacity<1){
+        setTimeout(function(){
+          that.setState((prevState)=>({
+            opacity:prevState.opacity+0.1
+          }),()=>{
+            console.log("addOpacity.",that.state.opacity)
+          })
+          addOpacity(that)
+        },50)
+      }
+}
 
 export function rectLeafScale(data,width,height){
     let maxX = d3.max(data,function(layer){return layer.x})

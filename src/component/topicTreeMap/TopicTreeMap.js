@@ -11,6 +11,8 @@ import {scaleFactory,
       smallize, 
       reduceRelationData,
       rectTree,
+      reduceOpacity,
+      addOpacity,
       filterRelationData} from './util';
 import {deepClone} from '../../util/tools'
 import Arrow from'./Arrow'
@@ -82,7 +84,8 @@ class TopicTreeMap extends React.Component{
       brushTransX:0,
       brushTransY:0,
       brushWidth:0,
-      brushHeight:0
+      brushHeight:0,
+      opacity:1
     }
     this.$container = React.createRef();
     this.handleMouseenter = this.handleMouseenter.bind(this)
@@ -248,27 +251,21 @@ class TopicTreeMap extends React.Component{
     }
   }
 
+
+
   // apply按钮的事件，将数据刷选的结果应用到topicView
   handleApply(){
     let that = this
-    topicData = brushFilter(topicData,that)
-    brushDatas=[]
-    let filterPersons = {...brushPersons}
-    brushPersons = {}
-    this.setState({
-      tooltip:"",
-      tipVisibility:"hidden",
-      highRowLabel:-1
+    // 将透明度逐渐调节为0,用时1.6s，分四次
+    let reducePromise = reduceOpacity(that)
+    reducePromise.then(()=>{
+      // 修改数据相关
+      let filterPromise = filterChangeEffect(that)
+      filterPromise.then(()=>{
+        // 将透明度状态逐渐调节为1
+        addOpacity(that)
+      })
     })
-    // 取消XXX-view所有高亮的人
-    this.props.setPerson({});
-    // filterPersons是刷选涉及到的人
-    // ANCHOR create a new flower
-    let param = new FormData();
-    for(let key in filterPersons) {
-      param.append("person_ids[]", key);
-    }
-    this.props.fetchTopicData(param,this.props.KEY, this.props.latestStep+1,1)
   }
 
   // 右上角的四个按钮的 注册事件
@@ -320,7 +317,10 @@ class TopicTreeMap extends React.Component{
   }
   handleSliderMouseUp(e){
     let that = this
-    adjustTreeMapUI(that)
+    if(dragFlag){
+      adjustTreeMapUI(that)
+    }
+    
   }
   handleSliderMouseOut(){
     if(dragFlag==true){
@@ -345,7 +345,6 @@ class TopicTreeMap extends React.Component{
       sliderWeights = this.props.topicWeight     
     }
     
-    // console.log("topicData",topicData,rectTreeData,sliderWeights)
     
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
@@ -380,6 +379,9 @@ class TopicTreeMap extends React.Component{
             width="100%"
             height="100%"
             viewBox = {`0 0 ${WIDTH} ${HEIGHT}`}
+            opacity = {this.state.opacity}
+            onMouseMove = {this.handleSliderMouseMove}
+            onMouseUp = {this.handleSliderMouseUp}
           >
             {/* 绘制矩阵子集 */}
             {
@@ -414,9 +416,8 @@ class TopicTreeMap extends React.Component{
                     weight={v}
                     index = {i}
                     onMouseDown = {this.handleSliderMouseDown}
-                    onMouseMove = {this.handleSliderMouseMove}
-                    onMouseUp = {this.handleSliderMouseUp}
-                    onMouseOut = {this.handleSliderMouseOut}
+                    
+                    // onMouseOut = {this.handleSliderMouseOut}
                   >
                   </SvgSlider>
                 </g>
@@ -614,4 +615,30 @@ function adjustTreeMapUI(that){
     }
     that.props.updateTopicLrs(param, that.props.KEY, that.props.step)
   },1000)
+}
+
+function filterChangeEffect(that){
+  return new Promise((resolve,reject)=>{
+    console.log("filterChangeEffect.---begin")
+
+    topicData = brushFilter(topicData,that)
+    brushDatas=[]
+    let filterPersons = {...brushPersons}
+    brushPersons = {}
+    that.setState({
+      tooltip:"",
+      tipVisibility:"hidden",
+      highRowLabel:-1
+    })
+    // 取消XXX-view所有高亮的人
+    that.props.setPerson({});
+    // filterPersons是刷选涉及到的人
+    // ANCHOR create a new flower
+    let param = new FormData();
+    for(let key in filterPersons) {
+      param.append("person_ids[]", key);
+    }
+    that.props.fetchTopicData(param,that.props.KEY, that.props.latestStep+1,1)
+    resolve()
+  })
 }
