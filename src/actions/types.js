@@ -10,9 +10,4 @@ export const UPDATE_GROUP_DATA_BY_STEP_KEY = "UPDATE_GROUP_DATA_BY_STEP_KEY";
 
 // data.js
 export const SET_PERSON = "SET_PERSON";
-export const SET_COUNTED_LAYER = "SET_COUNTED_LAYER";
-export const SET_YEAR = "SET_YEAR";
-// 设置dict(node_dict edge_dict)
-export const SET_DICT = "SET_DICT";
-// 设置step和layer view中显示的图的对应关系
-export const SET_STEP_2_LAYER = "SET_STEP_2_LAYER";
+export const SET_VENN_STEP = "SET_VENN_STEP";

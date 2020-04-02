@@ -1,5 +1,4 @@
 import axios from "axios";
-import { setDict } from "../actions/data";
 import { TOPIC_LRS,
         TOPICS,EDGE_DICT, 
         NODE_DICT,DICT, 
@@ -141,11 +140,6 @@ export function fetchTopicData(param, KEY, step, type) {
                         res.data[POSITIONS][id].push(id);
                         _positions[temp[DICT][id]] = res.data[POSITIONS][id];
                     })
-                    // console.log(people, _positions);
-               
-                    // 分发node和edge的映射 NOTE 好像暂时不需要
-                    // dispatch(setDict(temp[DICT]));
-                   
                    
                     //  接口数据说明
                     //         DICT(name.js) ：node_edge的dict
@@ -155,7 +149,6 @@ export function fetchTopicData(param, KEY, step, type) {
                     //         "person_id2position2d": res.data["person_id2position2d"]
                     // 
                     updateFourViews(dispatch,people,res,temp,topicId2Name,step,_positions,type)
-   
                 } 
             })
             .catch(err => console.error(err))
@@ -176,10 +169,7 @@ export function fetchTopicData(param, KEY, step, type) {
 
 export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _positions, type){
 
-    console.log("返回的数据***",res.data,"temp***",temp);
-
-     
-
+    // console.log("返回的数据***",res.data,"temp***",temp);
     // 给topic建立从0到n的编号映射
     let topicToIndex = {}
     temp[TOPICS].forEach((v,i)=>{

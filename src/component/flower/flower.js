@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Dimension from '../dimension/Dimension';
+import { useDispatch } from 'react-redux';
+import { setVeenedStep } from '../../actions/data';
 
 const BOX_WIDTH = 250;
 const RADIUS = 100;
@@ -17,8 +19,14 @@ const petalPath = [
 /**
  * @param {Number} number: 花瓣的数量
  */
-function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions, _hovered, _ratio, cb,color='#7483a9'}) {
+function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions, _hovered, _ratio, cb, step, color='#7483a9'}) {
     const [arr, setArr] = useState([]);
+    const [beenVenn, setVenn] = useState(false);
+    const dispatch = useDispatch();
+    const updateVenn = useCallback(
+        step => dispatch(setVeenedStep(step)),
+        [dispatch]
+      )
 
     useEffect(() => {
         let _arr = [];
@@ -27,6 +35,11 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
         }
         setArr(_arr);
     }, [number])
+
+    function toggleVeen() {
+        setVenn(!beenVenn)
+        updateVenn(step)
+    }
 
     return (
         <g transform={"translate("+marginWidth+",0)"}>
@@ -65,7 +78,7 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
                 ))}
             </g>
             <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="white" />
-
+            
             <Dimension
                 _width={60}
                 _height={60}
@@ -74,6 +87,8 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
                 type = {1}
             />
             <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="transparent" onClick={cb} />
+
+            <circle cx={BOX_WIDTH+200} cy={BOX_WIDTH-200} r={10} fill="black" onClick={toggleVeen} />
         </g>
     )
 }

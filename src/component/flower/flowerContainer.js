@@ -57,7 +57,7 @@ class FlowerContainer extends React.Component {
                     Array(current).fill(null).map((arr, i) => (
                         <Flower 
                             marginWidth = {BOX_WIDTH*2*i} key={"flo-"+i} number={leaves[i]}
-                            titles = {titles}
+                            titles = {titles[i]}
                             _showUpLine = {_showUpLine}
                             _selected = {_selected===i}
                             _hovered = {_hovered===i}
@@ -66,6 +66,7 @@ class FlowerContainer extends React.Component {
                             cb = {() => {
                                 this.props.cb(step[i])
                             }}
+                            step = {step[i]}
                         />
                     )) 
                 }
