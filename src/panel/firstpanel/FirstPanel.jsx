@@ -31,7 +31,7 @@ class FirstPanel extends React.Component {
             clickStatus: {'Gender':[false,false]},
             timeRange: [0, 0],
             _tabPanel: 1,
-            cypher: '',
+            cyphers: [],
             $liTarget: null,
             status: false,
         }
@@ -211,9 +211,9 @@ class FirstPanel extends React.Component {
     }
 
     // 传给pathContainer
-    modify_cypher = cypher => {
+    modify_cypher = cyphers => {
         this.setState({
-            cypher
+            cyphers
         })
     }
 
@@ -277,21 +277,28 @@ class FirstPanel extends React.Component {
                     })
                 break;
             case 2:
-                let {cypher} = this.state;
+                let {cyphers} = this.state;
+                let _p = new FormData();
+
                 // fetch
-                param.append('draws', cypher)
-                axios.post('/search_person_ids_by_draws/', param)
-                    .then(res => {
+                Promise.all(cyphers.map(cypher => {
+                    let param = new FormData();
+                    param.append('draws', cypher)
+                    return axios.post('/search_person_ids_by_draws/', param)
+                })).then(values => {
+                    values.forEach(res => {
                         if(res.data.is_success) {
-                            let _p = new FormData();
                             res.data["person_ids"].forEach(id => {
                                 _p.append('person_ids[]', id);
                             })
-                            fetchTopicData(_p, KEY, 1);
-                            setOtherStep(6);
-                            setOtherStep(9);
+                            
                         }
                     })
+                }).then(() => {
+                    fetchTopicData(_p, KEY, 1);
+                    setOtherStep(6);
+                    setOtherStep(9);
+                })
                 break;
             default:
                 console.log(_tabPanel);

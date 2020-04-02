@@ -27,7 +27,8 @@ class PathContainer extends React.Component {
             d: '',
             // rect的类型
             who: [],
-            events: new Set()
+            // rect -> parent who's index
+            whoIndex: {},
         }
         // 供拖拽的节点label种类
         this.$container = React.createRef();
@@ -56,27 +57,49 @@ class PathContainer extends React.Component {
             .on("zoom", null)
     }
 
+    // NOTE 目前是将节点绑定在who上的，可能要改成边绑定
     componentDidUpdate(prevProps, prevState) {
-        let { links, rects, who } = this.state;
-        if (JSON.stringify(prevState.links) !== JSON.stringify(links)) {
-            let cypher = "";
-            /**
-                MATCH (p:Person)-[]-({name:'男'})
-                MATCH (:Person{name:'王安石'})-[:Do]-(m)
-                MATCH (m)-[]-({name:'是Y的恩主'}) 
-                return distinct p
-             */
-            links.forEach(link => {
-                let l1 = rects[link["index"][0]][2],
-                    l2 = rects[link["index"][1]][2];
+        let { links, rects, whoIndex, rects_links } = this.state;
+        try {
+            if (prevState.links.length !== links.length) {
+                let rectsSet = {};
+                for(let key in whoIndex) {
+                    let p = whoIndex[key];
+                    if(rectsSet[p] === undefined) {
+                        rectsSet[p] = new Set();
+                    }
+                    // 矩形绑定的连接
+                    rects_links[key].forEach(link => {
+                        rectsSet[p].add(link["link"])
+                    })
+                }
                 
-                cypher +=  ` MATCH ${this.tool_appendCypher(link["index"][0],l1)} -[]- ${this.tool_appendCypher(link["index"][1],l2)}`
-            })
-
-            who.forEach(s => {
-                cypher += ` return distinct id(n)`
-            })
-            this.props.modify_cypher(cypher);
+                let cyphers = Object.values(rectsSet).map(_links => {
+                    let cypher = "";
+                    /**
+                        MATCH (p:Person)-[]-({name:'男'})
+                        MATCH (:Person{name:'王安石'})-[:Do]-(m)
+                        MATCH (m)-[]-({name:'是Y的恩主'}) 
+                        return distinct p
+                     */
+                    _links.forEach(_index => {
+                        let link = links[_index];
+                        let l1 = rects[link["index"][0]][2],
+                            l2 = rects[link["index"][1]][2];
+                        
+                        cypher +=  ` MATCH ${this.tool_appendCypher(link["index"][0],l1)} -[]- ${this.tool_appendCypher(link["index"][1],l2)}`
+                    })
+        
+                    cypher += ` return distinct id(n)`;
+    
+                    return cypher;
+                })
+    
+                this.props.modify_cypher(cyphers);
+            }
+        } catch(err){
+            console.info('因为撤销连接,rects_links可能不对应, 等下次更新link即可')
+            // TODO 如果就是多画了一条要撤销。。。
         }
     }
 
@@ -160,7 +183,7 @@ class PathContainer extends React.Component {
 
     // 返回link绘制完成时的函数
     cbDownFactory(event) {
-        let { rects, links, pathHistory, rects_links } = this.state;
+        let { rects, links, pathHistory, rects_links, whoIndex, who } = this.state;
         // 检测link是否落在rect上
         let flag = -1;
         let x2 = event.x, y2 = event.y;
@@ -192,6 +215,29 @@ class PathContainer extends React.Component {
                 rects_links[flag].push({ key: "target", link: links.length, other: index })
             }
 
+            let _parent;
+            // 将link连接的矩形加入who节点的集合
+            if(who.indexOf(index)!== -1) {
+                _parent = index;
+            } else if(who.indexOf(flag)!==-1) {
+               _parent = flag
+            } else {
+                if(whoIndex[index] && whoIndex[flag]) {
+                    _parent = whoIndex[index] < whoIndex[flag] ? whoIndex[index] : whoIndex[flag]
+                } else {
+                    _parent = whoIndex[index] || whoIndex[flag];
+                    if(_parent === undefined) {
+                        _parent = index < flag ? index : flag;
+                    }
+                }
+            }
+            for(let key in whoIndex) {
+                if(whoIndex[key] === whoIndex[index] || whoIndex[key] === whoIndex[flag]) {
+                    whoIndex[key] = _parent
+                }
+            }
+            whoIndex[index] = whoIndex[flag] = _parent;
+            
             links = [...links, {
                 source: [source_x, source_y],
                 target: [target_x, target_y],
@@ -204,6 +250,7 @@ class PathContainer extends React.Component {
                 d: '',
                 links,
                 pathHistory,
+                whoIndex
             })
         }
     }
@@ -261,7 +308,7 @@ class PathContainer extends React.Component {
             }
             let this_x = temp_rects[index][0];
             if(index === 0) {
-                // 保存"who"节点的类型
+                // 保存"who"类型节点的序号
                 who.push(rects.length);
             }
             rects.push([
