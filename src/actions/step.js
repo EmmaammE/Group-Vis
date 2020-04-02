@@ -426,6 +426,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
         }))
         // 更新所有图
+        let sliderWeights = topicData.map(v=>v.weight)
         dispatch(initTopicWeight(sliderWeights))
         dispatch(updateTopicView(topicData));
         dispatch(updateSelectList({selectListData}));
