@@ -1,4 +1,5 @@
 import React from 'react';
+import './seqCircles.css'
 
 class SeqCircles extends React.Component{
   constructor(props){
@@ -36,6 +37,7 @@ class SeqCircles extends React.Component{
       <g  transform={`translate(${rowOrColumn?0:gxy(index)},${rowOrColumn?gxy(index):0})`}>
         {data.map((v,i)=>(
               <circle
+                className = "seqCircle_timeLine"
                 key={`text_${i}`}
                 cx={rowOrColumn?xy(v.distance):0}
                 cy={rowOrColumn?0:xy(v.distance)}

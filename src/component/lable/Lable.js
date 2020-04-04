@@ -26,7 +26,7 @@ class Lable extends React.Component{
     const colorful = this.props.colorful
     return (
       <g transform={`translate${trans}`}>
-        {data.length>0&&data.map((v,i)=>(
+        {data&&data.map((v,i)=>(
             <g 
               transform={`translate(${rowOrColumn?xy(i):0},${rowOrColumn?0:xy(i)})`}
               key={`text_${i}`}>

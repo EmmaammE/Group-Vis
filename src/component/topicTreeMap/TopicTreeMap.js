@@ -20,8 +20,9 @@ import './topicTreeMap.css'
 import FlowerLabel from '../flowerLabel/FlowerLabel'
 import RectSlider from '../rectSlider/RectSlider'
 import { connect } from 'react-redux';
-import VerticalSlider from '../verticalSlider/VerticalSlider';
-import SvgSlider from '../verticalSlider/SvgSlider';
+// import VerticalSlider from '../verticalSlider/VerticalSlider';
+import RowSlider from '../verticalSlider/RowSlider'
+// import SvgSlider from '../verticalSlider/SvgSlider';
 import MatrixButton from '../button/MatrixButton'
 import CircleBtn from '../button/circlebtn';
 import {updateTopicView} from '../../redux/topicView.redux.js'
@@ -33,6 +34,7 @@ import {updateTopicWeight,updateTopicLrs} from '../../redux/topicWeight.redux.js
 import RectLeaf from './rectLeaf/RectLeaf'
 import { setPerson } from '../../actions/data'
 import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
+import Tip from '../tooltip/Tip'
 
 const btnData = [
       {btnName:"Add"},
@@ -40,9 +42,9 @@ const btnData = [
     ]
 let addOrMinus = true;
 
-let margin={left:15,top:25,right:15,bottom:15}
+let margin={left:15,top:10,right:15,bottom:15}
 const WIDTH = 600;
-const HEIGHT = 500
+const HEIGHT = 450
 
 let brushPersons = {}
 
@@ -75,21 +77,27 @@ class TopicTreeMap extends React.Component{
     
     this.state = {
       btnClassName:["choose_btn",""],
-      tooltip:"tooltip",
-      tipVisibility:"hidden",
-      changeX:"50",
-      changeY:"50",
       highRowLabel:-1,
       brushVisibility:"hidden",
       brushTransX:0,
       brushTransY:0,
       brushWidth:0,
       brushHeight:0,
-      opacity:1
+      opacity:1,
+      selectedTopicIndex:1,
+      tipHasX:false,
+      tipTitle:"topicName",
+      tipData:[],
+      tipStyle:{
+        visibility:"hidden"
+      }
+
     }
     this.$container = React.createRef();
+    this.$ratio = React.createRef();
     this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
+    this.handleClickX = this.handleClickX.bind(this)
 
     this.handleSliderInput = this.handleSliderInput.bind(this)
     
@@ -101,10 +109,7 @@ class TopicTreeMap extends React.Component{
     this.handleClickTimeLine = this.handleClickTimeLine.bind(this)
     this.handleClickMapView = this.handleClickMapView.bind(this)
 
-    this.handleSliderMouseDown = this.handleSliderMouseDown.bind(this)
-    this.handleSliderMouseMove = this.handleSliderMouseMove.bind(this)
-    this.handleSliderMouseUp = this.handleSliderMouseUp.bind(this)
-    this.handleSliderMouseOut = this.handleSliderMouseOut.bind(this)
+    this.handleRectLeafClick = this.handleRectLeafClick.bind(this)
   
   }
 
@@ -187,7 +192,10 @@ class TopicTreeMap extends React.Component{
         // 挑出刷选的selectList
         
         let selectListData= filterBrushSelectList(topicData)
-        that.props.updateSelectList({selectListData})
+        if(selectListData.length>0){
+          that.props.updateSelectList({selectListData})
+        }
+        
       }
     })
   }
@@ -195,44 +203,83 @@ class TopicTreeMap extends React.Component{
   // 下面两个函数为hover之后弹出tooltip的事件处理函数
   handleMouseenter(v){
     if(v.target.localName=="image"){
-      let infos = v.target.getAttribute("info").split("_")
-      let targetData = topicData[Number(infos[0])].cData[Number(infos[1])]
-      let xChange = targetData.tx
-      let yChange = targetData.ty-15
-      let displayInfo = `${infos[2]}`
-      
-      this.setState({
-        tooltip:displayInfo,
-        tipVisibility:"visible",
-        changeX: xChange,
-        changeY: yChange,
-        highRowLabel:Number(infos[0])
-      })
+      let that = this
+      let tipHasX = false
+      popUp(that,tipHasX,v)
     }
   }
 
+
   handleMouseout(v){
-    this.setState({
-      tooltip:"",
-      tipVisibility:"hidden",
-      highRowLabel:-1
-    })
+    if(!this.state.tipHasX){
+      let that = this
+      popDown(that)
+    }
   } 
+
+  handleClickX(){
+    let that = this
+    popDown(that)
+  }
 
   // 此为滑块调节的响应函数
   handleSliderInput(e){
-      console.log("target:-------",e.target)
+      let that = this
       let temp = e.target.value
-      let index = e.target.index
-      const topic = e.target.getAttribute("topic")
-      // console.log("eeee",e,e.target,topic,temp)
+      let ratioDom = this.$ratio.current
+      ratioDom.innerHTML = `${temp}%`
+      e.target.value = temp
       // 填充滑块有值部分，backgound-size转化为驼峰命名的方法
-      e.target.style.backgroundSize = `${temp*100}% 100%`
-      const data = {
-        index:index,
-        weight:temp
+      e.target.style.backgroundSize = `${temp}% 100%`
+
+      if(sliderTimer){
+        clearTimeout(sliderTimer)
       }
-      // this.props.updateTopicWeight(data)
+      
+      sliderTimer = setTimeout(()=>{
+        // 更新布局
+        sliderIndex = this.state.selectedTopicIndex
+        // 记录该选中topic之前,及之后，其余topic的总值
+        let restTotalWeight = 100 - topicData[sliderIndex].weight
+        let newTotalWeight = 100 - temp
+        //更新该topic的值
+        topicData[sliderIndex].weight = temp
+        // 更新各个topic的值
+        let lastLabel = topicData[sliderIndex].label
+        // 对其余weight的值，等比例变化，保证所有值之和为100
+        topicData.forEach(v=>{
+          if(v.label!=lastLabel){
+            v.weight = Number((v.weight/restTotalWeight*newTotalWeight).toFixed(2))
+          }
+        })
+        // 重新对topicData进行排序
+        topicData.sort((a,b)=>b.weight-a.weight)
+        let newIndex = 1
+        let tempWeights = topicData.map((v,i)=>{
+          if(v.label==lastLabel){
+            newIndex = i
+          }
+          return v.weight
+        })
+        that.props.updateTopicView(topicData)
+        that.props.initTopicWeight(tempWeights)
+
+        // 更新选中的topic的序号
+        that.setState({
+          selectedTopicIndex:newIndex
+        })
+        
+        // 向后端发起请求，更新降维图
+        let topic_weights= {}
+        topicData.forEach((v,i)=>{
+          topic_weights[v.id] = Number(sliderWeights[i])
+        })
+        let param ={
+          topic_weights,
+          ...that.props.historyData
+        }
+        that.props.updateTopicLrs(param, that.props.KEY, that.props.step)
+      },1000)
   }
 
   // 此为切换加选还是减选框的按钮事件函数
@@ -251,20 +298,18 @@ class TopicTreeMap extends React.Component{
     }
   }
 
-
-
   // apply按钮的事件，将数据刷选的结果应用到topicView
   handleApply(){
     let that = this
-    // 将透明度逐渐调节为0,用时1.6s，分四次
-    let reducePromise = reduceOpacity(that)
-    reducePromise.then(()=>{
-      // 修改数据相关
-      let filterPromise = filterChangeEffect(that)
-      filterPromise.then(()=>{
-        // 将透明度状态逐渐调节为1
-        addOpacity(that)
-      })
+    // reduceOpacity为将透明度减为0
+    // filterCountData为计算本视图更新后的数据
+    // filterFetchData为依据本视图的框选出的参数去后端取数据操作
+    // 以上三者并发执行，待都完成之后
+    Promise.all([reduceOpacity(that),filterCountData(that),filterfetchData(that)])
+    .then((result)=>{
+      topicData = result[1]
+      // 透明度从0变成1
+      addOpacity(that)
     })
   }
 
@@ -294,40 +339,19 @@ class TopicTreeMap extends React.Component{
 
   }
 
-  handleSliderMouseDown(e){
-    startY = e.clientY
-    sliderIndex =  Number(e.target.getAttribute("index"))
-    // sliderWeights
-    startWeight = this.props.topicWeight[sliderIndex]
-    dragFlag = true
-    sliderTimer = null
-    
-  }
-  handleSliderMouseMove(e){
-    if(dragFlag){
-      let dis = Number((((e.clientY - startY)/sliderHeight)*60).toFixed(0))
-      let temp = dis + startWeight
-      temp = temp>100?100:temp
-      temp = temp<0?0:temp
-      this.props.updateTopicWeight({
-        index:sliderIndex,
-        weight:temp
+  handleRectLeafClick(e){
+    if(e.target.localName=="rect"){
+      let index = e.target.getAttribute("index")    
+      this.setState({
+        selectedTopicIndex:index
       })
     }
-  }
-  handleSliderMouseUp(e){
-    let that = this
-    if(dragFlag){
-      adjustTreeMapUI(that)
-    }
-    
-  }
-  handleSliderMouseOut(){
-    if(dragFlag==true){
+    if(e.target.localName=="image"){
       let that = this
-      adjustTreeMapUI(that)
+      let tipHasX = true
+      popUp(that,tipHasX,e)
     }
-    
+
   }
 
   
@@ -339,16 +363,17 @@ class TopicTreeMap extends React.Component{
       topicData = deepClone(this.props.topicView)
     }
     let rectTreeData = []
-    
+    let index = this.state.selectedTopicIndex
+    let selectedRect
+    let selectedWeight
     if(topicData.length>0){
       rectTreeData = rectTree(WIDTH,HEIGHT,topicData)
-      sliderWeights = this.props.topicWeight     
+      sliderWeights = this.props.topicWeight 
+      selectedRect = rectTreeData[index]    
+      selectedWeight = Number(topicData[index].weight).toFixed(0);
+      selectedWeight = selectedWeight>100?100 : selectedWeight
     }
-    
-    
-    let width = WIDTH-margin.left-margin.right
-    let height = HEIGHT -margin.top-margin.bottom
-   
+
     let handleClick = []
     handleClick.push(this.handleClickTimeLine)
     handleClick.push(this.handleClickMatrixView)
@@ -373,6 +398,18 @@ class TopicTreeMap extends React.Component{
               }
           </div>   
         </div>
+        
+          {
+            topicData.length>0&&<div className = "rowSlider-container">
+              <RowSlider
+                handleSliderInput={this.handleSliderInput}
+                weight = {selectedWeight}
+                topicName = {topicData[index].label}
+              ></RowSlider>
+              <div id = "rightRatio"  ref={this.$ratio} className="rightRatio">{`${selectedWeight}%`}</div>
+            </div>
+          }
+        
         <div  className="topicViewChart-container">
           <svg
             ref={this.$container}
@@ -380,16 +417,17 @@ class TopicTreeMap extends React.Component{
             height="100%"
             viewBox = {`0 0 ${WIDTH} ${HEIGHT}`}
             opacity = {this.state.opacity}
-            onMouseMove = {this.handleSliderMouseMove}
-            onMouseUp = {this.handleSliderMouseUp}
+            preserveAspectRatio="xMinYMin"
+            // onMouseMove = {this.handleSliderMouseMove}
+            // onMouseUp = {this.handleSliderMouseUp}
           >
             {/* 绘制矩阵子集 */}
             {
-              rectTreeData.length==0?null:
-              rectTreeData.map((v,i)=>(
+              rectTreeData.length>0&&rectTreeData.map((v,i)=>(
                 <g 
                   onMouseOver={this.handleMouseenter}
                   onMouseOut = {this.handleMouseout}
+                  onClick = {this.handleRectLeafClick}
                   key={`rectLeaf-${i}`} 
                   transform={`translate(${v.x0},${v.y0})`}
                 >   
@@ -404,49 +442,18 @@ class TopicTreeMap extends React.Component{
                 </g>
               ))
             }
-            {/* 绘制各个矩阵的竖向滑块 */}
+            {/* 绘制选中topic的框 */}
             {
-              sliderWeights.length==0?null:
-              sliderWeights.map((v,i)=>(
-                <g key={`svg_slider_${i}`} transform={`translate(${rectTreeData[i].x0},${rectTreeData[i].y0})`}>
-                  <SvgSlider
-                    
-                    height={sliderHeight}
-                    width={sliderWidth}
-                    weight={v}
-                    index = {i}
-                    onMouseDown = {this.handleSliderMouseDown}
-                    
-                    // onMouseOut = {this.handleSliderMouseOut}
-                  >
-                  </SvgSlider>
-                </g>
-                
-              ))
+              rectTreeData.length>0&&<g transform={`translate(${selectedRect.x0},${selectedRect.y0})`}>
+                <rect
+                  stroke="#333333"
+                  strokeWidth = "1.5"
+                  fill="none"
+                  width = {selectedRect.x1-selectedRect.x0}
+                  height = {selectedRect.y1-selectedRect.y0}
+                ></rect>
+            </g>
             }
-            {/* 绘制tooltip */}
-            <g 
-                transform = {`translate(${this.state.changeX},${this.state.changeY+5})`}
-                visibility={this.state.tipVisibility}
-              >
-                <rect className="tooltip-g"
-                  width="50"
-                  height="15" 
-                  opacity="0.5"
-                  fill="#ffffff">
-                </rect>
-                <text 
-                  fill="red"
-                  className="tooltip-rec"
-                  y="10"
-                  x="25"
-                  textAnchor="start"
-                  z-index = "10"
-                  fontSize="0.65em"
-                >
-                  {this.state.tooltip}
-                </text>
-              </g>
             {/* 绘制已经存在的刷选框 */}
             <g className="exsit-brush-rects">
               {
@@ -481,6 +488,16 @@ class TopicTreeMap extends React.Component{
             </g>
           </svg>
         </div>
+        {
+          <Tip
+            tipHasX = {this.state.tipHasX}
+            data = {this.state.tipData}
+            title = {this.state.tipTitle}
+            style={this.state.tipStyle}
+            handleClickX ={this.handleClickX}
+          >
+          </Tip>
+        }   
       </div>
       
     )
@@ -586,54 +603,44 @@ function brushFilter(topicData,that){
       i++
     }
   }
+  let totalWeight = 0
   if(data.length===0){
     //选择数据为0，则需要将topicWeight的reducer恢复到初始状态
     tempSliderWeights = that.props.topicView.map(v=>v.weight)
+  }else{
+    // 将剩余的topic的比重值之和映射到100
+    data.forEach(v=>{
+      totalWeight+=v.weight
+    })
+    data.forEach(v=>{
+      v.weight = Number((v.weight/totalWeight*100).toFixed(2))
+    })
   }
+
 
   that.props.initTopicWeight(tempSliderWeights)
   // cData = newCirData
   return data
 }
 
-function adjustTreeMapUI(that){
-  // console.log("拖拽结束");
-  dragFlag = false
-  sliderTimer = setTimeout(function(){
-    // 更新布局
-    topicData[sliderIndex].weight = that.props.topicWeight[sliderIndex]
-    // 重新对topicData进行排序
-    topicData.sort((a,b)=>b.weight-a.weight)
-    let tempWeights = topicData.map(v=>v.weight)
-    that.props.updateTopicView(topicData)
-    that.props.initTopicWeight(tempWeights)
-    // 向后端发起请求，更新降维图
-    let topic_weights= {}
-    topicData.forEach((v,i)=>{
-      topic_weights[v.id] = sliderWeights[i]
-    })
-    let param ={
-      topic_weights,
-      ...that.props.historyData
-    }
-    that.props.updateTopicLrs(param, that.props.KEY, that.props.step)
-  },1000)
-}
 
-function filterChangeEffect(that){
+
+function filterCountData(that){
   return new Promise((resolve,reject)=>{
-
-    topicData = brushFilter(topicData,that)
+    //  使框选框消失
     brushDatas=[]
-    let filterPersons = {...brushPersons}
-    brushPersons = {}
-    that.setState({
-      tooltip:"",
-      tipVisibility:"hidden",
-      highRowLabel:-1
-    })
     // 取消XXX-view所有高亮的人
     that.props.setPerson({});
+
+    let tempTopicData = brushFilter(topicData,that) 
+    resolve(tempTopicData)   
+  })
+}
+
+function filterfetchData(that){
+  return new Promise((resolve,reject)=>{
+    let filterPersons = {...brushPersons}
+    brushPersons = {}  
     // filterPersons是刷选涉及到的人
     // ANCHOR create a new flower
     let param = new FormData();
@@ -641,6 +648,32 @@ function filterChangeEffect(that){
       param.append("person_ids[]", key);
     }
     that.props.fetchTopicData(param,that.props.KEY, that.props.latestStep+1,1)
-    resolve()
+    resolve("filterfetchData")
+  })
+}
+
+function popUp(that,tipHasX,v){
+  let infos = v.target.getAttribute("info").split("_")
+      let tipTitle = topicData[Number(infos[0])].label
+      let targetData = v.target.getAttribute("discription")
+      let tipStyle = {
+        left:v.clientX,
+        top:v.clientY,
+        visibility:"visible"
+      }
+      that.setState({
+        tipHasX:tipHasX,
+        tipData:[targetData],
+        tipTitle:tipTitle,
+        tipStyle:tipStyle
+      })
+}
+
+function popDown(that){
+  let tipStyle = {
+    visibility:"hidden"
+  }
+  that.setState({
+    tipStyle:tipStyle
   })
 }

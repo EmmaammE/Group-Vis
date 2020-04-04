@@ -47,10 +47,11 @@ class RectLeaf extends React.Component{
         stroke="#333333"
         // rx ="5"
         // ry="5"
-        fill="none"
+        fill="white"
         strokeWidth = "0.5"
         width = {this.props.width}
-        height= {this.props.height}  
+        height= {this.props.height}
+        index={index}  
       >
       </rect>
       <rect
@@ -59,6 +60,7 @@ class RectLeaf extends React.Component{
         opacity="0.1"
         width = {this.props.width}
         height= {pHeight}  
+        index={index} 
       >
       </rect>
       <text  

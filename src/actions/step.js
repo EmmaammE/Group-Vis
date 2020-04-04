@@ -10,7 +10,7 @@ import { TOPIC_LRS,
         TOPIC_SENTENCE_VECTOR } from "../util/name";
 import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
-import {updateMatrix } from '../redux/matrixView.redux'
+import {updateMatrix ,initPeopleCommon} from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
 import {updateTimeLine} from '../redux/timeLine.redux'
 import {initTopicWeight} from '../redux/topicWeight.redux'
@@ -128,9 +128,23 @@ export function fetchTopicData(param, KEY, step, type) {
                         count[_key] = Object.keys(res.data[TOPIC_SENTENCE_POSITION][_key]).length;
                     }
 
-                    // topic的排序按照他们的描述数量来排序
-                    temp[TOPICS].sort((a,b) => count[b[0]]-count[a[0]])
-                    
+
+                    let topicLrs = res.data[TOPIC_LRS]
+                    // topic的排序按照他们的比重大小来排序
+                    temp[TOPICS].sort((a,b) => topicLrs[b[0]]-topicLrs[a[0]])
+                    // 下面对topic进行过滤：将其中小于4%的部分过滤掉
+                    // 统计原始数据weight总值是多少
+                    let totalWeight = Object.values(topicLrs).reduce((a,b)=>a+b,0)
+                    let minWeight = totalWeight*0.04
+                    let minIndex = 0
+                    let originLength = temp[TOPICS].length
+                    while(topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
+                        minIndex++
+                    }
+                    temp[TOPICS].splice(minIndex,originLength-minIndex)
+                    console.log("totalWeight",totalWeight,minIndex,originLength)
+
+
                     // 地图查询的人
                     let people = {};
                     let _positions = {};
@@ -152,7 +166,7 @@ export function fetchTopicData(param, KEY, step, type) {
                 } 
             })
             .catch(err => console.error(err))
-    }
+        }
 }
 
 /*
@@ -169,12 +183,8 @@ export function fetchTopicData(param, KEY, step, type) {
 
 export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _positions, type){
 
-    // console.log("返回的数据***",res.data,"temp***",temp);
-    // 给topic建立从0到n的编号映射
-    let topicToIndex = {}
-    temp[TOPICS].forEach((v,i)=>{
-        topicToIndex[v[0]] = i;
-    })
+    console.log("返回的数据***",res.data,"temp***",temp);
+    
 
     // 描述类别字典
     let topicSentences = res.data[TOPIC_SENTENCE_POSITION]
@@ -183,13 +193,16 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     let topicLrs = res.data[TOPIC_LRS]
     let sentenceLabel = res.data[SENTENCE_DICT]
     let nodeDict = res.data[NODE_DICT]
-
-
     let nodeEdgeDict = {
         ...res.data[NODE_DICT],
         ...res.data[EDGE_DICT]
     }
 
+    // 给topic建立从0到n的编号映射
+    let topicToIndex = {}
+    temp[TOPICS].forEach((v,i)=>{
+        topicToIndex[v[0]] = i;
+    })
     // people建立了从id到人名的映射，
     // matrixView需要的数据
 
@@ -227,7 +240,9 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         personIndex++
     }
 
-    
+    // 建立由两个人，找到他们共同的描述的映射集合
+    // 两个人的描述可能有很多个，所以对应的是个数组
+    let peopleToDiscriptions = {}
 
     // selectList 需要的数据
     let selectListData = []
@@ -236,6 +251,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     let tIndex = 0;
     // 形成视图所需的数据
     let topicData = []
+    let topicTotalWeight = 0
     for(let v of temp[TOPICS]){
 
         // 将比重为0的数据过滤掉
@@ -246,12 +262,16 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         // labelData.push(topicName)
         let cData = []
         
+        topicTotalWeight += topicLrs[v[0]]
+
         topicData.push({
             id:v[0],
             label:topicName,
             weight:topicLrs[v[0]]
         })
 
+
+        // 记录topic中涉及到的人数，占总人数的比例，用来绘制雪糕图
         let topicPerson = new Set()
         // 下是关于该topic的所有描述是对象。
         let topicSentence = topicSentences[v[0]]
@@ -335,19 +355,25 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
                 }
             }
             
-            //该描述中出现了两个以上人,统计MatrixView所需的数据
-            // console.log("dispersons***",disPersons)
             if(disPersons.length>1){
                 for(let i of disPersons){
                     matrixPerson[i].number++
                     for(let j of disPersons){
-                        // 采用i比j小的记录方式
                         if(i<j){
+                            let name = []
+                            name.push( matrixPerson[i].name)
+                            // 采用i比j小的记录方式
+                            name.push( matrixPerson[j].name)
+                            let joinName = name.sort((a,b)=>{
+                                return b.localeCompare(a)
+                            }).join('-')
                             if(matrixData[i][j]==undefined){
                                 matrixData[i][j]=1
+                                peopleToDiscriptions[joinName]=[]
                             }else{
                                matrixData[i][j]+=1 
                             }
+                            peopleToDiscriptions[joinName].push(senDiscription)
                         }
                     }
                 }
@@ -393,16 +419,13 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     // let topicData = {labelData,cData,relationData,fData}
     let matrixViewData = {matrixData,matrixPerson}
     let timeLineData = {tLabelData,tCircleData}
-    console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData)
-    topicData.sort((a,b)=>b.weight-a.weight)
+    console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData,peopleToDiscriptions)
 
-    while(topicData.length>10){
-        if(topicData[topicData.length-1].weight<=0.5){
-            topicData.splice(topicData.length-1,1)
-        }else{
-            break
-        }
-    }
+    topicData.sort((a,b)=>b.weight-a.weight)
+    topicData.forEach(v=>{
+        // 按比例调整每个topic的weight，使其总和为100
+        v.weight = Number((v.weight/topicTotalWeight*100).toFixed(2))
+    })
     
     let sliderWeights = topicData.map(v=>v.weight)
 
@@ -426,11 +449,11 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
         }))
         // 更新所有图
-        let sliderWeights = topicData.map(v=>v.weight)
         dispatch(initTopicWeight(sliderWeights))
         dispatch(updateTopicView(topicData));
         dispatch(updateSelectList({selectListData}));
         dispatch(updateMatrix(matrixViewData));
         dispatch(updateTimeLine(timeLineData))
+        dispatch(initPeopleCommon(peopleToDiscriptions))
     }
 }

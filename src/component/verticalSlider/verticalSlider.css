@@ -6,10 +6,6 @@
   width: 60px;
   height: 20px;
   font: 9px sans-serif;
-  
-  /* font-size:9px; */
-  /* -webkit-transform: scale(0.7);  */
-  /* transform: scale(0.7); */
   position: absolute;
   left:100%;
   transform:rotate(90deg);
@@ -21,6 +17,65 @@
   font-size: 10px;
   margin: 0 0 -10% 50%;
   transform: scale(0.9);
+}
+
+.rowSliderContainer div{
+  display: inline-block;
+  vertical-align: top;
+}
+
+.rowSliderContainer{
+  width: 90%;
+  height: 35px;
+  font-size: 12px;
+  overflow-y: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#leftName{
+  width: 20%;
+}
+
+#middleInput{
+  width: 75%;
+  position: relative;
+}
+
+
+#rowSlider{
+  -webkit-appearance: none;
+  width: 95%;
+  height: 6px;
+  border-radius: 3px;
+  margin-left:2%;
+  margin-right: 3%;
+
+  background: -webkit-linear-gradient(#bbbbbb, #bbbbbb) no-repeat #ffffff;
+  border:0.5px solid #888888;
+  background-size: 50% 100%;
+  outline: none;
+  opacity: 0.6;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+
+}
+
+#rowSlider:hover{
+  opacity: 1;
+}
+
+#rowSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+
+  border:solid 2px #888888;
+  color: white;
+  background: #888888;
+  cursor: pointer;
 }
 
 .columnSlider .slider[orient=vertical]{

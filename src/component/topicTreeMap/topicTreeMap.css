@@ -47,10 +47,29 @@
   /* background-color: tomato; */
 }
 
+.rowSlider-container{
+  box-sizing: content-box;
+  position: relative;
+  margin-top:55px;
+  margin-left: 3%;
+  margin-right: 3%;
+  /* padding:0px 10px 10px 10px; */
+  width: 94%;
+  height: 25px;
+  
+}
+
+#rightRatio{
+  width: 4%;
+  display: inline-block;
+  vertical-align: top;
+  font-size: 12px;
+}
+
 .topicViewChart-container{
   box-sizing: content-box;
   position: relative;
-  margin-top:50px;
+  margin-top:5px;
   margin-left: 3%;
   margin-right: 3%;
   /* padding:0px 10px 10px 10px; */

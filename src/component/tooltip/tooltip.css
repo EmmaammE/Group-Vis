@@ -29,3 +29,68 @@
     top: 100%;
     left: 0;
     } */
+
+.tooltip-box{
+  position:fixed;
+  width: 150px;
+  height: 150px;
+  z-index: 10;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border: solid rgba(48, 48, 48, 0.753) 1px ;
+  background-color: rgba(255, 255, 255, 0.657);
+}
+
+.tooltip-head{
+  width: 100%;
+  height: 10%;
+  position: relative;
+  background-color: rgba(156, 154, 154, 0.664);
+  overflow: hidden;
+}
+.tooltip-head div{
+  display: inline-block;
+  vertical-align: top;
+}
+
+.tooltip-head-title{
+  left:0;
+  width: 85%;
+  font-size: 12px;
+  padding-left: 5px;
+  
+}
+
+.tooltip-head-close{
+  right :0;
+  width: 10%;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tooltip-content{
+  width: 96%;
+  height: 85%;
+  margin-top:2%;
+  margin-left: 2%;
+  margin-right:2%;
+  overflow-y: scroll;
+  font-size: 12px;
+}
+
+/* 滚动条 */
+.tooltip-content::-webkit-scrollbar-track {
+  border: 1px solid #d3d3d3;
+  background-color: #F5F5F5;
+}
+
+.tooltip-content::-webkit-scrollbar {
+  height:4px;
+  width: 4px;
+  background-color: #F5F5F5;
+}
+
+.tooltip-content::-webkit-scrollbar-thumb {
+  background-color: #d3d3d3;  
+}
+

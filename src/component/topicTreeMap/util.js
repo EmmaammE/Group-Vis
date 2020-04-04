@@ -10,11 +10,11 @@ export function reduceOpacity(that){
             that.setState((prevState)=>({
             opacity:prevState.opacity-0.1
             }),()=>{
-            console.log("reduceOpacity.",that.state.opacity)
+            // console.log("reduceOpacity.",that.state.opacity)
             })
             if(that.state.opacity<0){
                 clearInterval(timeInterval)
-                resolve()
+                resolve("reduceOpacity")
             }
         },50)
         }
@@ -27,7 +27,7 @@ export function addOpacity(that){
           that.setState((prevState)=>({
             opacity:prevState.opacity+0.1
           }),()=>{
-            console.log("addOpacity.",that.state.opacity)
+            // console.log("addOpacity.",that.state.opacity)
           })
           addOpacity(that)
         },50)

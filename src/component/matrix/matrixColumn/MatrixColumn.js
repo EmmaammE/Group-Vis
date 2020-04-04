@@ -1,5 +1,6 @@
 import React from 'react';
 import * as d3 from 'd3';
+import './matrixColumn.css'
 
 // 暂时的假数据
 

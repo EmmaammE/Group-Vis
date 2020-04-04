@@ -5,7 +5,7 @@ import {scaleFactory,sortTimeLineData,circleData,lineData} from './util';
 import './timeLine.css'
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
-
+import Tip from '../tooltip/Tip'
 
 
 const WIDTH = 380;
@@ -23,23 +23,28 @@ class TimeLine extends React.Component{
   constructor(props){
     super(props);
     this.state = {
-      tooltip:"tooltip",
-      tipVisibility:"hidden",
-      changeX:"50",
-      changeY:"50",
       highRowLabel:-1,
       brushVisibility:"hidden",
       brushTransX:0,
       brushTransY:0,
       brushWidth:0,
-      brushHeight:0
+      brushHeight:0,
+      tipHasX:false,
+      tipTitle:"topicName",
+      tipData:[],
+      tipStyle:{
+        visibility:"hidden"
+      }
     }
     this.$container = React.createRef();
+    this.handleClickCircle = this.handleClickCircle.bind(this)
+    this.handleClickX =  this.handleClickX.bind(this)
     this.handleMouseenter = this.handleMouseenter.bind(this)
     this.handleMouseout = this.handleMouseout.bind(this)
     this.handleBrushMouseDown = this.handleBrushMouseDown.bind(this)
     this.handleBrushMouseMove = this.handleBrushMouseMove.bind(this)
     this.handleBrushMouseUp = this.handleBrushMouseUp.bind(this)
+
   }
 
   componentDidMount(){
@@ -50,29 +55,36 @@ class TimeLine extends React.Component{
     svgX=currentX
     svgY=currentY
   }
-  handleMouseenter(v){
+
+  handleClickCircle(v){
     if(v.target.localName=="circle"){
-      let targetWidth = Number(v.target.getAttribute("width"));
-      let infos = v.target.getAttribute("info").split("_");
-      let xChange = v.clientX- svgX;
-      let yChange = v.clientY- svgY-targetWidth*3;
-      
-      this.setState({
-        tooltip:infos[2],
-        tipVisibility:"visible",
-        changeX: xChange,
-        changeY: yChange,
-        highRowLabel:Number(infos[0])
-      })
+      let that = this
+      let tipHasX = true
+      popUp(that,tipHasX,v) 
     }
   }
-  handleMouseout(v){
-    this.setState({
-      tooltip:"",
-      tipVisibility:"hidden",
-      highRowLabel:-1
-    })
+  handleMouseenter(v){
+    if(v.target.localName=="circle"){
+      let that = this
+      let tipHasX = false
+      popUp(that,tipHasX,v) 
+    }
   }
+
+
+  handleMouseout(v){
+    if(!this.state.tipHasX){
+      let that = this
+      popDown(that)
+    }
+  }
+
+  handleClickX(){
+    let that = this
+    popDown(that)
+  }
+
+
 
   // 下面三个函数为刷选框的监听函数
   handleBrushMouseDown(v){
@@ -177,6 +189,7 @@ class TimeLine extends React.Component{
                         key={`Circle_time_${i}`}
                         onMouseEnter={this.handleMouseenter}
                         onMouseOut = {this.handleMouseout}
+                        onClick = {this.handleClickCircle}
                         >
                         <SeqCircles
                           key={`SeqCircles_time_${i}`}
@@ -221,32 +234,6 @@ class TimeLine extends React.Component{
                       </line>
                     ))
                   }
-                </g>
-                {/* 绘制tooltip */}
-                <g 
-                  transform = {`translate(${this.state.changeX},${this.state.changeY-margin.top*2})`}
-                  visibility={this.state.tipVisibility}
-                >
-                  <rect className="tooltip-g"
-                    width="40"
-                    height="15" 
-                    opacity="0.5"
-                    // stroke="red"
-                    // strokeWidth="1"
-                    fill="#ffffff">
-                  </rect>
-                  <text 
-                    // transform = "scale(0.9)"
-                    fill="red"
-                    className="tooltip-rec"
-                    y="10"
-                    x="20"
-                    textAnchor="start"
-                    z-index = "10"
-                    fontSize="0.65em"
-                  >
-                    {this.state.tooltip}
-                  </text>
                 </g>
                 {/* 绘制刷选框 */}
                 <g
@@ -295,6 +282,16 @@ class TimeLine extends React.Component{
             }
           </svg>
         </div>
+        {
+          <Tip
+            tipHasX = {this.state.tipHasX}
+            data = {this.state.tipData}
+            title = {this.state.tipTitle}
+            style={this.state.tipStyle}
+            handleClickX ={this.handleClickX}
+          >
+          </Tip>
+        }
       </div>
       
     )
@@ -305,6 +302,30 @@ const mapStateToProps = (state)=>({
   timeLineView:state.timeLineView
 })
 
-
-
 export default connect(mapStateToProps)(TimeLine);
+
+function popUp(that,tipHasX,v){
+  let infos = v.target.getAttribute("info").split("_");
+  let tipTitle = `时间：${infos[1]}`
+  let targetData = infos[2]
+  let tipStyle = {
+    left:v.clientX,
+    top:v.clientY,
+    visibility:"visible"
+  }
+  that.setState({
+    tipHasX:tipHasX,
+    tipData:[targetData],
+    tipTitle:tipTitle,
+    tipStyle:tipStyle
+  })
+}
+
+function popDown(that){
+  let tipStyle = {
+    visibility:"hidden"
+  }
+  that.setState({
+    tipStyle:tipStyle
+  })
+}
