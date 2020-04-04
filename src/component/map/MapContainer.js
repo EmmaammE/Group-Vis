@@ -12,23 +12,28 @@ class MapContainer extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        let {people} = this.props;
-        if(JSON.stringify(prevProps.people)!==JSON.stringify(people)) {
+        let {data} = this.props;
+        if(JSON.stringify(prevProps.data)!==JSON.stringify(data)) {
             let that = this;
             let param = new FormData();
-            for(let _key in people) {
-                param.append("person_ids[]", _key);
+            for(let _key in data["addressNode"]) {
+                param.append("address_ids[]", _key);
             }
-            axios.post('/search_address_by_person_ids/', param)
+
+            console.log(data);
+            axios.post('/search_address_by_address_ids/', param)
                 .then(res => {
                     if(res.data.is_success) {
                         // console.log(res.data);
                         let addr = {};
                         for(let _data in res.data["Addr"]) {
-                            addr[people[_data]] = res.data["Addr"][_data];
+                            addr[_data] = res.data["Addr"][_data][0];
+                            if(addr[_data]) {
+                                addr[_data]['address_name'] = data["addressNode"][_data]
+                            }
                         }
                         that.setState({
-                            addr: addr
+                            addr
                         })
                     } else {
                         if(res.data.bug) {
@@ -55,7 +60,11 @@ const mapStateToProps = state => {
     let step = state.otherStep["9"];
     // console.log(step);
     return {
-        people: state.group[step] && state.group[step]["people"]
+        // "mapView": {
+        //     pos2sentence,
+        //     addressNode: addressMap['addressNode']
+        // },
+        data: state.group[step] && state.group[step]["mapView"]
     }
 }
 

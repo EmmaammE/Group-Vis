@@ -22,7 +22,7 @@ class FlowerContainer extends React.Component {
 
     componentDidUpdate(prevProps){
         let {next, current} = this.props;
-        if (prevProps.next !== next) {
+        if (prevProps.next !== next || prevProps.current !== current) {
             this.setState({
                 endpoints: getEndpoints(next, current)
             })

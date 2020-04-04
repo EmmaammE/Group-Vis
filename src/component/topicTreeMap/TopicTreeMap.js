@@ -408,7 +408,7 @@ class TopicTreeMap extends React.Component{
             {
               sliderWeights.length==0?null:
               sliderWeights.map((v,i)=>(
-                <g key={`svg_slider_${i}`} transform={`translate(${rectTreeData[i].x0},${rectTreeData[i].y0})`}>
+                rectTreeData[i] && <g key={`svg_slider_${i}`} transform={`translate(${rectTreeData[i].x0},${rectTreeData[i].y0})`}>
                   <SvgSlider
                     
                     height={sliderHeight}

@@ -44,12 +44,6 @@ class Map extends React.Component {
                   .attr("transform",transform);
                 },100)(d3.event.transform)
               }))
-    //   var tool_tip = d3.tip()
-    //   .attr("class", "d3-tip")
-    //   .offset([-8, 0])
-    //   .html(function(d) { return "Radius: " + d; });
-    // svg.call(tool_tip);
-    // this.$container.call(d3.tip().offset([-8,0]));
   }
 
   showTooltip(data,coor) {
@@ -101,13 +95,17 @@ class Map extends React.Component {
                 addr && 
                 Object.entries(addr).map((data, i) => {
 
-                  let $circle = data[1].map((d,j) => (
-                    <circle key={'cir-'+i+' '+j} r={5} fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
-                      onMouseOver = {e => this.showTooltip(data[0],projection([d['x_coord'], d['y_coord']]))}
-                      onMouseOut = { () => this.setState({tooltip:{show: false}})}
-                      transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
-                  ))
-                  return $circle;
+                  if(data[1]) {
+                    let d = data[1]
+                    return (
+                      <circle key={'cir-'+i} r={5} fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
+                        onMouseOver = {e => this.showTooltip(data[0],projection([d['x_coord'], d['y_coord']]))}
+                        onMouseOut = { () => this.setState({tooltip:{show: false}})}
+                        transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
+                    )
+                  } else {
+                    return null
+                  }
                 })
               }
             </g>
