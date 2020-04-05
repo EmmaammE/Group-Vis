@@ -37,7 +37,7 @@ class SecondPanel extends React.Component {
     componentDidUpdate(prevProps) {
         if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
             // if(prevProps.step !== this.props.step) {
-            let { grid, step2index, hoverIndex} = this.state;
+            let { grid, step2index, hoverIndex } = this.state;
             let { group, step } = this.props;
 
             if (grid.length === 0 || this.props.step === 1) {
@@ -54,8 +54,12 @@ class SecondPanel extends React.Component {
                 let newGrid = grid.slice(0);
                 let titles = group[step][TOPICS].slice(0, 8).map(arr => arr[1]);
 
-                let currentLayer = hoverIndex[0]
+                let currentLayer = hoverIndex[0];
                 let lastIndex = step2index[step - 1];
+
+                // if(lastHoverIndex !== undefined) {
+                //     lastIndex = step2index[lastHoverIndex[2]]
+                // }
                 // 被选中的这朵❀没有下一层
                 if (currentLayer === grid.length-1) {
                     newGrid[lastIndex[0]].next = 1;
@@ -130,17 +134,29 @@ class SecondPanel extends React.Component {
     clickFlower(step) {
         let thisIndex = this.state.step2index[step];
         // 设置这一层的selected
-        let { grid, gridBack, hoverIndex } = this.state;
+        let { grid, gridBack, hoverIndex  } = this.state;
 
-        // 如果已经有了下一层
-        if(thisIndex[0] < grid.length-1) {
-            gridBack[hoverIndex[step]] = grid.slice(thisIndex[0]+1);
-            grid = grid.slice(0, hoverIndex[0]+1);
+        let hasNext = false;
+        // 如果选中的这一层已经有了下一层，且不是在该花朵所在的层选择该花朵时创建的
+        if(thisIndex[0]+1 <= grid.length-1 && grid[thisIndex[0]].selected!==thisIndex[1]) {
+            // 当前被选中的step 
+            hasNext = true;
+            gridBack[hoverIndex[2]] = grid.slice(thisIndex[0]+1);
+            grid = grid.slice(0, thisIndex[0]+1);
+            grid[thisIndex[0]].next = -1;
         }
         // 如果该🌼已有备份
-        if(gridBack[step]!==undefined) {
-            grid = [grid, ...gridBack[step]];
+        if(gridBack[step]!==undefined && grid[thisIndex[0]].selected!==thisIndex[1]) {
+            // 如果选中该❀前，同层的❀已有下一层
+            if(hasNext === true) {
+                grid = grid.slice(0, thisIndex[0]+1);
+            }
+            gridBack[step].forEach(e => {
+                grid.push(e)
+            })
+            grid[thisIndex[0]].next = gridBack[step][0].size;
         }
+       
         // 更新选中的序号
         grid[thisIndex[0]].selected = thisIndex[1];
         // 更新降维图
@@ -150,8 +166,11 @@ class SecondPanel extends React.Component {
         let sliderWeights = topicData.map(v=>v.weight)
         this.props.initTopicWeight(sliderWeights);
         this.props.updateTopicView(this.props.group[step]["topicView"]);
+
+        let lastIndex = hoverIndex.slice(0);
         this.setState({
             grid,
+            lastHoverIndex: lastIndex,
             hoverIndex: [...thisIndex, step],
             btnStatus: new Array(4).fill(false)
         })
@@ -179,7 +198,7 @@ class SecondPanel extends React.Component {
                                         _ratio={i === 0 ? 1 : item.size / grid[i - 1].size}
                                         _showUpLine={i !== 0}
                                         _selected={item && item.selected}
-                                        _nextSelected={item.next !== -1 && grid[i + 1].selected}
+                                        _nextSelected={grid[i + 1] && grid[i + 1].selected}
                                         titles={item.titles}
                                         positions={item.positions}
                                         step={item.step}
