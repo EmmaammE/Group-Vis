@@ -8,6 +8,9 @@ export const LABEL_2_TOPIC = "label2topic_ids";
 // 字典
 export const DICT = "nodes_edges_dict"
 export const TOPIC_SENTENCE_POSITION = "topic_id2sentence_id2position1d";
+//相似的人
+export const SIMILAR_PEOPLE = "similar_person_ids";
+
 export const TOPIC_PMI = "topic_pmi"
 
 export const NODE_DICT = "node_dict"

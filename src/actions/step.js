@@ -7,10 +7,11 @@ import { TOPIC_LRS,
         TOPIC_PMI, 
         SENTENCE_DICT,
         PERSON_SENTENCE,
-        TOPIC_SENTENCE_VECTOR } from "../util/name";
+        TOPIC_SENTENCE_VECTOR, 
+        SIMILAR_PEOPLE} from "../util/name";
 import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
-import {updateMatrix ,initPeopleCommon} from '../redux/matrixView.redux'
+import {updateMatrix ,initPeopleCommon, peopleToList} from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
 import {updateTimeLine} from '../redux/timeLine.redux'
 import {initTopicWeight} from '../redux/topicWeight.redux'
@@ -150,7 +151,7 @@ export function fetchTopicData(param, KEY, step, type) {
                     let minWeight = totalWeight*0.04
                     let minIndex = 0
                     let originLength = temp[TOPICS].length
-                    while(minIndex<originLength&&topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
+                    while(minIndex < originLength && topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
                         minIndex++
                     }
                     temp[TOPICS].splice(minIndex,originLength-minIndex)
@@ -272,8 +273,12 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     let topicTotalWeight = 0
 
     // 地点和对应事件描述的映射
-    // pos2sentence[pos] = [ {sentence: '', type: '', topic: ''} ]
+    // pos2sentence[pos] = [ {sentence: Number, type: 'string', topic: 'vKey'} ]
     let pos2sentence = {};
+    // 描述包含的事件
+    // pos2sentence[---上面的sentence---] = [pos, pos...]
+    let sentence2pos = [];
+
     for(let v of temp[TOPICS]){
 
         // 将比重为0的数据过滤掉
@@ -338,29 +343,37 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
 
             // 提取地点事件用到地图
             let words = vKey.split(" ");
-            let _pos, _type;
+            let _pos = [] , _type;
             words.forEach(word => {
-                if(word === '432906') {
-                    console.log(addressMap["addressNode"]);
-                }
-                if(word in addressMap["addressNode"]) {
-                    _pos = word;
-                } 
-                if(word in addressMap["addressType"]) {
-                    _type = word;
+                if(word !== '-1') {
+                    if(word in addressMap["addressNode"]) {
+                        _pos.push(word);
+                    } 
+                    if(word in addressMap["addressType"]) {
+                        _type = word;
+                    }
                 }
             })
-            if(_pos !== undefined) {
-                if(pos2sentence[_pos] === undefined) {
-                    pos2sentence[_pos] = [];
+
+            _pos.forEach(pos => {
+                if(pos2sentence[pos] === undefined) {
+                    pos2sentence[pos] = [];
                 }
-                pos2sentence[_pos].push({
-                    'sentence': senDiscription, 
-                    'type':  _type,
-                    'topic': vKey
+                pos2sentence[pos].push({
+                    'sentence': sentence2pos.length, 
+                    'type':  temp[DICT][_type],
+                    'topic': v
+                })
+            })
+
+            if(_pos.length!==0) {
+                sentence2pos.push({
+                    pos: _pos,
+                    words: senDiscription
                 })
             }
 
+            
             let discript = vKey.split(" ").map(vk=>{
                 //一个描述的单一片段，如果其是我们要搜索的人的话
                 if(personToIndex[vk]!=undefined&&singleExist[vk]==undefined){
@@ -479,14 +492,18 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         {
             "mapView": {
                 pos2sentence,
-                addressNode: addressMap['addressNode']
+                addressNode: addressMap['addressNode'],
+                sentence2pos
             },
             [POSITIONS]: _positions,
             [TOPICS]: temp[TOPICS],
+            "people": people,
             "topicView": topicData,
             "selectView": {selectListData},
             "matrixView": matrixViewData,
-            "timelineView": timeLineData
+            "timelineView": timeLineData,
+            // TODO:暂时将相似的人放在group里
+            [SIMILAR_PEOPLE]: res.data[SIMILAR_PEOPLE]
         }
     )(dispatch)
 

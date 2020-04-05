@@ -12,39 +12,46 @@ class MapContainer extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        let {people} = this.props;
-        if(JSON.stringify(prevProps.people)!==JSON.stringify(people)) {
+        let {data} = this.props;
+        if(JSON.stringify(prevProps.data)!==JSON.stringify(data)) {
             let that = this;
-            let param = new FormData();
-            for(let _key in people) {
-                param.append("person_ids[]", _key);
+            if(Object.keys(data["pos2sentence"]).length!==0) {
+                let param = new FormData();
+                for(let _key in data["pos2sentence"]) {
+                    param.append("address_ids[]", _key);
+                }
+    
+                console.log(data);
+                axios.post('/search_address_by_address_ids/', param)
+                    .then(res => {
+                        if(res.data.is_success) {
+                            let addr = {};
+                            for(let _data in res.data["Addr"]) {
+                                addr[_data] = res.data["Addr"][_data][0];
+                                if(addr[_data]) {
+                                    addr[_data]['address_name'] = data["addressNode"][_data]
+                                }
+                            }
+                            that.setState({
+                                addr
+                            })
+                        } else {
+                            if(res.data.bug) {
+                                console.error(res.data.bug);
+                            }
+                        }
+                    })
             }
-            axios.post('/search_address_by_person_ids/', param)
-                .then(res => {
-                    if(res.data.is_success) {
-                        // console.log(res.data);
-                        let addr = {};
-                        for(let _data in res.data["Addr"]) {
-                            addr[people[_data]] = res.data["Addr"][_data];
-                        }
-                        that.setState({
-                            addr: addr
-                        })
-                    } else {
-                        if(res.data.bug) {
-                            console.error(res.data.bug);
-                        }
-                    }
-                })
         }
     }
 
     render() {
         let {addr} = this.state;
+        let {data} = this.props;
         return (
             <div className="geomap">
                 <div className="title">Map View</div>
-                <div className="container"><Map addr={addr} /></div>
+                <div className="container"><Map addr={addr} pos2sentence={data && data["pos2sentence"]} sentence2pos={data && data["sentence2pos"]} /></div>
             </div>
         )
     }
@@ -55,7 +62,14 @@ const mapStateToProps = state => {
     let step = state.otherStep["9"];
     // console.log(step);
     return {
-        people: state.group[step] && state.group[step]["people"]
+        // NOTE sentence2pos[---上面的sentence---] = [pos, pos...]
+        // NOTE pos2sentence[pos] = [ {sentence: Number, type: 'string', topic: 'vKey'} ]
+        // "mapView": {
+        //     pos2sentence,
+        //     addressNode: addressMap['addressNode'],
+        //     sentence2pos
+        // },
+        data: state.group[step] && state.group[step]["mapView"]
     }
 }
 
