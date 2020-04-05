@@ -87,6 +87,9 @@ export function fetchTopicData(param, KEY, step, type) {
         axios.post('/search_topics_by_person_ids/', param)
             .then(res => {
                 if(res.data.is_success) {
+                    // 存储label是Addr的节点的id
+                    let addressNode = {};
+                    let addressType = {};
                     // 处理node_dict and edge_dict, 将name修改一下
                     // KEY是区别中英文的代表
                     let temp = {[DICT]:{}, [TOPICS]:[]}
@@ -108,6 +111,13 @@ export function fetchTopicData(param, KEY, step, type) {
                             temp[DICT][_key] = _data["name"]
                         } else {
                             temp[DICT][_key] = _data[KEY]
+                        }
+
+                        if(_data["label"] === "Addr") {
+                            addressNode[_key] = _data[KEY]
+                        }
+                        if(_data["label"] === "AddrType") {
+                            addressType[_key] = _data[KEY]
                         }
                     }
                     
@@ -156,7 +166,12 @@ export function fetchTopicData(param, KEY, step, type) {
                         res.data[POSITIONS][id].push(id);
                         _positions[temp[DICT][id]] = res.data[POSITIONS][id];
                     })
-                   
+
+                    let addressMap = {
+                        addressNode,
+                        addressType
+                    }
+                    
                     //  接口数据说明
                     //         DICT(name.js) ：node_edge的dict
                     //         "label2topic_ids": res.data["label2topic_ids"],
@@ -164,7 +179,7 @@ export function fetchTopicData(param, KEY, step, type) {
                     //         "topic_pmi": res.data["topic_pmi"],
                     //         "person_id2position2d": res.data["person_id2position2d"]
                     // 
-                    updateFourViews(dispatch,people,res,temp,topicId2Name,step,_positions,type)
+                    updateFourViews(dispatch,people,res,temp,topicId2Name,step,_positions,addressMap,type)
                 } 
             })
             .catch(err => console.error(err))
@@ -183,7 +198,7 @@ export function fetchTopicData(param, KEY, step, type) {
  * 
 */
 
-export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _positions, type){
+export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _positions, addressMap, type){
 
     console.log("返回的数据***",res.data,"temp***",temp);
     
@@ -255,6 +270,10 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     // 形成视图所需的数据
     let topicData = []
     let topicTotalWeight = 0
+
+    // 地点和对应事件描述的映射
+    // pos2sentence[pos] = [ {sentence: '', type: '', topic: ''} ]
+    let pos2sentence = {};
     for(let v of temp[TOPICS]){
 
         // 将比重为0的数据过滤掉
@@ -315,6 +334,31 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
                 default:
                     senDiscription = vKey.split(" ").map(vk=>temp[DICT][vk]).join('-')
                     break;
+            }
+
+            // 提取地点事件用到地图
+            let words = vKey.split(" ");
+            let _pos, _type;
+            words.forEach(word => {
+                if(word === '432906') {
+                    console.log(addressMap["addressNode"]);
+                }
+                if(word in addressMap["addressNode"]) {
+                    _pos = word;
+                } 
+                if(word in addressMap["addressType"]) {
+                    _type = word;
+                }
+            })
+            if(_pos !== undefined) {
+                if(pos2sentence[_pos] === undefined) {
+                    pos2sentence[_pos] = [];
+                }
+                pos2sentence[_pos].push({
+                    'sentence': senDiscription, 
+                    'type':  _type,
+                    'topic': vKey
+                })
             }
 
             let discript = vKey.split(" ").map(vk=>{
@@ -430,12 +474,13 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         v.weight = Number((v.weight/topicTotalWeight*100).toFixed(2))
     })
     
-    let sliderWeights = topicData.map(v=>v.weight)
-
     // 更新group, step
     updateGroupAndStep(step, 
         {
-            "people": people,
+            "mapView": {
+                pos2sentence,
+                addressNode: addressMap['addressNode']
+            },
             [POSITIONS]: _positions,
             [TOPICS]: temp[TOPICS],
             "topicView": topicData,
@@ -452,6 +497,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
         }))
         // 更新所有图
+        let sliderWeights = topicData.map(v=>v.weight)
         dispatch(initTopicWeight(sliderWeights))
         dispatch(updateTopicView(topicData));
         dispatch(updateSelectList({selectListData}));
