@@ -13,8 +13,8 @@ class FourthPanel extends React.Component {
         <Header title = "Details view"></Header>
         <div className="content-panel">
           <div className="box"><TimeLine/></div>
-          <div className="box"><MatrixView/></div>
-          <div className="box"><MapContainer /></div>
+          <div className="matrix-box "><MatrixView/></div>
+          <div className="mapContainer-box"><MapContainer /></div>
         </div>
       </div>
     )

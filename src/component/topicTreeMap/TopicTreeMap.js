@@ -84,7 +84,7 @@ class TopicTreeMap extends React.Component{
       brushWidth:0,
       brushHeight:0,
       opacity:1,
-      selectedTopicIndex:1,
+      selectedTopicIndex:0,
       tipHasX:false,
       tipTitle:"topicName",
       tipData:[],

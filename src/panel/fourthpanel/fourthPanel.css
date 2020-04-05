@@ -13,9 +13,21 @@
   overflow: hidden;
 }
 
+
 .content-panel .box{
   box-sizing: border-box;
-  height: 34%;
+  height: 29%;
+  border-top: 5px solid #eaeaea;
+}
+.content-panel .mapContainer-box{
+  box-sizing: border-box;
+  height: 33%;
+  border-top: 5px solid #eaeaea;
+}
+
+.content-panel .matrix-box{
+  box-sizing: border-box;
+  height: 38%;
   border-top: 5px solid #eaeaea;
 }
 

@@ -91,6 +91,15 @@ export function fetchTopicData(param, KEY, step, type) {
                     // KEY是区别中英文的代表
                     let temp = {[DICT]:{}, [TOPICS]:[]}
                     // temp[DICT]中记录着从topic编号到topic名字的映射,以及从描述编号到描述文字的映射
+                    for(let _key in res.data["edge_dict"]) {
+                        // 中文： edge的name 英文: edge的label
+                        if(res.data["edge_dict"]==="") {
+                            temp[DICT][_key] = res.data["edge_dict"][_key]["label"]
+                        } else {
+                            temp[DICT][_key] = res.data["edge_dict"][_key][KEY]
+                        }
+                    }
+                    
                     for(let _key in res.data["node_dict"]) {
                         let _data = res.data["node_dict"][_key]
                         if(_data["name"] === "None" && _data["en_name"] === "None") {
@@ -102,14 +111,7 @@ export function fetchTopicData(param, KEY, step, type) {
                         }
                     }
                     
-                    for(let _key in res.data["edge_dict"]) {
-                        // 中文： edge的name 英文: edge的label
-                        if(res.data["edge_dict"]==="") {
-                            temp[DICT][_key] = res.data["edge_dict"][_key]["label"]
-                        } else {
-                            temp[DICT][_key] = res.data["edge_dict"][_key][KEY]
-                        }
-                    }
+                    
             
                     // 建立从topicId 到 名称 的映射
                     let topicId2Name={}
@@ -138,7 +140,7 @@ export function fetchTopicData(param, KEY, step, type) {
                     let minWeight = totalWeight*0.04
                     let minIndex = 0
                     let originLength = temp[TOPICS].length
-                    while(topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
+                    while(minIndex<originLength&&topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
                         minIndex++
                     }
                     temp[TOPICS].splice(minIndex,originLength-minIndex)
@@ -197,6 +199,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         ...res.data[NODE_DICT],
         ...res.data[EDGE_DICT]
     }
+
 
     // 给topic建立从0到n的编号映射
     let topicToIndex = {}

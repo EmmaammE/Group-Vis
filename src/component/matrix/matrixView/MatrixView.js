@@ -12,8 +12,8 @@ import Tip from '../../tooltip/Tip'
 
 // import 
 // 暂时的假数据
-let WIDTH = 270;
-let HEIGHT = 270;
+let WIDTH = 295;
+let HEIGHT = 295;
 const START_COLOR = 'red'
 const END_COLOR = 'rgb(3,93,195)' 
 const SINGAL_HEIGHT = 25
@@ -91,13 +91,13 @@ class MatrixView extends React.Component{
     labels = sortedData.matrixPerson
     // xy是比例尺，因为是方型所以，横竖方向使用一个
     // colorMap是颜色比例尺
-    let margin={left:40,top:40,right:10,bottom:10}
+    let margin={left:35,top:35,right:5,bottom:5}
     
-    HEIGHT = labels.length*SINGAL_HEIGHT+margin.top+margin.bottom
-    if(HEIGHT>WIDTH){
-      WIDTH = HEIGHT>WIDTH? HEIGHT : WIDTH
-    }
-    HEIGHT = WIDTH
+    // HEIGHT = labels.length*SINGAL_HEIGHT+margin.top+margin.bottom
+    // if(HEIGHT>WIDTH){
+    //   WIDTH = HEIGHT>WIDTH? HEIGHT : WIDTH
+    // }
+    // HEIGHT = WIDTH
     let height = HEIGHT -margin.top-margin.bottom
     let width = WIDTH-margin.left-margin.right
 
@@ -128,22 +128,26 @@ class MatrixView extends React.Component{
             <svg width={WIDTH+40} height={HEIGHT} viewBox={`0 0 ${WIDTH+40} ${HEIGHT}`} ref={this.$container}>
               <g transform="translate(0,0)">
                 {/* 绘制坐标轴 */}
-                <g className="matrix_lables" transform={`translate(${margin.left},${margin.top})`} >
-                  <LeftLable 
-                    key={`lable_row`} 
-                    rowOrColumn = {true} 
-                    data={labels} 
-                    xy={xy}
-                    highLable={this.state.highRowLabel}
-                  ></LeftLable>
-                  <LeftLable 
-                    key={`lable_column`} 
-                    rowOrColumn = {false} 
-                    data={labels} 
-                    xy={xy}
-                    highLable={this.state.highColLabel}
-                  ></LeftLable>
-                </g>
+                {
+                  labels.length>25 
+                  ?null
+                  :<g className="matrix_lables" transform={`translate(${margin.left},${margin.top})`} >
+                    <LeftLable 
+                      key={`lable_row`} 
+                      rowOrColumn = {true} 
+                      data={labels} 
+                      xy={xy}
+                      highLable={this.state.highRowLabel}
+                    ></LeftLable>
+                    <LeftLable 
+                      key={`lable_column`} 
+                      rowOrColumn = {false} 
+                      data={labels} 
+                      xy={xy}
+                      highLable={this.state.highColLabel}
+                    ></LeftLable>
+                  </g>
+                }
                 {/* 绘制矩形块 */}
                 <g 
                   className="matrix_columns" 

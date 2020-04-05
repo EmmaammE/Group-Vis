@@ -85,12 +85,26 @@ export function titleTemplate(vKey,tempDict,nodeDict){
         }
         return  tempDict[vk]
     })
-    
+    let lastYear = "none"
     if(officeBelongIndex!=-1){
         result = `${words[0]}于`
         nianHaoIndex.forEach(v=>{
-            result+=`${(v-2)?words[v-2]:"xxxx"}年(年号:${nianHaoIndex?words[v]:"xx"})，`
+            if((v-2)&&words[v-2]!=lastYear){
+                if(lastYear!="none"){
+                    result+=`),`
+                }
+                lastYear = words[v-2]
+                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号:${nianHaoIndex?words[v]:"xx"}`
+            }else if(words[v-2]==lastYear){
+                result+=`,${nianHaoIndex?words[v]:"xx"}`
+            }else{
+                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号:${nianHaoIndex?words[v]:"xx"}),`
+            }
+            
         })
+        if(lastYear!="none"){
+            result+=`),`
+        }
         result+= `被授予${words[officeBelongIndex+1]}的${words[officeBelongIndex-1]}官职，`
         result+= `${postWayIndex?words[postWayIndex]:""}${postWayIndex?words[postWayIndex+1]:""},`
         result+= `${addressIndex?words[addressIndex]:""} ${(addressIndex+1)?words[addressIndex+1]:""},`
@@ -139,9 +153,63 @@ export function locationTemplate(vKey,tempDict,nodeDict){
 }
 
 export function beOfficeTemplate(vKey,tempDict,nodeDict){
-    let words = vKey.split(" ").map(vk=>tempDict[vk])
-    if(words.length === 10){
-        return `${words[0]}的${words[3]}${words[4]}`
+    let result 
+    let nianHaoIndex = []
+    let entryWay = -1
+    let entryWayBelong = -1
+    let office = -1
+
+
+    let words = vKey.split(" ").map((vk,i)=>{
+
+        if(nodeDict[vk].label=="EntryEvent"&&office==-1){
+            office = i
+        }
+
+        if(nodeDict[vk].label=="EntryIs"&&entryWay ==-1){
+            entryWay = i
+        }
+
+        if(nodeDict[vk].label=="Entry_Belong"&&entryWayBelong ==-1){
+            entryWayBelong = i
+        }
+        if(nodeDict[vk].label=="Nianhao"){
+            nianHaoIndex.push(i)
+        }
+
+
+        return tempDict[vk]
+    })
+    if(words.length>10){
+        result = `${words[0]}做`
+        if(office>-1&&words[office]!="EntryEvent"){
+            result+=`${words[office]}`
+        }else{
+            result+="官"
+        }
+        
+        result+=entryWay>-1? `,入仕方式是：${words[entryWay+1]}，` : ""
+        result+= entryWayBelong>-1 ? `属于：${words[entryWayBelong+1]}，`:""
+
+        let lastYear = "none"
+        nianHaoIndex.forEach(v=>{
+            if((v-2)&&words[v-2]!=lastYear){
+                if(lastYear!="none"){
+                    result+=`)，`
+                }
+                lastYear = words[v-2]
+                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号：${nianHaoIndex?words[v]:"xx"}`
+            }else if(words[v-2]==lastYear){
+                result+=`,${nianHaoIndex?words[v]:"xx"}`
+            }else{
+                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号：${nianHaoIndex?words[v]:"xx"}),`
+            }  
+        })
+        if(lastYear!="none"){
+            result+=`)`
+        }
+        
+        return result
     }else{
         return  words.join("-")
     }
