@@ -26,7 +26,8 @@ class FirstPanel extends React.Component {
                 { key: 'Person', title: 'Related People', options: [] },
                 { key: 'Dynasty', title: 'Dynasty', options: [] },
                 { key: 'Status', title: 'Status', options: [] },
-                { key: 'Gender', title: 'Gender', options: [] }
+                { key: 'Gender', title: 'Gender', options: [["765", '男'], ["2635",'女']]},
+                { key: 'Native Place', title: 'Native Place', options: []}
             ],
             clickStatus: {'Gender':[false,false]},
             timeRange: [0, 0],
@@ -99,8 +100,12 @@ class FirstPanel extends React.Component {
     }
 
     // 选择框的click事件 TODO 修改调用
-    setStatus(name) {
-        return (index, is_all, status) => {
+    setStatus(name, is_all) {
+        //现在is_all只和类别名称有关了
+        if(name!=='Gender') {
+            is_all = true;
+        }
+        return (index, status) => {
             let { clickStatus } = this.state;
             let _status;
             // 如果是Person, click, 改变onEnter时的状态
@@ -108,7 +113,6 @@ class FirstPanel extends React.Component {
                 if (is_all && index === 0) {
                     // 选择了"选择全部"选项
                     let _last = clickStatus[name][0];
-
                     clickStatus[name] = new Array(clickStatus[name].length).fill(!_last);
                     _status = !_last;
                 } else {
@@ -226,7 +230,8 @@ class FirstPanel extends React.Component {
             { title: "Person", data: "person_ids[]", index: 1 },
             { title: "Dynasty", data: "dynasty_ids[]", index: 2 },
             { title: "Status", data: "status[]", index: 3 },
-            { title: "Gender", data: "genders[]", index: 4 }
+            { title: "Gender", data: "genders[]", index: 4 },
+            //TODO 更新序号
         ]
 
         let param = new FormData();
@@ -254,14 +259,10 @@ class FirstPanel extends React.Component {
                             let _size = Object.entries(res.data["Person"]).length;
                             if (_size !== 0 || res.data["Person"].constructor !== Object) {
                                 let param = new FormData();
-                                let i = 0;
                                 let arr = [];
                                 for (let _key in res.data["Person"]) {
-                                    // i++;
-                                    // if (i < 101) {
-                                        param.append("person_ids[]", _key);
-                                        arr.push(_key)
-                                    // }
+                                    param.append("person_ids[]", _key);
+                                    arr.push(_key)
                                 }
                                 fetchTopicData(param, KEY, 1);
                                 for (let i = 6; i <= 10; i++) {
@@ -329,11 +330,11 @@ class FirstPanel extends React.Component {
                 data-id = {index}
                 className={"person-dropdown dropdown__list-item"}
                 onClick={() => {
-                    this.setStatus('Person')(index, true)
+                    this.setStatus('Person')(index)
                 }}
                 onMouseEnter = {() => {
                     let {status} = this.state;
-                    this.setStatus('Person')(index, true, status)
+                    this.setStatus('Person')(index, status)
                 }}
             >
                 <input type="checkbox" checked={clickStatus["Person"][index]} readOnly />
@@ -403,7 +404,8 @@ class FirstPanel extends React.Component {
                                 if (index > 1) {
                                     return (<SelectedPanel
                                         key={`datum-${index}`} title={datum.title} clicked={clickStatus[datum.key]}
-                                        setClicked={this.setStatus(datum.key, true)} options={datum.options}
+                                        setClicked={this.setStatus(datum.key)} 
+                                        options={datum.options}
                                     />)
                                 } else {
                                     return null;

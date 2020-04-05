@@ -57,11 +57,11 @@ function DatePanel({ title, setClicked, range = [0, 0], options = [] }) {
     }
 
     function handleBlur1() {
-        if (showLow === "") {
-            setShowLow(range[0])
-        } else {
+        // if (showLow === "") {
+        //     setShowLow(range[0])
+        // } else {
             setClicked(showLow, showHigh)
-        }
+        // }
     }
 
     function handleChange2(event) {
@@ -77,11 +77,11 @@ function DatePanel({ title, setClicked, range = [0, 0], options = [] }) {
     }
 
     function handleBlur2() {
-        if (showHigh === "") {
-            setShowHigh(range[1])
-        } else {
+        // if (showHigh === "") {
+        //     setShowHigh(range[1])
+        // } else {
             setClicked(showLow, showHigh)
-        }
+        // }
     }
 
     return (
