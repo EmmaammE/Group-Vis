@@ -1,0 +1,69 @@
+.flowerbtns {
+  position: absolute;
+  cursor: pointer;
+}
+
+.flowerbtns .raindrop {
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  display: block;
+  overflow: hidden;
+
+  /* border-left: 0 solid transparent; */
+  border-left: 1px solid #d4ab9b;
+  border-radius: 7px;
+  border-top-right-radius: 0;
+  background-position: 0 -15px;
+  transition: background 1s ease-in-out;
+}
+
+.flowerbtns .raindrop.active {
+  background: linear-gradient(0deg, #d4ab9b, #f6d9bd 5%, #f6d9bd 90%, #d4ab9b);
+}
+
+.flowerbtns .inner {
+  width: 15px;
+  height: 15px;
+  top: 20px;
+  left: 30px;
+  background: #d4ab9b;
+  position: absolute;
+  border-radius: 50%;
+  transition: all 300ms ease-in-out;
+}
+
+.flowerbtns .inner.active {
+  width: 10px;
+  height: 10px;
+  top: 23px;
+  left: 32px;
+  background: radial-gradient(#f6d9bd, #fff );
+  border: 0;
+}
+
+.flowerbtns .raindrop:nth-child(1) {
+  transform: rotate(-76deg) skewX(-12deg) skewY(-4deg);
+  top: 29.8px;
+  left: 33.8px;
+}
+.flowerbtns .raindrop:nth-child(2) {
+  transform: rotate(-148deg) skewX(-12deg) skewY(-4deg);
+  top: 18.2px;
+  left: 39.6px;
+}
+.flowerbtns .raindrop:nth-child(3) {
+  transform: rotate(-220deg) skewX(-12deg) skewY(-4deg);
+  top: 9.2px;
+  left: 30.2px;
+}
+.flowerbtns .raindrop:nth-child(4) {
+  transform: rotate(-292deg) skewX(-12deg) skewY(-4deg);
+  top: 15.6px;
+  left: 18.8px;
+}
+.flowerbtns .raindrop:nth-child(5) {
+  transform: rotate(-4deg) skewX(-12deg) skewY(-4deg);
+  top: 28.4px;
+  left: 20.8px;
+}

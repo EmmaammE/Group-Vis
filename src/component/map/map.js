@@ -17,7 +17,10 @@ class Map extends React.Component {
       tooltip: {
         show: false,
         data: {}
-      }
+      },
+      rangeScale: d3.scaleLinear()
+          .clamp(true),
+      $d: ''
     };
     this.projection = d3.geoMercator()
       .center([110, 31])
@@ -25,7 +28,7 @@ class Map extends React.Component {
       .translate([BOX_WIDTH, BOX_HEIGHT]);
     this.path = d3.geoPath()
       .projection(this.projection);
-
+    
     this.$map = React.createRef();
     this.$container = React.createRef();
     this.$tooltip = React.createRef();
@@ -44,16 +47,22 @@ class Map extends React.Component {
                   .attr("transform",transform);
                 },100)(d3.event.transform)
               }))
-    //   var tool_tip = d3.tip()
-    //   .attr("class", "d3-tip")
-    //   .offset([-8, 0])
-    //   .html(function(d) { return "Radius: " + d; });
-    // svg.call(tool_tip);
-    // this.$container.call(d3.tip().offset([-8,0]));
+  }
+
+  componentDidUpdate(prevProps) {
+    let {pos2sentence, sentence2pos} = this.props;
+    if(JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
+      let {rangeScale} = this.state;
+      rangeScale.domain(d3.extent(Object.values(pos2sentence).map(e=>e.length)))
+        .range([5, sentence2pos.length % 20])
+      this.setState({
+        rangeScale
+      })
+    }
   }
 
   showTooltip(data,coor) {
-    console.log(coor);
+    console.log(data);
 
     this.setState({
       tooltip: {
@@ -61,23 +70,47 @@ class Map extends React.Component {
         data: {
           x: coor[0],
           y: coor[1],
-          title: data
+          title: data['title'],
+          content: data['sentence']
         }
       }
+    })
+  }
+
+  showPoints(sentenceid) {
+    let {sentence2pos, addr} = this.props;
+    let points = [];
+    sentence2pos[sentenceid]["pos"].forEach(pos => {
+      points.push(this.projection(
+        [addr[pos]['x_coord'], addr[pos]['y_coord']]
+      ))
+    })
+
+    let d = '';
+    points.forEach((point, i) => {
+      if(i === 0) {
+        d += `M ${point[0]} ${point[1]} `
+      } else {
+        d += `L ${point[0]} ${point[1]} `
+      }
+    })
+    this.setState({
+      $d: d
     })
   }
 
   render() {
     let path = this.path,
         projection = this.projection;
-    let {addr} = this.props;
-    let {tooltip} = this.state;
+    let {addr, sentence2pos, pos2sentence} = this.props;
+    let {tooltip, rangeScale, $d} = this.state;
 
     return (
       <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
         style={{position:'relative'}}
         ref = {this.$container}
       >
+        <path d={$d} stroke="white" />
         <g ref={this.$map}>
           {song.features.map((d,i) => (
               <path strokeWidth = "1"
@@ -100,14 +133,29 @@ class Map extends React.Component {
               {
                 addr && 
                 Object.entries(addr).map((data, i) => {
-
-                  let $circle = data[1].map((d,j) => (
-                    <circle key={'cir-'+i+' '+j} r={5} fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
-                      onMouseOver = {e => this.showTooltip(data[0],projection([d['x_coord'], d['y_coord']]))}
-                      onMouseOut = { () => this.setState({tooltip:{show: false}})}
-                      transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
-                  ))
-                  return $circle;
+                  let _r;
+                  console.log(data[0])
+                  if(pos2sentence[data[0]]) {
+                    _r = rangeScale( pos2sentence[data[0]].length )
+                  } else {
+                    _r  = 5;
+                  }
+                  if(data[1]) {
+                    let d = data[1]
+                    return (
+                      <circle key={'cir-'+i} 
+                        r={_r}
+                        fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
+                        onMouseOver = {e => this.showTooltip({
+                          'sentence': pos2sentence[data[0]].map( d => sentence2pos[d['sentence']]["words"]),
+                          'title': d['address_name']
+                        },projection([d['x_coord'], d['y_coord']]))}
+                        onMouseOut = { () => this.setState({tooltip:{show: false}})}
+                        transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
+                    )
+                  } else {
+                    return null
+                  }
                 })
               }
             </g>

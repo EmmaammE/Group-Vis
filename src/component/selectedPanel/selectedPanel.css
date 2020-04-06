@@ -207,7 +207,10 @@
 }
 
 .selected-panel .dropdown__mask {
-  height: 4px;
+  height: 24vh;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 /* ---begin---: control panel的checkbox */
@@ -286,4 +289,19 @@
 .date-panel .range-block input:active  {
   border-bottom: 1px solid #a3a3a3;
   outline: none;
+}
+
+.dropdown-input {
+  outline: none;
+  border: none;
+  width: 90%;
+}
+
+.dropdown-icons {
+  height: 4vh;
+  width: 75%;
+  overflow-y: hidden;
+  overflow-x: auto;
+  position: absolute;
+  top: 0;
 }
