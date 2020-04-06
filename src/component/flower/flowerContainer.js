@@ -22,7 +22,7 @@ class FlowerContainer extends React.Component {
 
     componentDidUpdate(prevProps){
         let {next, current} = this.props;
-        if (prevProps.next !== next) {
+        if (prevProps.next !== next || prevProps.current !== current) {
             this.setState({
                 endpoints: getEndpoints(next, current)
             })
@@ -49,8 +49,8 @@ class FlowerContainer extends React.Component {
                             fill="url(#pattern-stripe)" 
                         />
                     </mask>
-                    <filter id="dropshadow" x="-3" y="-3" width="200" height="200">
-                        <feGaussianBlur  stdDeviation="10"/>
+                    <filter id="dropshadow" x="-1" y="-1" width="200" height="200">
+                        <feGaussianBlur  stdDeviation="2"/>
                     </filter>
                 </defs>
                 {
