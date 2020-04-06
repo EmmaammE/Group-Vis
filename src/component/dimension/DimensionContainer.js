@@ -74,25 +74,27 @@ class DimensionContainer extends React.Component {
         return (
             <div style={style}>
                 <p className="title">Reduced-dimension View</p>
-                <div className={flowerClass(active)}
-                    onClick={this.onClickFlower}>
-                    <div className="ball" />
-                    
-                    <div className="pental first"></div>
-                    <div className="pental second"></div>
+                <div style={{position: 'relative'}}>
+                    <div className={flowerClass(active)}
+                        onClick={this.onClickFlower}>
+                        <div className="ball" />
+                        
+                        <div className="pental first"></div>
+                        <div className="pental second"></div>
+                    </div>
+                    {
+                        positions &&
+                            <svg viewBox={"0 0 340 340"} style={{flex: 1}} >
+                                <DimensionFilter 
+                                    _width={280}
+                                    _height={280}
+                                    _margin="translate(20,0)"
+                                    data={positions}
+                                    selectedPeople = {selectedPeople}
+                                />
+                            </svg>
+                    }
                 </div>
-                {
-                    positions &&
-                    <svg viewBox={"0 0 340 340"} style={{flex: 1}} >
-                        <DimensionFilter 
-                            _width={300}
-                            _height={300}
-                            _margin="translate(-50,25)"
-                            data={positions}
-                            selectedPeople = {selectedPeople}
-                        />
-                </svg>
-                }
             </div>
         );
     }
