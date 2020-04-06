@@ -10,7 +10,7 @@ import Tip from '../tooltip/Tip'
 
 const WIDTH = 380;
 const HEIGHT = 200;
-const SINGAL_HEIGHT = 30
+const SINGAL_HEIGHT = 25
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
 let startLoc=[];
@@ -207,8 +207,8 @@ class TimeLine extends React.Component{
                           transform={`translate(${-margin.left},${yScale(i)})`}
                           x1={0}
                           x2={WIDTH-margin.right}
-                          y1={height/rownum/2}
-                          y2={height/rownum/2}
+                          y1={gHeight/rownum/2}
+                          y2={gHeight/rownum/2}
                           strokeWidth="0.3px"
                           stroke="black"
                         >
@@ -308,6 +308,7 @@ function popUp(that,tipHasX,v){
   let infos = v.target.getAttribute("info").split("_");
   let tipTitle = `时间：${infos[1]}`
   let targetData = infos[2]
+
   let tipStyle = {
     left:v.clientX,
     top:v.clientY,

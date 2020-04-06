@@ -14,6 +14,14 @@ class Tip extends React.Component{
     let data = this.props.data
     let title = this.props.title
     let style = this.props.style
+    let dWidth = document.body.clientWidth
+    let dHeight = document.body.clientHeight
+    if(style.left+150>dWidth){
+      style.left-=150
+    }
+    if(style.top+150>dHeight){
+      style.top-=150
+    }
     let tipHasX = this.props.tipHasX
     let handleClickX = this.props.handleClickX
     return(
