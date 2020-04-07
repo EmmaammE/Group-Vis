@@ -166,14 +166,17 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
     }
 
     return (
-        <g ref={$container}>
-            <foreignObject x="35" y="-10" width="100" height="50" >
+        <g>
+            <g ref={$container}>
+                <DimensionCircles 
+                    _margin={_margin} _width={_width} _height={_height} 
+                    data={data} classCreator={classCreator} 
+                />
+                <rect width="100%" height="100%" fill="transparent"></rect>
+            </g>
+            <foreignObject x="35" y="-3px" width="100" height="50" >
                 <Flowerbtn cb = {toFetch} active={active} />
             </foreignObject>
-            <DimensionCircles 
-                _margin={_margin} _width={_width} _height={_height} 
-                data={data} classCreator={classCreator} 
-            />
         </g>
     )
 }

@@ -4,6 +4,7 @@ import song from '../../assets/geojson/song.json';
 // import ming from '../../assets/geojson/ming_1391.json';
 import {debounce} from '../../util/tools';
 import Tooltip from '../tooltip/tooltip';
+import Tip from '../tooltip/Tip'
 
 const BOX_WIDTH = 250;
 const BOX_HEIGHT = 213;
@@ -16,7 +17,15 @@ class Map extends React.Component {
             .range([6,12]),
       tooltip: {
         show: false,
-        data: {}
+        data: {
+          style: {
+            "left":1035,
+            "top":614,
+            "visibility": "visible"
+          },
+          title: '',
+          data: ['hhh']
+        }
       },
       rangeScale: d3.scaleLinear()
           .clamp(true),
@@ -62,16 +71,19 @@ class Map extends React.Component {
   }
 
   showTooltip(data,coor) {
-    console.log(data);
+    console.log(coor);
 
     this.setState({
       tooltip: {
         show: true,
         data: {
-          x: coor[0],
-          y: coor[1],
+          style: {
+            "left":coor[0],
+            "top": coor[1],
+            "visibility": "visible"
+          },
           title: data['title'],
-          content: data['sentence']
+          data: data['sentence']
         }
       }
     })
@@ -106,7 +118,10 @@ class Map extends React.Component {
     let {tooltip, rangeScale, $d} = this.state;
 
     return (
-      <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
+      <>
+       {tooltip.show && <Tip {...tooltip.data} /> }
+
+       <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
         style={{position:'relative'}}
         ref = {this.$container}
       >
@@ -128,13 +143,11 @@ class Map extends React.Component {
                 key={'fea-'+i}
               />
             ))} */}
-            {tooltip.show && <Tooltip width={2*BOX_WIDTH} height={2*BOX_HEIGHT} {...tooltip.data} />}
             <g>
               {
                 addr && 
                 Object.entries(addr).map((data, i) => {
                   let _r;
-                  console.log(data[0])
                   if(pos2sentence[data[0]]) {
                     _r = rangeScale( pos2sentence[data[0]].length )
                   } else {
@@ -149,7 +162,8 @@ class Map extends React.Component {
                         onMouseOver = {e => this.showTooltip({
                           'sentence': pos2sentence[data[0]].map( d => sentence2pos[d['sentence']]["words"]),
                           'title': d['address_name']
-                        },projection([d['x_coord'], d['y_coord']]))}
+                        }, [e.nativeEvent.clientX, e.nativeEvent.clientY])}
+                        // projection(e, d['y_coord']]))}
                         onMouseOut = { () => this.setState({tooltip:{show: false}})}
                         transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
                     )
@@ -162,9 +176,10 @@ class Map extends React.Component {
         </g>
         {/* <text x={80} y={200} fill="#999" fontSize="30px">Song</text> */}
       </svg>
+      </>
+
     )
   }
-
 }
 
 export default Map;

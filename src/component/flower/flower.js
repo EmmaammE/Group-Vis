@@ -86,83 +86,86 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
     }
 
     return (
-        <g transform={"translate("+marginWidth+",0)"} ref={$container}>
-            { _showUpLine && 
+        <g transform={"translate("+marginWidth+",0)"}>
+            {/* { _showUpLine && 
                 <path d={`M${BOX_WIDTH} 0 v40`} 
                     fill = "transparent" stroke = "black"
                     strokeWidth={_ratio} strokeDasharray = {_selected?'none':_ratio*8} />
-            }
-            <g className="petals">
-                {arr.map((angle, index) => (
-                    <g transform={'translate(' + [BOX_WIDTH, BOX_WIDTH-OFFSET] + ')'} key={'petal-'+index}>
-                        <g transform={`rotate(${angle}) scale(1.2)`}>
-                            <path 
-                                key={'petal-'+index} 
-                                d ={ 
-                                    petalPath
-                                    // active
-                                    // ? petalPath_(petalPoints(0,0)
-                                    //     .map(point => [point[0]+BOX_WIDTH, point[1]+BOX_WIDTH-OFFSET])
-                                    //     .map(point => [fisheye(point)[0], fisheye(point)[1]]))
-                                    // : petalPath_(petalPoints(0,0))
-                                }
-                                fill = {color}
-                                style = {{mask: "url(#mask-stripe)"}}
-                            />
-                            <line x1="0" y1="102" x2="0" y2="114" stroke="black" />
-                        </g>
-                        <text x="-40" y="0" transform={`translate(${150*Math.cos((angle+90)*Math.PI/180)},${150*Math.sin((angle+90)*Math.PI/180)})`}>
-                            {titles && titles[index] && titles[index].map((text, i) => {
-                                return (<tspan 
-                                    style = {{transition: 'all 100ms ease-in-out'}}
-                                    x="-40" y={i*20} key={"t-"+i}
-                                    fontSize = {active?fisheye([BOX_WIDTH + 150*Math.cos((angle+90)*Math.PI/180)-40, BOX_WIDTH-OFFSET+150*Math.sin((angle+90)*Math.PI/180)+i*20])[2]*12+'px':'12px'}
-                                >{text}</tspan>) }
-                            )}
-                            
-                        </text>
-                    </g>
-                ))}
-            </g>
-            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="white" />
+            } */}
 
-            { _hovered === true &&
-                <g> 
-                    <path d={`
-                        M ${BOX_WIDTH},${BOX_WIDTH-OFFSET}
-                        m -${OUTER_RADIUS}, 0
-                        a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 ${OUTER_RADIUS*2},0
-                        a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 -${OUTER_RADIUS*2},0
-                        `} 
-                        stroke="#f17381"
-                        fill="transparent"
-                        strokeWidth="2"
-                    />
-                    <path d={`
-                        M ${BOX_WIDTH},${BOX_WIDTH-OFFSET}
-                        m -${OUTER_RADIUS}, 0
-                        a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 ${OUTER_RADIUS*2},0
-                        a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 -${OUTER_RADIUS*2},0
-                        `} 
-                        stroke="#f17381"
-                        fill="transparent"
-                        strokeWidth="4"
-                        filter="url('#dropshadow')"
+            <g ref={$container}>
+                <g className="petals">
+                    {arr.map((angle, index) => (
+                        <g transform={'translate(' + [BOX_WIDTH, BOX_WIDTH-OFFSET] + ')'} key={'petal-'+index}>
+                            <g transform={`rotate(${angle}) scale(1.2)`}>
+                                <path 
+                                    key={'petal-'+index} 
+                                    d ={ 
+                                        petalPath
+                                        // active
+                                        // ? petalPath_(petalPoints(0,0)
+                                        //     .map(point => [point[0]+BOX_WIDTH, point[1]+BOX_WIDTH-OFFSET])
+                                        //     .map(point => [fisheye(point)[0], fisheye(point)[1]]))
+                                        // : petalPath_(petalPoints(0,0))
+                                    }
+                                    fill = {color}
+                                    style = {{mask: "url(#mask-stripe)"}}
+                                />
+                                <line x1="0" y1="102" x2="0" y2="114" stroke="black" />
+                            </g>
+                            <text x="-40" y="0" transform={`translate(${150*Math.cos((angle+90)*Math.PI/180)},${150*Math.sin((angle+90)*Math.PI/180)})`}>
+                                {titles && titles[index] && titles[index].map((text, i) => {
+                                    return (<tspan 
+                                        style = {{transition: 'all 100ms ease-in-out'}}
+                                        x="-40" y={i*20} key={"t-"+i}
+                                        fontSize = {active?fisheye([BOX_WIDTH + 150*Math.cos((angle+90)*Math.PI/180)-40, BOX_WIDTH-OFFSET+150*Math.sin((angle+90)*Math.PI/180)+i*20])[2]*12+'px':'12px'}
+                                    >{text}</tspan>) }
+                                )}
+                                
+                            </text>
+                        </g>
+                    ))}
+                </g>
+                <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="white" />
+
+                { _hovered === true &&
+                    <g> 
+                        <path d={`
+                            M ${BOX_WIDTH},${BOX_WIDTH-OFFSET}
+                            m -${OUTER_RADIUS}, 0
+                            a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 ${OUTER_RADIUS*2},0
+                            a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 -${OUTER_RADIUS*2},0
+                            `} 
+                            stroke="#f17381"
+                            fill="transparent"
+                            strokeWidth="2"
+                        />
+                        <path d={`
+                            M ${BOX_WIDTH},${BOX_WIDTH-OFFSET}
+                            m -${OUTER_RADIUS}, 0
+                            a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 ${OUTER_RADIUS*2},0
+                            a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 -${OUTER_RADIUS*2},0
+                            `} 
+                            stroke="#f17381"
+                            fill="transparent"
+                            strokeWidth="4"
+                            filter="url('#dropshadow')"
+                        />
+                    </g>
+                }
+                
+                <g transform="translate(200,200)">
+                    <DimensionFisheye
+                        fisheye={fisheye}
+                        _width={80}
+                        _height={80}
+                        _margin = {"translate(0,0)"}
+                        data={positions}
+                        offset={[0,0]} 
+                        active = {active}
+                        cb={cb}
                     />
                 </g>
-            }
-            
-            <g transform="translate(200,200)">
-                <DimensionFisheye
-                    fisheye={fisheye}
-                    _width={80}
-                    _height={80}
-                    _margin = {"translate(0,0)"}
-                    data={positions}
-                    offset={[0,0]} 
-                    active = {active}
-                    cb={cb}
-                />
             </g>
 
             <foreignObject x={BOX_WIDTH+180} y={BOX_WIDTH-200} width="200" height="200" >
