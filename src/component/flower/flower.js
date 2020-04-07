@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { setVeenedStep } from '../../actions/data';
 import { Flowerbtn } from '../button/flowerbtn';
@@ -10,12 +10,7 @@ const BOX_WIDTH = 250;
 const RADIUS = 100;
 const OFFSET = 15;
 const OUTER_RADIUS = 100;
-const LENS = 50;
-
-let fisheye = d3Fisheye.radial()
-                .radius(LENS)
-                .distortion(6) 
-                .smoothing(0.4)
+const LENS = 40;
 
 const petalPath = [
     'M0,0',
@@ -45,7 +40,7 @@ const petalPath_ = (points = []) => {
 /**
  * @param {Number} number: 花瓣的数量
  */
-function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions, _hovered, _ratio, cb, step, color='#7483a9'}) {
+function Flower ({number,current, marginWidth, titles, _showUpLine, _selected, positions, _hovered, _ratio, cb, step, color='#7483a9'}) {
     const [arr, setArr] = useState([]);
     const [active, setActive] = useState(false);
     const $container = useRef(null);
@@ -56,6 +51,10 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
         step => dispatch(setVeenedStep(step)),
         [dispatch]
       )
+    const fisheye = useMemo(() => d3Fisheye.radial()
+                        .radius(LENS+current*20)
+                        .distortion(5+current) 
+                        .smoothing(0.4), [current])
 
     useEffect(() => {
         let _arr = [];
@@ -118,7 +117,7 @@ function Flower ({number, marginWidth, titles, _showUpLine, _selected, positions
                                     return (<tspan 
                                         style = {{transition: 'all 100ms ease-in-out'}}
                                         x="-40" y={i*20} key={"t-"+i}
-                                        fontSize = {active?fisheye([BOX_WIDTH + 150*Math.cos((angle+90)*Math.PI/180)-40, BOX_WIDTH-OFFSET+150*Math.sin((angle+90)*Math.PI/180)+i*20])[2]*12+'px':'12px'}
+                                        fontSize = {active?fisheye([BOX_WIDTH + 150*Math.cos((angle+90)*Math.PI/180)-40, BOX_WIDTH-OFFSET+150*Math.sin((angle+90)*Math.PI/180)+i*20])[2]+14+'px':'14px'}
                                     >{text}</tspan>) }
                                 )}
                                 

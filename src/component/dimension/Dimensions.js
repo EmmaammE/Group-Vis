@@ -6,6 +6,7 @@ import './lasso.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {fetchTopicData} from '../../actions/step';
 import { Flowerbtn } from '../button/flowerbtn';
+import axios from 'axios';
 
 const d3 = Object.assign(d3Base, { lasso });
 
@@ -21,6 +22,22 @@ const getScales = (width, height, data) => {
 }
 
 const _class = () => 'circles';
+
+const flowerClass = (status) => {
+    switch (status) {
+        case 0:
+            // 没有相似的人，不能点击
+            return 'btn-add cannot-click'
+        case 1:
+            // 可以点击， 未点击
+            return 'btn-add'
+        case 2:
+            // 已点击
+            return 'btn-add active'
+        default:
+            break;
+    }
+}
 
 // 返回降维图的点点
 export function DimensionCircles({_width, _height, data, _margin, classCreator=_class}) {
@@ -87,6 +104,7 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
     )
     const _step = useSelector(state => state.step);
     const [active, setActive] = useState(false);
+    const [flowerSatus, setFlowerStatus] = useState(0)
 
     useEffect(() => {
         const _lasso = lasso()
@@ -165,6 +183,38 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
         _setPeople([]);
     }
 
+    function onClickFlower() {
+        if(flowerSatus !== 0) {
+            // 已经框选的人
+            let param = new FormData();
+            _people.forEach(_key => {
+                param.append('person_ids[]', _key);
+            })
+            
+            let next_param = Object.assign(param)
+            // 传入调整的topic_weights
+
+            
+            axios.post('/search_all_similar_person/')
+                .then(res => {
+                    if(res.data.is_success) {
+                        for(let _key in res.data["similiar_person"]) {
+                            next_param.append('person_ids[]', _key);
+                        }
+
+                        fetchTopic(param, KEY, _step);
+                        setFlowerStatus(2)
+
+                    } else {
+                        console.err(res.data.bug)
+                    }
+                })
+                .catch( err => {
+                    console.err(err)
+                })
+        }
+    }
+
     return (
         <g>
             <g ref={$container}>
@@ -174,7 +224,14 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                 />
                 <rect width="100%" height="100%" fill="transparent"></rect>
             </g>
-            <foreignObject x="35" y="-3px" width="100" height="50" >
+            <foreignObject x="10" y="-3px" width="100" height="50" >
+                <div className={flowerClass(flowerSatus)}
+                    onClick={onClickFlower}>
+                    <div className="ball" />
+                    
+                    <div className="pental first"></div>
+                    <div className="pental second"></div>
+                </div>
                 <Flowerbtn cb = {toFetch} active={active} />
             </foreignObject>
         </g>
