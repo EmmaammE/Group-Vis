@@ -41,6 +41,7 @@ class FirstPanel extends React.Component {
         this.onClickSearch = this.onClickSearch.bind(this);
         this.setStatus = this.setStatus.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
+        this._renderRow = this._renderRow.bind(this);
     }
 
     tool_handleItem(data, type) {
@@ -328,24 +329,18 @@ class FirstPanel extends React.Component {
                 </div>)
             }
     
-            let _class;
-            if(name==="Person") {
-                _class = "person-dropdown dropdown__list-item";
-            } else {
-                _class = "addr-dropdown dropdown__list-item";
-            }
             return (
                 <div
                     key={key} value={dataSet[1].options[index][1]}
                     style={style}
                     data-id = {index}
-                    className={_class}
+                    className={"person-dropdown dropdown__list-item"}
                     onClick={() => {
-                        this.setStatus([name])(index)
+                        this.setStatus(name)(index)
                     }}
                     onMouseEnter = {() => {
                         let {status} = this.state;
-                        this.setStatus([name])(index, status)
+                        this.setStatus(name)(index, status)
                     }}
                 >
                     <input type="checkbox" checked={clickStatus[name][index]} readOnly />
@@ -394,7 +389,7 @@ class FirstPanel extends React.Component {
                                     height={250}
                                     rowHeight={30}
                                     className="dropdown-list"
-                                    rowRenderer={() => this._renderRow("Person")}
+                                    rowRenderer={this._renderRow("Person")}
                                     rowCount={dataSet[1].options.length}
                                 />
                             </div>
