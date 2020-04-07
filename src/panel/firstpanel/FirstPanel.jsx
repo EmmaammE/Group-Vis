@@ -26,8 +26,8 @@ class FirstPanel extends React.Component {
                 { key: 'Person', title: 'Related People', options: [] },
                 { key: 'Dynasty', title: 'Dynasty', options: [] },
                 { key: 'Status', title: 'Status', options: [] },
+                { key: 'Addr', title: 'Native Place', options: []},
                 { key: 'Gender', title: 'Gender', options: [["765", '男'], ["2635",'女']]},
-                { key: 'Native Place', title: 'Native Place', options: []}
             ],
             clickStatus: {'Gender':[false,false]},
             timeRange: [0, 0],
@@ -78,11 +78,14 @@ class FirstPanel extends React.Component {
         axios.post('/init_ranges/')
             .then(res => {
                 if (res.data.is_success === true) {
-                    // 朝代和社会区分有初始值
+                    // 朝代 社会区分 籍贯有初始值
                     dataSet[2].options = that.tool_handleItem(res.data[dataSet[2].key], 1);
                     dataSet[3].options = that.tool_handleItem(res.data[dataSet[3].key], 1);
+                    dataSet[4].options = that.tool_handleItem(res.data[dataSet[4].key], 1);
+
                     clickStatus[dataSet[2].key] = Array(dataSet[2].options.length).fill(false);
                     clickStatus[dataSet[3].key] = Array(dataSet[3].options.length).fill(false);
+                    clickStatus[dataSet[4].key] = Array(dataSet[4].options.length).fill(false);
 
                     that.setState({
                         dataSet,
@@ -170,7 +173,7 @@ class FirstPanel extends React.Component {
         bdata.append('name', searchValue);
 
         axios
-            .post('/search_ranges_by_name/', bdata)
+            .post('/search_relation_person_by_name/', bdata)
             .then(res => {
                 if (res.data.is_success) {
                     let { data } = res;
@@ -230,8 +233,8 @@ class FirstPanel extends React.Component {
             { title: "Person", data: "person_ids[]", index: 1 },
             { title: "Dynasty", data: "dynasty_ids[]", index: 2 },
             { title: "Status", data: "status[]", index: 3 },
-            { title: "Gender", data: "genders[]", index: 4 },
-            //TODO 更新序号
+            { title: "Gender", data: "genders[]", index: 5 },
+            { title: "Addr", data: "address_ids[]", index: 4},
         ]
 
         let param = new FormData();
@@ -312,35 +315,44 @@ class FirstPanel extends React.Component {
         })
     }
 
-    _renderRow({ index, key, style }) {
-        let { dataSet, clickStatus } = this.state;
-        let $item;
-        if (index === 0) {
-            $item = 'Selected all  ';
-        } else {
-            $item = (<div className="item-container">
-                <span className="first-item">{dataSet[1].options[index][1]}</span>
-                <span>{dataSet[1].options[index][2]}</span>
-            </div>)
+    _renderRow(name) {
+        return ({index, key, style }) => {
+            let { dataSet, clickStatus } = this.state;
+            let $item;
+            if (index === 0) {
+                $item = 'Selected all  ';
+            } else {
+                $item = (<div className="item-container">
+                    <span className="first-item">{dataSet[1].options[index][1]}</span>
+                    <span>{dataSet[1].options[index][2]}</span>
+                </div>)
+            }
+    
+            let _class;
+            if(name==="Person") {
+                _class = "person-dropdown dropdown__list-item";
+            } else {
+                _class = "addr-dropdown dropdown__list-item";
+            }
+            return (
+                <div
+                    key={key} value={dataSet[1].options[index][1]}
+                    style={style}
+                    data-id = {index}
+                    className={_class}
+                    onClick={() => {
+                        this.setStatus([name])(index)
+                    }}
+                    onMouseEnter = {() => {
+                        let {status} = this.state;
+                        this.setStatus([name])(index, status)
+                    }}
+                >
+                    <input type="checkbox" checked={clickStatus[name][index]} readOnly />
+                    {$item}
+                </div>
+            )
         }
-        return (
-            <div
-                key={key} value={dataSet[1].options[index][1]}
-                style={style}
-                data-id = {index}
-                className={"person-dropdown dropdown__list-item"}
-                onClick={() => {
-                    this.setStatus('Person')(index)
-                }}
-                onMouseEnter = {() => {
-                    let {status} = this.state;
-                    this.setStatus('Person')(index, status)
-                }}
-            >
-                <input type="checkbox" checked={clickStatus["Person"][index]} readOnly />
-                {$item}
-            </div>
-        )
     }
 
     _renderPanel() {
@@ -382,7 +394,7 @@ class FirstPanel extends React.Component {
                                     height={250}
                                     rowHeight={30}
                                     className="dropdown-list"
-                                    rowRenderer={this._renderRow.bind(this)}
+                                    rowRenderer={() => this._renderRow("Person")}
                                     rowCount={dataSet[1].options.length}
                                 />
                             </div>
@@ -436,7 +448,6 @@ class FirstPanel extends React.Component {
                 </h1>
                 <div className="content-container">
                     <div className="title"><p>Overview</p></div>
-                    {/* <Blobs blobs={Object.values(this.props.group_)} /> */}
                     <Blobs />
                     <div className="title"><p>Control Panel</p></div>
 

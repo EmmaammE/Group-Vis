@@ -26,6 +26,11 @@ import {genderTemplate,
         } from '../util/tools.js'
 import { batch } from "react-redux";
 
+//查找topic的参数
+const p_populate_ratio = 0.6;
+const p_max_topic = 10;
+const p_min_sentence = 5;
+
 export function setStep(step) {
     return {
         type: SET_STEP,
@@ -84,6 +89,11 @@ function updateGroupAndStep(step, data) {
  *              1：点击Flower：更新topic|XXX-view数据
  */
 export function fetchTopicData(param, KEY, step, type) {
+    // 加上其他参数
+    param.append('populate_ratio', p_populate_ratio);
+    param.append('max_topic', p_max_topic);
+    param.append('min_sentence', p_min_sentence);
+    
     return dispatch => {
         axios.post('/search_topics_by_person_ids/', param)
             .then(res => {

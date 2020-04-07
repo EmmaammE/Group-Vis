@@ -37,7 +37,7 @@ class SecondPanel extends React.Component {
     componentDidUpdate(prevProps) {
         if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
             // if(prevProps.step !== this.props.step) {
-            let { grid, step2index, hoverIndex } = this.state;
+            let { grid, step2index, hoverIndex, lastHoverIndex } = this.state;
             let { group, step } = this.props;
 
             if (grid.length === 0 || this.props.step === 1) {
@@ -57,9 +57,9 @@ class SecondPanel extends React.Component {
                 let currentLayer = hoverIndex[0];
                 let lastIndex = step2index[step - 1];
 
-                // if(lastHoverIndex !== undefined) {
-                //     lastIndex = step2index[lastHoverIndex[2]]
-                // }
+                if(lastHoverIndex !== undefined) {
+                    lastIndex = step2index[lastHoverIndex]
+                }
                 // 被选中的这朵❀没有下一层
                 if (currentLayer === grid.length-1) {
                     newGrid[lastIndex[0]].next = 1;
@@ -167,10 +167,9 @@ class SecondPanel extends React.Component {
         this.props.initTopicWeight(sliderWeights);
         this.props.updateTopicView(this.props.group[step]["topicView"]);
 
-        let lastIndex = hoverIndex.slice(0);
         this.setState({
             grid,
-            lastHoverIndex: lastIndex,
+            lastHoverIndex: step,
             hoverIndex: [...thisIndex, step],
             btnStatus: new Array(4).fill(false)
         })

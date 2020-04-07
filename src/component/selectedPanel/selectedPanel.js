@@ -18,7 +18,6 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 	function clickEvent(event, i) {
 		event.stopPropagation();
 		setClicked(i);
-		setValue("");
 		$input.current.blur();
 	}
 
@@ -71,7 +70,10 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 										<li
 											key={`option-${index}`} value={option[1]}
 											className={"dropdown__list-item"}
-											onClick={() => setClicked(index)}
+											onClick={() => {
+												setClicked(index);
+												setValue("")
+											}}
 										>
 											<input type="checkbox" checked={clicked[index]} readOnly />
 											{index === 0 && option[0] === 'all' ? 'Selected all  ' : option[1]}
