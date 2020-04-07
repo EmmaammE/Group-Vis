@@ -17,8 +17,8 @@ export function scaleFactory(width,data,startColor,endColor){
 
 
   var colorMap = d3.scaleLinear()
-  .domain([minValue,0,maxValue])
-  .range([startColor,"#dddddd", endColor]);
+  .domain([0,maxValue])
+  .range(["#dddddd", endColor]);
 
   return { xy,colorMap}
 }
@@ -30,8 +30,9 @@ export function sortMatrixPerson(matrixView){
   let matrixData = matrixView.matrixData
   let matrixPerson = matrixView.matrixPerson
   // if()
-  matrixPerson.sort((a,b)=>b.number-a.number)
+  matrixPerson = matrixPerson.sort((a,b)=>b.number-a.number).filter(v=>v.number>0)
   // console.log("matrixView---sort",matrixPerson)
+  
   let preToNewIndex = {}
   let newMatrixData = []
   let newMatrixPerson = matrixPerson.map((v,i)=>{

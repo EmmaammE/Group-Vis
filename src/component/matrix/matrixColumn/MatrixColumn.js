@@ -44,7 +44,7 @@ class MatrixColumn extends React.Component{
             strokeWidth={0}
             info={`${index}_${i}_${v}`}
             // 换成颜色标尺
-            fill={colorMap(data[i])}
+            fill={data[i]?colorMap(data[i]):"#dddddd"}
             key={`rect_${i}`}
             onMouseOver={this.handleMouseover}
             onMouseOut={this.handleMouseout}
