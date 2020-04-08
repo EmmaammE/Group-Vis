@@ -8,7 +8,7 @@ import { TOPIC_LRS,
         SENTENCE_DICT,
         PERSON_SENTENCE,
         TOPIC_SENTENCE_VECTOR, 
-        SIMILAR_PEOPLE} from "../util/name";
+        } from "../util/name";
 import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix ,initPeopleCommon, peopleToList} from '../redux/matrixView.redux'
@@ -79,6 +79,140 @@ function updateGroupAndStep(step, data) {
     }
 }
 
+function fetchBySocket(dispatch, param, KEY, step, type) {
+    // 新建WebSocket连接
+    let websocket = new WebSocket("ws://localhost:8080/socket_search_topics_by_person_ids/");
+    
+    // 连接打开事件，打开连接后发送数据
+    websocket.onopen = function () {
+        // 使用send()方法发送数据
+        let p = JSON.stringify({
+            'person_ids[]': param,
+            "populate_ratio": p_populate_ratio,
+            "max_topic": p_max_topic,
+            "min_sentence": p_min_sentence
+        })
+        websocket.send(p);
+    };
+
+    // 接收数据事件，event的data就是返回数据
+    websocket.onmessage = function (evt) {
+        let received_json = {
+            "data": JSON.parse(evt.data)
+        };
+        // console.log(received_json)
+        handleTopicRes(dispatch, received_json, KEY, step, type)
+        websocket.close();
+
+    };
+
+    // 关闭连接后要做的事
+    websocket.onclose = function () {
+        console.log("连接已关闭...");
+    };
+}
+
+function handleTopicRes(dispatch, res, KEY, step, type) {
+    console.log(Object.keys(res.data))
+
+    if(res.data["is_success"]) {
+        // 存储label是Addr的节点的id
+        let addressNode = {};
+        let addressType = {};
+        // 处理node_dict and edge_dict, 将name修改一下
+        // KEY是区别中英文的代表
+        let temp = {[DICT]:{}, [TOPICS]:[]}
+        // temp[DICT]中记录着从topic编号到topic名字的映射,以及从描述编号到描述文字的映射
+        for(let _key in res.data["edge_dict"]) {
+            // 中文： edge的name 英文: edge的label
+            if(res.data["edge_dict"]==="") {
+                temp[DICT][_key] = res.data["edge_dict"][_key]["label"]
+            } else {
+                temp[DICT][_key] = res.data["edge_dict"][_key][KEY]
+            }
+        }
+        
+        for(let _key in res.data["node_dict"]) {
+            let _data = res.data["node_dict"][_key]
+            if(_data["name"] === "None" && _data["en_name"] === "None") {
+                temp[DICT][_key] =  _data["label"]
+            } else if(_data[KEY] === "None") {
+                temp[DICT][_key] = _data["name"]
+            } else {
+                temp[DICT][_key] = _data[KEY]
+            }
+
+            if(_data["label"] === "Addr") {
+                addressNode[_key] = _data[KEY]
+            }
+            if(_data["label"] === "AddrType") {
+                addressType[_key] = _data[KEY]
+            }
+        }
+        
+        
+
+        // 建立从topicId 到 名称 的映射
+        let topicId2Name={}
+
+        // 翻译topic_id
+        res.data[TOPICS].forEach(id => {
+            let idstring = id.join(" ");
+            temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
+            topicId2Name[idstring] = id.map(_id => (temp[DICT][_id])).join('-')
+        }) 
+
+        // console.log(temp[TOPICS]);
+        // 记录每个topic的次数
+        let count = {};
+        for(let _key in res.data[TOPIC_SENTENCE_POSITION]) {
+            count[_key] = Object.keys(res.data[TOPIC_SENTENCE_POSITION][_key]).length;
+        }
+
+
+        let topicLrs = res.data[TOPIC_LRS]
+        // topic的排序按照他们的比重大小来排序
+        temp[TOPICS].sort((a,b) => topicLrs[b[0]]-topicLrs[a[0]])
+        // 下面对topic进行过滤：将其中小于4%的部分过滤掉
+        // 统计原始数据weight总值是多少
+        let totalWeight = Object.values(topicLrs).reduce((a,b)=>a+b,0)
+        let minWeight = totalWeight*0.04
+        let minIndex = 0
+        let originLength = temp[TOPICS].length
+        while(minIndex < originLength && topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
+            minIndex++
+        }
+        temp[TOPICS].splice(minIndex,originLength-minIndex)
+        console.log("totalWeight",totalWeight,minIndex,originLength)
+
+
+        // 地图查询的人
+        let people = {};
+        let _positions = {};
+        Object.keys(res.data[POSITIONS]).forEach(id => {
+            //  _positions[temp[DICT][id]] = res.data[POSITIONS][id]
+            people[id] = temp[DICT][id]
+            res.data[POSITIONS][id].push(id);
+            _positions[temp[DICT][id]] = res.data[POSITIONS][id];
+        })
+
+        let addressMap = {
+            addressNode,
+            addressType
+        }
+        
+        //  接口数据说明
+        //         DICT(name.js) ：node_edge的dict
+        //         "label2topic_ids": res.data["label2topic_ids"],
+        //         "topic_id2sentence_id2position1d": res.data["topic_id2sentence_id2position1d"],
+        //         "topic_pmi": res.data["topic_pmi"],
+        //         "person_id2position2d": res.data["person_id2position2d"]
+        // 
+        updateFourViews(dispatch,people,res,temp,topicId2Name,step,_positions,addressMap,type)
+    } else {
+        console.log(res.data.bug)
+    }
+}
 /**
  * 
  * @param {*} param 请求topicd的参数 formData
@@ -89,109 +223,23 @@ function updateGroupAndStep(step, data) {
  *              1：点击Flower：更新topic|XXX-view数据
  */
 export function fetchTopicData(param, KEY, step, type) {
+
+    let people = param.getAll('person_ids[]');
+    if(people.length > 400) {
+        // 使用socket通信
+        return dispatch => {
+            fetchBySocket(dispatch, people, KEY, step, type)
+        }
+    }
     // 加上其他参数
     param.append('populate_ratio', p_populate_ratio);
     param.append('max_topic', p_max_topic);
     param.append('min_sentence', p_min_sentence);
-    
+
     return dispatch => {
         axios.post('/search_topics_by_person_ids/', param)
             .then(res => {
-                if(res.data.is_success) {
-                    // 存储label是Addr的节点的id
-                    let addressNode = {};
-                    let addressType = {};
-                    // 处理node_dict and edge_dict, 将name修改一下
-                    // KEY是区别中英文的代表
-                    let temp = {[DICT]:{}, [TOPICS]:[]}
-                    // temp[DICT]中记录着从topic编号到topic名字的映射,以及从描述编号到描述文字的映射
-                    for(let _key in res.data["edge_dict"]) {
-                        // 中文： edge的name 英文: edge的label
-                        if(res.data["edge_dict"]==="") {
-                            temp[DICT][_key] = res.data["edge_dict"][_key]["label"]
-                        } else {
-                            temp[DICT][_key] = res.data["edge_dict"][_key][KEY]
-                        }
-                    }
-                    
-                    for(let _key in res.data["node_dict"]) {
-                        let _data = res.data["node_dict"][_key]
-                        if(_data["name"] === "None" && _data["en_name"] === "None") {
-                            temp[DICT][_key] =  _data["label"]
-                        } else if(_data[KEY] === "None") {
-                            temp[DICT][_key] = _data["name"]
-                        } else {
-                            temp[DICT][_key] = _data[KEY]
-                        }
-
-                        if(_data["label"] === "Addr") {
-                            addressNode[_key] = _data[KEY]
-                        }
-                        if(_data["label"] === "AddrType") {
-                            addressType[_key] = _data[KEY]
-                        }
-                    }
-                    
-                    
-            
-                    // 建立从topicId 到 名称 的映射
-                    let topicId2Name={}
-
-                    // 翻译topic_id
-                    res.data[TOPICS].forEach(id => {
-                        let idstring = id.join(" ");
-                        temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
-                        topicId2Name[idstring] = id.map(_id => (temp[DICT][_id])).join('-')
-                    }) 
-
-                    // console.log(temp[TOPICS]);
-                    // 记录每个topic的次数
-                    let count = {};
-                    for(let _key in res.data[TOPIC_SENTENCE_POSITION]) {
-                        count[_key] = Object.keys(res.data[TOPIC_SENTENCE_POSITION][_key]).length;
-                    }
-
-
-                    let topicLrs = res.data[TOPIC_LRS]
-                    // topic的排序按照他们的比重大小来排序
-                    temp[TOPICS].sort((a,b) => topicLrs[b[0]]-topicLrs[a[0]])
-                    // 下面对topic进行过滤：将其中小于4%的部分过滤掉
-                    // 统计原始数据weight总值是多少
-                    let totalWeight = Object.values(topicLrs).reduce((a,b)=>a+b,0)
-                    let minWeight = totalWeight*0.04
-                    let minIndex = 0
-                    let originLength = temp[TOPICS].length
-                    while(minIndex < originLength && topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
-                        minIndex++
-                    }
-                    temp[TOPICS].splice(minIndex,originLength-minIndex)
-                    console.log("totalWeight",totalWeight,minIndex,originLength)
-
-
-                    // 地图查询的人
-                    let people = {};
-                    let _positions = {};
-                    Object.keys(res.data[POSITIONS]).forEach(id => {
-                        //  _positions[temp[DICT][id]] = res.data[POSITIONS][id]
-                        people[id] = temp[DICT][id]
-                        res.data[POSITIONS][id].push(id);
-                        _positions[temp[DICT][id]] = res.data[POSITIONS][id];
-                    })
-
-                    let addressMap = {
-                        addressNode,
-                        addressType
-                    }
-                    
-                    //  接口数据说明
-                    //         DICT(name.js) ：node_edge的dict
-                    //         "label2topic_ids": res.data["label2topic_ids"],
-                    //         "topic_id2sentence_id2position1d": res.data["topic_id2sentence_id2position1d"],
-                    //         "topic_pmi": res.data["topic_pmi"],
-                    //         "person_id2position2d": res.data["person_id2position2d"]
-                    // 
-                    updateFourViews(dispatch,people,res,temp,topicId2Name,step,_positions,addressMap,type)
-                } 
+                handleTopicRes(dispatch, res, KEY, step, type)
             })
             .catch(err => console.error(err))
         }
@@ -512,8 +560,6 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             "selectView": {selectListData},
             "matrixView": matrixViewData,
             "timelineView": timeLineData,
-            // TODO:暂时将相似的人放在group里
-            [SIMILAR_PEOPLE]: res.data[SIMILAR_PEOPLE]
         }
     )(dispatch)
 

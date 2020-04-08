@@ -52,9 +52,9 @@ function Flower ({number,current, marginWidth, titles, _showUpLine, _selected, p
         [dispatch]
       )
     const fisheye = useMemo(() => d3Fisheye.radial()
-                        .radius(LENS+current*20)
-                        .distortion(5+current) 
-                        .smoothing(0.4), [current])
+            .radius(35 * current)
+            .distortion(5 * current) 
+            .smoothing(0.4), [current])
 
     useEffect(() => {
         let _arr = [];
@@ -77,7 +77,7 @@ function Flower ({number,current, marginWidth, titles, _showUpLine, _selected, p
                 setActive(false)
             })
 
-    }, [])
+    }, [fisheye])
 
     function toggleVeen() {
         setVenn(!beenVenn)
@@ -117,7 +117,7 @@ function Flower ({number,current, marginWidth, titles, _showUpLine, _selected, p
                                     return (<tspan 
                                         style = {{transition: 'all 100ms ease-in-out'}}
                                         x="-40" y={i*20} key={"t-"+i}
-                                        fontSize = {active?fisheye([BOX_WIDTH + 150*Math.cos((angle+90)*Math.PI/180)-40, BOX_WIDTH-OFFSET+150*Math.sin((angle+90)*Math.PI/180)+i*20])[2]+14+'px':'14px'}
+                                        fontSize = {active?fisheye([BOX_WIDTH + 150*Math.cos((angle+90)*Math.PI/180)-40, BOX_WIDTH-OFFSET+150*Math.sin((angle+90)*Math.PI/180)+i*20])[2]*10+'px':'10px'}
                                     >{text}</tspan>) }
                                 )}
                                 
@@ -172,7 +172,7 @@ function Flower ({number,current, marginWidth, titles, _showUpLine, _selected, p
             </foreignObject>
 
 
-            {active && <circle stroke="black" fill="none" r={LENS} cx={lensPos[0]} cy={lensPos[1]} />}
+            {active && <circle stroke="black" fill="none" r={LENS*current} cx={lensPos[0]} cy={lensPos[1]} />}
         </g>
     )
 }

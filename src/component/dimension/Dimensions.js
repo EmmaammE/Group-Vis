@@ -245,7 +245,8 @@ export function DimensionFisheye({fisheye, _width, _height, _margin, cb, data = 
 
 
     useEffect(() => {
-        d3.select($mask.current)
+        try {
+            d3.select($mask.current)
             .on('mousemove', function() {
                 const mouse = d3.mouse(this);
                 fisheye.focus(mouse)
@@ -292,8 +293,9 @@ export function DimensionFisheye({fisheye, _width, _height, _margin, cb, data = 
                 }
                 
             })
-            
-
+        } catch( err) {
+            console.error(err)
+        } 
     }, [fisheye, $container, points, offset,$mask])
 
     return (

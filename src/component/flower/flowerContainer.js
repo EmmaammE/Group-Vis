@@ -67,6 +67,7 @@ class FlowerContainer extends React.Component {
                                 this.props.cb(step[i])
                             }}
                             step = {step[i]}
+                            current = {current}
                         />
                     )) 
                 }
