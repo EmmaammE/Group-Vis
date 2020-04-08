@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
+// import * as WordCloudGenerator from './wordCloud';
+// import louvain from 'louvain'
 
 export function reduceOpacity(that){
     return new Promise((resolve,reject)=>{
@@ -52,9 +54,10 @@ export function rectLeafScale(data,width,height){
     return {xScale,yScale}
 }
 
-export function rectTree(width,height,topicData){
-    
-    
+export function rectTree2(width,height,topicData){
+    console.log(topicData)
+
+    let all_relation_data
     let weightData = topicData.map(v=>v.weight)
     let children = weightData.map((v,i)=>({
         name:i,
@@ -88,6 +91,119 @@ export function rectTree(width,height,topicData){
     return rectTreeData
 }
 
+export function rectTree(width,height,topicData){
+    console.log(topicData)
+
+    let all_topics = topicData.map(elm => elm.id)
+
+    let topic2index = {}, topic2data = {}
+    all_topics.forEach((id,index) =>  {
+        topic2index[id] = index
+        topic2data[id] = topicData[index]
+    })
+
+    let hash_id2rel_data = {}
+    Object.keys(topicData).forEach(topic_id=>{
+        topicData[topic_id].relationData.forEach(rdata=>{
+            let t = [topic_id, rdata.id]
+            if(!all_topics.includes(rdata.id))
+                return
+            t.sort()
+            let hash_id = t.join('-')
+            hash_id2rel_data[hash_id] = {
+                source: t[0],
+                target: t[1], 
+                weight: rdata.pmi
+            }
+        })
+    })
+    
+    // 先画pmi大的，pmi一样画weight大的
+    let edge_data = Object.values(hash_id2rel_data)
+    edge_data.sort((a,b)=> b.weight - a.weight)
+    edge_data = edge_data.slice(0, Math.ceil(edge_data.length/4))
+
+    let louvain = require('louvain');
+    // console.log(louvain)
+    let community = louvain.jLouvain()
+                    .nodes(all_topics)
+                    .edges(edge_data)
+                    // .partition_init(init_part);
+    let topic2group  = community();
+    // console.log(result, edge_data.map(elm=> elm.weight))
+
+    // const getMaxWeight = elm => Math.max(...elm.t)
+    // all_relation_data.sort((a,b)=> b.pmi!==a.pmi?(b.pmi - a.pmi):(getMaxWeight(b)-getMaxWeight(a)))
+    // let imp_all_relation_data = all_relation_data.slice(0, Math.ceil(all_relation_data.length/5))
+    // console.log(all_relation_data)
+
+    let groups = new Set(Object.values(topic2group))
+    groups = [...groups]
+
+    const data = {
+        name:"root",
+        children: groups.map(group=>{
+            let topics = Object.keys(topic2group).filter(topic => topic2group[topic] == group)
+            return {
+                name: group,
+                children: topics.map(topic => {
+                    return {
+                        name: topic,
+                        value: topic2data[topic].weight
+                    }
+                })
+            }
+        })
+    }
+
+    // console.log(data)
+
+    // let weightData = topicData.map(v=>v.weight)
+
+    // let children = weightData.map((v,i)=>({
+    //     name:i,
+    //     value:v
+    // }))
+    // const data = {
+    //     name:"root",
+    //     children
+    // }
+
+    //treemap是一个函数
+    const treemap = d3.treemap()
+    .padding(1)
+    .round(true);
+
+    // console.log("treemap",treemap)
+
+    let root = d3.hierarchy(data)
+        .sum(d => d.value)
+        .sort((a, b) => b.value - a.value);
+
+    treemap.size([width, height]);
+    const leaves = treemap(root).leaves();
+
+    // console.log(leaves)
+    let rectTreeData = new Array(all_topics.length)
+    leaves.forEach(v => {
+        let node_data = {
+            "x0":v.x0,
+            "y0":v.y0,
+            "x1":v.x1,
+            "y1":v.y1,
+        }
+        rectTreeData[topic2index[v.data.name]] = node_data
+    })
+
+    // let rectTreeData = root['children'].map((v,i)=>({
+    //     "x0":v.x0,
+    //     "y0":v.y0,
+    //     "x1":v.x1,
+    //     "y1":v.y1
+    // }))
+    // console.log(rectTreeData)
+    return rectTreeData
+}
 
 export function filterTimeLine(data){
     let personIndex = 0;
