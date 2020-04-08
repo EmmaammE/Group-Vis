@@ -57,18 +57,15 @@ let svgRatio
 let brushFlag=false;
 let topicData=[];
 
-let sliderHeight = 45
-let sliderWidth = 5
+
 let sliderIndex = -1
-let startY 
-let startWeight
 let dragFlag = false
 let sliderTimer = null
-let sliderMoveTimer  = null
-let updateFlag = false
 let sliderWeights=[]
 
 let topicViewState
+let originTotalWeight = 0
+let originWeights = {}
 
 class TopicTreeMap extends React.Component{
 
@@ -116,7 +113,7 @@ class TopicTreeMap extends React.Component{
   componentDidMount(){
     const that = this
     let container = this.$container.current
-    console.log("container",container.clientWidth,container.clientHeight)
+    // console.log("container",container.clientWidth,container.clientHeight)
     svgWidth =  container.clientWidth
     svgHeight = container.clientHeight
     svgRatio = svgWidth/WIDTH < svgHeight/HEIGHT ? svgWidth/WIDTH : svgHeight/HEIGHT
@@ -237,43 +234,61 @@ class TopicTreeMap extends React.Component{
       }
       
       sliderTimer = setTimeout(()=>{
-        // 更新布局
+
+        /**更新布局**/
         sliderIndex = this.state.selectedTopicIndex
-        // 记录该选中topic之前,及之后，其余topic的总值
-        let restTotalWeight = 100 - topicData[sliderIndex].weight
-        let newTotalWeight = 100 - temp
+        // 根据比例计算该topic的实际比重是多少
+        temp = (originTotalWeight*temp)/100
+        // 记录该选中topic之前及之后，其余topic的总值
+        let restTotalWeight = originTotalWeight - topicData[sliderIndex].weight
+        let newTotalWeight = originTotalWeight - temp
+        // 记录该topic的label
+        let lastLabel = topicData[sliderIndex].label
+        
+
         //更新该topic的值
         topicData[sliderIndex].weight = temp
-        // 更新各个topic的值
-        let lastLabel = topicData[sliderIndex].label
-        // 对其余weight的值，等比例变化，保证所有值之和为100
+        
+        // 对其余weight的值，等比例变化
         topicData.forEach(v=>{
           if(v.label!=lastLabel){
-            v.weight = Number((v.weight/restTotalWeight*newTotalWeight).toFixed(2))
+            v.weight = Number((v.weight*newTotalWeight/restTotalWeight).toFixed(2))
           }
         })
         // 重新对topicData进行排序
+        // topicData中存放的weight是实际值
         topicData.sort((a,b)=>b.weight-a.weight)
-        let newIndex = 1
-        let tempWeights = topicData.map((v,i)=>{
+        let newIndex = 0
+        // 找到该topic在下一轮布局中的位置
+        topicData.forEach((v,i)=>{
           if(v.label==lastLabel){
             newIndex = i
           }
-          return v.weight
         })
-        that.props.updateTopicView(topicData)
-        that.props.initTopicWeight(tempWeights)
+
 
         // 更新选中的topic的序号
         that.setState({
           selectedTopicIndex:newIndex
         })
-        
-        // 向后端发起请求，更新降维图
+
+        // 更新降维图所需要的topicWeights
         let topic_weights= {}
-        topicData.forEach((v,i)=>{
-          topic_weights[v.id] = Number(sliderWeights[i])
+
+        // 取出该topicView的原始topicData，更新其topic的weight，然后更新group中topicData的值
+        let updateTopicData = deepClone(this.props.topicView)
+        updateTopicData.forEach(v=>{
+          if(v.label===lastLabel){
+            v.weight = temp
+          }else{
+            v.weight = Number((v.weight/restTotalWeight*newTotalWeight).toFixed(2))
+          }
+          topic_weights[v.id] = Number(v.weight)
         })
+        let step = this.props.currentStep
+        this.props.updateGroupdata("topicView",step,updateTopicData)
+
+      
         let param ={
           topic_weights,
           ...that.props.historyData
@@ -357,21 +372,32 @@ class TopicTreeMap extends React.Component{
   
 
   render(){
-    // 当topicData0时，或者this.props.topicView变化时更新，
-    if(topicData.length==0||topicViewState!=this.props.topicView){
+    // 当topicData0时，或者this.props.topicView变化时更新
+    let topicPropsUpdateFlag = false
+    if(topicData.length===0||topicViewState!==this.props.topicView){
       topicViewState = this.props.topicView
+      originTotalWeight = 0
+      topicViewState.forEach(v=>{
+        // 计算该视图的所有topicweight的总和
+        originTotalWeight+=v.weight
+        // 存储原始的topic的weight值
+        originWeights[v.id ]= v.weight
+      })
       topicData = deepClone(this.props.topicView)
+      topicPropsUpdateFlag = true
     }
     let rectTreeData = []
-    let index = this.state.selectedTopicIndex
+    // 如果该视图依赖的props.topicView数据发生变动，则index设置为0
+    let index = topicPropsUpdateFlag?0:this.state.selectedTopicIndex
     let selectedRect
     let selectedWeight
     if(topicData.length>0){
       rectTreeData = rectTree(WIDTH,HEIGHT,topicData)
-      sliderWeights = this.props.topicWeight 
+      sliderWeights = topicData.map((v,i)=>{
+        return v.weight/originTotalWeight*100
+      })
       selectedRect = rectTreeData[index]    
-      selectedWeight = Number(topicData[index].weight).toFixed(0);
-      selectedWeight = selectedWeight>100?100 : selectedWeight
+      selectedWeight = Number(sliderWeights[index]).toFixed(0);
     }
 
     let handleClick = []
@@ -570,7 +596,6 @@ function rectFilter(data,singleBrush){
               brushPersons[vkey] = v.persons[i]
             }
           })
-          
         }
       }
     }
@@ -603,23 +628,6 @@ function brushFilter(topicData,that){
       i++
     }
   }
-  let totalWeight = 0
-  if(data.length===0){
-    //选择数据为0，则需要将topicWeight的reducer恢复到初始状态
-    tempSliderWeights = that.props.topicView.map(v=>v.weight)
-  }else{
-    // 将剩余的topic的比重值之和映射到100
-    data.forEach(v=>{
-      totalWeight+=v.weight
-    })
-    data.forEach(v=>{
-      v.weight = Number((v.weight/totalWeight*100).toFixed(2))
-    })
-  }
-
-
-  that.props.initTopicWeight(tempSliderWeights)
-  // cData = newCirData
   return data
 }
 
@@ -633,6 +641,9 @@ function filterCountData(that){
     that.props.setPerson({});
 
     let tempTopicData = brushFilter(topicData,that) 
+    that.setState({
+      selectedTopicIndex:0
+    })
     resolve(tempTopicData)   
   })
 }

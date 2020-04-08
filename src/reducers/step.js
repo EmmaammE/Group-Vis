@@ -27,7 +27,7 @@ export function group(state={}, action) {
                     console.info(data)
                     console.info('更新前后数据一样')
                 }
-                state[step][key] = {...data};
+                state[step][key] = data;
                 // return Object.assign({}, state);
                 return deepClone(state)
                 

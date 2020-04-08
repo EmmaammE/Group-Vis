@@ -11,6 +11,7 @@ import { updateMatrix } from '../../redux/matrixView.redux';
 import { updateSelectList } from '../../redux/selectList.redux';
 import { updateTimeLine } from '../../redux/timeLine.redux';
 import { initTopicWeight } from '../../redux/topicWeight.redux';
+import {addHistoryData} from '../../redux/history.redux'
 
 const GRID_ITEM_TEMPLATE = { next: -1, size: 0, property: [], selected: -1 };
 class SecondPanel extends React.Component {
@@ -163,10 +164,9 @@ class SecondPanel extends React.Component {
         this.props.setOtherStep(6, step);
         // 更新topicView
         let topicData = this.props.group[step]["topicView"];
-        let sliderWeights = topicData.map(v=>v.weight)
-        this.props.initTopicWeight(sliderWeights);
+        // console.log("topicData",topicData)
         this.props.updateTopicView(this.props.group[step]["topicView"]);
-
+        this.props.addHistoryData(this.props.group[step]["historyData"])
         this.setState({
             grid,
             lastHoverIndex: step,
@@ -233,7 +233,8 @@ const mapDispatchToProps = (dispatch) => {
         updateTimeLine: data => dispatch(updateTimeLine(data)),
         updateMatrix: data => dispatch(updateMatrix(data)),
         updateSelectList: data => dispatch(updateSelectList(data)),
-        initTopicWeight: data => dispatch(initTopicWeight(data))
+        initTopicWeight: data => dispatch(initTopicWeight(data)),
+        addHistoryData:data=>dispatch(addHistoryData(data))
     }
 }
 

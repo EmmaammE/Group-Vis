@@ -153,12 +153,13 @@ export function fetchTopicData(param, KEY, step, type) {
 
 
                     let topicLrs = res.data[TOPIC_LRS]
-                    // topic的排序按照他们的比重大小来排序
+                    // topic的排序按照他们的比重大小来排序,从大到小排序
                     temp[TOPICS].sort((a,b) => topicLrs[b[0]]-topicLrs[a[0]])
                     // 下面对topic进行过滤：将其中小于4%的部分过滤掉
                     // 统计原始数据weight总值是多少
                     let totalWeight = Object.values(topicLrs).reduce((a,b)=>a+b,0)
-                    let minWeight = totalWeight*0.04
+                    let topicNum = Object.values(topicLrs).length
+                    let minWeight = totalWeight/topicNum*0.2
                     let minIndex = 0
                     let originLength = temp[TOPICS].length
                     while(minIndex < originLength && topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
@@ -492,11 +493,15 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData,peopleToDiscriptions)
 
     topicData.sort((a,b)=>b.weight-a.weight)
-    topicData.forEach(v=>{
-        // 按比例调整每个topic的weight，使其总和为100
-        v.weight = Number((v.weight/topicTotalWeight*100).toFixed(2))
-    })
-    
+    // topicData.forEach(v=>{
+    //     // 按比例调整每个topic的weight，使其总和为100
+    //     // 其实不该修改weight值
+    //     v.weight = Number((v.weight/topicTotalWeight*100).toFixed(2))
+    // })
+    let historyData = {
+        [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
+        [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
+    }
     // 更新group, step
     updateGroupAndStep(step, 
         {
@@ -512,20 +517,18 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             "selectView": {selectListData},
             "matrixView": matrixViewData,
             "timelineView": timeLineData,
+            "historyData":historyData,
             // TODO:暂时将相似的人放在group里
             [SIMILAR_PEOPLE]: res.data[SIMILAR_PEOPLE]
         }
     )(dispatch)
 
     if(type === 0) {
-        // 更新降维图所需要的辅助数据
-        dispatch(addHistoryData({
-            [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
-            [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
-        }))
+        // 更新降维图所需要的辅助数据 
+        dispatch(addHistoryData(historyData))
         // 更新所有图
-        let sliderWeights = topicData.map(v=>v.weight)
-        dispatch(initTopicWeight(sliderWeights))
+        // let sliderWeights = topicData.map(v=>v.weight)
+        // dispatch(initTopicWeight(sliderWeights))
         dispatch(updateTopicView(topicData));
         dispatch(updateSelectList({selectListData}));
         dispatch(updateMatrix(matrixViewData));
