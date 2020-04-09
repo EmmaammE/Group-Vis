@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {fetchTopicData} from '../../actions/step';
 import { Flowerbtn } from '../button/flowerbtn';
 import axios from 'axios';
+import { updateSelectList } from '../../redux/selectList.redux';
 
 const d3 = Object.assign(d3Base, { lasso });
 
@@ -65,7 +66,7 @@ export function DimensionCircles({_width, _height, data, _margin, classCreator=_
             {/* {show && <Tooltip {...tooltip} />} */}
             {
                 scales.dataArr.map((d, i) => {
-                    let person_id = d[1][2];
+                    let person_id = d[0];
                     let points = [scales.xScale(d[1][0]), scales.yScale(d[1][1])];
                     return (
                         <circle key={'cir-' + i} r={3}  
@@ -102,9 +103,16 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
       (param, step) => dispatch(fetchTopicData(param, KEY, step+1, 1)),
       [dispatch, KEY]
     )
+    const setSelectList = useCallback(
+        (data = [] ) => dispatch(updateSelectList({selectListData: data})),[]
+    )
     const _step = useSelector(state => state.step);
     const [active, setActive] = useState(false);
-    const [flowerSatus, setFlowerStatus] = useState(0)
+    const [flowerSatus, setFlowerStatus] = useState(1)
+    const currentStep = useSelector(state => state.otherStep["6"])
+    const topicData = useSelector(state => state.group[currentStep]["topicView"])
+    const selectList = useSelector(state => state.group[currentStep]["selectView"]["selectListData"])
+    const [showName, setShowName] = useState(false)
 
     useEffect(() => {
         const _lasso = lasso()
@@ -184,25 +192,34 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
     }
 
     function onClickFlower() {
-        if(flowerSatus !== 0) {
-            // 已经框选的人
+        // if(flowerSatus !== 0) {
+            // 所有人
             let param = new FormData();
-            _people.forEach(_key => {
-                param.append('person_ids[]', _key);
+            let json_param = {
+                "person_ids": []
+            }
+            Object.values(data).forEach(_key => {
+                param.append('person_ids[]', _key[2]);
+                json_param["person_ids"].push(_key[2])
             })
             
-            let next_param = Object.assign(param)
             // 传入调整的topic_weights
+            let topic_weight = {};
 
+            topicData.forEach(e => {
+                topic_weight[e.id] = e.weight
+            })
+            console.log(topic_weight)
+            json_param["topic_weights"] = topic_weight;
             
-            axios.post('/search_all_similar_person/')
+            axios.post('/search_all_similar_person/', JSON.stringify(json_param))
                 .then(res => {
                     if(res.data.is_success) {
                         for(let _key in res.data["similiar_person"]) {
-                            next_param.append('person_ids[]', _key);
+                            param.append('person_ids[]', _key);
                         }
 
-                        fetchTopic(param, KEY, _step);
+                        fetchTopic(param, currentStep);
                         setFlowerStatus(2)
 
                     } else {
@@ -210,9 +227,33 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                     }
                 })
                 .catch( err => {
-                    console.err(err)
+                    console.error(err)
                 })
+        // }
+    }
+
+    function clear() {
+        _setPeople([])
+        d3.select($container.current).selectAll('circle')
+            .each(function() {
+                this.classList.remove("selected");
+            })
+    }
+
+    function people() {
+        if(showName === false) {
+            if(_people.length!==0) {
+                // 显示已选中的人
+                setSelectList(_people.map(p => data[p][2]))
+            } else {
+                setSelectList(Object.values(data).map(d => d[2]))
+            }
+            setShowName(true)
+        } else {
+            setSelectList(selectList)
         }
+        
+
     }
 
     return (
@@ -224,7 +265,8 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                 />
                 <rect width="100%" height="100%" fill="transparent"></rect>
             </g>
-            <foreignObject x="10" y="-3px" width="100" height="50" >
+            <foreignObject x="10" y="-3px" width="100%" height="50" >
+                <Flowerbtn cb = {toFetch} active={active} />
                 <div className={flowerClass(flowerSatus)}
                     onClick={onClickFlower}>
                     <div className="ball" />
@@ -232,7 +274,8 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                     <div className="pental first"></div>
                     <div className="pental second"></div>
                 </div>
-                <Flowerbtn cb = {toFetch} active={active} />
+                <div className="clear-btn" onClick={clear}>clear</div>
+                <div className="people-btn" onClick={people}>people</div>
             </foreignObject>
         </g>
     )

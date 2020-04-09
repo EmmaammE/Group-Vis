@@ -193,8 +193,8 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         Object.keys(res.data[POSITIONS]).forEach(id => {
             //  _positions[temp[DICT][id]] = res.data[POSITIONS][id]
             people[id] = temp[DICT][id]
-            res.data[POSITIONS][id].push(id);
-            _positions[temp[DICT][id]] = res.data[POSITIONS][id];
+            res.data[POSITIONS][id].push(temp[DICT][id]);
+            _positions[id] = res.data[POSITIONS][id];
         })
 
         let addressMap = {
