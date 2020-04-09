@@ -4,6 +4,39 @@ import topicData from '../../assets/geojson/a.json';
 // import * as WordCloudGenerator from './wordCloud';
 // import louvain from 'louvain'
 
+export function boolRectToPolygon(addOrMinus,polygons,singleBD){
+    const rectPointData = []
+    rectPointData.push([singleBD.brushTransX,singleBD.brushTransY])
+    rectPointData.push([singleBD.brushTransX,singleBD.brushTransY+singleBD.brushHeight])
+    rectPointData.push([singleBD.brushTransX+singleBD.brushWidth,singleBD.brushTransY+singleBD.brushHeight])
+    rectPointData.push([singleBD.brushTransX+singleBD.brushWidth,singleBD.brushTransY])
+    let p2 = {"regions":[rectPointData],"inverted":false}
+
+    // 如果polygons为空的话
+    if(polygons.length===0){
+        if(addOrMinus)return p2.regions
+        else return []
+    }
+    let p1 = {
+        "regions":polygons,
+        "inverted":false
+    }
+    console.log("p1--p2",p1,p2)
+    let PolyBool = require('polybooljs')
+    // 加选
+    if(addOrMinus){
+        return PolyBool.union(p1,p2).regions
+    }else{
+        return PolyBool.difference(p1,p2).regions
+    }
+    
+    
+    
+    
+    
+    
+  }
+
 export function reduceOpacity(that){
     return new Promise((resolve,reject)=>{
         let timeInterval
@@ -92,7 +125,7 @@ export function rectTree2(width,height,topicData){
 }
 
 export function rectTree(width,height,topicData){
-    console.log(topicData)
+    // console.log(topicData)
 
     let all_topics = topicData.map(elm => elm.id)
 

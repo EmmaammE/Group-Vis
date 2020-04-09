@@ -12,6 +12,7 @@ import {scaleFactory,
       reduceRelationData,
       rectTree,
       reduceOpacity,
+      boolRectToPolygon,
       addOpacity,
       filterRelationData} from './util';
 import {deepClone} from '../../util/tools'
@@ -38,10 +39,10 @@ import Tip from '../tooltip/Tip'
 
 const btnData = [
       {btnName:"Add"},
-      {btnName:"Minus"}
+      {btnName:"Minus"},
+      {btnName:"Clear"}
     ]
 let addOrMinus = true;
-
 let margin={left:15,top:10,right:15,bottom:15}
 const WIDTH = 600;
 const HEIGHT = 450
@@ -49,6 +50,7 @@ const HEIGHT = 450
 let brushPersons = {}
 
 let brushDatas=[];
+let polygons = [];
 let startLoc=[];
 let brushWidth;
 let brushHeight;
@@ -71,15 +73,16 @@ class TopicTreeMap extends React.Component{
 
   constructor(props){
     super(props);
-    
     this.state = {
-      btnClassName:["choose_btn",""],
+      btnClassName:["choose_btn","",""],
       highRowLabel:-1,
       brushVisibility:"hidden",
       brushTransX:0,
       brushTransY:0,
       brushWidth:0,
       brushHeight:0,
+      brushDatas:[],
+      polygons:[],
       opacity:1,
       selectedTopicIndex:0,
       tipHasX:false,
@@ -171,7 +174,17 @@ class TopicTreeMap extends React.Component{
         brushWidth = 0
         brushHeight = 0
         rectFilter(topicData,singleBrushData)
-        brushDatas.push(singleBrushData)
+        // 加选才绘制，减选不绘制
+        polygons = boolRectToPolygon(addOrMinus,polygons,singleBrushData)
+        console.log("polygons--",polygons)
+        let tempPolygons = polygons.map(v=>{
+          let vArray = v.map(point=>point.join(","))
+          return vArray.join(" ")
+        })
+        console.log("tempPolygons",tempPolygons)
+        // brushDatas.push(singleBrushData)
+        that.setState({polygons:tempPolygons})
+        
         that.setState({
           brushVisibility:"hidden",
           brushWidth:0,
@@ -183,7 +196,6 @@ class TopicTreeMap extends React.Component{
         let brushPersonsId = Object.keys(brushPersons)
         let personsIdObject = [...brushPersonsId]
           .reduce((acc, e) => ({...acc, [e]:true}), {})
-        // console.log("brushPersonsId",brushPersonsId);
         that.props.setPerson(personsIdObject)
 
         // 挑出刷选的selectList
@@ -299,18 +311,35 @@ class TopicTreeMap extends React.Component{
 
   // 此为切换加选还是减选框的按钮事件函数
   handleSwitch(v){
-    let classList = v.target.className.split(" ")
+    
     let index = v.target.id.split("")[0]
-    // 如果点击的按钮不是当下选中的按钮
-    if(classList.indexOf("choose_btn")==-1){
-      addOrMinus=!addOrMinus;
-      v.target.className="choose_btn"
-      let tempClassName=["",""]
-      tempClassName[index]="choose_btn"
-      this.setState({
-        btnClassName:tempClassName
-      })
+    if(Number(index)===2){
+      console.log("index",index)
+      // 框选框数据都进行消除
+      polygons = []
+
+      this.setState({polygons})
+      // topicData中叙述被选中的进行清除
+      brushPersons = {}
+      clearChoosed(topicData)
+      // 取消XXX-view所有高亮的人
+      this.props.setPerson({});
+      
+
+    }else{
+      let classList = v.target.className.split(" ")
+      // 如果点击的按钮不是当下选中的按钮
+      if(classList.indexOf("choose_btn")==-1){
+        addOrMinus=!addOrMinus;
+        v.target.className="choose_btn"
+        let tempClassName=["",""]
+        tempClassName[index]="choose_btn"
+        this.setState({
+          btnClassName:tempClassName
+        })
+      }
     }
+    
   }
 
   // apply按钮的事件，将数据刷选的结果应用到topicView
@@ -483,18 +512,19 @@ class TopicTreeMap extends React.Component{
             {/* 绘制已经存在的刷选框 */}
             <g className="exsit-brush-rects">
               {
-                brushDatas.map((v,i)=>(
-                  <rect
+                this.state.polygons.map((v,i)=>(
+                  <polygon
                     key={`exsit-brush-${i}`}
                     className="brush"
-                    transform = {`translate(${v.brushTransX},${v.brushTransY})`}
-                    width={v.brushWidth}
-                    height={v.brushHeight}
-                    opacity="0.1"
-                    strokeWidth="2"
-                    stroke={`${v.addOrMinus?"red":"blue"}`}
+                    // transform = {`translate(${v.brushTransX},${v.brushTransY})`}
+                    points={v}
+                    // width={v.brushWidth}
+                    // height={v.brushHeight}
+                    // opacity="0.1"
+                    // strokeWidth="1"
+                    style={{fill:"#cccccc", stroke:"red", strokeWidth:1.5, opacity:0.3}}
                   >
-                  </rect>
+                  </polygon>
                  ))
               }
             </g>
@@ -557,6 +587,14 @@ const mapDispatchToProps = {
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicTreeMap);
 
+function clearChoosed(data){
+  for(let d of data){
+    for(let v of d.cData){
+        v.isChoose=false
+    }
+  }
+}
+
 function rectFilter(data,singleBrush){
   let {addOrMinus,brushTransX,brushTransY,brushWidth,brushHeight} = singleBrush
   let cData=data.cData
@@ -572,7 +610,6 @@ function rectFilter(data,singleBrush){
 
   if(!addOrMinus){
     // 减数据
-
     for(let d of data){
       for(let v of d.cData){
         if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2){
@@ -636,7 +673,9 @@ function brushFilter(topicData,that){
 function filterCountData(that){
   return new Promise((resolve,reject)=>{
     //  使框选框消失
-    brushDatas=[]
+    polygons = []
+    that.setState({polygons})
+    
     // 取消XXX-view所有高亮的人
     that.props.setPerson({});
 
@@ -688,3 +727,6 @@ function popDown(that){
     tipStyle:tipStyle
   })
 }
+
+
+
