@@ -64,3 +64,8 @@
   color: #333;
   transition: 0.3s;
 }
+
+.link-input {
+  width: 50px;
+  outline: #000;
+}

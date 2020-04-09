@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as d3 from 'd3';
 import './path.css'
 import { PathHistory } from './pathHistory';
@@ -10,6 +10,31 @@ const RECT_HEIGHT = 15;
 
 let temp_rects = ['Who', 'Input']
     .map((e, i) => [(RECT_WIDTH * 2 + 10) * i + 10, RECT_HEIGHT, e]);
+
+function Link({link}) {
+    const [value, setValue] = useState('');
+
+    function onInput(e) {
+        setValue(e.target.value.trim())
+    }
+    return (
+        <g>
+            <path stroke="#aaa" fill="transparent"
+                d={`M${link.source[0]},${link.source[1]} L${link.target[0]},${link.target[1]}`}
+                strokeDasharray="5"
+                markerEnd='url(#marker-circle)' markerStart="url(#marker-circle)"
+            />
+            <foreignObject 
+                x={(link.source[0]+link.target[0])/2 - 25} y={(link.source[1]+link.target[1])/2} 
+                width="120px" height={4 * RECT_HEIGHT + 10}>
+                <div>
+                    <input className="link-input" type="text" placeholder="name:"
+                        value={value} onChange={onInput} />
+                </div>
+            </foreignObject>
+        </g>
+    )
+}
 
 class PathContainer extends React.Component {
     constructor(props) {
@@ -403,11 +428,7 @@ class PathContainer extends React.Component {
                         />
                         <g> {
                             links.map((link, i) => (
-                                <path key={'link-' + i} stroke="#aaa" fill="transparent"
-                                    d={`M${link.source[0]},${link.source[1]} L${link.target[0]},${link.target[1]}`}
-                                    strokeDasharray="5"
-                                    markerEnd='url(#marker-circle)' markerStart="url(#marker-circle)"
-                                />
+                                <Link key={'link-' + i} link={link} />
                             ))
                         } </g>
                     </g>

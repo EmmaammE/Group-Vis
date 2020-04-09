@@ -42,17 +42,23 @@
 .btn-add {
   cursor: pointer;
   position: absolute;
-  top: 5%;
+  top: 32%;
+  left: 100px;
+  transform: scale(1.5);
+}
+
+.btn-add.active {
+  top: 39%;
 }
 
 .btn-add .ball {
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  height: 8px;
   background: lightcoral;
   border-radius: 50%;
   transform: translateY(-2px);
   position: absolute;
-  left: 8px;
+  left: 10px;
   transition: all 300ms ease-in-out;
 }
 
@@ -69,11 +75,12 @@
 } 
 
 .btn-add .pental {
-  width: 10px;
-  height: 10px;
+  width: 15px;
+  height: 15px;
   position: absolute;
   display: block;
   overflow: hidden;
+  opacity: 0.6;
 
   /* border-left: 0 solid transparent; */
   border-left: 1px solid #d4ab9b;
@@ -85,22 +92,30 @@
 }
 
 .btn-add .pental.first {
-  transform: rotate(151deg) skewX(-18deg) skewY(-6deg) scale(0.8);
-    /* position: absolute; */
-  left: 8px;
+  transform: rotate(162deg) skewX(-18deg) skewY(-6deg);
+  left: 13px;
 }
 
 .btn-add .pental.second {
-  transform: rotate(101deg) skewX(-18deg) skewY(-6deg) scale(0.8);
-  left: 2px;
+  transform: rotate(94deg) skewX(-18deg) skewY(-6deg);
+  left: -1px;
 }
 
 .btn-add.active .pental.first {
-  transform: rotate(176deg) skewX(-18deg) skewY(-6deg) scale(0.8);
-    /* position: absolute; */
-  left: 10px;
+  transform: rotate(176deg) skewX(-18deg) skewY(-6deg);
 }
 
 .btn-add.active .pental.second {
-  transform: rotate(76deg) skewX(-18deg) skewY(-6deg) scale(0.8);
+  transform: rotate(80deg) skewX(-18deg) skewY(-6deg);
+}
+
+.clear-btn {
+  border: 1px solid #000;
+  border-radius: 20px;
+  position: absolute;
+  padding: 3px 14px;
+  top: 14px;
+  height: 20px;
+  line-height: 20px;
+  right: 0;
 }

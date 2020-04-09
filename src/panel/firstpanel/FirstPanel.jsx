@@ -33,7 +33,6 @@ class FirstPanel extends React.Component {
             timeRange: [0, 0],
             _tabPanel: 1,
             cyphers: [],
-            $liTarget: null,
             status: false,
         }
 
