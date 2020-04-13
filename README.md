@@ -19,3 +19,19 @@ You will also see any lint errors in the console.
 "start": "react-scripts --max_old_space_size=6144 start "
 
 并注释掉 actions/step.js 中的 dispatch(updateMatrix(matrixViewData));
+
+## 样式
+
+在App.css里写全局的样式，后面用到组件里。
+
+命名： global-XXX 
+
+颜色： 在root中写自定义变量
+
+## 中英文切换
+
+reducers/index.js文件中， 修改KEY的初始值
+
+en_name: 英文
+
+name: 中文

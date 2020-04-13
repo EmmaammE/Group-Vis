@@ -19,7 +19,9 @@ class SecondPanel extends React.Component {
         super(props);
         this.state = {
             grid: [
-                // {next:-1, size:1, property:[8],selected:0, positions:[], titles: Array(8).fill(null).map((e,i)=>'topic-'+i)},
+                // {next:-1, size:1, property:[[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8].reverse()],selected:0, positions:[], 
+                //     step: [0],
+                //     titles: [[[1],[2],[3],[4],[5],[6],[7],[8]]]},
                 // {next:-1, size:2, property:[8,9],selected:0, positions:[]},
                 // {next:4, size:3, property:[7,9,10],selected:2, positions:[]},
                 // {next:-1, size:4, property:[7,7,5,10],selected:2, positions:[]},
@@ -44,16 +46,21 @@ class SecondPanel extends React.Component {
             if (grid.length === 0 || this.props.step === 1) {
                 // console.log('update init');
                 // 暂定8片花瓣
-                let titles = group[1][TOPICS].slice(0, 8).map(arr => arr[1]);
+                // let titles = group[1][TOPICS].slice(0, 8).map(arr => arr[1]);
+                let titles = [], weights = [];
+                group[1][TOPICS].forEach(e => {
+                    titles.push(e['content']);
+                    weights.push(e['weight'])
+                })
+
                 let newGrid = [({
                     ...GRID_ITEM_TEMPLATE, size: 1, selected: 0, step: [1],
-                    property: [titles.length], titles: [titles], positions: [group[1][POSITIONS]]
+                    property: [weights], titles: [titles], positions: [group[1][POSITIONS]]
                 })]
 
                 this.setState({ grid: newGrid })
             } else {
                 let newGrid = grid.slice(0);
-                let titles = group[step][TOPICS].slice(0, 8).map(arr => arr[1]);
 
                 let currentLayer = hoverIndex[0];
                 let lastIndex = step2index[step - 1];
@@ -61,12 +68,19 @@ class SecondPanel extends React.Component {
                 if(lastHoverIndex !== undefined) {
                     lastIndex = step2index[lastHoverIndex]
                 }
+
+                let titles = [], weights = [];
+                group[step][TOPICS].forEach(e => {
+                    titles.push(e['content']);
+                    weights.push(e['weight'])
+                })
+                
                 // 被选中的这朵❀没有下一层
                 if (currentLayer === grid.length-1) {
                     newGrid[lastIndex[0]].next = 1;
                     newGrid.push({
                         ...GRID_ITEM_TEMPLATE, size: 1, step: [step],
-                        property: [titles.length], titles: [titles], positions: [group[step][POSITIONS]]
+                        property: [weights], titles: [titles], positions: [group[step][POSITIONS]]
                     });
                     // step2index[step] = [1,0];
                     step2index[step] = [lastIndex[0] + 1, 0];
@@ -81,7 +95,7 @@ class SecondPanel extends React.Component {
 
                     let _grid = newGrid[currentLayer+1];
                     _grid.size += 1;
-                    _grid.property.push(titles.length);
+                    _grid.property.push(weights);
                     _grid.titles.push(titles) ;
                     _grid.positions.push(group[step][POSITIONS]);
                     _grid.step.push(step);

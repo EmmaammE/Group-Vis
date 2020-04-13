@@ -109,13 +109,21 @@
   transform: rotate(80deg) skewX(-18deg) skewY(-6deg);
 }
 
-.clear-btn {
+
+.d-btn {
   border: 1px solid #000;
-  border-radius: 20px;
+  border-radius: 15px;
+  height: 20px;
+  line-height: 20px;
   position: absolute;
   padding: 3px 14px;
   top: 14px;
-  height: 20px;
-  line-height: 20px;
+}
+
+.clear-btn {
+  right: 100px;
+}
+
+.people-btn {
   right: 0;
 }

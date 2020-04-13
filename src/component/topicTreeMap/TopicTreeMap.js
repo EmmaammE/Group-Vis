@@ -175,7 +175,11 @@ class TopicTreeMap extends React.Component{
         brushHeight = 0
         rectFilter(topicData,singleBrushData)
         // 加选才绘制，减选不绘制
-        polygons = boolRectToPolygon(addOrMinus,polygons,singleBrushData)
+        try {
+          polygons = boolRectToPolygon(addOrMinus,polygons,singleBrushData)
+        } catch(err) {
+          console.error(err)
+        }
         console.log("polygons--",polygons)
         let tempPolygons = polygons.map(v=>{
           let vArray = v.map(point=>point.join(","))

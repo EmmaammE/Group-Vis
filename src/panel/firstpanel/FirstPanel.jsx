@@ -13,6 +13,8 @@ import DatePanel from '../../component/selectedPanel/datePanel';
 import PathContainer from '../../component/pathContainer/PathContainer';
 import { fetchTopicData, setOtherStep } from '../../actions/step';
 import { debounce } from '../../util/tools';
+// import * as order from '../../assets/data/name.json'
+import Header from '../../component/header/Header';
 
 const ALL_SIGN = "all";
 class FirstPanel extends React.Component {
@@ -51,7 +53,25 @@ class FirstPanel extends React.Component {
         
         if (type === 2) {
             // "Person", 有相关人的relation
-            let entries = Object.entries(data)
+            let entries = Object.entries(data);
+                // let order = await('../../assets/data/name.json');
+                // let parent = await('../../assets/data/parent.json');
+                
+            // entries.sort((a,b) => {
+            //     let ordera = Number(order[a[1]["relation"][KEY]]);
+            //     let orderb = Number(order[b[1]["relation"][KEY]]);
+            //     if(ordera === orderb) {
+            //         return a[1]["relation"][KEY] - b[1]['relation'][KEY]
+            //     } else {
+            //         return ordera - orderb
+            //     }
+            // })
+
+            // entries.sort((a,b) => {
+            //     return a[1]["relation"][KEY] - b[1]['relation'][KEY]
+            // })
+            
+            
             entries.forEach(e => {
                 if(e[1][KEY] === searchValue) {
                     arr.unshift([e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]])
@@ -382,7 +402,7 @@ class FirstPanel extends React.Component {
                                     <img src={slogo} alt="search" />
                                 </span>
                             </div>
-                            <div style={{height: '32vh', overflow: 'hidden'}}>
+                            <div style={{height: '90%', overflow: 'hidden'}}>
                                 <List
                                     width={220}
                                     height={250}
@@ -437,18 +457,22 @@ class FirstPanel extends React.Component {
     render() {
         return (
             <div className="first-panel">
-                <h1 className="big-title">
-                    <img src={logo} alt="logo" />
-                </h1>
+                {/* <h1 className="big-title">
+                    CohortVA
+                </h1> */}
+                <Header title="CohortVA" />
                 <div className="content-container">
-                    <div className="title"><p>Overview</p></div>
+                    <div className="title"><p>Venn</p></div>
                     <Blobs />
-                    <div className="title"><p>Control Panel</p></div>
 
-                    {this._renderPanel()}
+                    <div className="control-panel">
+                        <div className="title"><p>Control Panel</p></div>
 
-                    <div className="btn-container">
-                        <button className="btn" onClick={this.onClickSearch}>Search</button>
+                        {this._renderPanel()}
+
+                        <div className="btn-container">
+                            <button className="btn" onClick={this.onClickSearch}>Search</button>
+                        </div>
                     </div>
                 </div>
             </div>

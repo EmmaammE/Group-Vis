@@ -17,7 +17,7 @@ class DimensionContainer extends React.Component {
         let { positions, selectedPeople } = this.props;
         return (
             <div style={style}>
-                <p className="title">Reduced-dimension View</p>
+                <p className="title">Figure View</p>
                 {
                     positions &&
                         <svg viewBox={"0 0 340 340"} style={{flex: 1}} >

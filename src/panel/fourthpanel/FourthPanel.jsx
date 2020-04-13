@@ -10,7 +10,7 @@ class FourthPanel extends React.Component {
   render() {
     return (
       <div className="fourth-panel">
-        <Header title = "Details view"></Header>
+        <Header title = "Auxiliary Views"></Header>
         <div className="content-panel">
           <div className="box"><TimeLine/></div>
           <div className="matrix-box "><MatrixView/></div>

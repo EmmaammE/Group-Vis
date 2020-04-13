@@ -21,7 +21,7 @@ class ThirdPanel extends React.Component {
   render() {
     return (
       <div className="third-panel">
-        <Header title = "Topicview"></Header>
+        <Header title = "Detail Views"></Header>
         <div className="topicView-panel">
             <TopicTreeMap></TopicTreeMap>
         </div>

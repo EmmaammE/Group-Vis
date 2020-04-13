@@ -272,7 +272,7 @@ class TopicView extends React.Component{
     xScaleReverse = xScaleR
     return (
       <div className="chart-wrapper">
-        <div className="title">Topic View</div>
+        <div className="title">Feature View</div>
         <div  className="topic-buttons">
           <div className="mButtonContainer" onClick={this.handleSwitch}>
             {btnData.map((v,i)=>(

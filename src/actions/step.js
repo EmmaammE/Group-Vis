@@ -97,10 +97,12 @@ function fetchBySocket(dispatch, param, KEY, step, type) {
 
     // 接收数据事件，event的data就是返回数据
     websocket.onmessage = function (evt) {
+
+        console.log(evt)
+        console.log(evt.data)
         let received_json = {
             "data": JSON.parse(evt.data)
         };
-        // console.log(received_json)
         handleTopicRes(dispatch, received_json, KEY, step, type)
         websocket.close();
 
@@ -138,6 +140,7 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
                 temp[DICT][_key] =  _data["label"]
             } else if(_data[KEY] === "None") {
                 temp[DICT][_key] = _data["name"]
+                // console.log('没有英文', _key, _data["name"])
             } else {
                 temp[DICT][_key] = _data[KEY]
             }
@@ -189,12 +192,10 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
 
         // 地图查询的人
         let people = {};
-        let _positions = {};
         Object.keys(res.data[POSITIONS]).forEach(id => {
             //  _positions[temp[DICT][id]] = res.data[POSITIONS][id]
             people[id] = temp[DICT][id]
             res.data[POSITIONS][id].push(temp[DICT][id]);
-            _positions[id] = res.data[POSITIONS][id];
         })
 
         let addressMap = {
@@ -209,7 +210,7 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         //         "topic_pmi": res.data["topic_pmi"],
         //         "person_id2position2d": res.data["person_id2position2d"]
         // 
-        updateFourViews(dispatch,people,res,temp,topicId2Name,step,_positions,addressMap,type)
+        updateFourViews(dispatch,people,res,temp,topicId2Name,step,addressMap,type)
     } else {
         console.log(res.data.bug)
     }
@@ -226,7 +227,7 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
 export function fetchTopicData(param, KEY, step, type) {
 
     let people = param.getAll('person_ids[]');
-    if(people.length > 400) {
+    if(people.length > 200) {
         // 使用socket通信
         return dispatch => {
             fetchBySocket(dispatch, people, KEY, step, type)
@@ -240,6 +241,7 @@ export function fetchTopicData(param, KEY, step, type) {
     return dispatch => {
         axios.post('/search_topics_by_person_ids/', param)
             .then(res => {
+                // console.log(res)
                 handleTopicRes(dispatch, res, KEY, step, type)
             })
             .catch(err => console.error(err))
@@ -258,7 +260,7 @@ export function fetchTopicData(param, KEY, step, type) {
  * 
 */
 
-export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _positions, addressMap, type){
+export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addressMap, type){
 
     console.log("返回的数据***",res.data,"temp***",temp);
     
@@ -541,6 +543,18 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
     console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData,peopleToDiscriptions)
 
     topicData.sort((a,b)=>b.weight-a.weight)
+
+    // 计算topicData的占比
+    let weights = [];
+    for(let i=topicData.length-1; i >=0; i--) {
+        if(weights.length > 8) break;
+
+        weights.push({
+            'weight': topicData[i].weight / topicTotalWeight,
+            'content': temp[TOPICS][i][1] 
+        })
+    }
+    
     // topicData.forEach(v=>{
     //     // 按比例调整每个topic的weight，使其总和为100
     //     // 其实不该修改weight值
@@ -550,6 +564,8 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
         [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
     }
+
+    console.info(res.data[POSITIONS])
     // 更新group, step
     updateGroupAndStep(step, 
         {
@@ -558,8 +574,8 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
                 addressNode: addressMap['addressNode'],
                 sentence2pos
             },
-            [POSITIONS]: _positions,
-            [TOPICS]: temp[TOPICS],
+            [POSITIONS]: res.data[POSITIONS],
+            [TOPICS]: weights,
             "people": people,
             "topicView": topicData,
             "selectView": {selectListData},

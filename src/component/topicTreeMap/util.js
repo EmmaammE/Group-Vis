@@ -11,7 +11,7 @@ export function boolRectToPolygon(addOrMinus,polygons,singleBD){
     rectPointData.push([singleBD.brushTransX+singleBD.brushWidth,singleBD.brushTransY+singleBD.brushHeight])
     rectPointData.push([singleBD.brushTransX+singleBD.brushWidth,singleBD.brushTransY])
     let p2 = {"regions":[rectPointData],"inverted":false}
-
+    // try {
     // 如果polygons为空的话
     if(polygons.length===0){
         if(addOrMinus)return p2.regions
@@ -29,12 +29,9 @@ export function boolRectToPolygon(addOrMinus,polygons,singleBD){
     }else{
         return PolyBool.difference(p1,p2).regions
     }
-    
-    
-    
-    
-    
-    
+//    } catch(err) {
+//        console.error(err)
+//    }
   }
 
 export function reduceOpacity(that){
