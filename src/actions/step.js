@@ -24,6 +24,13 @@ import {genderTemplate,
         relationTemplate,
         locationTemplate,
         beOfficeTemplate,
+        genderTemplateEn,
+        familyTemplateEn,
+        socialDisTemplateEn,
+        titleTemplateEn,
+        relationTemplateEn,
+        locationTemplateEn,
+        beOfficeTemplateEn,
         } from '../util/tools.js'
 import { batch } from "react-redux";
 
@@ -231,7 +238,7 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         //         "topic_pmi": res.data["topic_pmi"],
         //         "person_id2position2d": res.data["person_id2position2d"]
         // 
-        updateFourViews(dispatch,people,res,temp,topicId2Name,step,addressMap,type)
+        updateFourViews(dispatch,people,res,temp,topicId2Name,step,addressMap,type,KEY)
     } else {
         console.log(res.data.bug)
     }
@@ -281,7 +288,7 @@ export function fetchTopicData(param, KEY, step, type) {
  * 
 */
 
-export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addressMap, type){
+export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addressMap, type,KEY){
 
     console.log("返回的数据***",res.data,"temp***",temp);
     
@@ -397,32 +404,65 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             let timeNumber = 0
             let time=0
             let senDiscription
-            switch (sentenceLabel[vKey]) {
-                case "性别":
-                    senDiscription = genderTemplate(vKey,temp[DICT],nodeEdgeDict )
-                    break;
-                case "亲属":
-                    senDiscription = familyTemplate(vKey,temp[DICT],nodeEdgeDict )
-                    break;
-                case "社会区分":
-                    senDiscription = socialDisTemplate(vKey,temp[DICT],nodeEdgeDict )
-                    break;
-                case "官职":
-                    senDiscription = titleTemplate(vKey,temp[DICT],nodeEdgeDict )
-                    break;
-                case "关系":
-                    senDiscription = relationTemplate(vKey,temp[DICT],nodeEdgeDict )
-                    break;
-                case "地点事件":
-                    senDiscription = locationTemplate(vKey,temp[DICT],nodeEdgeDict )
-                    break;
-                case "入仕":
-                    senDiscription = beOfficeTemplate(vKey,temp[DICT],nodeEdgeDict )
-                    break;
-                default:
-                    senDiscription = vKey.split(" ").map(vk=>temp[DICT][vk]).join('-')
-                    break;
+            console.log("KEY",KEY)
+            if(KEY == "name"){
+                // 中文版本的模板
+                switch (sentenceLabel[vKey]) {
+                    case "性别":
+                        senDiscription = genderTemplate(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "亲属":
+                        senDiscription = familyTemplate(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "社会区分":
+                        senDiscription = socialDisTemplate(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "官职":
+                        senDiscription = titleTemplate(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "关系":
+                        senDiscription = relationTemplate(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "地点事件":
+                        senDiscription = locationTemplate(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "入仕":
+                        senDiscription = beOfficeTemplate(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    default:
+                        senDiscription = vKey.split(" ").map(vk=>temp[DICT][vk]).join('-')
+                        break;
+                }
+            }else{
+                // 英文版本的模板
+                switch (sentenceLabel[vKey]) {
+                    case "性别":
+                        senDiscription = genderTemplateEn(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "亲属":
+                        senDiscription = familyTemplateEn(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "社会区分":
+                        senDiscription = socialDisTemplateEn(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "官职":
+                        senDiscription = titleTemplateEn(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "关系":
+                        senDiscription = relationTemplateEn(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "地点事件":
+                        senDiscription = locationTemplateEn(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    case "入仕":
+                        senDiscription = beOfficeTemplateEn(vKey,temp[DICT],nodeEdgeDict )
+                        break;
+                    default:
+                        senDiscription = vKey.split(" ").map(vk=>temp[DICT][vk]).join('-')
+                        break;
+                }
             }
+            
 
             // 提取地点事件用到地图
             let words = vKey.split(" ");
