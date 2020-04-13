@@ -570,7 +570,7 @@ class TopicTreeMap extends React.Component{
                   width = {v.x1-v.x0}
                   height = {v.y1-v.y0}
                   fill= "none"
-                  stroke= "#660000"
+                  stroke= "#f77f7f"
                   strokeWidth = "1.5"
                   transform={`translate(${v.x0},${v.y0})`}
                 > 
