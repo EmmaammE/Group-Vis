@@ -28,6 +28,12 @@
   height: 13%;
 }
 
+.timeline-clear{
+  position:absolute;
+  right:15px;
+  top:5px;
+}
+
 /* 滚动条 */
 .timeLine-container::-webkit-scrollbar-track {
   border: 1px solid #d3d3d3;

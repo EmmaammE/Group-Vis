@@ -1,6 +1,7 @@
 import React from 'react';
 import Lable from '../lable/Lable'
 import SeqCircles from '../seqCircles/SeqCircles'
+import MatrixButton from '../button/MatrixButton'
 import {scaleFactory,sortTimeLineData,circleData,lineData} from './util';
 import './timeLine.css'
 import { connect } from 'react-redux';
@@ -51,6 +52,8 @@ class TimeLine extends React.Component{
     this.handleBrushMouseDown = this.handleBrushMouseDown.bind(this)
     this.handleBrushMouseMove = this.handleBrushMouseMove.bind(this)
     this.handleBrushMouseUp = this.handleBrushMouseUp.bind(this)
+
+    this.handleClear = this.handleClear.bind(this)
 
   }
 
@@ -151,6 +154,22 @@ class TimeLine extends React.Component{
 
   }
 
+  handleClear(){
+    timeLineData.tCircleData.forEach((d,i)=>{
+        d.forEach(v=>{
+          v.isChoose = false
+        })
+    })
+    this.setState({
+      brushVisibility:"hidden",
+      brushTransX:0,
+      brushTransY:0,
+      brushWidth:0,
+      brushHeight:0
+    })
+    this.props.setPerson({})
+  }
+
   render(){
     // console.log("sort--before",this.props.timeLineView)
     timeLineData = sortTimeLineData(this.props.timeLineView)
@@ -178,6 +197,9 @@ class TimeLine extends React.Component{
       <div 
         className="chart-wrapper">
         <div className="title">Timeline View</div>
+        <div className="timeline-clear" onClick={this.handleClear}>
+          <MatrixButton id="timeline-clear-button"  btnName="clear" cName="timeline-button"></MatrixButton>
+        </div>
         <div className="timeLine-container">
           <svg width={WIDTH} height={gHeight} 
             viewBox={`0 0 ${WIDTH} ${gHeight}`}
