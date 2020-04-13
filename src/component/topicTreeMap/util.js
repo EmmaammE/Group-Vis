@@ -4,7 +4,64 @@ import topicData from '../../assets/geojson/a.json';
 // import * as WordCloudGenerator from './wordCloud';
 // import louvain from 'louvain'
 
-export function boolRectToPolygon(addOrMinus,polygons,singleBD){
+export function maxItem(data){
+    let itemSets = []
+    let item2Index = {}
+    let index = 0
+    data.forEach(d=>{
+        d.split(", ").forEach(v=>{
+            if(v!=="-1"){
+                if(item2Index[v]==undefined){
+                    item2Index[v] = index
+                    index++
+                    itemSets.push({
+                        id:v,
+                        number:0
+                    })
+                }
+                itemSets[item2Index[v]].number++
+            } 
+        })
+    })
+    itemSets.sort((a,b)=>b.number-a.number)
+    console.log("itemSets",itemSets)
+    return itemSets.slice(0,5)
+}
+export function maxLabel(infos){
+    let maxSects = []
+    let freMap = {}
+    let max = 0
+    infos.forEach(info=>{
+        if(!freMap[info]){
+            freMap[info] = 1
+        }else{
+            freMap[info]++
+        }
+    })
+    for(let i in freMap){
+        maxSects.push({
+            label:i,
+            number:freMap[i]
+        })
+    }
+    maxSects.sort((a,b)=>b.number-a.number)
+    return maxSects.map(v=>`${v.label}: ${v.number}`)
+}
+export function isPointInPolygon(point,vs){
+
+    var x = point[0], y = point[1];
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+}
+
+export function boolRectToPolygon(addOrMinus,polygons,singleBD,polygonsData,singleFilterData){
     const rectPointData = []
     rectPointData.push([singleBD.brushTransX,singleBD.brushTransY])
     rectPointData.push([singleBD.brushTransX,singleBD.brushTransY+singleBD.brushHeight])
@@ -12,29 +69,65 @@ export function boolRectToPolygon(addOrMinus,polygons,singleBD){
     rectPointData.push([singleBD.brushTransX+singleBD.brushWidth,singleBD.brushTransY])
     let p2 = {"regions":[rectPointData],"inverted":false}
 
+    let pData = []
     // 如果polygons为空的话
     if(polygons.length===0){
-        if(addOrMinus)return p2.regions
-        else return []
+        if(addOrMinus){
+            pData.push(deepClone(singleFilterData))
+            return {"result":p2.regions,pData}
+        }else{
+            return {"result":[],pData}
+        } 
     }
     let p1 = {
         "regions":polygons,
         "inverted":false
     }
-    console.log("p1--p2",p1,p2)
+    // console.log("p1--p2",p1,p2)
     let PolyBool = require('polybooljs')
-    // 加选
+    // 加选或减选
+
+    // 将polygonsData的数据先汇总到一个对象中,方便数据的加选和减选
+    let originPdata = {}
+    polygonsData.forEach(v=>{
+        originPdata = {...originPdata,...v}
+    })
+    polygonsData = originPdata
+    let result
     if(addOrMinus){
-        return PolyBool.union(p1,p2).regions
+        result = PolyBool.union(p1,p2).regions
+        // 数据进行汇总
+        for(let v in singleFilterData){
+            if(!polygonsData[v]){
+                polygonsData[v] = singleFilterData[v]
+            }
+        }
     }else{
-        return PolyBool.difference(p1,p2).regions
+        result = PolyBool.difference(p1,p2).regions
+        for(let v in singleFilterData){
+            if(polygonsData[v]!=undefined){
+                // 数据减选
+                delete polygonsData[v]
+            }
+        }
     }
     
-    
-    
-    
-    
-    
+    let k = 0
+    while(k<result.length){
+        pData[k] = {}
+        k++
+    }
+    // 将数据分发到各个区域的集合中
+    for(let v in polygonsData){
+        for(let j=0;j<result.length;j++){
+            if(isPointInPolygon([polygonsData[v].tx,polygonsData[v].ty],result[j])){
+                pData[j][v] = polygonsData[v]
+                break
+            }
+        }
+    }
+
+    return {result,pData}
   }
 
 export function reduceOpacity(that){
@@ -189,6 +282,8 @@ export function rectTree(width,height,topicData){
         })
     }
 
+    // console.log("treeMap - data",data)
+
     // console.log(data)
 
     // let weightData = topicData.map(v=>v.weight)
@@ -204,7 +299,7 @@ export function rectTree(width,height,topicData){
 
     //treemap是一个函数
     const treemap = d3.treemap()
-    .padding(1)
+    .padding(3)
     .round(true);
 
     // console.log("treemap",treemap)
@@ -214,10 +309,22 @@ export function rectTree(width,height,topicData){
         .sort((a, b) => b.value - a.value);
 
     treemap.size([width, height]);
-    const leaves = treemap(root).leaves();
+    let treemapData = treemap(root)
+    const leaves = treemapData.leaves();
 
     // console.log(leaves)
     let rectTreeData = new Array(all_topics.length)
+    // 此为分组的矩形数据
+    let rectGroupData = []
+    treemapData.children.forEach(v=>{
+        let group_rect = {
+            "x0":v.x0,
+            "y0":v.y0,
+            "x1":v.x1,
+            "y1":v.y1
+        }
+        rectGroupData.push(group_rect)
+    })
     leaves.forEach(v => {
         let node_data = {
             "x0":v.x0,
@@ -228,6 +335,8 @@ export function rectTree(width,height,topicData){
         rectTreeData[topic2index[v.data.name]] = node_data
     })
 
+
+
     // let rectTreeData = root['children'].map((v,i)=>({
     //     "x0":v.x0,
     //     "y0":v.y0,
@@ -235,7 +344,7 @@ export function rectTree(width,height,topicData){
     //     "y1":v.y1
     // }))
     // console.log(rectTreeData)
-    return rectTreeData
+    return {rectTreeData,rectGroupData}
 }
 
 export function filterTimeLine(data){
@@ -247,10 +356,11 @@ export function filterTimeLine(data){
     for(let v of data){
         for (let k of v.cData){
             if(k.time>0&&k.persons.length>0){
-                for(let h of k.persons){
+                k.persons.forEach((h,i)=>{
                     if(personToIndex[h]==undefined){
                         personToIndex[h]=personIndex
                         tLabelData[personIndex] = {
+                            personId:k.personsId[i],
                             name:h,
                             number:0,
                             preIndex:personIndex
@@ -264,10 +374,12 @@ export function filterTimeLine(data){
                         tLabelData[personToIndex[h]].number++
                         tCircleData[personToIndex[h]].push({
                             discription:k.discription,
-                            distance:k.time
+                            distance:k.time,
+                            sentenceId:k.id,
+                            topicId:v.id
                         })
                     }
-                }
+                })
             }
         }
     }

@@ -14,7 +14,9 @@ import {scaleFactory,
       reduceOpacity,
       boolRectToPolygon,
       addOpacity,
-      filterRelationData} from './util';
+      filterRelationData,
+      maxItem,
+      maxLabel} from './util';
 import {deepClone} from '../../util/tools'
 import Arrow from'./Arrow'
 import './topicTreeMap.css'
@@ -47,9 +49,13 @@ let margin={left:15,top:10,right:15,bottom:15}
 const WIDTH = 600;
 const HEIGHT = 450
 
+// const apriori = require('simple-apriori');
 let brushPersons = {}
+let singleFilterData = {}
+// 存放框选集合的数据集，每个多边形对应一个数据集，该数据集是对象
+let polygonsData = []
 
-let brushDatas=[];
+let brushDatas={};
 let polygons = [];
 let startLoc=[];
 let brushWidth;
@@ -110,6 +116,7 @@ class TopicTreeMap extends React.Component{
     this.handleClickMapView = this.handleClickMapView.bind(this)
 
     this.handleRectLeafClick = this.handleRectLeafClick.bind(this)
+    this.handleClickPolygons =  this.handleClickPolygons.bind(this)
   
   }
 
@@ -171,20 +178,25 @@ class TopicTreeMap extends React.Component{
           brushWidth:brushWidth,
           brushHeight:brushHeight
         }
+        
+        // 避免微小移动带来的计算，加一个限制
+        if(brushWidth>5&&brushHeight>5){
+          rectFilter(topicData,singleBrushData)
+          // 加选才绘制，减选不绘制
+          let boolResult = boolRectToPolygon(addOrMinus,polygons,singleBrushData,polygonsData,singleFilterData)
+          polygons = boolResult.result
+          polygonsData = boolResult.pData
+          let tempPolygons = polygons.map(v=>{
+            let vArray = v.map(point=>point.join(","))
+            return vArray.join(" ")
+          })
+          console.log("polygons---polygonsData",polygons,polygonsData)
+          that.setState({polygons:tempPolygons})
+        }
+        
+
         brushWidth = 0
         brushHeight = 0
-        rectFilter(topicData,singleBrushData)
-        // 加选才绘制，减选不绘制
-        polygons = boolRectToPolygon(addOrMinus,polygons,singleBrushData)
-        console.log("polygons--",polygons)
-        let tempPolygons = polygons.map(v=>{
-          let vArray = v.map(point=>point.join(","))
-          return vArray.join(" ")
-        })
-        console.log("tempPolygons",tempPolygons)
-        // brushDatas.push(singleBrushData)
-        that.setState({polygons:tempPolygons})
-        
         that.setState({
           brushVisibility:"hidden",
           brushWidth:0,
@@ -193,7 +205,9 @@ class TopicTreeMap extends React.Component{
           brushTransY:0
         })
         //  高亮xxx-view......
+
         let brushPersonsId = Object.keys(brushPersons)
+        console.log("brushPersons",brushPersons,brushPersonsId)
         let personsIdObject = [...brushPersonsId]
           .reduce((acc, e) => ({...acc, [e]:true}), {})
         that.props.setPerson(personsIdObject)
@@ -398,6 +412,55 @@ class TopicTreeMap extends React.Component{
 
   }
 
+  handleClickPolygons(e){
+    if(e.target.localName=="polygon"){
+      let that = this
+      let tipHasX = true
+      let index = e.target.getAttribute("index")
+      // console.log("index",index)
+      let infos = []
+      // ids是序列数组
+
+      let ids = Object.keys(polygonsData[index]).map(v=>v.split(" ").join(", "))
+      // console.log("ids",ids)
+      
+
+      let maxItems = maxItem(ids)
+      maxItems.forEach(v=>{
+        infos.push(`${this.props.dict[v.id]}，Number:${v.number}`)
+      })
+      // var support = 35;
+      // var confidence = 35;
+
+      // console.log(apriori.getApriori(ids, support, confidence));  
+
+      // for(let i in polygonsData[index]){
+      //   infos.push(polygonsData[index][i].label)
+      // }
+      
+      // infos = maxLabel(infos)
+      
+      // let apriInfos = apriori.getApriori(dataset, support, confidence);
+      // console.log("aaa--infos---",apriInfos)
+      let tipStyle = {
+        left:e.clientX,
+        top:e.clientY,
+        visibility:"visible"
+      }
+      try{
+        that.setState({
+          tipHasX:tipHasX,
+          tipData:infos?infos:null,
+          tipTitle:"Item Number",
+          tipStyle:tipStyle
+        })
+      }catch{
+        console.error('step,key无效' );
+      }
+      
+    }
+  }
+
   
 
   render(){
@@ -415,13 +478,15 @@ class TopicTreeMap extends React.Component{
       topicData = deepClone(this.props.topicView)
       topicPropsUpdateFlag = true
     }
-    let rectTreeData = []
+    let rectTreeData=[],rectGroupData=[]
     // 如果该视图依赖的props.topicView数据发生变动，则index设置为0
     let index = topicPropsUpdateFlag?0:this.state.selectedTopicIndex
     let selectedRect
     let selectedWeight
     if(topicData.length>0){
-      rectTreeData = rectTree(WIDTH,HEIGHT,topicData)
+      let tempData = rectTree(WIDTH,HEIGHT,topicData)
+      rectTreeData = tempData.rectTreeData
+      rectGroupData = tempData.rectGroupData
       sliderWeights = topicData.map((v,i)=>{
         return v.weight/originTotalWeight*100
       })
@@ -497,12 +562,27 @@ class TopicTreeMap extends React.Component{
                 </g>
               ))
             }
+            {/* 绘制topic组的矩阵 */}
+            {
+              rectGroupData.length>0&&rectGroupData.map((v,i)=>(
+                <rect
+                  key={`rectGroup-${i}`} 
+                  width = {v.x1-v.x0}
+                  height = {v.y1-v.y0}
+                  fill= "none"
+                  stroke= "#660000"
+                  strokeWidth = "1.5"
+                  transform={`translate(${v.x0},${v.y0})`}
+                > 
+                </rect>
+              ))
+            }
             {/* 绘制选中topic的框 */}
             {
               rectTreeData.length>0&&<g transform={`translate(${selectedRect.x0},${selectedRect.y0})`}>
                 <rect
                   stroke="#333333"
-                  strokeWidth = "1.5"
+                  strokeWidth = "2"
                   fill="none"
                   width = {selectedRect.x1-selectedRect.x0}
                   height = {selectedRect.y1-selectedRect.y0}
@@ -515,13 +595,10 @@ class TopicTreeMap extends React.Component{
                 this.state.polygons.map((v,i)=>(
                   <polygon
                     key={`exsit-brush-${i}`}
+                    onClick = {this.handleClickPolygons}
+                    index={i}
                     className="brush"
-                    // transform = {`translate(${v.brushTransX},${v.brushTransY})`}
                     points={v}
-                    // width={v.brushWidth}
-                    // height={v.brushHeight}
-                    // opacity="0.1"
-                    // strokeWidth="1"
                     style={{fill:"#cccccc", stroke:"red", strokeWidth:1.5, opacity:0.3}}
                   >
                   </polygon>
@@ -569,6 +646,7 @@ const mapStateToProps = (state)=>({
   KEY: state.KEY,
   // 最新的step
   latestStep: state.step,
+  dict:state.dict
 })
 
 
@@ -598,6 +676,7 @@ function clearChoosed(data){
 function rectFilter(data,singleBrush){
   let {addOrMinus,brushTransX,brushTransY,brushWidth,brushHeight} = singleBrush
   let cData=data.cData
+  singleFilterData = {}
   let x1,x2,y1,y2
   //将框选转换成相应横纵轴范围
   x1 = brushTransX
@@ -613,12 +692,19 @@ function rectFilter(data,singleBrush){
     for(let d of data){
       for(let v of d.cData){
         if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2){
-          v.isChoose=false
-          v.personsId.map(vkey=>{
-            if(brushPersons[vkey]){
-              delete brushPersons[vkey]
+          if(v.isChoose){
+            v.isChoose=false
+            v.personsId.map(vkey=>{
+              if(brushPersons[vkey]){
+                delete brushPersons[vkey]
+              }
+            })
+            singleFilterData[v.id]={
+              label:v.label,
+              tx:v.tx,
+              ty:v.ty
             }
-          })
+          }
         }
       }
     }
@@ -626,13 +712,18 @@ function rectFilter(data,singleBrush){
     // 加数据
     for(let d of data){
       for(let v of d.cData){
-        if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2){
+        if(v.tx>=x1&&v.tx<=x2&&v.ty>=y1&&v.ty<=y2&&!v.isChoose){
           v.isChoose=true
           v.personsId.map((vkey,i)=>{
             if(!brushPersons[vkey]){
               brushPersons[vkey] = v.persons[i]
             }
           })
+          singleFilterData[v.id] = {
+            label:v.label,
+            tx:v.tx,
+            ty:v.ty
+          }
         }
       }
     }

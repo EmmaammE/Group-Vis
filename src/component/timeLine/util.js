@@ -29,9 +29,17 @@ export function scaleFactory(width,height,tLabelData,tCircleData,startColor,endC
     .domain([minDistance,maxDistance])
     .range([0,width])
 
+  let xScaleR = d3.scaleLinear()
+    .domain([0,width])
+    .range([minDistance,maxDistance])
+
   yScale = d3.scaleLinear()
     .domain([0,numcols])
     .range([0,height])
+
+  let yScaleR = d3.scaleLinear()
+    .domain([0,height])
+    .range([0,numcols])
 
   colorMap = d3.scaleLinear()
     .domain([minValue,maxValue])
@@ -43,7 +51,7 @@ export function scaleFactory(width,height,tLabelData,tCircleData,startColor,endC
   aScale = d3.scaleLinear()
     .domain([0,n-1])
     .range([minDistance,maxDistance])
-
+  // console.log("[minDistance,maxDistance]",[minDistance,maxDistance])
   for(let i=0;i<n;i++){
       timeData.push(aScale(i).toFixed(0))
   }
@@ -52,7 +60,7 @@ export function scaleFactory(width,height,tLabelData,tCircleData,startColor,endC
     .domain([0,n-1])
     .range([0,width])
 
-  return { yScale,xScale,colorMap,timeData,tScale}
+  return { yScale,yScaleR,xScale,xScaleR,colorMap,timeData,tScale}
 }
 
 export function sortTimeLineData(timeLineData){
@@ -63,8 +71,10 @@ export function sortTimeLineData(timeLineData){
   return {tLabelData,tCircleData}
 }
 
+
 // 绘制相关性虚线
 export const lineData = []
+
 
 
 

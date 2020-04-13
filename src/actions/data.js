@@ -5,7 +5,7 @@ import {
 
 // topicView中brush的人， 即Reduced-View高亮的人
 export function setPerson(person) {
-    console.log('invoke setPerson', person);
+    // console.log('invoke setPerson', person);
     return {
         type: SET_PERSON,
         data: person

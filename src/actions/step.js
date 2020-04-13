@@ -16,6 +16,7 @@ import {updateSelectList} from '../redux/selectList.redux'
 import {updateTimeLine} from '../redux/timeLine.redux'
 import {initTopicWeight} from '../redux/topicWeight.redux'
 import {addHistoryData} from '../redux/history.redux'
+import { initDict} from '../redux/dict.redux'
 import {genderTemplate,
         familyTemplate,
         socialDisTemplate,
@@ -25,6 +26,7 @@ import {genderTemplate,
         beOfficeTemplate,
         } from '../util/tools.js'
 import { batch } from "react-redux";
+
 
 //查找topic的参数
 const p_populate_ratio = 0.6;
@@ -112,6 +114,24 @@ function fetchBySocket(dispatch, param, KEY, step, type) {
     };
 }
 
+function label2EnName(label){
+    let result = []
+    let start = 0
+    let end = 0
+    let labelArray = label.split("")
+    labelArray.forEach((v,i)=>{
+        if(i>0&&v>='A'&&v<='Z'){
+            let temp = labelArray.slice(start,i)
+            result.push(temp.join("").toLowerCase())
+            start = i
+        }
+        end = i
+    })
+    let eArray = labelArray.slice(start,end+1)
+    result.push(eArray.join("").toLowerCase())
+    return result.join(" ")
+}
+
 function handleTopicRes(dispatch, res, KEY, step, type) {
     console.log(Object.keys(res.data))
 
@@ -125,8 +145,9 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         // temp[DICT]中记录着从topic编号到topic名字的映射,以及从描述编号到描述文字的映射
         for(let _key in res.data["edge_dict"]) {
             // 中文： edge的name 英文: edge的label
-            if(res.data["edge_dict"]==="") {
-                temp[DICT][_key] = res.data["edge_dict"][_key]["label"]
+            if(res.data["edge_dict"][_key][KEY]==="") {
+                temp[DICT][_key] = label2EnName(res.data["edge_dict"][_key]["label"])
+
             } else {
                 temp[DICT][_key] = res.data["edge_dict"][_key][KEY]
             }
@@ -308,6 +329,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         personToIndex[key] = personIndex
         matrixData[personIndex] = []
         tLabelData.push({
+            personId:key,
             name:people[key],
             number:0,
             preIndex:personIndex
@@ -466,7 +488,10 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
                             tLabelData[i].number++
                             tCircleData[i].push({
                                 discription,
-                                distance:time
+                                distance:time,
+                                sentenceId:vKey,
+                                topicId:v[0],
+                                isChoose:false
                             }) 
                         }
                           
@@ -511,7 +536,9 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
                 time,
                 isChoose:false,
                 x:distance[0],
-                y:distance[1]
+                y:distance[1],
+                id:vKey,
+                label:sentenceLabel[vKey]
             })
         }
 
@@ -528,7 +555,6 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             })
             pmiIndex++
         }
-        //  标记该topic相关性的数据已经统计过了
         topicData[tIndex].cData = cData
         topicData[tIndex].relationData = topicRelation
         //  占比
@@ -560,6 +586,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
             },
             [POSITIONS]: _positions,
             [TOPICS]: temp[TOPICS],
+            "dict":temp[DICT],
             "people": people,
             "topicView": topicData,
             "selectView": {selectListData},
@@ -580,5 +607,6 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, _pos
         dispatch(updateMatrix(matrixViewData));
         dispatch(updateTimeLine(timeLineData))
         dispatch(initPeopleCommon(peopleToDiscriptions))
+        dispatch(initDict(temp[DICT]))
     }
 }

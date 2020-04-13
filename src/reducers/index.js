@@ -7,9 +7,10 @@ import {selectListView} from '../redux/selectList.redux.js'
 import {historyData} from '../redux/history.redux.js'
 import { step, group, otherStep } from './step';
 import { people, vennstep} from './data'
+import { dict} from '../redux/dict.redux.js'
 
 // 设置语言， en_name对应接口中的数据键值
-function KEY(state="name") {
+function KEY(state="en_name") {
     return state;
 }
 
@@ -26,5 +27,6 @@ export default combineReducers({
     matrixView,
     selectListView,
     historyData,
-    peopleToList
+    peopleToList,
+    dict
 });

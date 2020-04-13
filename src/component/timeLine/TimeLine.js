@@ -6,18 +6,25 @@ import './timeLine.css'
 import { connect } from 'react-redux';
 import * as d3 from 'd3';
 import Tip from '../tooltip/Tip'
+import {setPerson} from '../../actions/data'
 
 
-const WIDTH = 380;
+const WIDTH = 355;
 const HEIGHT = 200;
 const SINGAL_HEIGHT = 25
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
+const margin={left:50,top:10,right:10,bottom:20}
 let startLoc=[];
 let brushWidth;
 let brushHeight;
 let svgX ,svgY;
 let brushFlag=false;
+let timeLineData
+let xScaleRT
+let yScaleRT
+
+
 
 class TimeLine extends React.Component{
   constructor(props){
@@ -88,8 +95,8 @@ class TimeLine extends React.Component{
 
   // 下面三个函数为刷选框的监听函数
   handleBrushMouseDown(v){
-    // console.log("getbox",v.clientX,v.screenX,v.screenY)
-    startLoc = [v.clientX-svgX-2,v.clientY-svgY-3]
+    console.log("getbox",v.nativeEvent.offsetX,v.nativeEvent.offsetY)
+    startLoc = [v.nativeEvent.offsetX,v.nativeEvent.offsetY]
     brushFlag=true
     this.setState({
       brushTransX:startLoc[0],
@@ -99,8 +106,8 @@ class TimeLine extends React.Component{
   }
   handleBrushMouseMove(v){
     if(brushFlag){
-      let nowX = v.clientX-svgX-2
-      let nowY = v.clientY-svgY-3
+      let nowX = v.nativeEvent.offsetX
+      let nowY = v.nativeEvent.offsetY
       brushWidth = nowX-startLoc[0]
       brushHeight = nowY-startLoc[1]
       if(brushWidth<0){
@@ -124,11 +131,20 @@ class TimeLine extends React.Component{
     }
   }
   handleBrushMouseUp(v){
-    startLoc[0] = this.state.brushTransX
-    startLoc[1] = this.state.brushTransY
+    let x1  = this.state.brushTransX - margin.left
+    let y1 = this.state.brushTransY - margin.top
+    let x2 = x1 + this.state.brushWidth
+    let y2 = y1 + this.state.brushHeight
+    // 拿到尺寸数据反推回去
+    let brushPersonsId = rectFilter(x1,y1,x2,y2,timeLineData)
+    let personsIdObject = [...brushPersonsId]
+          .reduce((acc, e) => ({...acc, [e]:true}), {})
+    this.props.setPerson(personsIdObject)
     brushFlag=false
     this.setState({
       brushVisibility:"hidden",
+      brushTransX:0,
+      brushTransY:0,
       brushWidth:0,
       brushHeight:0
     })
@@ -137,19 +153,21 @@ class TimeLine extends React.Component{
 
   render(){
     // console.log("sort--before",this.props.timeLineView)
-    let timeLineData = sortTimeLineData(this.props.timeLineView)
+    timeLineData = sortTimeLineData(this.props.timeLineView)
     
     let tLabelData = timeLineData.tLabelData.map(v=>v.name)
     let tCircleData = timeLineData.tCircleData
     
-    let margin={left:70,top:10,right:40,bottom:20}
+    
     let width = WIDTH-margin.left-margin.right
     let height = HEIGHT -margin.top-margin.bottom
     let gHeight = SINGAL_HEIGHT*tLabelData.length
     gHeight = gHeight>height?gHeight:height
     
     let rownum = tLabelData.length
-    const {yScale,xScale,colorMap,timeData,tScale} = scaleFactory(width,gHeight,tLabelData,tCircleData,START_COLOR,END_COLOR)
+    const { yScale,yScaleR,xScale,xScaleR,colorMap,timeData,tScale} = scaleFactory(width,gHeight,tLabelData,tCircleData,START_COLOR,END_COLOR)
+    xScaleRT = xScaleR
+    yScaleRT = yScaleR
     let flag = false
     if(rownum==0||!yScale){
       flag = true
@@ -157,7 +175,8 @@ class TimeLine extends React.Component{
     
     // let cData = circleData.map(v=>v.info)
     return (
-      <div className="chart-wrapper">
+      <div 
+        className="chart-wrapper">
         <div className="title">Timeline View</div>
         <div className="timeLine-container">
           <svg width={WIDTH} height={gHeight} 
@@ -168,7 +187,7 @@ class TimeLine extends React.Component{
             onMouseUp={this.handleBrushMouseUp}
           >
             {flag?null
-            :<g transform={`translate(20,${margin.top})`}>
+            :<g transform={`translate(0,${margin.top})`}>
                 {/* 绘制左边标签 */}
                 <g className="timeLine_Lables" >
                   <Lable  
@@ -237,7 +256,7 @@ class TimeLine extends React.Component{
                 </g>
                 {/* 绘制刷选框 */}
                 <g
-                  transform = {`translate(${this.state.brushTransX-20},${this.state.brushTransY-margin.top})`}
+                  transform = {`translate(${this.state.brushTransX},${this.state.brushTransY-margin.top})`}
                   visibility={this.state.brushVisibility}
                 >
                   <rect
@@ -255,9 +274,9 @@ class TimeLine extends React.Component{
           </svg>
         </div>
         <div className="timeLine_underLabel">
-          <svg width="100%" height="100%" viewBox={`0 0 ${WIDTH} ${margin.bottom}`}>
+          <svg width={WIDTH} height={margin.bottom} viewBox={`0 0 ${WIDTH} ${margin.bottom}`}>
             {rownum==0?null
-            :<g transform={`translate(20,0)`}>
+            :<g transform={`translate(0,0)`}>
               {/* 绘制底下时间轴坐标 */}
               <g transform={`translate(0,0)`}>
                 <rect
@@ -273,7 +292,7 @@ class TimeLine extends React.Component{
                   translate={`(${margin.left},10)`}  
                   rowOrColumn = {true} 
                   data={timeData}
-                  anchor={"end"}
+                  anchor={"middle"}
                   rotate={0}
                   xy={tScale}>
                 </Lable>
@@ -301,8 +320,11 @@ class TimeLine extends React.Component{
 const mapStateToProps = (state)=>({
   timeLineView:state.timeLineView
 })
+const mapDispatchToProps = {
+  setPerson
+}
 
-export default connect(mapStateToProps)(TimeLine);
+export default connect(mapStateToProps,mapDispatchToProps)(TimeLine);
 
 function popUp(that,tipHasX,v){
   let infos = v.target.getAttribute("info").split("_");
@@ -329,4 +351,32 @@ function popDown(that){
   that.setState({
     tipStyle:tipStyle
   })
+}
+
+function rectFilter(x1,y1,x2,y2,data){
+  let h1 = Number(yScaleRT(y1).toFixed(0))
+  h1 = h1<0?0:h1
+  let h2 = Math.floor(yScaleRT(y2))
+  h2 = h2<0?0:h2
+  let brushPersonsId = []
+  data.tLabelData.forEach((v,i)=>{
+    if(i>=h1&&i<=h2){
+      brushPersonsId.push(v.personId)
+    }
+  })
+  let w1 = xScaleRT(x1)
+  let w2 = xScaleRT(x2)
+  // 将其标记出来
+  data.tCircleData.forEach((d,i)=>{
+    if(i>=h1&&i<=h2){
+      d.forEach(v=>{
+        if(v.distance>=w1&&v.distance<=w2){
+          v.isChoose = true
+        }
+      })
+    }
+  })
+
+  return brushPersonsId
+
 }
