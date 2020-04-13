@@ -39,14 +39,12 @@ export function updateTopicLrs(param, KEY, step){
           // 返回的数据：person_dict
           // 更新降维图的数据.....
           // console.log("返回的数据",res.data)
-          let _positions = {};
           Object.keys(res.data[POSITIONS])
             .forEach(id => {
-              res.data[POSITIONS][id].push(id);
-              _positions[res.data["person_dict"][id][KEY]] = res.data[POSITIONS][id];
+              res.data[POSITIONS][id].push(res.data["person_dict"][id][KEY]);
             })
 
-          dispatch(updateGroupdata(POSITIONS, step, _positions))
+          dispatch(updateGroupdata(POSITIONS, step, res.data[POSITIONS]))
         }
       })
   }

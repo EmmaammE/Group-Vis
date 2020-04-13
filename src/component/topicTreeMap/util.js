@@ -24,7 +24,7 @@ export function maxItem(data){
         })
     })
     itemSets.sort((a,b)=>b.number-a.number)
-    console.log("itemSets",itemSets)
+    // console.log("itemSets",itemSets)
     return itemSets.slice(0,5)
 }
 export function maxLabel(infos){

@@ -190,7 +190,7 @@ class TopicTreeMap extends React.Component{
             let vArray = v.map(point=>point.join(","))
             return vArray.join(" ")
           })
-          console.log("polygons---polygonsData",polygons,polygonsData)
+          // console.log("polygons---polygonsData",polygons,polygonsData)
           that.setState({polygons:tempPolygons})
         }
         
@@ -207,7 +207,7 @@ class TopicTreeMap extends React.Component{
         //  高亮xxx-view......
 
         let brushPersonsId = Object.keys(brushPersons)
-        console.log("brushPersons",brushPersons,brushPersonsId)
+        // console.log("brushPersons",brushPersons,brushPersonsId)
         let personsIdObject = [...brushPersonsId]
           .reduce((acc, e) => ({...acc, [e]:true}), {})
         that.props.setPerson(personsIdObject)
@@ -328,7 +328,7 @@ class TopicTreeMap extends React.Component{
     
     let index = v.target.id.split("")[0]
     if(Number(index)===2){
-      console.log("index",index)
+      // console.log("index",index)
       // 框选框数据都进行消除
       polygons = []
 

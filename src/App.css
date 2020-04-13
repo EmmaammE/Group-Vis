@@ -10,3 +10,7 @@
   background: #fff;
   margin: 0 3px;
 }
+
+:root {
+  --main-bg-color: #eae2d8
+}

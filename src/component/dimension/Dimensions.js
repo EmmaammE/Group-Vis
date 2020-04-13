@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useEffect, useState, useCallback, createRef } from 'react';
+import React, { useMemo, useRef, useEffect, useState, useCallback, } from 'react';
 import * as d3Base from 'd3';
 import { lasso } from 'd3-lasso';
 import Tooltip from '../tooltip/tooltip';
@@ -15,9 +15,9 @@ const getScales = (width, height, data) => {
     let dataArr = Object.entries(data)
 
     let xScale = d3.scaleLinear().range([0, width])
-        .domain(d3.extent(dataArr, d => d[1][0]));
+        .domain(d3.extent(dataArr, d => d[1][0])).nice();
     let yScale = d3.scaleLinear().range([0, height])
-        .domain(d3.extent(dataArr, d => d[1][1]));
+        .domain(d3.extent(dataArr, d => d[1][1])).nice();
 
     return { xScale, yScale, dataArr }
 }
@@ -79,8 +79,6 @@ export function DimensionCircles({_width, _height, data, _margin, classCreator=_
                             style={{ cursor: 'pointer' }}
                             cx={points[0]} 
                             cy={points[1]} 
-                            datax={points[0]} 
-                            datay={points[1]} 
                             onMouseOver={(e) => showTooltip(i, e)}
                             onMouseOut={toggleShow} />
                     )
@@ -104,7 +102,7 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
       [dispatch, KEY]
     )
     const setSelectList = useCallback(
-        (data = [] ) => dispatch(updateSelectList({selectListData: data})),[]
+        (data = [] ) => dispatch(updateSelectList({selectListData: data})),[dispatch]
     )
     const _step = useSelector(state => state.step);
     const [active, setActive] = useState(false);
@@ -156,11 +154,14 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                     })
                 
                 _setPeople(_people);
+                if(showName === true) {
+                    setSelectList(_people.map(p => data[p][2]))
+                }
 
             });
 
         d3.select($container.current).call(_lasso)
-    }, [ _people])
+    }, [ _people, showName, data, setSelectList])
 
     useEffect(() => {
         _setSelected({});
@@ -198,9 +199,9 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
             let json_param = {
                 "person_ids": []
             }
-            Object.values(data).forEach(_key => {
-                param.append('person_ids[]', _key[2]);
-                json_param["person_ids"].push(_key[2])
+            Object.keys(data).forEach(_key => {
+                param.append('person_ids[]', _key);
+                json_param["person_ids"].push(_key)
             })
             
             // 传入调整的topic_weights
@@ -250,7 +251,8 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
             }
             setShowName(true)
         } else {
-            setSelectList(selectList)
+            setSelectList(selectList);
+            setShowName(false)
         }
         
 
@@ -274,81 +276,9 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                     <div className="pental first"></div>
                     <div className="pental second"></div>
                 </div>
-                <div className="clear-btn" onClick={clear}>clear</div>
-                <div className="people-btn" onClick={people}>people</div>
+                <div className="d-btn clear-btn" onClick={clear}>clear</div>
+                <div className="d-btn people-btn" onClick={people}>people</div>
             </foreignObject>
-        </g>
-    )
-}
-
-export function DimensionFisheye({fisheye, _width, _height, _margin, cb, data = {}, offset=[]}) {
-    const [points, setPoints] = useState([])
-    const $container = createRef(null);
-    const $mask = createRef(null);
-
-
-    useEffect(() => {
-        try {
-            d3.select($mask.current)
-            .on('mousemove', function() {
-                const mouse = d3.mouse(this);
-                fisheye.focus(mouse)
-
-                if(points.length === 0) {
-                    let arr = [];
-                    d3.select($container.current).selectAll('.circles')
-                        .each(function(e,i) {
-                            let $node = d3.select(this)
-                            let p = [Number($node.attr("datax")+offset[0]), Number($node.attr("datay"))+offset[1]]
-                            arr.push(p)
-                        })
-                        .transition()
-                        .duration(100)
-                        .attr('cx',(e,i)=>{
-                            return fisheye(arr[i])[0]-offset[0]
-                        })
-                        .attr('cy',(e,i)=> fisheye(arr[i])[1]-offset[1])
-                        .attr('r' ,(e,i) => fisheye(arr[i])[2]*2)
-                    setPoints(arr)
-                } else {
-                    d3.select($container.current).selectAll('.circles')
-                        .transition(d3.easeCubic)
-                        .duration(100)
-                        .attr('cx',(e,i)=>fisheye(points[i])[0])
-                        .attr('cy',(e,i)=>fisheye(points[i])[1])
-                        .attr('r' ,(e,i) => fisheye(points[i])[2]*2)
-                }
-                
-            })
-            .on('mouseout', function() {
-                const mouse = d3.mouse(this);
-                if((mouse[0] >150 || mouse[0]< -50) 
-                    && (mouse[1] < -70 || mouse[1]> 130)
-                ) {
-                    if(points.length!==0) {
-                        d3.select($container.current).selectAll('.circles')
-                        .transition(d3.easeCubic)
-                        .duration(200)
-                        .attr('cx',(e,i)=>points[i][0])
-                        .attr('cy',(e,i)=>points[i][1])
-                        .attr('r' ,2)
-                    }
-                }
-                
-            })
-        } catch( err) {
-            console.error(err)
-        } 
-    }, [fisheye, $container, points, offset,$mask])
-
-    return (
-        <g ref={$container}>
-            <DimensionCircles 
-                _margin={_margin} _width={_width} _height={_height} data={data} 
-            />
-            <circle ref={$mask} r="100" cx="50" cy="35" fill="transparent" 
-                onClick={cb}
-            />
         </g>
     )
 }
