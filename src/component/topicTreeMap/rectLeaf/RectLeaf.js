@@ -3,8 +3,18 @@ import {rectLeafScale} from '../util.js'
 import p1 from '../../../assets/img/p1.png'
 import p2 from '../../../assets/img/p2.png'
 import p3 from '../../../assets/img/p3.png'
+import leaf from '../../../assets/leaf/leaf.svg'
+import leaf_choose from '../../../assets/leaf/leaf_choose.svg'
+import leaf2 from '../../../assets/leaf/leaf2.svg'
+import leaf2_choose from '../../../assets/leaf/leaf2_choose.svg'
+import leaf3 from '../../../assets/leaf/leaf3.svg'
+import leaf3_choose from '../../../assets/leaf/leaf3_choose.svg'
+
+import '../topicTreeMap.css'
 const margin = {top:20,bottom:12,left:12,right:12}
 
+let leafSrc = [leaf,leaf2,leaf3]
+let leafSrcChoose = [leaf_choose,leaf2_choose,leaf3_choose]
 
 
 class RectLeaf extends React.Component{
@@ -39,31 +49,46 @@ class RectLeaf extends React.Component{
     const {xScale,yScale} = rectLeafScale(data.cData,width,height)
     // console.log("xScale,yScale",xScale,yScale)
     const parentPos= this.props.parentPos
-    let rWidth = 10
+    let rWidth = 12
     let index = this.props.index
     return (
     <g>
       <rect
-        stroke="#333333"
+        transform={`translate(0,${transHeight})`}
+        fill="#f1f8f6"
+        width = {this.props.width}
+        height= {pHeight}  
+        index={index} 
+      >
+      </rect>
+      <rect
+        stroke="#c68b54"
         // rx ="5"
         // ry="5"
-        fill="white"
+        fill="none"
         strokeWidth = "0.5"
         width = {this.props.width}
         height= {this.props.height}
         index={index}  
       >
       </rect>
-      <rect
-        transform={`translate(0,${transHeight})`}
-        fill="red"
-        opacity="0.1"
+      
+      <foreignObject 
         width = {this.props.width}
-        height= {pHeight}  
-        index={index} 
+        
+        className = "foreign-rect-header"
       >
-      </rect>
-      <text  
+        <div
+          className = "rect-header"
+        >
+          <p
+            className = "rect-header-content"
+          >
+           {data.label}
+          </p>
+        </div>
+      </foreignObject>
+      {/* <text  
         fill="#888888"
         x="4"
         y="12"
@@ -75,7 +100,7 @@ class RectLeaf extends React.Component{
         // zindex = "10"
       > 
         {data.label}
-      </text>
+      </text> */}
       <g  
         zindex="11"
         transform={`translate(${margin.left},${margin.top})`}>
@@ -85,10 +110,12 @@ class RectLeaf extends React.Component{
             data.cData[i].tx = parentPos[0]+margin.left+xScale(v.x)
             data.cData[i].ty = parentPos[1]+margin.top+yScale(v.y)
             let len = v.persons.length
+            len = len>3?3:len===2?2:1
+
           return <g 
             key={`${v.x}-${i}-${v.y}`}
             transform={`translate(${xScale(v.x)-5},${yScale(v.y)-5})`} >
-              <rect
+              {/* <rect
                 className="reactLeaf_image"
                 rx={rWidth/2+1}
                 ry={rWidth/2+1}
@@ -98,15 +125,23 @@ class RectLeaf extends React.Component{
                 stroke={v.isChoose?"red":null}
                 strokeWidth = "0.5"
               >
-              </rect>
+              </rect> */}
               <image
                 className="reactLeaf_image"
                 info={`${index}_${i}_${v.discription}`}
                 discription = {v.discription}
                 width={rWidth} 
                 height={rWidth}
-                xlinkHref={len>=3?p3:len==2?p2:p1}
+                xlinkHref={v.isChoose?leafSrcChoose[len-1]:leafSrc[len-1]}
               />
+              {/* <image
+                className="reactLeaf_image"
+                info={`${index}_${i}_${v.discription}`}
+                discription = {v.discription}
+                width={rWidth} 
+                height={rWidth}
+                xlinkHref={len>=3?p3:len==2?p2:p1}
+              /> */}
           </g> 
         })
         }

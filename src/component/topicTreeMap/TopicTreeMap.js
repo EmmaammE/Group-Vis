@@ -96,8 +96,8 @@ class TopicTreeMap extends React.Component{
       tipData:[],
       tipStyle:{
         visibility:"hidden"
-      }
-
+      },
+      activeBtnIndex:4
     }
     this.$container = React.createRef();
     this.$ratio = React.createRef();
@@ -107,8 +107,10 @@ class TopicTreeMap extends React.Component{
 
     this.handleSliderInput = this.handleSliderInput.bind(this)
     
-    this.handleSwitch =this.handleSwitch.bind(this)
-    this.handleApply =this.handleApply.bind(this)
+    this.handleAdd =this.handleAdd.bind(this)
+    this.handleMinus = this.handleMinus.bind(this)
+    this.handleClear = this.handleClear.bind(this)
+    this.handleFilter =this.handleFilter.bind(this)
 
     this.handleClickSelectList = this.handleClickSelectList.bind(this)
     this.handleClickMatrixView = this.handleClickMatrixView.bind(this)
@@ -323,7 +325,26 @@ class TopicTreeMap extends React.Component{
       },1000)
   }
 
+  handleClear(v){
+    // 框选框数据都进行消除
+    polygons = []
+    this.setState({polygons})
+    // topicData中叙述被选中的进行清除
+    brushPersons = {}
+    clearChoosed(topicData)
+    // 取消XXX-view所有高亮的人
+    this.props.setPerson({});
+  }
+
   // 此为切换加选还是减选框的按钮事件函数
+  handleAdd(v){
+    addOrMinus=true;
+    this.setState({activeBtnIndex:4})
+  }
+  handleMinus(v){
+    addOrMinus=false;
+    this.setState({activeBtnIndex:5})
+  }
   handleSwitch(v){
     
     let index = v.target.id.split("")[0]
@@ -357,7 +378,7 @@ class TopicTreeMap extends React.Component{
   }
 
   // apply按钮的事件，将数据刷选的结果应用到topicView
-  handleApply(){
+  handleFilter(){
     let that = this
     // reduceOpacity为将透明度减为0
     // filterCountData为计算本视图更新后的数据
@@ -423,12 +444,8 @@ class TopicTreeMap extends React.Component{
 
       let ids = Object.keys(polygonsData[index]).map(v=>v.split(" ").join(", "))
       // console.log("ids",ids)
-      
 
-      let maxItems = maxItem(ids)
-      maxItems.forEach(v=>{
-        infos.push(`${this.props.dict[v.id]}，Number:${v.number}`)
-      })
+      let maxItems = maxItem(ids,that)
       // var support = 35;
       // var confidence = 35;
 
@@ -450,7 +467,7 @@ class TopicTreeMap extends React.Component{
       try{
         that.setState({
           tipHasX:tipHasX,
-          tipData:infos?infos:null,
+          tipData:maxItems?maxItems:null,
           tipTitle:"Item Number",
           tipStyle:tipStyle
         })
@@ -499,6 +516,10 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleClickMatrixView)
     handleClick.push(this.handleClickMapView)
     handleClick.push(this.handleClickSelectList)
+    handleClick.push(this.handleAdd)
+    handleClick.push(this.handleMinus)
+    handleClick.push(this.handleClear)
+    handleClick.push(this.handleFilter)
     return (
       <div className="chart-wrapper">
         {/* <div className="title">Topic View</div> */}
@@ -507,7 +528,7 @@ class TopicTreeMap extends React.Component{
             {btnData.map((v,i)=>(
               <MatrixButton key={v.btnName} id={`${i}_btn`}  btnName={v.btnName} cName={this.state.btnClassName[i]}></MatrixButton>))}
           </div>
-          <div className="topic-apply" onClick={this.handleApply}>
+          <div className="topic-apply" onClick={this.handleFilter}>
             <MatrixButton id="topic-apply-button"  btnName="filter" cName="topic-apply-button"></MatrixButton>
           </div>
           <div className="btn-container">
@@ -516,20 +537,34 @@ class TopicTreeMap extends React.Component{
                 Array(4).fill(null).map((e,i)=>
                 (<CircleBtn key={'btn2-'+i} type={i} onClick={handleClick[i]} />))
               }
-          </div>   
+          </div>
+            
         </div>
-        
-          {
-            topicData.length>0&&<div className = "rowSlider-container">
-              <RowSlider
-                handleSliderInput={this.handleSliderInput}
-                weight = {selectedWeight}
-                topicName = {topicData[index].label}
-              ></RowSlider>
-              <div id = "rightRatio"  ref={this.$ratio} className="rightRatio">{`${selectedWeight}%`}</div>
-            </div>
-          }
-        
+          <div>
+            <div className="brush-btn-container">
+                {
+                  Array(4).fill(null).map((e,i)=>
+                  (<div className = "topic-brush-btn" key={'brush-btn2-'+i}>
+                      <CircleBtn 
+                        key={'brush-btn-'+i} 
+                        active={(i+4)==this.state.activeBtnIndex?false:true}
+                        type={i+4} 
+                        onClick={handleClick[i+4]} 
+                      />
+                    </div>))
+                }
+            </div> 
+            {
+              topicData.length>0&&<div className = "rowSlider-container">
+                <RowSlider
+                  handleSliderInput={this.handleSliderInput}
+                  weight = {selectedWeight}
+                  topicName = {topicData[index].label}
+                ></RowSlider>
+                <div id = "rightRatio"  ref={this.$ratio} className="rightRatio">{`${selectedWeight}%`}</div>
+              </div>
+            }
+          </div>
         <div  className="topicViewChart-container">
           <svg
             ref={this.$container}
@@ -581,7 +616,7 @@ class TopicTreeMap extends React.Component{
             {
               rectTreeData.length>0&&<g transform={`translate(${selectedRect.x0},${selectedRect.y0})`}>
                 <rect
-                  stroke="#333333"
+                  stroke="#af2c2a"
                   strokeWidth = "2"
                   fill="none"
                   width = {selectedRect.x1-selectedRect.x0}

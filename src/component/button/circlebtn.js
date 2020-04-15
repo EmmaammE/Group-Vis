@@ -8,9 +8,16 @@ import list_ from '../../assets/list.svg';
 import matrix_ from '../../assets/matrix.svg';
 import topic_ from '../../assets/topic.svg';
 import map_ from '../../assets/map.svg';
+import add from '../../assets/brush/add.svg';
+import minus from '../../assets/brush/minus.svg'
+import add_ from '../../assets/brush/add_choose.svg'
+import minus_ from '../../assets/brush/minus_choose.svg'
+import clear from '../../assets/brush/clear.svg'
+import filter from '../../assets/brush/filter.svg'
+
 // 对应 7\8\9\10图的顺序
-const btn_urls = [topic,matrix,map,list]
-const btn_urls_ = [topic_,matrix_,map_,list_]
+const btn_urls = [topic,matrix,map,list,add,minus,clear,filter]
+const btn_urls_ = [topic_,matrix_,map_,list_,add_,minus_]
 
 const btnStyle = {
   margin: '0 -5px',
@@ -22,7 +29,7 @@ const imgStyle = {
 
 // 传入active修改图标的样式 active=true表示点击后更新了
 function CircleBtn({type, active, onClick}) {
-
+  // console.log("circle",type,active)
   return (
     <div className="circle-btn" style={btnStyle} onClick={onClick}>
       <img style={imgStyle} src={active?btn_urls[type]:btn_urls_[type]} alt="" />

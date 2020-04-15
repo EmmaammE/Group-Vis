@@ -67,14 +67,14 @@ class TimeLine extends React.Component{
   }
 
   handleClickCircle(v){
-    if(v.target.localName=="circle"){
+    if(v.target.localName=="image"){
       let that = this
       let tipHasX = true
       popUp(that,tipHasX,v) 
     }
   }
   handleMouseenter(v){
-    if(v.target.localName=="circle"){
+    if(v.target.localName=="image"){
       let that = this
       let tipHasX = false
       popUp(that,tipHasX,v) 

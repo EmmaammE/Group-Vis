@@ -4,28 +4,122 @@ import topicData from '../../assets/geojson/a.json';
 // import * as WordCloudGenerator from './wordCloud';
 // import louvain from 'louvain'
 
-export function maxItem(data){
+export function maxItem(data,that){
     let itemSets = []
     let item2Index = {}
     let index = 0
+    let nameData = []
     data.forEach(d=>{
+        let singleSet = []
         d.split(", ").forEach(v=>{
-            if(v!=="-1"){
+
+            if(v!=="-1"&&that.props.dict[v]!=="0"&&that.props.dict[v]!=="None"&&that.props.dict[v]!=="1"){
                 if(item2Index[v]==undefined){
                     item2Index[v] = index
                     index++
                     itemSets.push({
                         id:v,
-                        number:0
+                        number:0,
+                        name:that.props.dict[v]
                     })
                 }
                 itemSets[item2Index[v]].number++
+                singleSet.push(itemSets[item2Index[v]].name)
             } 
+            
+        })
+        nameData.push(singleSet)
+    })
+    // 对item进行排序，依据数量进行
+    itemSets.sort((a,b)=>b.number-a.number)
+    let i = 0;
+    // 将一些无意义词条去掉
+    let item2Number = {}
+    // 统计前1/2的item数量即可，其余的item会被过滤
+    while(i++<itemSets.length/2){
+        if(itemSets[i].name in item2Number){
+            item2Number[itemSets[i].name] +=itemSets[i].number
+        }else{
+            item2Number[itemSets[i].name] = itemSets[i].number
+        }
+    }
+
+    //剔除掉序列中数量少的那部分词语,并对序列进行排序
+    nameData.forEach(nameSet=>{
+        let j = 0
+        while(j<nameSet.length){
+            if(item2Number[nameSet[j]]==undefined){
+                nameSet.splice(j,1)
+            }else{
+                j++
+            }
+        }
+        nameSet.sort((a,b)=>{
+            return item2Number[a]-item2Number[b]
         })
     })
-    itemSets.sort((a,b)=>b.number-a.number)
-    // console.log("itemSets",itemSets)
-    return itemSets.slice(0,5)
+    console.log("FP-GROWTH",itemSets,item2Number,nameData)
+
+
+    // 建树
+    // 树的节点
+    function Node(name){
+        this.name = name
+        this.children = null
+        this.number = 1
+    }
+    let root = new Node("root")
+    nameData.forEach(nameSet=>{
+        let p = root 
+        let j = 0
+        while(j++<nameSet.length){
+            p.number++
+            if(!p.children){
+                p.children = {}
+                p.children[nameSet[j]] = new Node(nameSet[j])
+                p = p.children[nameSet[j]]
+            }else{
+                if(nameSet[j] in p.children){
+                    p = p.children[nameSet[j]]
+                    p.number ++
+                }else{
+                    p.children[nameSet[j]] = new Node(nameSet[j])
+                    p = p.children[nameSet[j]]
+                }
+            }
+        }
+    })
+
+    let resultSet = {}
+    let deepestLevel = 6
+    // 统计一定深度的序列的路径总和，频度的DFS函数
+    function DFS(r,totalNumber,arraySet,level){
+        if(!r.children||level>deepestLevel){
+            let itemJoin = arraySet.join("-")
+            resultSet[itemJoin] = totalNumber
+            return 
+        }
+        for(let v in r.children){
+            
+            let tempChildren = r.children[v]
+            arraySet.push(tempChildren.name)
+            DFS(tempChildren,totalNumber+tempChildren.number,arraySet,level+1)
+            arraySet.pop()
+        }
+    }
+    DFS(root,0,[],0)
+    let resultArray = []
+    for(let v in resultSet){
+        resultArray.push({
+            name:v,
+            number:resultSet[v]
+        })
+    }
+    resultArray.sort((a,b)=>b.number-a.number)
+
+
+    console.log("resultArray",resultArray)
+    return resultArray.map(v=>v.name).slice(0,3)
 }
 export function maxLabel(infos){
     let maxSects = []

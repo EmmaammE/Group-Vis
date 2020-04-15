@@ -47,14 +47,28 @@
   /* background-color: tomato; */
 }
 
+.brush-btn-container{
+  margin-top:55px;
+  width: 20%;
+  margin-left: 4%;
+  margin-right: 3%;
+  position: relative;
+  display: inline-block;
+}
+.topic-brush-btn{
+  margin-right: 20px;
+  display: inline-block;
+}
+
 .rowSlider-container{
+  display: inline-block;
   box-sizing: content-box;
   position: relative;
-  margin-top:55px;
+  
   margin-left: 3%;
   margin-right: 3%;
   /* padding:0px 10px 10px 10px; */
-  width: 94%;
+  width: 54%;
   height: 25px;
   
 }
@@ -96,3 +110,17 @@
   background-color: #d3d3d3;  
 }
 */
+.foreign-rect-header{
+  height:20px;
+}
+
+.rect-header{
+  background :#eddccb;
+  width :"100%";
+}
+
+.rect-header-content{
+  font-size: 12px;
+  transform: scale(0.85);
+  margin: 0;
+}

@@ -36,7 +36,7 @@ import { batch } from "react-redux";
 
 
 //查找topic的参数
-const p_populate_ratio = 0.6;
+const p_populate_ratio = 0.3;
 const p_max_topic = 10;
 const p_min_sentence = 5;
 
