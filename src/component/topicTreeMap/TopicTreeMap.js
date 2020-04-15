@@ -524,15 +524,14 @@ class TopicTreeMap extends React.Component{
       <div className="chart-wrapper">
         {/* <div className="title">Topic View</div> */}
         <div  className="topic-buttons">
-          <div className="mButtonContainer" onClick={this.handleSwitch}>
+          {/* <div className="mButtonContainer" onClick={this.handleSwitch}>
             {btnData.map((v,i)=>(
               <MatrixButton key={v.btnName} id={`${i}_btn`}  btnName={v.btnName} cName={this.state.btnClassName[i]}></MatrixButton>))}
           </div>
           <div className="topic-apply" onClick={this.handleFilter}>
             <MatrixButton id="topic-apply-button"  btnName="filter" cName="topic-apply-button"></MatrixButton>
-          </div>
+          </div> */}
           <div className="btn-container">
-              {/* {btn_urls.map((url,i)=>(<CircleBtn onClick={handleClick[i]} key={url+'-'+i} url={url} />))} */}
               {
                 Array(4).fill(null).map((e,i)=>
                 (<CircleBtn key={'btn2-'+i} type={i} onClick={handleClick[i]} />))

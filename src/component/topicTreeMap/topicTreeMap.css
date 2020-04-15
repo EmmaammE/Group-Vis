@@ -7,12 +7,12 @@
 
 .topic-buttons{
   position:absolute;
-  width: 75%;
+  /* width: 50%; */
   right:3px;
   top:0px;
-  display: flex;
-  align-items: center;
-  justify-content:space-around;
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content:space-around; */
   z-index: 10;
   overflow-y: visible;
 }
@@ -32,6 +32,9 @@
 
 .topic-buttons .btn-container{
   display: flex;
+  position: relative;
+  right: 10px;
+
 }
 
 .slider_space{

@@ -449,7 +449,7 @@ export function filterTimeLine(data){
     let tTopicExist = []
     for(let v of data){
         for (let k of v.cData){
-            if(k.time>0&&k.persons.length>0){
+            if(k.isChoose&&k.time>0&&k.persons.length>0){
                 k.persons.forEach((h,i)=>{
                     if(personToIndex[h]==undefined){
                         personToIndex[h]=personIndex
@@ -487,7 +487,7 @@ export function filterMatrixView(data){
     let matrixData = []
     for(let v of data){
         for(let k of v.cData){
-            if(k.persons.length>1){
+            if(k.isChoose&&k.persons.length>1){
                 for(let p of k.persons){
                     if(personToIndex[p]==undefined){
                         personToIndex[p] = personIndex
@@ -524,7 +524,10 @@ export function filterSelectList(data){
     let newData = []
     for(let singleData of data){
         for(let k of singleData.cData){
-             newData.push(k.discription)
+            if(k.isChoose){
+                newData.push(k.discription)
+            }
+             
         }
     }
     return newData
