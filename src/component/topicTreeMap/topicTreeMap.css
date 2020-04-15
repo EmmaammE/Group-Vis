@@ -96,6 +96,9 @@
   /* overflow-x:hidden; */
 }
 
+.topicTreeMap-svg{
+  overflow: visible;
+}
 /* 滚动条 */
 /*
 .topicViewChart-container::-webkit-scrollbar-track {

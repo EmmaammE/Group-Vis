@@ -54,6 +54,16 @@ class RectLeaf extends React.Component{
     return (
     <g>
       <rect
+        stroke="#c68b54"
+        // rx ="5"
+        // ry="5"
+        fill="white"
+        strokeWidth = "1.5"
+        width = {this.props.width}
+        height= {this.props.height}
+        index={index}  
+      ></rect>
+      <rect
         transform={`translate(0,${transHeight})`}
         fill="#f1f8f6"
         width = {this.props.width}
@@ -66,7 +76,7 @@ class RectLeaf extends React.Component{
         // rx ="5"
         // ry="5"
         fill="none"
-        strokeWidth = "0.5"
+        strokeWidth = "1.5"
         width = {this.props.width}
         height= {this.props.height}
         index={index}  

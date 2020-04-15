@@ -19,7 +19,7 @@ const END_COLOR = 'rgb(3,93,195)'
 const SINGAL_HEIGHT = 25
 let labels
 let height
-let margin={left:55,top:35,right:5,bottom:5}
+let margin={left:70,top:35,right:5,bottom:5}
 let sortedData = -1;
 let matrixData
 let matrixViewState
@@ -254,8 +254,8 @@ class MatrixView extends React.Component{
                   width={this.state.brushWidth}
                   height={this.state.brushHeight}
                   opacity="0.2"
-                  strokeWidth="3"
-                  stroke="red"
+                  strokeWidth="1.5"
+                  stroke="black"
                 >
                 </rect>
               </g>

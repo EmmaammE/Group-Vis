@@ -287,7 +287,7 @@ class TimeLine extends React.Component{
                     height={this.state.brushHeight}
                     opacity="0.3"
                     strokeWidth="1.5"
-                    stroke="red"
+                    stroke="black"
                   >
                   </rect>
                 </g>

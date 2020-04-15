@@ -14,35 +14,32 @@ export function maxItem(data,that){
         d.split(", ").forEach(v=>{
 
             if(v!=="-1"&&that.props.dict[v]!=="0"&&that.props.dict[v]!=="None"&&that.props.dict[v]!=="1"){
-                if(item2Index[v]==undefined){
-                    item2Index[v] = index
+                let tempName = that.props.dict[v]
+                if(item2Index[tempName]==undefined){
+                    item2Index[tempName] = index
                     index++
                     itemSets.push({
                         id:v,
                         number:0,
-                        name:that.props.dict[v]
+                        name:tempName
                     })
                 }
-                itemSets[item2Index[v]].number++
-                singleSet.push(itemSets[item2Index[v]].name)
+                itemSets[item2Index[tempName]].number++
+                singleSet.push(itemSets[item2Index[tempName]].name)
             } 
-            
         })
         nameData.push(singleSet)
     })
     // 对item进行排序，依据数量进行
     itemSets.sort((a,b)=>b.number-a.number)
     let i = 0;
-    // 将一些无意义词条去掉
     let item2Number = {}
     // 统计前1/2的item数量即可，其余的item会被过滤
     while(i++<itemSets.length/2){
-        if(itemSets[i].name in item2Number){
-            item2Number[itemSets[i].name] +=itemSets[i].number
-        }else{
-            item2Number[itemSets[i].name] = itemSets[i].number
-        }
+        item2Number[itemSets[i].name] = itemSets[i].number
     }
+
+
 
     //剔除掉序列中数量少的那部分词语,并对序列进行排序
     nameData.forEach(nameSet=>{
@@ -290,7 +287,7 @@ export function rectTree2(width,height,topicData){
 
     //treemap是一个函数
     const treemap = d3.treemap()
-    .padding(1)
+    .padding(0)
     .round(true);
 
     // console.log("treemap",treemap)
@@ -393,7 +390,7 @@ export function rectTree(width,height,topicData){
 
     //treemap是一个函数
     const treemap = d3.treemap()
-    .padding(3)
+    .padding(0)
     .round(true);
 
     // console.log("treemap",treemap)

@@ -572,6 +572,7 @@ class TopicTreeMap extends React.Component{
             viewBox = {`0 0 ${WIDTH} ${HEIGHT}`}
             opacity = {this.state.opacity}
             preserveAspectRatio="xMinYMin"
+            className = "topicTreeMap-svg"
             // onMouseMove = {this.handleSliderMouseMove}
             // onMouseUp = {this.handleSliderMouseUp}
           >
@@ -604,8 +605,8 @@ class TopicTreeMap extends React.Component{
                   width = {v.x1-v.x0}
                   height = {v.y1-v.y0}
                   fill= "none"
-                  stroke= "#f77f7f"
-                  strokeWidth = "1.5"
+                  stroke= "#c47d3a"
+                  strokeWidth = "2"
                   transform={`translate(${v.x0},${v.y0})`}
                 > 
                 </rect>
@@ -615,8 +616,8 @@ class TopicTreeMap extends React.Component{
             {
               rectTreeData.length>0&&<g transform={`translate(${selectedRect.x0},${selectedRect.y0})`}>
                 <rect
-                  stroke="#af2c2a"
-                  strokeWidth = "2"
+                  stroke="#333333"
+                  strokeWidth = "2.5"
                   fill="none"
                   width = {selectedRect.x1-selectedRect.x0}
                   height = {selectedRect.y1-selectedRect.y0}
@@ -633,7 +634,7 @@ class TopicTreeMap extends React.Component{
                     index={i}
                     className="brush"
                     points={v}
-                    style={{fill:"#cccccc", stroke:"red", strokeWidth:1.5, opacity:0.3}}
+                    style={{fill:"#eeeeee", stroke:"black", strokeWidth:2, opacity:0.4}}
                   >
                   </polygon>
                  ))
@@ -647,9 +648,10 @@ class TopicTreeMap extends React.Component{
                 className="brush"
                 width={this.state.brushWidth}
                 height={this.state.brushHeight}
-                opacity="0.2"
-                strokeWidth="3"
-                stroke={`${addOrMinus?"red":"blue"}`}
+                opacity="0.4"
+                strokeWidth="2"
+                stroke="black"
+                fill="#eeeeee"
               >
               </rect>
             </g>
