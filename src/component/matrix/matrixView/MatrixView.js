@@ -8,7 +8,8 @@ import {scaleFactory,sortMatrixPerson} from '../util/util'
 import { connect } from 'react-redux';
 import {updateSelectList} from '../../../redux/selectList.redux'
 import Tip from '../../tooltip/Tip'
-
+import { setPerson } from '../../../actions/data'
+import MatrixButton from '../../button/MatrixButton'
 
 // import 
 // 暂时的假数据
@@ -58,6 +59,8 @@ class MatrixView extends React.Component{
     this.handleMouseout = this.handleMouseout.bind(this)
     this.handleClick = this.handleClick.bind(this)
     this.handleClickX = this.handleClickX.bind(this)
+
+    this.handleClear = this.handleClear.bind(this)
   }
 
   componentDidMount(){
@@ -107,30 +110,28 @@ class MatrixView extends React.Component{
         startLoc[0] = that.state.brushTransX
         startLoc[1] = that.state.brushTransY
         brushFlag=false
+
         // 计算筛选的数据
         let singleDis = labels.length?height/labels.length:height
-        // console.log("singleDis",singleDis)
-        if(that.state.brushWidth>singleDis&&that.state.brushHeight>singleDis){
+
+        // 依据框选范围判断：是框选人还是放大matrixView，看横坐标比较大那个在哪个位置
+        if(that.state.brushTransX+that.state.brushWidth<margin.left&&that.state.brushWidth>10&&that.state.brushHeight>singleDis){
+          console.log("矩形刷选")
+          filterPerson(that,singleDis)
+        }else if(that.state.brushWidth>singleDis&&that.state.brushHeight>singleDis){
           rectFilter(that,singleDis).then(()=>{
-            // 刷选框消失
-            that.setState({
-              brushVisibility:"hidden",
-              brushWidth:0,
-              brushHeight:0,
-              brushTransX:0,
-              brushTransY:0
-            })
           })
         }else{
           sortedData = -1
-          that.setState({
-            brushVisibility:"hidden",
-            brushWidth:0,
-            brushHeight:0,
-            brushTransX:0,
-            brushTransY:0
-          })
         }
+         // 刷选框消失
+        that.setState({
+          brushVisibility:"hidden",
+          brushWidth:0,
+          brushHeight:0,
+          brushTransX:0,
+          brushTransY:0
+        })
       }
     })
 
@@ -164,6 +165,20 @@ class MatrixView extends React.Component{
     popDown(that)
   }
 
+  handleClear(){
+    labels.forEach((d,i)=>{
+        d.isChoose = false
+    })
+    this.setState({
+      brushVisibility:"hidden",
+      brushTransX:0,
+      brushTransY:0,
+      brushWidth:0,
+      brushHeight:0
+    })
+    this.props.setPerson({})
+  }
+
   render(){
     if(sortedData==-1||matrixViewState!=this.props.matrixView){
       matrixViewState = this.props.matrixView
@@ -188,6 +203,9 @@ class MatrixView extends React.Component{
       <div className="chart-wrapper">
         <div className="header-line">
           <div className="title">People Matrix View</div>
+          <div className="matrixView-clear" onClick={this.handleClear}>
+            <MatrixButton id="matrixView-clear-button"  btnName="clear" cName="timeline-button"></MatrixButton>
+          </div>
         </div>
         {
           <Tip
@@ -205,28 +223,32 @@ class MatrixView extends React.Component{
             <svg width={WIDTH+40} height={HEIGHT} viewBox={`0 0 ${WIDTH+40} ${HEIGHT}`} ref={this.$container}>
               {labels.length==0
                 ?<text 
-                  transform={`translate(${margin.left},${margin.top})`}
+                  transform={`translate(10,${margin.top})`}
                   fontSize = "0.8em">{"No Concerned People"}</text>
                 :<g transform="translate(0,0)">
                 {/* 绘制坐标轴 */}
                 {
                   labels.length>25 
                   ?null
-                  :<g className="matrix_lables" transform={`translate(${margin.left},${margin.top})`} >
-                    <LeftLable 
-                      key={`lable_row`} 
-                      rowOrColumn = {true} 
-                      data={labels} 
-                      xy={xy}
-                      highLable={this.state.highRowLabel}
-                    ></LeftLable>
-                    <LeftLable 
-                      key={`lable_column`} 
-                      rowOrColumn = {false} 
-                      data={labels} 
-                      xy={xy}
-                      highLable={this.state.highColLabel}
-                    ></LeftLable>
+                  :<g className="matrix_lables"  >
+                    <g transform={`translate(${margin.left},${margin.top})`} >
+                      <LeftLable 
+                        key={`lable_row`} 
+                        rowOrColumn = {true} 
+                        data={labels} 
+                        xy={xy}
+                        highLable={this.state.highRowLabel}
+                      ></LeftLable>
+                    </g>
+                    <g transform={`translate(${margin.left*0.7},${margin.top})`}>
+                      <LeftLable 
+                        key={`lable_column`} 
+                        rowOrColumn = {false} 
+                        data={labels} 
+                        xy={xy}
+                        highLable={this.state.highColLabel}
+                      ></LeftLable>
+                    </g>
                   </g>
                 }
                 {/* 绘制矩形块 */}
@@ -275,7 +297,8 @@ const mapStateToProps = (state)=>({
   peopleToList:state.peopleToList
 })
 const mapDispatchToProps={
-  updateSelectList
+  updateSelectList,
+  setPerson
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(MatrixView);
@@ -284,8 +307,12 @@ export default connect(mapStateToProps,mapDispatchToProps)(MatrixView);
 function popUp(that,tipHasX,v){
   let infos = v.target.getAttribute("info").split("_").map(v=>Number(v))
       let name = []
-      name.push(labels[infos[0]])
-      name.push(labels[infos[1]])
+      name.push(labels[infos[0]].name)
+      name.push(labels[infos[1]].name)
+      that.setState({
+        highRowLabel:infos[0],
+        highColLabel:infos[1]
+      })
       let joinName = name.sort((a,b)=>{
           return b.localeCompare(a)
       }).join('-')
@@ -322,16 +349,18 @@ function popDown(that){
     visibility:"hidden"
   }
   that.setState({
-    tipStyle:tipStyle
+    tipStyle:tipStyle,
+    highRowLabel:-1,
+    highColLabel:-1
   })
 }
 
 function rectFilter(that,singleDis){
   return new Promise((resolve)=>{
-    let startX = figureXY(that.state.brushTransX,singleDis,margin.left)
-    let endX = figureXY(that.state.brushTransX+that.state.brushWidth,singleDis,margin.left)-1
-    let startY = figureXY(that.state.brushTransY,singleDis,margin.top)
-    let endY= figureXY(that.state.brushTransY+that.state.brushHeight,singleDis,margin.top)-1
+    let startX = figureXY(that.state.brushTransX,singleDis,margin.left,true)
+    let endX = figureXY(that.state.brushTransX+that.state.brushWidth,singleDis,margin.left,false)+1
+    let startY = figureXY(that.state.brushTransY,singleDis,margin.top,true)
+    let endY= figureXY(that.state.brushTransY+that.state.brushHeight,singleDis,margin.top,false)+1
     // 取并集
     let startIndex = startX<startY?startX:startY
     let endIndex = endX>endY?endX:endY
@@ -340,26 +369,48 @@ function rectFilter(that,singleDis){
       sortedData = -1
       resolve()
     }else{
-      sortedData.matrixPerson = labels.slice(startIndex,endIndex-startIndex+1)
-      sortedData.matrixData = matrixData.slice(startIndex,endIndex-startIndex+1)
-      sortedData.matrixData = sortedData.matrixData.map(v=>v.slice(startIndex,endIndex-startIndex+1))
+      sortedData.matrixPerson = labels.slice(startIndex,endIndex)
+      sortedData.matrixData = matrixData.slice(startIndex,endIndex)
+      sortedData.matrixData = sortedData.matrixData.map(v=>v.slice(startIndex,endIndex))
       // console.log("sortedData",sortedData)
       resolve()
     }
   })
+
+
 }
 
-function figureXY(brushDis,singleDis,margin){
+function filterPerson(that,singleDis){
+    let startIndex = figureXY(that.state.brushTransY,singleDis,margin.top,true)
+    let endIndex= figureXY(that.state.brushTransY+that.state.brushHeight,singleDis,margin.top,false)+1
+    // 取并集
+    
+    if(startIndex<= endIndex){
+      let brushPersonsId = []
+      for(let i =startIndex;i<=endIndex;i++){
+        if(sortedData.matrixPerson[i]){
+          sortedData.matrixPerson[i].isChoose = true
+          brushPersonsId.push(sortedData.matrixPerson[i].id)
+        }
+      }
+      console.log("brushPersonId",brushPersonsId)
+      let personsIdObject = [...brushPersonsId]
+          .reduce((acc, e) => ({...acc, [e]:true}), {})
+      that.props.setPerson(personsIdObject)
+    }
+}
+
+function figureXY(brushDis,singleDis,margin,flag){
   // console.log("figureXY",brushDis,singleDis,margin)
   let result 
   if(brushDis<=margin){
     result = 0
   }else{
     let tempDis = brushDis-margin
-    result  = Number((tempDis/singleDis).toFixed(0))
+    result  = Math.floor(tempDis/singleDis)
     // 如果过半
-    if(tempDis-result*singleDis>=singleDis*0.5){
-      result+=1
+    if(tempDis-result*singleDis>singleDis*0.5){
+      result= result + (flag?1:0)
     }
   }
   result = result<0?0:result

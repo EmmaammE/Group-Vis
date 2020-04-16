@@ -39,7 +39,13 @@ export function sortMatrixPerson(matrixView){
     newMatrixData[i] = new Array(matrixPerson.length).fill(0)
     v.newIndex = i
     preToNewIndex[v.preIndex] = v.newIndex
-    return v.name
+    return {
+      name:v.name,
+      id:v.personId,
+      isChoose:false
+    }
+    
+    // v.name
   })
   for(let i=0;i<matrixData.length;i++){
     let b = matrixData[i].length

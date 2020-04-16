@@ -28,9 +28,9 @@ class LeftLable extends React.Component{
                 fontSize="0.65em"
                 textAnchor="end"
                 transform="rotate(45) scale(0.9)"
-                fill={`${highLable==i?"red":"black"}`}
+                fill={`${v.isChoose||highLable==i?"red":"black"}`}
               >
-                {v}
+                {v.name}
               </text>
             </g>
             

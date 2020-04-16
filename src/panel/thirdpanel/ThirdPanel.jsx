@@ -29,9 +29,9 @@ class ThirdPanel extends React.Component {
           <div className = "third-footer">
             <DimensionContainer />
           </div>
-          <div className = "third-footer">
+          {/* <div className = "third-footer">
             <SelectList />
-          </div>
+          </div> */}
         </div>
       </div>
     )

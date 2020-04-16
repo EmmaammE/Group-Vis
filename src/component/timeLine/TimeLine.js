@@ -98,7 +98,7 @@ class TimeLine extends React.Component{
 
   // 下面三个函数为刷选框的监听函数
   handleBrushMouseDown(v){
-    console.log("getbox",v.nativeEvent.offsetX,v.nativeEvent.offsetY)
+    // console.log("getbox",v.nativeEvent.offsetX,v.nativeEvent.offsetY)
     startLoc = [v.nativeEvent.offsetX,v.nativeEvent.offsetY]
     brushFlag=true
     this.setState({

@@ -11,6 +11,12 @@
   display: inline-block;
 }
 
+.matrixView-clear{
+  position:absolute;
+  right:15px;
+  top:5px;
+}
+
 /* 滚动条 */
 .matrix-container::-webkit-scrollbar-track {
   border: 1px solid #d3d3d3;
