@@ -8,6 +8,7 @@ import {fetchTopicData} from '../../actions/step';
 import { Flowerbtn } from '../button/flowerbtn';
 import axios from 'axios';
 import { updateSelectList } from '../../redux/selectList.redux';
+import CircleBtn from '../button/circlebtn';
 
 const d3 = Object.assign(d3Base, { lasso });
 
@@ -69,12 +70,12 @@ export function DimensionCircles({_width, _height, data, _margin, classCreator=_
                     let person_id = d[0];
                     let points = [scales.xScale(d[1][0]), scales.yScale(d[1][1])];
                     return (
-                        <circle key={'cir-' + i} r={3}  
+                        <circle key={'cir-' + i} r={5}  
                             className={classCreator(person_id)}
-                            stroke="#bec0db"
                             strokeWidth="1px"
-                            opacity = {0.8}
-                            fill={"#efeff6"}
+                            stroke="#e9dac9"
+                            opacity = {0.5}
+                            fill={"#e9dac9"}
                             data={person_id}
                             style={{ cursor: 'pointer' }}
                             cx={points[0]} 
@@ -101,6 +102,7 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
       (param, step) => dispatch(fetchTopicData(param, KEY, step+1, 1)),
       [dispatch, KEY]
     )
+    // const (btnStatus, setBtnS) = useState([false, false, false, false])
     const setSelectList = useCallback(
         (data = [] ) => dispatch(updateSelectList({selectListData: data})),[dispatch]
     )
@@ -120,7 +122,7 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                 setActive(false)
 
                 _lasso.items()
-                    .attr("fill", '#efefef')
+                    .attr("fill", '#e9dac9')
             })
             .on("draw", () => {
 
@@ -137,7 +139,7 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
             .on("end", () => {
                 // Reset the color of all dots
                 _lasso.items()
-                    .attr('fill', "#efeff6")
+                    .attr('fill', "#e9dac9")
                     .classed("not_possible", false)
                     .classed("possible", false);
 
@@ -254,9 +256,9 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
             setSelectList(selectList);
             setShowName(false)
         }
-        
-
     }
+
+    const cbs = ['', '', clear, toFetch]
 
     return (
         <g>
@@ -267,17 +269,22 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                 />
                 <rect width="100%" height="100%" fill="transparent"></rect>
             </g>
-            <foreignObject x="10" y="-3px" width="100%" height="50" >
-                <Flowerbtn cb = {toFetch} active={active} />
-                <div className={flowerClass(flowerSatus)}
+            <foreignObject x="-128" y="-3px" width="160px" height="50" >
+                <div className="dimension-btn-container">
+                    <CircleBtn type={4} onClick={clear}></CircleBtn>
+                    <CircleBtn type={5} onClick={clear}></CircleBtn>
+                    <CircleBtn type={6} onClick={clear} active={true}></CircleBtn>
+                    <CircleBtn type={7} onClick={toFetch} active={true}></CircleBtn>
+                </div>
+
+                {/* <div className={flowerClass(flowerSatus)}
                     onClick={onClickFlower}>
                     <div className="ball" />
                     
                     <div className="pental first"></div>
                     <div className="pental second"></div>
                 </div>
-                <div className="d-btn clear-btn" onClick={clear}>clear</div>
-                <div className="d-btn people-btn" onClick={people}>people</div>
+                <div className="d-btn people-btn" onClick={people}>people</div> */}
             </foreignObject>
         </g>
     )

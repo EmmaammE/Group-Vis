@@ -8,7 +8,7 @@ const getEndpoints = (number, size) => {
         return [];
     } else {
         return Array(number).fill(null)
-            .map((val, i) => size * BOX_WIDTH / number * (2 * i + 1))
+            .map((val, i) => size * BOX_WIDTH )
     }
 }
 
@@ -30,25 +30,14 @@ class FlowerContainer extends React.Component {
     }
 
     render() {
-        let { leaves, current, _showUpLine, _selected, _nextSelected, _hovered, titles, positions, _ratio, step } = this.props;
+        // let { leaves, current, _showUpLine, _selected, _nextSelected, _hovered, titles, positions, _ratio, step } = this.props;
+        let { step, leaves, current, next, _selected, _nextSelected, _hovered, positions, cb } = this.props;
         let { endpoints } = this.state;
 
         return (
-            <svg width="100%" height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH}`}
+            <svg width="80%" height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH }`}
                 xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <pattern id="pattern-stripe"
-                        width="100" height="3"
-                        patternUnits="userSpaceOnUse"
-                    >
-                        <rect width="100" height="1" transform="translate(0,0)" fill="white"></rect>
-                    </pattern>
-                    <mask id="mask-stripe">
-                        <circle
-                            r={BOX_WIDTH}
-                            fill="url(#pattern-stripe)"
-                        />
-                    </mask>
                     <filter id="dropshadow" x="-1" y="-1" width="200" height="200">
                         <feGaussianBlur stdDeviation="2" />
                     </filter>
@@ -56,17 +45,15 @@ class FlowerContainer extends React.Component {
                 {
                     Array(current).fill(null).map((arr, i) => (
                         <Flower
-                            marginWidth={BOX_WIDTH * 2 * i} key={"flo-" + i} number={leaves[i]}
-                            titles={titles[i]}
-                            _showUpLine={_showUpLine}
+                            marginWidth={BOX_WIDTH * 2 * i} key={"flo-" + i} 
+                            leaves ={leaves && leaves[i]}
+                            // titles={titles && titles[i]}
+                            // _showUpLine={_showUpLine}
                             _selected={_selected === i}
                             _hovered={_hovered === i}
-                            _ratio={_ratio}
-                            positions={positions[i]}
-                            cb={() => {
-                                this.props.cb(step[i])
-                            }}
-                            step={step[i]}
+                            positions={positions && positions[i]}
+                            cb={() => {cb(step && step[i])}}
+                            step={step && step[i]}
                             current={current}
                         />
                     ))

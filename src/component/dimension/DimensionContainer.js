@@ -17,13 +17,13 @@ class DimensionContainer extends React.Component {
         let { positions, selectedPeople } = this.props;
         return (
             <div style={style}>
-                <p className="title">Figure View</p>
+                <p className="g-chart-title">Figure View</p>
                 {
                     positions &&
                         <svg viewBox={"0 0 340 340"} style={{flex: 1}} >
                             <DimensionFilter 
-                                _width={200}
-                                _height={200}
+                                _width={300}
+                                _height={300}
                                 _margin="translate(20,40)"
                                 data={positions}
                                 selectedPeople = {selectedPeople}

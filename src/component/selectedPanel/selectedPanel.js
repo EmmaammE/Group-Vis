@@ -21,6 +21,10 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 		$input.current.blur();
 	}
 
+	function toggle() {
+		setExpanded(!expanded)
+	}
+
 	return (
 		<div className="selected-panel">
 			<div className="divider"><p>{title}</p></div>
@@ -39,7 +43,7 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 							options.map((val, i) => {
 								if (clicked[i]) {
 									return (
-									<span key={'icon-' + i} className="icon" onClick={(e) => clickEvent(e, i)}>{val[1]}</span>)
+									<span key={'icon-' + i} className="icon" onClick={(e) => clickEvent(e, i)}>{val['label']}</span>)
 								} else {
 									return null;
 								}
@@ -47,28 +51,32 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 						}
 						</div>
 					</div>
+					<div className="svg-badge"
+						onClick={toggle}
+					>
+						<svg
+							className={["dropdown__arrow", expanded ? "expanded" : ""].join(" ")}
+							width="10"
+							height="5"
+							viewBox="0 0 10 5"
+							fillRule="evenodd"
+						>
+							<title>Open drop down</title>
+							<path d="M10 0L5 5 0 0z"></path>
+						</svg>
+					</div>
 				</li>
-				<svg
-					className={["dropdown__arrow", expanded ? "expanded" : ""].join(" ")}
-					width="10"
-					height="5"
-					viewBox="0 0 10 5"
-					fillRule="evenodd"
-				>
-					<title>Open drop down</title>
-					<path d="M10 0L5 5 0 0z"></path>
-				</svg>
 				<li role="list" className="dropdown__list-container">
 					<ul className={expanded ? "dropdown__list open" : "dropdown__list"}
 						onMouseMove={() => setExpanded(true)}
-						onMouseOut={() => setExpanded(false)}
+						// onMouseOut={() => setExpanded(false)}
 					>
 						{
 							options.map((option, index) => {
-								if (value.length === 0 || option[1].indexOf(value) !== -1 || index === 0) {
+								if (value.length === 0 || option['label'].indexOf(value) !== -1 || index === 0) {
 									return (
 										<li
-											key={`option-${index}`} value={option[1]}
+											key={`option-${index}`} value={option['label']}
 											className={"dropdown__list-item"}
 											onClick={() => {
 												setClicked(index);
@@ -76,7 +84,7 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 											}}
 										>
 											<input type="checkbox" checked={clicked[index]} readOnly />
-											{index === 0 && option[0] === 'all' ? 'Selected all  ' : option[1]}
+											{index === 0 && option[0] === 'all' ? 'Selected all  ' : option['label']}
 										</li>
 									)
 								} else {

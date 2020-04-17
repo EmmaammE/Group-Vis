@@ -18,23 +18,25 @@
     position: relative;
 }
 
+.first-panel .control-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.first-panel .control-panel .title {
+    margin: 10px auto;
+}
+
 .first-panel .content-container .title::before {
     position: absolute; 
     top: 0;
     left: 49%;
     content: "";
-    background: url(/static/media/path.52b3a55b.svg) no-repeat;
     width: 16px;
     height: 16px;
     transform: scale(.6);
-}
-
-.content-container .title p{
-    line-height: 30px;
-    text-align: center;
-    color: #b6afbe;
-    font-size: 14px;
-    margin: 0;
 }
 
 .search-container {
@@ -75,7 +77,7 @@
 }
 
 .search-icon svg {
-    fill: #f77683;
+    fill: var(--main-bg-color);
 }
 
 .first-panel .btn-container {
@@ -83,24 +85,27 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 10px 0;
-    min-height: 10vh;
+    margin: 15px 0 2px;
 }
 
 .first-panel .btn {
-    height: 30px;
-    width: 13vw;
-    border: 0;
+    height: 36px;
+    width: 14vw;
     border-radius: 3px;
-    text-transform: uppercase;
-    font-weight: 100;
-    overflow: hidden;
-    position: relative;
-    background-image: linear-gradient(to right, #f37556, #f35366);
-    color: #fff;
+    background: #fff;
+    border: 2px solid #cccccc;
     margin: 5px 0;
     cursor: pointer;
+
+    text-transform: uppercase;
+    font-family:Helvetica;
+    font-size:11.2px;
+    color:#574767;
+    letter-spacing:0.8px;
+    text-align:center;
+    line-height:9.6px;
 }
+
 
 .first-panel .btn-delete {
     background: #fbfbfb!important;
@@ -109,13 +114,19 @@
 }
 
 /* 切换panel */
+.switch-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    transition: all 300ms ease-in-out;
+}
+
 .first-panel .panel-titles {
     display: flex;
     justify-content: space-evenly;
 }
 
 .first-panel .switch-title {
-    font-size: 12px;
     cursor: pointer;
     position: relative;
 }
@@ -131,10 +142,15 @@
     transition: all 300ms ease-in-out;
 }
 
+.first-panel .switch-title.active {
+    color:#706e6e;
+    font-weight: bold;
+}
+
 .first-panel .switch-title.active::after{
     width:150%;
     left: -25%;
-    background:linear-gradient(to right, #FFFFFF,#f77683,#FFFFFF);
+    background:linear-gradient(to right, #FFFFFF,#dacaa5,#FFFFFF);
 }
 
 /* panel-content */
@@ -144,12 +160,14 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 50vh;
     border: 1px solid transparent;
+    flex: 1;
 }
 
 .first-panel .panel-content.border {
     border: 1px solid #b6afbe;
+    justify-content: stretch;
+    max-height: 90%;
 }
 
 .panel-content ::-webkit-scrollbar {
@@ -193,20 +211,22 @@
 }
 
 .first-panel .item-container {
-    width: 90%;
+    min-width: 10vw;
+    display: flex;
+    justify-content: flex-start;
 }
 .first-panel .item-container span::after {
     content: '';
     position: absolute;
     bottom: 0;
-    width: 40%;
     height: 1px;
     background: #444;
-    left: 50%;
+    right: 0;
+    left: 45%;
 }
 
 .first-panel .item-container .first-item::after {
-    left: 10px;
+    left: 0px;
     width: 35%;
 }
 
@@ -214,4 +234,54 @@
     margin-right: 10px;
     display: inline-block;
     width: 35%;
+    min-width: 35%;
+}
+
+.first-panel .venn-container {
+    margin: 0 auto 15px;
+    width: 13vw;
+    height: 10%;
+    transition: height 300ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.first-panel .venn-container.show-venn {
+    height: 29%;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.first-panel .venn-container.show-venn .title {
+    border-bottom-color: #fff;
+}
+
+.first-panel .venn-container .title {
+    padding: 10px;
+    border: solid #000;
+    border-width: 1px 0;
+}
+
+.first-panel .g-chart-title {
+    text-align: center;
+    margin-left: 0;
+}
+
+.first-panel .person-lists {
+    /* min-height: 90%;
+    height: 43vh; */
+    overflow: auto;
+    padding: 0 1px;
+    /* transition: all 300ms ease-in-out; */
+    
+}
+
+.first-panel .person-dropdown-container {
+    overflow: hidden;
+    flex: 1 1 0%;
+    max-height: 85%;
+    display: flex;
+    flex-direction: column;
+}
+
+.venn path {
+    fill: rgb(231, 142, 33)!important;
 }

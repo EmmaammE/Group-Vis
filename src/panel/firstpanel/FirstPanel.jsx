@@ -1,10 +1,7 @@
 import React from 'react';
 import './firstPanel.css';
 import 'react-virtualized/styles.css';
-import logo from '../../assets/logo.svg';
 import slogo from '../../assets/search.svg';
-import List from 'react-virtualized/dist/commonjs/List';
-
 import Blobs from '../../component/blob/blob';
 import SelectedPanel from '../../component/selectedPanel/selectedPanel';
 import axios from 'axios';
@@ -12,9 +9,11 @@ import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
 import PathContainer from '../../component/pathContainer/PathContainer';
 import { fetchTopicData, setOtherStep } from '../../actions/step';
-import { debounce } from '../../util/tools';
-// import * as order from '../../assets/data/name.json'
+import order from '../../assets/data/name.json';
+import parent from '../../assets/data/parent.json'
+import parent2 from '../../assets/data/parent2.json'
 import Header from '../../component/header/Header';
+import GroupPanel from '../../component/selectedPanel/groupPanel';
 
 const ALL_SIGN = "all";
 class FirstPanel extends React.Component {
@@ -29,9 +28,9 @@ class FirstPanel extends React.Component {
                 { key: 'Dynasty', title: 'Dynasty', options: [] },
                 { key: 'Status', title: 'Status', options: [] },
                 { key: 'Addr', title: 'Native Place', options: []},
-                { key: 'Gender', title: 'Gender', options: [["765", '男'], ["2635",'女']]},
+                { key: 'Gender', title: 'Gender', options: [{value:"765", label:'男'}, {value:"2635",label:'女'}]},
             ],
-            clickStatus: {'Gender':[false,false]},
+            clickStatus: {'Gender':[false,false], 'Person':[false]},
             timeRange: [0, 0],
             _tabPanel: 1,
             cyphers: [],
@@ -47,47 +46,17 @@ class FirstPanel extends React.Component {
 
     tool_handleItem(data, type) {
         let { KEY } = this.props;
-        let {searchValue} = this.state;
         let arr = [];
 
         
-        if (type === 2) {
-            // "Person", 有相关人的relation
-            let entries = Object.entries(data);
-                // let order = await('../../assets/data/name.json');
-                // let parent = await('../../assets/data/parent.json');
-                
-            // entries.sort((a,b) => {
-            //     let ordera = Number(order[a[1]["relation"][KEY]]);
-            //     let orderb = Number(order[b[1]["relation"][KEY]]);
-            //     if(ordera === orderb) {
-            //         return a[1]["relation"][KEY] - b[1]['relation'][KEY]
-            //     } else {
-            //         return ordera - orderb
-            //     }
-            // })
-
-            // entries.sort((a,b) => {
-            //     return a[1]["relation"][KEY] - b[1]['relation'][KEY]
-            // })
-            
-            
-            entries.forEach(e => {
-                if(e[1][KEY] === searchValue) {
-                    arr.unshift([e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]])
-                } else {
-                    arr.push([e[0], e[1][KEY], e[1]["relation"] && e[1]["relation"][KEY]])
-                }
-            })
-        } else {
-
+        if (type !== 2) {
             for (let _key in data) {
-                arr.push([_key, data[_key][KEY]])
+                arr.push({value: _key, label: data[_key][KEY]})
             }
         }
 
         if (type !== 0) {
-            arr.unshift([0, ALL_SIGN])
+            arr.unshift({value: 0, label: ALL_SIGN})
         }
         return arr;
     }
@@ -188,6 +157,7 @@ class FirstPanel extends React.Component {
     fetchRange() {
         let that = this;
         let { searchValue, clickStatus } = this.state;
+        let { KEY } = this.props;
 
         let bdata = new FormData();
         bdata.append('name', searchValue);
@@ -196,13 +166,62 @@ class FirstPanel extends React.Component {
             .post('/search_relation_person_by_name/', bdata)
             .then(res => {
                 if (res.data.is_success) {
-                    let { data } = res;
-
+                    let data = res.data["Person"][0]
                     // SECTION update dataSet
                     let { dataSet } = that.state;
 
-                    dataSet[1].options =  that.tool_handleItem(data["Person"], 2)
-                    clickStatus["Person"] = Array(dataSet[1].options.length).fill(false);
+                    // "Person", 有相关人的relation
+                    let groups = {
+                        // key: {
+                        //     'title': kinkey,
+                        //     'people': [
+                        //         [person_id, name, relationship]
+                        //     ]
+                        // }
+                    };
+
+                    for(let key in data) {
+                        console.log(data[key])
+                        data[key]["relation"].forEach(r => {
+                            let _order = order[r["name"]];
+                            if(_order === undefined) {
+                                // 属于其他亲属类
+                                _order = "1106"
+                            }
+                            let parentType = +(_order[0]+_order[1]);
+                            if(groups[parentType]===undefined) {
+                                groups[parentType] = {
+                                    'title': parent[parentType][KEY],
+                                    'group': {}
+                                }
+                            }
+                            if(groups[parentType]['group'][_order] === undefined) {
+                                groups[parentType]['group'][_order] = {
+                                    'title': parent2[_order][KEY],
+                                    'people': []
+                                }
+                            }
+    
+                            groups[parentType]['group'][_order]['people'].push(
+                                {value: key, label: data[key][KEY], r: r[KEY]}
+                            )
+                        })
+                    }
+
+                    dataSet[1].options.push({value: 0, label: ALL_SIGN})
+                    let size = 0;
+                    for(let key in groups) {
+                        for(let inner in groups[key]['group']) {
+                            groups[key]['group'][inner]['people'].sort((a, b) => {
+                                return a['r'].localeCompare(b['r'])
+                            })
+                            dataSet[1].options.push(...groups[key]['group'][inner]['people'])
+                            size += groups[key]['group'][inner]['people'].length;
+                        }
+                    }
+           
+                    dataSet[1]['groups'] =  groups;
+                    clickStatus["Person"] = Array(size+1).fill(false);
 
                     that.setState({
                         dataSet,
@@ -220,19 +239,39 @@ class FirstPanel extends React.Component {
     }
 
     // appendParam:  {title: "Person", data: "person_ids[]", index:1},
-    tool_appendParam(input_item, param) {
+    tool_appendParam(input_item, param, type) {
         let { clickStatus, dataSet } = this.state;
         let { title, data, index } = input_item;
-        if (clickStatus[title] !== undefined) {
-            if (clickStatus[title][0] && dataSet[index].options[0][1] === ALL_SIGN) {
+
+        if(type === 1) {
+            let persons = new Set();
+            if (clickStatus[title][0] && dataSet[index].options[0]['label'] === ALL_SIGN) {
                 dataSet[index].options.forEach((k, j) => {
                     // entries({id: name})
-                    j > 0 && param.append(data, k[0])
+                    j > 0 && persons.add(k['value'])
                 })
             } else {
                 clickStatus[title].forEach((k, j) => {
-                    k && param.append(data, dataSet[index].options[j][0])
+                    k && persons.add(dataSet[index].options[j]['value'])
                 })
+            }
+
+            for(let id of persons.values()) {
+                param.append(data, id)
+            }
+            // console.log(persons)
+        } else {
+            if (clickStatus[title] !== undefined) {
+                if (clickStatus[title][0] && dataSet[index].options[0]['label'] === ALL_SIGN) {
+                    dataSet[index].options.forEach((k, j) => {
+                        // entries({id: name})
+                        j > 0 && param.append(data, k['value'])
+                    })
+                } else {
+                    clickStatus[title].forEach((k, j) => {
+                        k && param.append(data, dataSet[index].options[j]['value'])
+                    })
+                }
             }
         }
     }
@@ -245,7 +284,7 @@ class FirstPanel extends React.Component {
     }
 
     onClickSearch() {
-        let { KEY, fetchTopicData, setOtherStep } = this.props;
+        let { KEY, groups, step, fetchTopicData, setOtherStep } = this.props;
         let { timeRange, _tabPanel } = this.state;
         // input[i].title = dataSet[i+1].key ~ clickStates{title}
         // index = i+1 留在这里，修改顺序后可以快点修改
@@ -260,8 +299,8 @@ class FirstPanel extends React.Component {
         let param = new FormData();
         switch (_tabPanel) {
             case 0:
-                this.tool_appendParam(input[0], param);
-                fetchTopicData(param, KEY, 1);
+                this.tool_appendParam(input[0], param, 1);
+                fetchTopicData(param, KEY, step+1, groups+1);
 
                 setOtherStep(6)
                 setOtherStep(9)
@@ -287,7 +326,7 @@ class FirstPanel extends React.Component {
                                     param.append("person_ids[]", _key);
                                     arr.push(_key)
                                 }
-                                fetchTopicData(param, KEY, 1);
+                                fetchTopicData(param, KEY, step+1, groups+1);
                                 for (let i = 6; i <= 10; i++) {
                                     setOtherStep(i)
                                 }
@@ -319,7 +358,7 @@ class FirstPanel extends React.Component {
                         }
                     })
                 }).then(() => {
-                    fetchTopicData(_p, KEY, 1);
+                    fetchTopicData(_p, KEY, step+1, groups+1);
                     setOtherStep(6);
                     setOtherStep(9);
                 })
@@ -370,24 +409,27 @@ class FirstPanel extends React.Component {
     }
 
     _renderPanel() {
-        let { _tabPanel, searchValue, dataSet, clickStatus, timeRange } = this.state;
+        let { _tabPanel, searchValue, dataSet, clickStatus, timeRange, status} = this.state;
 
         const _titles = ["Person", "Condition", "Graph"];
         let $titles = (
             <div className="panel-titles">
                 {
                     _titles.map((title, i) => (
-                        <span key={title} className={["switch-title", i === _tabPanel ? "active" : ""].join(" ")}
+                        <span key={title} className={["switch-title g-text", i === _tabPanel ? "active" : ""].join(" ")}
                             onClick={() => this.onSwitchPanel(i)}
                         >{title}</span>
                     ))
                 }
             </div>
         )
+
+        let count = 1;
+
         switch (_tabPanel) {
             case 0:
                 return (
-                    <div className="switch-panel">
+                    <div className="switch-panel" style={{overflow: 'hidden'}}>
                         {$titles}
                         <div className="panel-content border">
                             <div className="search-container">
@@ -402,16 +444,47 @@ class FirstPanel extends React.Component {
                                     <img src={slogo} alt="search" />
                                 </span>
                             </div>
-                            <div style={{height: '90%', overflow: 'hidden'}}>
-                                <List
-                                    width={220}
-                                    height={250}
-                                    rowHeight={30}
-                                    className="dropdown-list"
-                                    rowRenderer={this._renderRow("Person")}
-                                    rowCount={dataSet[1].options.length}
-                                />
-                            </div>
+                            {
+                                dataSet[1].groups && 
+                                    <div className="person-dropdown-container"
+                                        style={{overflow:'hidden', flex: 1}}>
+                                        
+                                        <div className={"person-dropdown dropdown__list-item"} 
+                                            style={{minHeight: '4vh'}}
+                                            onClick={() => this.setStatus('Person')(0)}
+                                        >
+                                            <input type="checkbox"
+                                                checked={clickStatus['Person'][0]}  
+                                                readOnly />
+                                            <div className="item-container">
+                                                Select all
+                                            </div>
+                                        </div>
+
+                                        <div className="person-lists">
+                                        {
+                                            Object.values(dataSet[1].groups).map(group => {
+                                                return Object.values(group['group']).map(inner => {
+                                                    return (
+                                                        <GroupPanel
+                                                            key={count}
+                                                            title={inner['title']}
+                                                            startIndex={count}
+                                                            status ={clickStatus["Person"].slice(count, count += inner['people'].length)}
+                                                            options={inner['people']}
+                                                            change ={status}
+                                                            cb={this.setStatus("Person")}
+                                                        >
+                                                        </GroupPanel>
+                                                    )
+                                                })
+                                            })
+                                        }
+                                        </div>
+                                    </div>
+                                
+                            }
+                            
                         </div>
                     </div>
                 )
@@ -428,11 +501,13 @@ class FirstPanel extends React.Component {
                             />
                             {dataSet.map((datum, index) => {
                                 if (index > 1) {
-                                    return (<SelectedPanel
-                                        key={`datum-${index}`} title={datum.title} clicked={clickStatus[datum.key]}
-                                        setClicked={this.setStatus(datum.key)} 
-                                        options={datum.options}
-                                    />)
+                                    return (
+                                        <SelectedPanel
+                                            key={`datum-${index}`} title={datum.title} clicked={clickStatus[datum.key]}
+                                            setClicked={this.setStatus(datum.key)} 
+                                            options={datum.options}
+                                        />
+                                    )
                                 } else {
                                     return null;
                                 }
@@ -455,25 +530,37 @@ class FirstPanel extends React.Component {
     }
 
     render() {
+        let {showVenn} = this.props;
+
         return (
             <div className="first-panel">
-                {/* <h1 className="big-title">
-                    CohortVA
-                </h1> */}
-                <Header title="CohortVA" />
+                <Header title="CohortVA" cstyle={{textAlign: 'center', fontSize:'30px', margin:'0 auto'}} />
                 <div className="content-container">
-                    <div className="title"><p>Venn</p></div>
-                    <Blobs />
-
                     <div className="control-panel">
-                        <div className="title"><p>Control Panel</p></div>
+                        <div className="title"><p className="g-chart-title">Control Panel</p></div>
 
                         {this._renderPanel()}
 
                         <div className="btn-container">
                             <button className="btn" onClick={this.onClickSearch}>Search</button>
                         </div>
+
+                        
                     </div>
+
+                    
+                    {
+                        showVenn ?
+                        <div className="venn-container show-venn">
+                            <p className="title g-chart-title">Venn</p>
+                            <Blobs />
+                        </div>
+                         : 
+                        <div className="venn-container vennshow">
+                            <p className="title g-chart-title">Venn</p>
+                        </div>
+                    } 
+                    
                 </div>
             </div>
         )
@@ -482,16 +569,18 @@ class FirstPanel extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        // group_: Object.values(state.group).map(d => Object.keys(d['people']).length),
-        KEY: state.KEY
+        KEY: state.KEY,
+        step: state.step,
+        groups: state.groups,
+        showVenn: state.vennstep.length > 0
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         // 入口，所以只作为第一步
-        fetchTopicData: (param, key) => dispatch(fetchTopicData(param, key, 1, 0)),
-        setOtherStep: key => dispatch(setOtherStep(key, 1))
+        fetchTopicData: (param, key, groupIndex) => dispatch(fetchTopicData(param, key, 1, 0, groupIndex)),
+        setOtherStep: (key, step = 1)=> dispatch(setOtherStep(key, step))
     };
 };
 

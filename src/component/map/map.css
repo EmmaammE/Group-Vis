@@ -2,13 +2,6 @@
     position: relative;
 }
 
-.title {
-    font-size: 14px;
-    margin-top:5px;
-    margin-left: 20px;
-    margin-right:20px;
-}
-
 .geomap .legend {
     position: absolute;
     top: 35px;

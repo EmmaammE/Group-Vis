@@ -16,20 +16,23 @@
   fill: #3399ff;
   fill-opacity: 0.5;
 }
-
+/* 
 .not_possible {
   fill: #efefef;
 }
 
 .possible {
   fill: #ec888c;
-}
+} */
 
+.topic-selected ,
 .selected {
-  fill: steelblue;
+  fill: #e9dac9;
+  stroke: black;
+  transition: all 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.been-selected {
+/* .been-selected {
   fill:#a2a4bf!important
 }
 
@@ -37,7 +40,7 @@
   transition: all 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
   stroke-width: 2px;
   r:6;
-}
+} */
 
 .btn-add {
   cursor: pointer;
@@ -126,4 +129,21 @@
 
 .people-btn {
   right: 0;
+} 
+
+.dimension-btn-container {
+  display: flex;
+  justify-content: space-between;
+  /* margin-left: 5px; */
+  align-items: flex-end;
+  margin: 8px;
+}
+
+.dimension-btn-container .circle-btn {
+  display: flex;
+  align-items: center;
+}
+
+.dimension-btn-container .circle-btn img {
+  width: 30px;
 }
