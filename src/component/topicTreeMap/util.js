@@ -12,9 +12,8 @@ export function maxItem(data,that){
     data.forEach(d=>{
         let singleSet = []
         d.split(", ").forEach(v=>{
-
-            if(v!=="-1"&&that.props.dict[v]!=="0"&&that.props.dict[v]!=="None"&&that.props.dict[v]!=="1"){
-                let tempName = that.props.dict[v]
+            let tempName = that.props.dict[Number(v)]
+            if(tempName&&v!=="-1"&&tempName!=="0"&&tempName!=="None"&&tempName!=="1"&&tempName!=="[未详]"){
                 if(item2Index[tempName]==undefined){
                     item2Index[tempName] = index
                     index++

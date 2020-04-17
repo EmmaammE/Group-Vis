@@ -11,7 +11,7 @@ import leaf3 from '../../../assets/leaf/leaf3.svg'
 import leaf3_choose from '../../../assets/leaf/leaf3_choose.svg'
 
 import '../topicTreeMap.css'
-const margin = {top:20,bottom:12,left:12,right:12}
+const margin = {top:25,bottom:12,left:12,right:12}
 
 let leafSrc = [leaf,leaf2,leaf3]
 let leafSrcChoose = [leaf_choose,leaf2_choose,leaf3_choose]
@@ -86,7 +86,7 @@ class RectLeaf extends React.Component{
       <foreignObject 
         width = {this.props.width}
         
-        className = "foreign-rect-header"
+        className = "foreign-rect-header" 
       >
         <div
           className = "rect-header"
@@ -98,19 +98,6 @@ class RectLeaf extends React.Component{
           </p>
         </div>
       </foreignObject>
-      {/* <text  
-        fill="#888888"
-        x="4"
-        y="12"
-        textAnchor="start"
-        fontSize="0.65em"
-        transform="scale(0.85)"
-        width = {this.props.width}
-        overflow="hidden"
-        // zindex = "10"
-      > 
-        {data.label}
-      </text> */}
       <g  
         zindex="11"
         transform={`translate(${margin.left},${margin.top})`}>
@@ -125,17 +112,6 @@ class RectLeaf extends React.Component{
           return <g 
             key={`${v.x}-${i}-${v.y}`}
             transform={`translate(${xScale(v.x)-5},${yScale(v.y)-5})`} >
-              {/* <rect
-                className="reactLeaf_image"
-                rx={rWidth/2+1}
-                ry={rWidth/2+1}
-                width={rWidth+2} 
-                height = {rWidth+2} 
-                fill="none"
-                stroke={v.isChoose?"red":null}
-                strokeWidth = "0.5"
-              >
-              </rect> */}
               <image
                 className="reactLeaf_image"
                 info={`${index}_${i}_${v.discription}`}
@@ -144,14 +120,6 @@ class RectLeaf extends React.Component{
                 height={rWidth}
                 xlinkHref={v.isChoose?leafSrcChoose[len-1]:leafSrc[len-1]}
               />
-              {/* <image
-                className="reactLeaf_image"
-                info={`${index}_${i}_${v.discription}`}
-                discription = {v.discription}
-                width={rWidth} 
-                height={rWidth}
-                xlinkHref={len>=3?p3:len==2?p2:p1}
-              /> */}
           </g> 
         })
         }
