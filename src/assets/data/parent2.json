@@ -1,0 +1,170 @@
+{
+    "0000": {
+        "en_name": "me",
+        "name": "自己"
+    },
+    "0101": {
+        "en_name": "Associations (General)",
+        "name": "社會關係（籠統）"
+    },
+    "0102": {
+        "en_name": "Association through common membership",
+        "name": "同為……之成員"
+    },
+    "0103": {
+        "en_name": "Social Interactions",
+        "name": "社會交際"
+    },
+    "0202": {
+        "en_name": "Teacher-Student",
+        "name": "師生關係"
+    },
+    "0203": {
+        "en_name": "Intellectual Affiliations",
+        "name": "學術交往"
+    },
+    "0204": {
+        "en_name": "Association by Scholarly Topic",
+        "name": "學術主題相近"
+    },
+    "0205": {
+        "en_name": "Association through common membership",
+        "name": "同為……之成員"
+    },
+    "0206": {
+        "en_name": "Academic Patronage",
+        "name": "學術襄助"
+    },
+    "0207": {
+        "en_name": "Literary and Artistic Affiliations",
+        "name": "文學藝術交往"
+    },
+    "0208": {
+        "en_name": "Intellectual Attacks",
+        "name": "學術攻訐"
+    },
+    "0301": {
+        "en_name": "Friendship(General)",
+        "name": "朋友關係（籠統）"
+    },
+    "0401": {
+        "en_name": "Politics (General)",
+        "name": "政治關係（籠統）"
+    },
+    "0402": {
+        "en_name": "Connection via office (equal)",
+        "name": "官場關係（平級）"
+    },
+    "0403": {
+        "en_name": "Connection via office (subordinate)",
+        "name": "官場關係（下屬）"
+    },
+    "0404": {
+        "en_name": "Connection via office (superior)",
+        "name": "官場關係（上司）"
+    },
+    "0405": {
+        "en_name": "Supportive political association",
+        "name": "政治奧援"
+    },
+    "0406": {
+        "en_name": "Recommendation and sponsorship",
+        "name": "薦舉保任"
+    },
+    "0407": {
+        "en_name": "Oppositional political association",
+        "name": "政治對抗"
+    },
+    "0501": {
+        "en_name": "Writings (General)",
+        "name": "著述關係（籠統）"
+    },
+    "0502": {
+        "en_name": "Commemorative Texts",
+        "name": "記詠文字"
+    },
+    "0503": {
+        "en_name": "Epitaphs",
+        "name": "墓誌文字"
+    },
+    "0504": {
+        "en_name": "Prefaces/Postfaces",
+        "name": "序跋文字"
+    },
+    "0505": {
+        "en_name": "Ritual Texts",
+        "name": "禮儀文字"
+    },
+    "0506": {
+        "en_name": "Biographical Texts",
+        "name": "傳記文字"
+    },
+    "0507": {
+        "en_name": "Explanatory Texts",
+        "name": "論說文字"
+    },
+    "0508": {
+        "en_name": "Mottos",
+        "name": "箴銘文字"
+    },
+    "0509": {
+        "en_name": "Correspondences",
+        "name": "書札文字"
+    },
+    "0510": {
+        "en_name": "Occasional Texts",
+        "name": "應酬文字"
+    },
+    "0601": {
+        "en_name": "Military (General)",
+        "name": "軍事關係（籠統）"
+    },
+    "0602": {
+        "en_name": "Supportive military association",
+        "name": "軍事支持"
+    },
+    "0603": {
+        "en_name": "Oppositional military association",
+        "name": "軍事對抗"
+    },
+    "0701": {
+        "en_name": "Medicine (General)",
+        "name": "醫療關係（籠統）"
+    },
+    "0801": {
+        "en_name": "Religion (General)",
+        "name": "宗教關係（籠統）"
+    },
+    "0901": {
+        "en_name": "Family (General)",
+        "name": "家庭關係（籠統）"
+    },
+    "1001": {
+        "en_name": "Finance (General)",
+        "name": "財務關係（籠統）"
+    },
+    "1101": {
+        "en_name":  "Agnates",
+        "name": "本宗血亲"
+    },
+    "1102": {
+        "en_name":  "Affines",
+        "name": "本宗姻亲"
+    },
+    "1103": {
+        "en_name":  "Patrilateral Kin of Husband",
+        "name": "夫族"
+    },
+    "1104": {
+        "en_name":  "Patrilateral Kin of Wife",
+        "name": "妻服"
+    },
+    "1105": {
+        "en_name":  "Matrilateral Kin",
+        "name": "外服"
+    },
+    "1106": {
+        "en_name":  "Other Kinships",
+        "name": "其他"
+    }
+}

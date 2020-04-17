@@ -9,7 +9,6 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
     "d3": "^5.15.0",
-    "d3-fisheye": "^2.0.1",
     "d3-lasso": "skokenes/d3-lasso",
     "louvain": "^1.2.0",
     "polybooljs": "^1.2.0",

@@ -24,7 +24,7 @@ You will also see any lint errors in the console.
 
 在App.css里写全局的样式，后面用到组件里。
 
-命名： global-XXX 
+命名： g-XXX 
 
 颜色： 在root中写自定义变量
 
