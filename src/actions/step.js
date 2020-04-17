@@ -140,7 +140,7 @@ function label2EnName(label){
 }
 
 function handleTopicRes(dispatch, res, KEY, step, type) {
-    console.log(Object.keys(res.data))
+    // console.log(Object.keys(res.data))
 
     if(res.data["is_success"]) {
         // 存储label是Addr的节点的id
@@ -290,7 +290,11 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
 
     console.log("返回的数据***",res.data,"temp***",temp);
     
-
+    // nodeDictKey用于从id到翻译好的node的名字，注意名字有中英版，此时是已经翻译好的版本
+    let nodeDictKey = []
+    for(let v in res.data[NODE_DICT]){
+        nodeDictKey[Number(v)] = temp[DICT][v]
+    }
     // 描述类别字典
     let topicSentences = res.data[TOPIC_SENTENCE_POSITION]
     let topicPmis = res.data[TOPIC_PMI]
@@ -402,7 +406,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             let timeNumber = 0
             let time=0
             let senDiscription
-            if(KEY == "name"){
+            if(KEY === "name"){
                 // 中文版本的模板
                 switch (sentenceLabel[vKey]) {
                     case "性别":
@@ -638,7 +642,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 addressNode: addressMap['addressNode'],
                 sentence2pos
             },
-            "dict":temp[DICT],
+            "dict":nodeDictKey,
             [POSITIONS]: res.data[POSITIONS],
             [TOPICS]: _topics,
             "people": people,

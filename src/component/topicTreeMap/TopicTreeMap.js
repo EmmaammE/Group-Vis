@@ -38,6 +38,8 @@ import RectLeaf from './rectLeaf/RectLeaf'
 import { setPerson } from '../../actions/data'
 import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
 import Tip from '../tooltip/Tip'
+import leaf from '../../assets/leaf/leaf.svg'
+
 
 const btnData = [
       {btnName:"Add"},
@@ -438,27 +440,12 @@ class TopicTreeMap extends React.Component{
       let that = this
       let tipHasX = true
       let index = e.target.getAttribute("index")
-      // console.log("index",index)
-      let infos = []
       // ids是序列数组
 
       let ids = Object.keys(polygonsData[index]).map(v=>v.split(" ").join(", "))
       // console.log("ids",ids)
 
       let maxItems = maxItem(ids,that)
-      // var support = 35;
-      // var confidence = 35;
-
-      // console.log(apriori.getApriori(ids, support, confidence));  
-
-      // for(let i in polygonsData[index]){
-      //   infos.push(polygonsData[index][i].label)
-      // }
-      
-      // infos = maxLabel(infos)
-      
-      // let apriInfos = apriori.getApriori(dataset, support, confidence);
-      // console.log("aaa--infos---",apriInfos)
       let tipStyle = {
         left:e.clientX,
         top:e.clientY,
@@ -468,7 +455,7 @@ class TopicTreeMap extends React.Component{
         that.setState({
           tipHasX:tipHasX,
           tipData:maxItems?maxItems:null,
-          tipTitle:"Item Number",
+          tipTitle:"Frequent Itemsets",
           tipStyle:tipStyle
         })
       }catch{
@@ -563,6 +550,38 @@ class TopicTreeMap extends React.Component{
                 <div id = "rightRatio"  ref={this.$ratio} className="rightRatio">{`${selectedWeight}%`}</div>
               </div>
             }
+            <div className = "topicView-label-container">
+              <div className="topic-leaf-label">
+                  <svg width="12px" height="12px">
+                    <image
+                      width="100%" 
+                      height="100%" 
+                      xlinkHref={leaf}
+                    />
+                  </svg>
+              </div>
+              <p className="topic-leaf-label topic-label-text">Description</p>
+              <div className="topic-leaf-label">
+                  <svg width="12px" height="12px">
+                    <rect
+                      transform = "translate(0,6)"
+                      fill="#f1f8f6"
+                      width = "12px"
+                      height= "6px" 
+                    >
+                    </rect>
+                    <rect
+                      stroke="#c68b54"
+                      fill="none"
+                      strokeWidth = "1.5"
+                      width = "12px"
+                      height= "12px"
+                    >
+                    </rect>
+                  </svg>
+              </div>
+              <p className="topic-leaf-label topic-label-text">Proportion</p>
+            </div>
           </div>
         <div  className="topicViewChart-container">
           <svg
