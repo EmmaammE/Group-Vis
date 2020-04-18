@@ -291,7 +291,8 @@ export function fetchTopicData(param, KEY, step, type) {
 export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addressMap, type,KEY){
 
     console.log("返回的数据***",res.data,"temp***",temp);
-    
+
+    let historyData = res.data["adjust_topic_weights_params"]
     // nodeDictKey用于从id到翻译好的node的名字，注意名字有中英版，此时是已经翻译好的版本
     let nodeDictKey = []
     for(let v in res.data[NODE_DICT]){
@@ -621,7 +622,8 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
 
         weights.push({
             'weight': topicData[i].weight / topicTotalWeight,
-            'content': temp[TOPICS][i][1] 
+            'content': topicData[i].label.split("-"),
+            'id':topicData[i].id
         })
     }
     
@@ -630,10 +632,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
     //     // 其实不该修改weight值
     //     v.weight = Number((v.weight/topicTotalWeight*100).toFixed(2))
     // })
-    let historyData = {
-        [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
-        [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
-    }
+    
 
     console.info(res.data[POSITIONS])
     // 更新group, step

@@ -39,6 +39,7 @@ import { setPerson } from '../../actions/data'
 import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
 import Tip from '../tooltip/Tip'
 import leaf from '../../assets/leaf/leaf.svg'
+import {TOPICS} from '../../util/name.js'
 
 
 const btnData = [
@@ -113,6 +114,7 @@ class TopicTreeMap extends React.Component{
     this.handleMinus = this.handleMinus.bind(this)
     this.handleClear = this.handleClear.bind(this)
     this.handleFilter =this.handleFilter.bind(this)
+    this.handleDeleteTopic = this.handleDeleteTopic.bind(this)
 
     this.handleClickSelectList = this.handleClickSelectList.bind(this)
     this.handleClickMatrixView = this.handleClickMatrixView.bind(this)
@@ -321,9 +323,9 @@ class TopicTreeMap extends React.Component{
       
         let param ={
           topic_weights,
-          ...that.props.historyData
+          adjust_topic_weights_params:that.props.historyData
         }
-        that.props.updateTopicLrs(param, that.props.KEY, that.props.step)
+        that.props.updateTopicLrs(JSON.stringify(param), that.props.KEY, that.props.step)
       },1000)
   }
 
@@ -386,14 +388,75 @@ class TopicTreeMap extends React.Component{
     // filterCountData为计算本视图更新后的数据
     // filterFetchData为依据本视图的框选出的参数去后端取数据操作
     // 以上三者并发执行，待都完成之后
-    Promise.all([reduceOpacity(that),filterCountData(that),filterfetchData(that)])
-    .then((result)=>{
-      topicData = result[1]
-      // 透明度从0变成1
-      addOpacity(that)
+
+    // 清楚框选操作
+    polygons = []
+    that.setState({polygons})
+    // 取消XXX-view所有高亮的人
+    that.props.setPerson({});
+    that.setState({
+      selectedTopicIndex:0
     })
+    clearChoosed(topicData)
+
+    let filterPersons = {...brushPersons}
+    brushPersons = {}  
+    // filterPersons是刷选涉及到的人
+    // ANCHOR create a new flower
+    let param = new FormData();
+    for(let key in filterPersons) {
+      param.append("person_ids[]", key);
+    }
+    that.props.fetchTopicData(param,that.props.KEY, that.props.latestStep+1,1)
+
   }
 
+  handleDeleteTopic(){
+    let deleteTopicId = topicData[this.state.selectedTopicIndex].id
+    console.log("deleteTopicId",deleteTopicId)
+    // 拿到该topic的Id，删除它，重新计算花朵数据，及右边视图数据，然后更新
+    // 其实应该是先更新topicView视图的数据，然后依次去更新右边四个视图的数据
+    // topicView数据本身就可以更新右边三个视图的数据
+    // 在更新花朵的数据
+    // 更新花朵group数据中其它视图中存储的数据
+
+    topicData.splice(this.state.selectedTopicIndex,1)
+
+    let cStep = this.props.currentStep
+    let selectListData= filterSelectList(topicData)
+    this.props.updateSelectList({selectListData})
+    this.props.updateGroupdata("selectView",cStep,{selectListData})
+
+    let matrixViewData = filterMatrixView(topicData)
+    this.props.updateMatrix(matrixViewData)
+    this.props.updateGroupdata("matrixView",cStep,{selectListData})
+
+    let timeLineData = filterTimeLine(topicData)
+    this.props.updateTimeLine(timeLineData)
+    this.props.updateGroupdata("timelineView",cStep,{selectListData})
+
+    let mapViewPersons = filterMapView(topicData)
+    this.props.updateGroupdata("people",cStep,mapViewPersons)
+
+    // this
+    let weights = this.props.group[cStep][TOPICS]
+    let i = 0
+    while(i<weights.length){
+      if(weights[i].id ===deleteTopicId){
+        weights.splice(i,1)
+        break
+      }else{
+        i++
+      }
+    }
+    // this.props.updateGroupdata([TOPICS],cStep,weights)
+
+    console.log("weights",weights)
+
+
+
+
+  }
   // 右上角的四个按钮的 注册事件
   //  selectList视图
   handleClickSelectList(){
@@ -507,6 +570,8 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleMinus)
     handleClick.push(this.handleClear)
     handleClick.push(this.handleFilter)
+    handleClick.push(this.handleDeleteTopic)
+
     return (
       <div className="chart-wrapper">
         {/* <div className="title">Topic View</div> */}
@@ -524,12 +589,11 @@ class TopicTreeMap extends React.Component{
                 (<CircleBtn key={'btn2-'+i} type={i} onClick={handleClick[i]} />))
               }
           </div>
-            
         </div>
           <div>
             <div className="brush-btn-container">
                 {
-                  Array(4).fill(null).map((e,i)=>
+                  Array(5).fill(null).map((e,i)=>
                   (<div className = "topic-brush-btn" key={'brush-btn2-'+i}>
                       <CircleBtn 
                         key={'brush-btn-'+i} 
@@ -565,7 +629,7 @@ class TopicTreeMap extends React.Component{
                   <svg width="12px" height="12px">
                     <rect
                       transform = "translate(0,6)"
-                      fill="#f1f8f6"
+                      fill="#a8f7e0"
                       width = "12px"
                       height= "6px" 
                     >
@@ -701,7 +765,8 @@ const mapStateToProps = (state)=>({
   KEY: state.KEY,
   // 最新的step
   latestStep: state.step,
-  dict:state.dict
+  dict:state.dict,
+  group: state.group
 })
 
 
@@ -814,39 +879,6 @@ function brushFilter(topicData,that){
   return data
 }
 
-
-
-function filterCountData(that){
-  return new Promise((resolve,reject)=>{
-    //  使框选框消失
-    polygons = []
-    that.setState({polygons})
-    
-    // 取消XXX-view所有高亮的人
-    that.props.setPerson({});
-
-    let tempTopicData = brushFilter(topicData,that) 
-    that.setState({
-      selectedTopicIndex:0
-    })
-    resolve(tempTopicData)   
-  })
-}
-
-function filterfetchData(that){
-  return new Promise((resolve,reject)=>{
-    let filterPersons = {...brushPersons}
-    brushPersons = {}  
-    // filterPersons是刷选涉及到的人
-    // ANCHOR create a new flower
-    let param = new FormData();
-    for(let key in filterPersons) {
-      param.append("person_ids[]", key);
-    }
-    that.props.fetchTopicData(param,that.props.KEY, that.props.latestStep+1,1)
-    resolve("filterfetchData")
-  })
-}
 
 function popUp(that,tipHasX,v){
   let infos = v.target.getAttribute("info").split("_")

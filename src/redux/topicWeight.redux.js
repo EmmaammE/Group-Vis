@@ -30,7 +30,7 @@ export function initTopicWeight(data){
 // 更新topic的weight值，将值发给后端，获取新的数据
 export function updateTopicLrs(param, KEY, step){
   return dispatch=>{
-    // console.log("updateTopicLrs",param,KEY,step)
+    console.log("updateTopicLrs",param,KEY,step)
     axios.post('/adjust_topic_weights/',param)
       .then(res=>{
         if(res.data.is_success){

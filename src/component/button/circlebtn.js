@@ -14,9 +14,10 @@ import add_ from '../../assets/brush/add_choose.svg'
 import minus_ from '../../assets/brush/minus_choose.svg'
 import clear from '../../assets/brush/clear.svg'
 import filter from '../../assets/brush/filter.svg'
+import deleteIcon from '../../assets/deleteIcon.svg'
 
 // 对应 7\8\9\10图的顺序
-const btn_urls = [topic,matrix,map,list,add,minus,clear,filter]
+const btn_urls = [topic,matrix,map,list,add,minus,clear,filter,deleteIcon]
 const btn_urls_ = [topic_,matrix_,map_,list_,add_,minus_]
 
 const btnStyle = {
