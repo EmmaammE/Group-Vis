@@ -68,9 +68,37 @@
     position: absolute;
     left: 70px;
     top: -5px;
-    background: #d9b38a;
     line-height: 30px;
     font-size: 20px;
-    color: #fff;
     border-radius: 50%;
+    transition: all 300ms ease-in-out;
+    cursor: pointer;
+
+    background: #fff;
+    color: #000;
+    border: 1px solid #eba3ad;
+}
+
+/** for flower **/
+.second-panel .flower-active .g-text {
+    background: #eba3ad;                                                                                            
+    color: #fff;
+}
+
+.second-panel .flower-title {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.second-panel .flower-divider {
+    background: linear-gradient(to right, #e9e9e9,#919191,#e9e9e9);
+    height: 1px;
+    width: 80%;
+}
+
+.second-panel .btn-container {
+    position: absolute;
+    top: 0;
+    right: 10px;
 }

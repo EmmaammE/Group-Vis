@@ -15,10 +15,7 @@ export function step(state=0, action) {
 /**
  * group: 历史数据
  *  {   
- *      // groupIndex对应组别，默认为1
- *      groupIndex: {
- *          step: data
- *      }
+ *      step: data
  *  }
  */
 export function group(state={}, action) {
@@ -30,16 +27,11 @@ export function group(state={}, action) {
             // });
             return Object.assign({}, state, action.data);
         case UPDATE_GROUP_DATA_BY_STEP_KEY:
-            let {step, key, data, groupIndex} = action.data;
+            let {step, key, data} = action.data;
             try {
-                // if(JSON.stringify(state[groupIndex][step][key]) === JSON.stringify(data)) {
-                //     console.info(data)
-                //     console.info('更新前后数据一样')
-                // }
-                state[groupIndex][step][key] = data;
+                state[step][key] = data;
                 // return Object.assign({}, state);
                 return deepClone(state)
-                
             } catch {
                 console.error('step,key无效', state, action);
                 return state;
