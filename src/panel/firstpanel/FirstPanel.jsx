@@ -517,7 +517,7 @@ class FirstPanel extends React.Component {
                 )
             case 2:
                 return (
-                    <div className="switch-panel">
+                    <div className="switch-panel" style={{overflow: 'hidden'}}>
                         {$titles}
                         <div className="panel-content border">
                             <PathContainer modify_cypher={this.modify_cypher} />

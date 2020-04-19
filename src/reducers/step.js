@@ -15,10 +15,7 @@ export function step(state=0, action) {
 /**
  * group: 历史数据
  *  {   
- *      // groupIndex对应组别，默认为1
- *      groupIndex: {
- *          step: data
- *      }
+ *      step: data
  *  }
  */
 export function group(state={}, action) {
