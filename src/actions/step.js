@@ -88,6 +88,42 @@ function updateGroupAndStep(step, data) {
     }
 }
 
+/**
+ * 根据人群的id比较他们的topics以及数据
+ *      将使用group[step]['people']生成查询的参数
+ * @param {*} dispatch 
+ * @param {*} person_ids1 
+ * @param {*} person_ids2 
+ */
+export function compareGroup(dispatch, person_ids1 = [], person_ids2 = []) {
+    console.log(person_ids1, person_ids2)
+    let socket = new WebSocket("ws://localhost:8080/socket_compare_topics_by_person_ids/");
+
+    socket.onopen = function() {
+        let p = JSON.stringify({
+            "populate_ratio": p_populate_ratio,
+            "max_topic": p_max_topic,
+            "min_sentence": p_min_sentence,
+            "person_ids1[]": person_ids1,
+            "person_ids2[]": person_ids2,
+        })
+        console.log(p)
+        socket.send(p);
+    }
+
+    socket.onmessage = function(evt) {
+        let received_json = {
+            'data': JSON.parse(evt.data)
+        }
+        console.log(received_json)
+        socket.close();
+    }
+
+    socket.onclose = function() {
+        console.log('人物对比连接关闭')
+    }
+}
+
 function fetchBySocket(dispatch, param, KEY, step, type) {
     // 新建WebSocket连接
     let websocket = new WebSocket("ws://localhost:8080/socket_search_topics_by_person_ids/");

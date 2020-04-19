@@ -1,59 +1,57 @@
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { setVeenedStep } from '../../actions/data';
-import { Flowerbtn } from '../button/flowerbtn';
 import { DimensionFisheye } from '../dimension/DimensionFisheye';
 import * as d3 from 'd3';
 
 const BOX_WIDTH = 250;
-const RADIUS = 100;
+const RADIUS = 90;
 const OFFSET = 15;
-const OUTER_RADIUS = 100;
+const OUTER_RADIUS = 90;
+const COLOR = "#eba3ad";
 
 // 映射花瓣半径和花瓣所占比重（如百分之5等）
 const size = d3.scaleSqrt()
-  .domain([0, 1])
-  .range([ 0, 150]);
+    .domain([0, 1])
+    .range([0, 180]);
 
-  /**
- * flower petal path
- * @param {Number} input_angle 花瓣对应的角度
- * @param {Number} weight 当前花瓣所占的整体比值
- */
-const petalPath = (input_angle, weight, proportion) => {
-    let r = RADIUS;
+/**
+* flower petal path
+* @param {Number} number 花瓣的数量，调整花瓣的宽度
+* @param {Number} weight 当前花瓣所占的整体比值
+*/
+const petalPath = (number, weight, proportion) => {
+    let r = RADIUS, x, y;
 
-    if(proportion!==undefined) {
+    if (proportion !== undefined) {
         r += size(weight) * proportion
     } else {
         r += size(weight)
     }
-   
-    let x = r*0.5;
-    let y = r*0.5;
+
+    x = r * (0.3 + 0.05*(8-number))
+    y = r * 0.5;
     // let quarter = (k + RADIUS)*0.2;
-    
+
     return "M0,0 "
         + `C${x},${y} ${x},${r} 0,${r}`
         + `C-${x},${r} -${x},${y} 0,0 Z`
 };
-// TODO 每个属性的名字（title)
+
 /**
- * @param {Number} number: 花瓣的数量
+ * @param {Number} type: 花朵是否展示文字
+ *                    0: 展示文字； 1: 不展示
  */
 // function Flower({ number, current, marginWidth, titles, positions, _hovered, cb, step}) {
-function Flower({ marginWidth, leaves, _selected, _hovered, positions, cb, step, current}) {
+function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, type = 1}) {
     const [arr, setArr] = useState([]);
-    const [active, setActive] = useState(true);
     const $container = useRef(null);
     const [beenVenn, setVenn] = useState(false);
     const dispatch = useDispatch();
-    const [lensPos, setLensPos] = useState([0, 0])
     const updateVenn = useCallback(
         step => dispatch(setVeenedStep(step)),
         [dispatch]
     )
-    const [points, setPoints] = useState([])
 
     useEffect(() => {
         let _arr = [];
@@ -63,19 +61,6 @@ function Flower({ marginWidth, leaves, _selected, _hovered, positions, cb, step,
         setArr(_arr);
     }, [leaves])
 
-    useEffect(() => {
-        d3.select($container.current)
-            .on('mousemove', function () {
-                const mouse = d3.mouse(this);
-                setLensPos([mouse[0], mouse[1]])
-                setActive(true)
-            })
-            .on('mouseout', function () {
-                // setActive(false)
-            })
-
-    }, [current])
-
     function toggleVeen() {
         setVenn(!beenVenn)
         updateVenn(step)
@@ -84,36 +69,40 @@ function Flower({ marginWidth, leaves, _selected, _hovered, positions, cb, step,
     return (
         <g transform={"translate(" + marginWidth + ",0)"}>
             <g ref={$container}>
-                <g className="petals">
+                <g className="petals" transform={'translate(' + [BOX_WIDTH, BOX_WIDTH - OFFSET] + ')'}>
                     {arr.map((angle, index) => (
-                        <g transform={'translate(' + [BOX_WIDTH, BOX_WIDTH - OFFSET] + ')'} key={'petal-' + index}>
+                        <g key={'petal-' + index}>
                             <g transform={`rotate(${angle})`}>
                                 <path
-                                    d={petalPath(angle, leaves[index]['weight'])}
-                                    stroke="#f0a4ae"
+                                    d={petalPath(leaves.length, leaves[index]['weight'])}
+                                    stroke={COLOR}
                                     fill="transparent"
                                 />
                                 <path
-                                    d={petalPath(angle, leaves[index]['weight'], leaves[index]['ratio'])}
-                                    fill="#f0a4ae"
+                                    d={petalPath(leaves.length, leaves[index]['weight'], leaves[index]['ratio'])}
+                                    fill={COLOR}
                                 />
-                                <line x1="0" y1="102" x2="0" y2="114" stroke="black" />
+                                {/* <line x1="0" y1="200" x2="0" y2="214" stroke="black" /> */}
                             </g>
-                            <text x="0" y="0" transform={`translate(${150 * Math.cos((angle + 90) * Math.PI / 180)},${150 * Math.sin((angle + 90) * Math.PI / 180)})`}>
-                                {
-                                    leaves[index]['title'] && leaves[index]['title'].map((text, i) => {
-                                        return (<tspan
-                                            style={{ transition: 'all 100ms ease-in-out' }}
-                                            x="0" y={i * 20} key={"t-" + i}
-                                            fontSize="14px"
-                                        >{text}</tspan>)
-                                    })
-                                }
-                            </text>
+                            {
+                                type === 0 && 
+                                <g x="0" y="0" transform={`translate(${200 * Math.cos((angle + 90) * Math.PI / 180)},${200 * Math.sin((angle + 90) * Math.PI / 180)})`}>
+                                    <foreignObject x={-100 + 50 * Math.cos((angle + 90) * Math.PI / 180)} y={-25 + 25* Math.sin((angle + 90) * Math.PI / 180)} width="200" height="100">
+                                        <div className="flower-title">
+                                            {
+                                                leaves[index]['content'] && 
+                                                    leaves[index]['content'].map((text, i) => (
+                                                        <p key={"title-" + i} className="g-text">{text}</p>
+                                                    ))
+                                            }
+                                        </div>
+                                    </foreignObject>
+                                </g>
+                            }
                         </g>
                     ))}
                 </g>
-                <circle cx={BOX_WIDTH} cy={BOX_WIDTH - OFFSET} r={RADIUS} fill="white" opacity="1" />
+                <circle cx={BOX_WIDTH} cy={BOX_WIDTH - OFFSET} r={RADIUS} fill="white" stroke={COLOR} opacity="1" />
 
                 {_hovered === true &&
                     <g>
@@ -123,7 +112,7 @@ function Flower({ marginWidth, leaves, _selected, _hovered, positions, cb, step,
                             a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 ${OUTER_RADIUS * 2},0
                             a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 -${OUTER_RADIUS * 2},0
                             `}
-                            stroke="#f17381"
+                            stroke="black"
                             fill="transparent"
                             strokeWidth="2"
                         />
@@ -133,9 +122,9 @@ function Flower({ marginWidth, leaves, _selected, _hovered, positions, cb, step,
                             a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 ${OUTER_RADIUS * 2},0
                             a ${OUTER_RADIUS},${OUTER_RADIUS} 0 1,1 -${OUTER_RADIUS * 2},0
                             `}
-                            stroke="#f17381"
+                            stroke="#e3e3e3"
                             fill="transparent"
-                            strokeWidth="4"
+                            strokeWidth="2"
                             filter="url('#dropshadow')"
                         />
                     </g>
@@ -147,17 +136,17 @@ function Flower({ marginWidth, leaves, _selected, _hovered, positions, cb, step,
                         _height={80}
                         _margin={"translate(0,0)"}
                         data={positions}
-                        active={active}
-                        cb={cb}
-                        cb_over={setPoints}
                     />
                 </g>
             </g>
 
-            <foreignObject x={-20} y={60} width="200" height="200" >
-                <Flowerbtn cb={toggleVeen} />
-                <div className="flower-number"><p className="g-text">{step}</p></div>
+            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="transparent" onClick={cb} />
+            <foreignObject x={-120 + type * 100} y={type * 60} width="200" height="200" >
+                <div className={["flower-number", beenVenn ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
+                    <p className="g-text">{step}</p>
+                </div>
             </foreignObject>
+
         </g>
     )
 }

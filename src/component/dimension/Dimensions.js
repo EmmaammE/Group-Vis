@@ -10,6 +10,7 @@ import axios from 'axios';
 import { updateSelectList } from '../../redux/selectList.redux';
 import CircleBtn from '../button/circlebtn';
 
+
 const d3 = Object.assign(d3Base, { lasso });
 
 const getScales = (width, height, data) => {
@@ -194,7 +195,7 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
         _setPeople([]);
     }
 
-    function onClickFlower() {
+    async function fetchSimiliarPerson() {
         // if(flowerSatus !== 0) {
             // 所有人
             let param = new FormData();
@@ -205,14 +206,15 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                 param.append('person_ids[]', _key);
                 json_param["person_ids"].push(_key)
             })
-            
+
+            // await fetchTopic(param, currentStep);
             // 传入调整的topic_weights
             let topic_weight = {};
 
             topicData.forEach(e => {
                 topic_weight[e.id] = e.weight
             })
-            console.log(topic_weight)
+            // console.log(topic_weight)
             json_param["topic_weights"] = topic_weight;
             
             axios.post('/search_all_similar_person/', JSON.stringify(json_param))
@@ -222,7 +224,7 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                             param.append('person_ids[]', _key);
                         }
 
-                        fetchTopic(param, currentStep);
+                        fetchTopic(param, currentStep+1);
                         setFlowerStatus(2)
 
                     } else {
@@ -274,7 +276,9 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
                     <CircleBtn type={4} onClick={clear}></CircleBtn>
                     <CircleBtn type={5} onClick={clear}></CircleBtn>
                     <CircleBtn type={6} onClick={clear} active={true}></CircleBtn>
-                    <CircleBtn type={7} onClick={toFetch} active={true}></CircleBtn>
+                    {/* <CircleBtn type={7} onClick={toFetch} active={true}></CircleBtn> */}
+                    <CircleBtn type={8} onClick={toFetch} active={true}></CircleBtn>
+                    <CircleBtn type={9} onClick={fetchSimiliarPerson} active={true}></CircleBtn>
                 </div>
 
                 {/* <div className={flowerClass(flowerSatus)}
