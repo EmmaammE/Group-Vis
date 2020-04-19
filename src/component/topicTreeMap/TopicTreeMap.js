@@ -452,13 +452,9 @@ class TopicTreeMap extends React.Component{
         i++
       }
     }
-    // this.props.updateGroupdata([TOPICS],cStep,weights)
 
+    this.props.updateGroupdata([TOPICS],cStep,weights)
     console.log("weights",weights)
-
-
-
-
   }
   // 右上角的四个按钮的 注册事件
   //  selectList视图
@@ -482,8 +478,8 @@ class TopicTreeMap extends React.Component{
   handleClickMapView(){
     let step = this.props.currentStep
     let mapViewPersons = filterMapView(topicData)
+    console.log("mapViewPersons",mapViewPersons)
     this.props.updateGroupdata("people",step,mapViewPersons)
-
   }
 
   handleRectLeafClick(e){

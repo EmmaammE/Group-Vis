@@ -465,9 +465,11 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 }
             }
             
-
+            // addressMap["addressNode"]记录的是地点的映射：地点ID到地点名称
+            // addressMap["addressType"]记录的是地点类型的映射
             // 提取地点事件用到地图
             let words = vKey.split(" ");
+            // 一句话中可能涉及多个地点，但是只有一个类型
             let _pos = [] , _type;
             words.forEach(word => {
                 if(word !== '-1') {
