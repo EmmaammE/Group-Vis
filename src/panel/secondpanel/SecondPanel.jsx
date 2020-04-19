@@ -11,21 +11,16 @@ import { updateMatrix } from '../../redux/matrixView.redux';
 import { updateSelectList } from '../../redux/selectList.redux';
 import { updateTimeLine } from '../../redux/timeLine.redux';
 import { initTopicWeight } from '../../redux/topicWeight.redux';
-import {addHistoryData} from '../../redux/history.redux'
+import {addHistoryData} from '../../redux/history.redux';
+import LEGEND from '../../assets/legend/flower.png';
 
 const GRID_ITEM_TEMPLATE = { next: -1, size: 0, property: [], selected: -1 };
 class SecondPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            grid: [
-                // {next:-1, size:1, property:[[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8].reverse()],selected:0, positions:[], 
-                //     step: [0],
-                //     titles: [[[1],[2],[3],[4],[5],[6],[7],[8]]]},
-                // {next:-1, size:2, property:[8,9],selected:0, positions:[]},
-                // {next:4, size:3, property:[7,9,10],selected:2, positions:[]},
-                // {next:-1, size:4, property:[7,7,5,10],selected:2, positions:[]},
-            ],
+            // grids: [],
+            grid: [],
             gridBack: {},
             // [第几层， 第几个，step]
             hoverIndex: [0, 0, 0],
@@ -41,24 +36,37 @@ class SecondPanel extends React.Component {
         if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
             // if(prevProps.step !== this.props.step) {
             let { grid, step2index, hoverIndex, lastHoverIndex } = this.state;
-            let { group, step } = this.props;
+            let { group, step, groups } = this.props;
 
-            if (grid.length === 0 || this.props.step === 1) {
+            // let grid = grids[groups-1] ? grids[groups-1]: [];
+            // console.log(groups)
+            // group = group[groups]
+            // let grid = grids;
+            if (grid.length === 0) {
                 // console.log('update init');
-                // 暂定8片花瓣
-                // let titles = group[1][TOPICS].slice(0, 8).map(arr => arr[1]);
-                let titles = [], weights = [];
-                group[1][TOPICS].forEach(e => {
-                    titles.push(e['content']);
-                    weights.push(e['weight'])
-                })
+               
+                // let titles = [], weights = [];
+                // let data = [];
+                // group[1][TOPICS].forEach(e => {
+                //     titles.push(e['content']);
+                //     weights.push(e['weight'])
+                // })
+                // group[1][TOPICS].forEach(e => {
+                //     titles.push(e['content']);
+                //     weights.push(e['weight'])
+                // })
+                
 
                 let newGrid = [({
                     ...GRID_ITEM_TEMPLATE, size: 1, selected: 0, step: [1],
-                    property: [weights], titles: [titles], positions: [group[1][POSITIONS]]
+                    // property: [weights], titles: [titles], 
+                    positions: [group[1][POSITIONS]], data: [group[1][TOPICS]]
                 })]
 
-                this.setState({ grid: newGrid })
+                // grids[groups-1] = newGrid;
+                // this.setState({ grids: newGrid})
+                this.setState({ grid: newGrid})
+
             } else {
                 let newGrid = grid.slice(0);
 
@@ -72,7 +80,7 @@ class SecondPanel extends React.Component {
                 let titles = [], weights = [];
                 group[step][TOPICS].forEach(e => {
                     titles.push(e['content']);
-                    weights.push(e['weight'])
+                    weights.push(e['weight']);
                 })
                 
                 // 被选中的这朵❀没有下一层
@@ -80,7 +88,9 @@ class SecondPanel extends React.Component {
                     newGrid[lastIndex[0]].next = 1;
                     newGrid.push({
                         ...GRID_ITEM_TEMPLATE, size: 1, step: [step],
-                        property: [weights], titles: [titles], positions: [group[step][POSITIONS]]
+                        positions: [group[step][POSITIONS]],
+                        data: [group[step][TOPICS]]
+                        // property: [weights], titles: [titles],
                     });
                     // step2index[step] = [1,0];
                     step2index[step] = [lastIndex[0] + 1, 0];
@@ -95,13 +105,17 @@ class SecondPanel extends React.Component {
 
                     let _grid = newGrid[currentLayer+1];
                     _grid.size += 1;
-                    _grid.property.push(weights);
-                    _grid.titles.push(titles) ;
+                    // _grid.property.push(weights);
+                    // _grid.titles.push(titles) ;
                     _grid.positions.push(group[step][POSITIONS]);
                     _grid.step.push(step);
+                    _grid.data.push(group[step][TOPICS])
                 }
 
+                // grids[grid] = newGrid
+
                 this.setState({
+                    // grids: newGrid,
                     grid: newGrid,
                     step2index,
                 })
@@ -115,25 +129,24 @@ class SecondPanel extends React.Component {
 
     clickBtn(i) {
         let { btnStatus, hoverIndex } = this.state;
-        let step = hoverIndex[2];
-        let { group, updateTimeLine, updateMatrix, updateSelectList } = this.props;
+
+
         // step为被选中的❀的step
         switch (i) {
             case 0:
                 // TimeLine
-                updateTimeLine(group[step]["timelineView"]);
+                
                 break;
             case 1:
                 // Matrix
-                updateMatrix(group[step]["matrixView"]);
+                
+
                 break;
             case 2:
                 // map
-                this.props.setOtherStep(7 + i, hoverIndex[2]);
                 break;
             case 3:
                 // selectList
-                updateSelectList(group[step]["selectView"]);
                 break;
 
             default:
@@ -174,13 +187,9 @@ class SecondPanel extends React.Component {
        
         // 更新选中的序号
         grid[thisIndex[0]].selected = thisIndex[1];
-        // 更新降维图
-        this.props.setOtherStep(6, step);
-        // 更新topicView
-        let topicData = this.props.group[step]["topicView"];
-        // console.log("topicData",topicData)
-        this.props.updateTopicView(this.props.group[step]["topicView"]);
-        this.props.addHistoryData(this.props.group[step]["historyData"])
+        
+        this.updateViews(step);
+
         this.setState({
             grid,
             lastHoverIndex: step,
@@ -189,39 +198,74 @@ class SecondPanel extends React.Component {
         })
     }
 
+    updateViews(step) {
+        let { group, updateTimeLine, updateMatrix, updateSelectList, updateTopicView, addHistoryData, setOtherStep } = this.props;
+        // 更新details
+        updateTimeLine(group[step]["timelineView"]);
+        updateMatrix(group[step]["matrixView"]);
+        setOtherStep(9, step);
+        updateSelectList(group[step]["selectView"]);
+        // 降维图
+        setOtherStep(6, step);
+
+        // let topicData = group[step]["topicView"];
+        // console.log("topicData",topicData)
+        updateTopicView(group[step]["topicView"]);
+        addHistoryData(group[step]["historyData"])
+    }
+
     render() {
         let { grid, btnStatus, hoverIndex } = this.state;
 
         return (
             <div className="second-panel">
                 <Header title="Overview"></Header>
-                <div className="btn-container">
-                    {btnStatus.map(
-                        (e, i) => (<CircleBtn key={'btn-' + i} type={i} active={btnStatus[i]}
-                            onClick={() => this.clickBtn(i)} />)
-                    )}
-                </div>
+                
                 <div className="content-panel">
+                    <div className="legend-container">
+                        <img src={LEGEND} alt="" />
+                    </div>
                     {
-                        grid.map((item, i) => {
-                            return (
-                                <div className="grid-line" key={'line-' + i}>
-                                    <FlowerContainer
-                                        leaves={item.property} current={item.size} next={item.next}
-                                        _ratio={i === 0 ? 1 : item.size / grid[i - 1].size}
-                                        _showUpLine={i !== 0}
-                                        _selected={item && item.selected}
-                                        _nextSelected={grid[i + 1] && grid[i + 1].selected}
-                                        titles={item.titles}
-                                        positions={item.positions}
-                                        step={item.step}
-                                        cb={this.clickFlower}
-                                        _hovered={i === hoverIndex[0] ? hoverIndex[1] : -1}
-                                    />
-                                </div>
-                            )
-                        })
+                        // grids.map((grid, j) => {
+                        //     return (
+                        //         <div className="grids-content" key={'grids-'+j}>
+                                // {
+                                    grid.map((item, i) => {
+                                        if(item) {
+                                            // console.log(item)
+                                            // let size = 80%current;
+                                            return (
+                                                <div className="grid-line" key={'line-' + i}
+                                                    style={{width:80*item.size+'%',
+                                                        paddingLeft: (item.size-1)*25+'%'
+                                                    }}
+                                                >
+                                                    <FlowerContainer
+                                                        step={item.step}
+                                                        leaves={item.data} 
+                                                        current={item.size} 
+                                                        next={item.next}
+                                                        // _ratio={i === 0 ? 1 : item.size / grid[i - 1].size}
+                                                        // _showUpLine={i !== 0}
+                                                        _selected={item && item.selected}
+                                                        _nextSelected={grid[i + 1] && grid[i + 1].selected}
+                                                        _hovered={i === hoverIndex[0] ? hoverIndex[1] : -1}
+                                                        // titles={item.titles}
+                                                        positions={item.positions}
+                                                        cb={this.clickFlower}
+                                                    />
+                                                </div>
+                                            )
+                                        } else {
+                                            return null
+                                        }
+                                    })
+                                // }
+                            //     </div>
+                            // )
+                        // })
                     }
+                    
                 </div>
             </div>
         )
@@ -233,6 +277,7 @@ const mapStateToProps = (state) => {
         step: state.step,
         group: state.group,
         countedLayer: state.countedLayer,
+        groups: state.groups
     }
 }
 

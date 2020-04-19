@@ -107,8 +107,6 @@ function fetchBySocket(dispatch, param, KEY, step, type) {
     // 接收数据事件，event的data就是返回数据
     websocket.onmessage = function (evt) {
 
-        // console.log(evt)
-        // console.log(evt.data)
         let received_json = {
             "data": JSON.parse(evt.data)
         };
@@ -409,8 +407,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             let timeNumber = 0
             let time=0
             let senDiscription
-            // console.log("KEY",KEY)
-            if(KEY == "name"){
+            if(KEY === "name"){
                 // 中文版本的模板
                 switch (sentenceLabel[vKey]) {
                     case "性别":
@@ -616,14 +613,15 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
     topicData.sort((a,b)=>b.weight-a.weight)
 
     // 计算topicData的占比
-    let weights = [];
+    let _topics = [];
     for(let i=topicData.length-1; i >=0; i--) {
-        if(weights.length > 8) break;
+        if(_topics.length > 8) break;
 
-        weights.push({
+        _topics.push({
             'weight': topicData[i].weight / topicTotalWeight,
             'content': topicData[i].label.split("-"),
-            'id':topicData[i].id
+            'id':topicData[i].id,
+            'ratio': topicData[i].personRatio
         })
     }
     
@@ -645,7 +643,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             },
             "dict":nodeDictKey,
             [POSITIONS]: res.data[POSITIONS],
-            [TOPICS]: weights,
+            [TOPICS]: _topics,
             "people": people,
             "topicView": topicData,
             "selectView": {selectListData},

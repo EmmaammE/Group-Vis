@@ -85,14 +85,15 @@ class RectLeaf extends React.Component{
       
       <foreignObject 
         width = {this.props.width}
-        
         className = "foreign-rect-header" 
+        index = {index}
       >
         <div
           className = "rect-header"
         >
           <p
             className = "rect-header-content"
+            index={index} 
           >
            {data.label}
           </p>

@@ -18,27 +18,31 @@ const size = d3.scaleSqrt()
   /**
  * flower petal path
  * @param {Number} input_angle 花瓣对应的角度
- * @param {Number} proportion 当前花瓣所占的整体比值
+ * @param {Number} weight 当前花瓣所占的整体比值
  */
-const petalPath = (input_angle, proportion) => {
-    let k = size(proportion);
-    let r = k + RADIUS;
-    // let mid = (k + RADIUS)*0.4;
-    let x = (k + RADIUS)*0.5;
-    let y = (k + RADIUS)*0.5;
+const petalPath = (input_angle, weight, proportion) => {
+    let r = RADIUS;
+
+    if(proportion!==undefined) {
+        r += size(weight) * proportion
+    } else {
+        r += size(weight)
+    }
+   
+    let x = r*0.5;
+    let y = r*0.5;
     // let quarter = (k + RADIUS)*0.2;
+    
     return "M0,0 "
-        + `C${x},${y} ${x*0.618},${r} 0,${r}`
-        + `C-${x*0.618},${r} -${x},${y} 0,0`
-    // return `M 0 0 
-    //         C ${mid} ${quarter} ${mid} ${r*0.75} 0 ${r}
-    //         C -${mid} ${r*0.75} -${mid} ${quarter} 0 0`
+        + `C${x},${y} ${x},${r} 0,${r}`
+        + `C-${x},${r} -${x},${y} 0,0 Z`
 };
 // TODO 每个属性的名字（title)
 /**
  * @param {Number} number: 花瓣的数量
  */
-function Flower({ number, current, marginWidth, titles, positions, _hovered, cb, step, color = '#7483a9' }) {
+// function Flower({ number, current, marginWidth, titles, positions, _hovered, cb, step}) {
+function Flower({ marginWidth, leaves, _selected, _hovered, positions, cb, step, current}) {
     const [arr, setArr] = useState([]);
     const [active, setActive] = useState(true);
     const $container = useRef(null);
@@ -53,11 +57,11 @@ function Flower({ number, current, marginWidth, titles, positions, _hovered, cb,
 
     useEffect(() => {
         let _arr = [];
-        for (let i = 0; i < number.length; i++) {
-            _arr.push((360 / number.length) * i)
+        for (let i = 0; i < leaves.length; i++) {
+            _arr.push((360 / leaves.length) * i)
         }
         setArr(_arr);
-    }, [number])
+    }, [leaves])
 
     useEffect(() => {
         d3.select($container.current)
@@ -85,22 +89,23 @@ function Flower({ number, current, marginWidth, titles, positions, _hovered, cb,
                         <g transform={'translate(' + [BOX_WIDTH, BOX_WIDTH - OFFSET] + ')'} key={'petal-' + index}>
                             <g transform={`rotate(${angle})`}>
                                 <path
-                                    key={'petal-' + index}
-                                    d={
-                                        petalPath(angle, number[index])
-                                    }
-                                    fill={color}
-                                    style={{ mask: "url(#mask-stripe)" }}
+                                    d={petalPath(angle, leaves[index]['weight'])}
+                                    stroke="#f0a4ae"
+                                    fill="transparent"
+                                />
+                                <path
+                                    d={petalPath(angle, leaves[index]['weight'], leaves[index]['ratio'])}
+                                    fill="#f0a4ae"
                                 />
                                 <line x1="0" y1="102" x2="0" y2="114" stroke="black" />
                             </g>
-                            <text x="-40" y="0" transform={`translate(${150 * Math.cos((angle + 90) * Math.PI / 180)},${150 * Math.sin((angle + 90) * Math.PI / 180)})`}>
+                            <text x="0" y="0" transform={`translate(${150 * Math.cos((angle + 90) * Math.PI / 180)},${150 * Math.sin((angle + 90) * Math.PI / 180)})`}>
                                 {
-                                    titles && titles[index].map((text, i) => {
+                                    leaves[index]['title'] && leaves[index]['title'].map((text, i) => {
                                         return (<tspan
                                             style={{ transition: 'all 100ms ease-in-out' }}
-                                            x="-40" y={i * 20} key={"t-" + i}
-                                            fontSize="12px"
+                                            x="0" y={i * 20} key={"t-" + i}
+                                            fontSize="14px"
                                         >{text}</tspan>)
                                     })
                                 }
@@ -149,8 +154,9 @@ function Flower({ number, current, marginWidth, titles, positions, _hovered, cb,
                 </g>
             </g>
 
-            <foreignObject x={BOX_WIDTH + 180} y={BOX_WIDTH - 200} width="200" height="200" >
+            <foreignObject x={-20} y={60} width="200" height="200" >
                 <Flowerbtn cb={toggleVeen} />
+                <div className="flower-number"><p className="g-text">{step}</p></div>
             </foreignObject>
         </g>
     )

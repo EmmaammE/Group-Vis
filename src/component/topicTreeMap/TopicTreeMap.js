@@ -315,7 +315,7 @@ class TopicTreeMap extends React.Component{
           }else{
             v.weight = Number((v.weight/restTotalWeight*newTotalWeight).toFixed(2))
           }
-          topic_weights[v.id] = Number(v.weight)
+          topic_weights[v.id] = Number(v.weight.toFixed(2))
         })
         let step = this.props.currentStep
         this.props.updateGroupdata("topicView",step,updateTopicData)
@@ -325,6 +325,7 @@ class TopicTreeMap extends React.Component{
           topic_weights,
           adjust_topic_weights_params:that.props.historyData
         }
+        console.log("param-----",param)
         that.props.updateTopicLrs(JSON.stringify(param), that.props.KEY, that.props.step)
       },1000)
   }
@@ -419,23 +420,25 @@ class TopicTreeMap extends React.Component{
     // topicView数据本身就可以更新右边三个视图的数据
     // 在更新花朵的数据
     // 更新花朵group数据中其它视图中存储的数据
+    let cStep = this.props.currentStep
 
     topicData.splice(this.state.selectedTopicIndex,1)
-
-    let cStep = this.props.currentStep
-    let selectListData= filterSelectList(topicData)
+    this.props.updateTopicView(topicData)
+    this.props.updateGroupdata("topicView",cStep,topicData)
+    
+    let selectListData= filterSelectList(topicData,true)
     this.props.updateSelectList({selectListData})
     this.props.updateGroupdata("selectView",cStep,{selectListData})
 
-    let matrixViewData = filterMatrixView(topicData)
+    let matrixViewData = filterMatrixView(topicData,true)
     this.props.updateMatrix(matrixViewData)
-    this.props.updateGroupdata("matrixView",cStep,{selectListData})
+    this.props.updateGroupdata("matrixView",cStep,matrixViewData)
 
-    let timeLineData = filterTimeLine(topicData)
+    let timeLineData = filterTimeLine(topicData,true)
     this.props.updateTimeLine(timeLineData)
-    this.props.updateGroupdata("timelineView",cStep,{selectListData})
+    this.props.updateGroupdata("timelineView",cStep,timeLineData)
 
-    let mapViewPersons = filterMapView(topicData)
+    let mapViewPersons = filterMapView(topicData,true)
     this.props.updateGroupdata("people",cStep,mapViewPersons)
 
     // this
@@ -484,8 +487,11 @@ class TopicTreeMap extends React.Component{
   }
 
   handleRectLeafClick(e){
-    if(e.target.localName=="rect"){
+    console.log("rest",e.target)
+    if(e.target.localName=="rect"||e.target.localName==="foreignObject"||e.target.localName==="p"){
+      
       let index = e.target.getAttribute("index")    
+      console.log("rest",index)
       this.setState({
         selectedTopicIndex:index
       })
@@ -576,13 +582,6 @@ class TopicTreeMap extends React.Component{
       <div className="chart-wrapper">
         {/* <div className="title">Topic View</div> */}
         <div  className="topic-buttons">
-          {/* <div className="mButtonContainer" onClick={this.handleSwitch}>
-            {btnData.map((v,i)=>(
-              <MatrixButton key={v.btnName} id={`${i}_btn`}  btnName={v.btnName} cName={this.state.btnClassName[i]}></MatrixButton>))}
-          </div>
-          <div className="topic-apply" onClick={this.handleFilter}>
-            <MatrixButton id="topic-apply-button"  btnName="filter" cName="topic-apply-button"></MatrixButton>
-          </div> */}
           <div className="btn-container">
               {
                 Array(4).fill(null).map((e,i)=>
@@ -590,63 +589,63 @@ class TopicTreeMap extends React.Component{
               }
           </div>
         </div>
-          <div>
-            <div className="brush-btn-container">
-                {
-                  Array(5).fill(null).map((e,i)=>
-                  (<div className = "topic-brush-btn" key={'brush-btn2-'+i}>
-                      <CircleBtn 
-                        key={'brush-btn-'+i} 
-                        active={(i+4)==this.state.activeBtnIndex?false:true}
-                        type={i+4} 
-                        onClick={handleClick[i+4]} 
-                      />
-                    </div>))
-                }
-            </div> 
-            {
-              topicData.length>0&&<div className = "rowSlider-container">
-                <RowSlider
-                  handleSliderInput={this.handleSliderInput}
-                  weight = {selectedWeight}
-                  topicName = {topicData[index].label}
-                ></RowSlider>
-                <div id = "rightRatio"  ref={this.$ratio} className="rightRatio">{`${selectedWeight}%`}</div>
-              </div>
-            }
-            <div className = "topicView-label-container">
-              <div className="topic-leaf-label">
-                  <svg width="12px" height="12px">
-                    <image
-                      width="100%" 
-                      height="100%" 
-                      xlinkHref={leaf}
+        <div className="topicView-header">
+          <div className="brush-btn-container">
+              {
+                Array(5).fill(null).map((e,i)=>
+                (<div className = "topic-brush-btn" key={'brush-btn2-'+i}>
+                    <CircleBtn 
+                      key={'brush-btn-'+i} 
+                      active={(i+4)==this.state.activeBtnIndex?false:true}
+                      type={i+4} 
+                      onClick={handleClick[i+4]} 
                     />
-                  </svg>
-              </div>
-              <p className="topic-leaf-label topic-label-text">Description</p>
-              <div className="topic-leaf-label">
-                  <svg width="12px" height="12px">
-                    <rect
-                      transform = "translate(0,6)"
-                      fill="#a8f7e0"
-                      width = "12px"
-                      height= "6px" 
-                    >
-                    </rect>
-                    <rect
-                      stroke="#c68b54"
-                      fill="none"
-                      strokeWidth = "1.5"
-                      width = "12px"
-                      height= "12px"
-                    >
-                    </rect>
-                  </svg>
-              </div>
-              <p className="topic-leaf-label topic-label-text">Proportion</p>
+                  </div>))
+              }
+          </div> 
+          {
+            topicData.length>0&&<div className = "rowSlider-container">
+              <RowSlider
+                handleSliderInput={this.handleSliderInput}
+                weight = {selectedWeight}
+                topicName = {topicData[index].label}
+              ></RowSlider>
+              <div id = "rightRatio"  ref={this.$ratio} className="rightRatio">{`${selectedWeight}%`}</div>
             </div>
+          }
+          <div className = "topicView-label-container">
+            <div className="topic-leaf-label">
+                <svg width="12px" height="12px">
+                  <image
+                    width="100%" 
+                    height="100%" 
+                    xlinkHref={leaf}
+                  />
+                </svg>
+            </div>
+            <p className="topic-leaf-label topic-label-text">Description</p>
+            <div className="topic-leaf-label">
+                <svg width="12px" height="12px">
+                  <rect
+                    transform = "translate(0,6)"
+                    fill="#a8f7e0"
+                    width = "12px"
+                    height= "6px" 
+                  >
+                  </rect>
+                  <rect
+                    stroke="#c68b54"
+                    fill="none"
+                    strokeWidth = "1.5"
+                    width = "12px"
+                    height= "12px"
+                  >
+                  </rect>
+                </svg>
+            </div>
+            <p className="topic-leaf-label topic-label-text">Proportion</p>
           </div>
+        </div>
         <div  className="topicViewChart-container">
           <svg
             ref={this.$container}

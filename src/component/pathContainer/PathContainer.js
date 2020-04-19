@@ -378,17 +378,13 @@ class PathContainer extends React.Component {
 
         return (
             <div>
-                <svg width="100%" height="100%" viewBox="0 0 300 400"
+                <svg width="100%" height="100%" viewBox="0 0 300 650"
                     xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <marker id="marker-circle" markerWidth="10" markerHeight="10" refX="5" refY="5">
                             <circle cx="5" cy="5" r={4} stroke="#aaa" fill="transparent" />
                         </marker>
                     </defs>
-
-                    <clipPath id="myClip">
-                        <rect cx="18" cy="0" width="260" height="420" />
-                    </clipPath>
 
                     <foreignObject x="180" y="20" width="100px" height="50px">
                         <div xmlns="http://www.w3.org/1999/xhtml" style={{ display: 'flex' }}>
@@ -408,7 +404,7 @@ class PathContainer extends React.Component {
                     </g>
 
 
-                    <g ref={this.$container} clipPath="url(#myClip)">
+                    <g ref={this.$container}>
                         <g> {
                             rects.map((rect, i) => (
                                 <RectContainer key={'rect-' + i} x={rect[0]} y={rect[1]}

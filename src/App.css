@@ -1,6 +1,11 @@
+@font-face{
+  font-family: 'DFPSongW9';
+  src : url('../src/assets/fonts/DFPSongW9.ttf');
+}
+
 .App {
   display: grid;
-  grid-template-columns: 18% auto 35% 21%;
+  grid-template-columns: 18% auto 33% 21%;
   grid-template-rows: calc(100vh - 22px);
   margin: 8px;
   border: 3px solid #d3d3d3;
@@ -12,5 +17,36 @@
 }
 
 :root {
-  --main-bg-color: #eae2d8
+  --main-bg-color: #eae2d8;
+  --main-color: #240f39;
+}
+
+/** 每个视图的名字 */
+.g-chart-title {
+  font-family:Helvetica;
+  font-size:20px;
+  color:#240f39;
+  letter-spacing:0;
+  line-height:14px;
+  margin-left: 1em;
+}
+
+/** 每部分视图的名字：如Detail Views */
+.g-view-title {
+  font-family:DFPSongW9;
+  font-size:25px;
+  color:#240f39;
+  letter-spacing:-0.3px;
+  line-height:36px;
+  text-align:left;
+}
+
+/** 一般的文字 */
+.g-text {
+  font-family:Helvetica;
+  font-size:14px;
+  color:#6e6e6e;
+  letter-spacing:0.64px;
+  text-align:center;
+  line-height:15.6px;
 }

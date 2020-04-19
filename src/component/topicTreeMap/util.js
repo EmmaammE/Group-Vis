@@ -13,7 +13,7 @@ export function maxItem(data,that){
         let singleSet = []
         d.split(", ").forEach(v=>{
             let tempName = that.props.dict[Number(v)]
-            if(tempName&&v!=="-1"&&tempName!=="0"&&tempName!=="None"&&tempName!=="1"&&tempName!=="[未详]"){
+            if(tempName&&v!=="-1"&&tempName!=="0"&&tempName!=="None"&&tempName!=="1"&&tempName!=="[未详]"&&tempName!=="AssocEvent"&&tempName!=="EntryEvent"){
                 if(item2Index[tempName]==undefined){
                     item2Index[tempName] = index
                     index++
@@ -437,7 +437,7 @@ export function rectTree(width,height,topicData){
     return {rectTreeData,rectGroupData}
 }
 
-export function filterTimeLine(data){
+export function filterTimeLine(data,flag){
     let personIndex = 0;
     let personToIndex = {}
     let tLabelData = []
@@ -445,7 +445,8 @@ export function filterTimeLine(data){
     let tTopicExist = []
     for(let v of data){
         for (let k of v.cData){
-            if(k.isChoose&&k.time>0&&k.persons.length>0){
+            let isChoose = flag||k.isChoose
+            if(isChoose&&k.time>0&&k.persons.length>0){
                 k.persons.forEach((h,i)=>{
                     if(personToIndex[h]==undefined){
                         personToIndex[h]=personIndex
@@ -476,14 +477,15 @@ export function filterTimeLine(data){
     return {tLabelData,tCircleData}
     
 }
-export function filterMatrixView(data){
+export function filterMatrixView(data,flag){
     let personIndex = 0;
     let personToIndex = {}
     let matrixPerson = []
     let matrixData = []
     for(let v of data){
         for(let k of v.cData){
-            if(k.isChoose&&k.persons.length>1){
+            let isChoose = flag||k.isChoose
+            if(isChoose&&k.persons.length>1){
                 for(let p of k.persons){
                     if(personToIndex[p]==undefined){
                         personToIndex[p] = personIndex
@@ -516,11 +518,12 @@ export function filterMatrixView(data){
     }
     return {matrixData,matrixPerson}
 }
-export function filterSelectList(data){
+export function filterSelectList(data,flag){
     let newData = []
     for(let singleData of data){
         for(let k of singleData.cData){
-            if(k.isChoose){
+            let isChoose = flag||k.isChoose
+            if(isChoose){
                 newData.push(k.discription)
             }
              
@@ -541,15 +544,18 @@ export function filterBrushSelectList(data){
     return newData
 }
 
-export function filterMapView(data){
+export function filterMapView(data,flag){
     let mapViewData = {}
     for(let singleData of data){
         for(let k of singleData.cData){
-            k.personsId.forEach((v,i)=>{
-                if(!mapViewData[v]){
-                    mapViewData[v] = k.persons[i]
-                }
-            })
+            let isChoose = flag||k.isChoose
+            if(isChoose){
+                k.personsId.forEach((v,i)=>{
+                    if(!mapViewData[v]){
+                        mapViewData[v] = k.persons[i]
+                    }
+                })
+            }
         }
     }
     return mapViewData

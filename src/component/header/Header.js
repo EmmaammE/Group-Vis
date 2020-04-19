@@ -1,10 +1,10 @@
 import React from 'react';
 import './header.css';
 
-function Header({title}) {
+function Header({title, cstyle={}}) {
   return (
     <div className="header">
-        <h1>{title}</h1>
+        <h1 className="g-view-title" style={cstyle}>{title}</h1>
     </div>
   );
 }

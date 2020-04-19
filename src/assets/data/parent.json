@@ -1,0 +1,50 @@
+{
+    "0": {
+        "en_name": "me",
+        "name": "自己"
+    },
+    "1": {
+        "en_name": "Associations",
+        "name": "社会关系类"
+    },
+    "2": {
+        "en_name": "Scholarship",
+        "name": "学术关系类"
+    },
+    "3": {
+        "en_name": "Friendship",
+        "name": "朋友关系类"
+    },
+    "4": {
+        "en_name": "Politics",
+        "name": "政治关系类"
+    },
+    "5": {
+        "en_name": "Writings",
+        "name": "著述关系类"
+    },
+    "6": {
+        "en_name": "Military",
+        "name": "军事关系类"
+    },
+    "7": {
+        "en_name": "Medicine",
+        "name": "医疗关系类"
+    },
+    "8": {
+        "en_name": "Religion",
+        "name": "宗教关系类"
+    },
+    "9": {
+        "en_name": "Family",
+        "name": "家庭关系类"
+    },
+    "10": {
+        "en_name": "Finance",
+        "name": "财务关系类"
+    },
+    "11": {
+        "en_name": "Kinship",
+        "name": "亲属关系类"
+    }
+}

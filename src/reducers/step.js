@@ -14,22 +14,33 @@ export function step(state=0, action) {
 
 /**
  * group: 历史数据
- * Map {step: num}
+ *  {   
+ *      // groupIndex对应组别，默认为1
+ *      groupIndex: {
+ *          step: data
+ *      }
+ *  }
  */
-export function group(state={}, action) {
+export function group(state={}, action) { 
     switch(action.type) {
         case SET_GROUP:
+
+            // return Object.assign({}, state, {
+            //     [action.groupIndex]: Object.assign({}, action.data)
+            // });
             return Object.assign({}, state, action.data);
         case UPDATE_GROUP_DATA_BY_STEP_KEY:
-            let {step, key, data} = action.data;
+            let {step, key, data, groupIndex} = action.data;
             try {
-                if(JSON.stringify(state[step][key]) === JSON.stringify(data)) {
-                    console.info(data)
-                    console.info('更新前后数据一样')
-                }
-                state[step][key] = data;
+                // if(JSON.stringify(state[groupIndex][step][key]) === JSON.stringify(data)) {
+                //     console.info(data)
+                //     console.info('更新前后数据一样')
+                // }
+                console.log("try内部",state,data)
+                let tempState = deepClone(state)
+                tempState[step][key] = data;
                 // return Object.assign({}, state);
-                return deepClone(state)
+                return tempState
                 
             } catch {
                 console.error('step,key无效', state, action);
@@ -53,6 +64,16 @@ export function otherStep(state={}, action) {
         // case "10_SET_STEP" :
             console.info('update', action); 
             return Object.assign({}, state, {[action.type[0]]: action.data})
+        default:
+            return state;
+    }
+}
+
+/** 组别 */
+export function groups(state=1, action) {
+    switch(action.type) {
+        case "ADD_A_GROUP":
+            return state+1;
         default:
             return state;
     }
