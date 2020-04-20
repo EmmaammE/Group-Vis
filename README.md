@@ -1,16 +1,11 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
-
-In the project directory, you can run:
-
 ### `yarn start`
 
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+后端： http://localhost:8080
 
 ## 备注
 
@@ -35,3 +30,24 @@ reducers/index.js文件中， 修改KEY的初始值
 en_name: 英文
 
 name: 中文
+
+## 群体对比数据流说明
+
+- 对比的群体：
+
+    存储在store.vennstep（Array）中， 默认为选择的最后两个群体的step.
+
+- 请求两个群体合并分析的结果：
+    
+    actions/step.js | function compareGroup 
+
+- 数据存储：
+
+    为了方便，直接存储在group中，键为 step1-step2 (String)
+
+    查看：
+    - actions/step.js | function compareGroup | socket.onmessage
+
+    - actions/step.js | function updateFourViews | type = 3
+
+        （目前只放了地图、降维图、人、主题）

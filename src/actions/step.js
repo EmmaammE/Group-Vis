@@ -9,7 +9,7 @@ import { TOPIC_LRS,
         PERSON_SENTENCE,
         TOPIC_SENTENCE_VECTOR, 
         } from "../util/name";
-import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "./types";
+import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix ,initPeopleCommon, peopleToList} from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
@@ -68,6 +68,14 @@ export function setOtherStep(key, step) {
     }
 }
 
+// 将所有主题保存到group的'flower'字段
+export function setFlower(flower) {
+    return {
+        type: SET_FLOWER,
+        data: flower
+    }
+}
+
 export function updateGroupdata(key, step, data) {
     return {
         type: UPDATE_GROUP_DATA_BY_STEP_KEY,
@@ -84,6 +92,7 @@ function updateGroupAndStep(step, data) {
             // 分发Overview更新需要的数据
             dispatch(setGroup({[step]: data}))
             dispatch(setStep(step))
+            dispatch(setFlower(data[TOPICS].map(e => e['content'].join('-'))))
         })
     }
 }
@@ -91,12 +100,11 @@ function updateGroupAndStep(step, data) {
 /**
  * 根据人群的id比较他们的topics以及数据
  *      将使用group[step]['people']生成查询的参数
- * @param {*} dispatch 
  * @param {*} person_ids1 
  * @param {*} person_ids2 
+ * @param {*} steps: 两个群体对应的step
  */
-export function compareGroup(dispatch, person_ids1 = [], person_ids2 = []) {
-    console.log(person_ids1, person_ids2)
+export function compareGroup(KEY, person_ids1 = [], person_ids2 = [], steps = []) {
     let socket = new WebSocket("ws://localhost:8080/socket_compare_topics_by_person_ids/");
 
     socket.onopen = function() {
@@ -115,8 +123,13 @@ export function compareGroup(dispatch, person_ids1 = [], person_ids2 = []) {
         let received_json = {
             'data': JSON.parse(evt.data)
         }
-        console.log(received_json)
-        socket.close();
+
+        return dispatch => {
+            /** type=3 表示是传入的两个群体的数据 */
+            handleTopicRes(dispatch, received_json, KEY, steps, 3);
+            
+            socket.close();
+        }
     }
 
     socket.onclose = function() {
@@ -670,38 +683,73 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
     // })
     
 
-    console.info(res.data[POSITIONS])
-    // 更新group, step
-    updateGroupAndStep(step, 
-        {
-            "mapView": {
-                pos2sentence,
-                addressNode: addressMap['addressNode'],
-                sentence2pos
-            },
-            "dict":nodeDictKey,
-            [POSITIONS]: res.data[POSITIONS],
-            [TOPICS]: _topics,
-            "people": people,
-            "topicView": topicData,
-            "selectView": {selectListData},
-            "matrixView": matrixViewData,
-            "timelineView": timeLineData,
-            "historyData":historyData
-        }
-    )(dispatch)
+    if(type === 3) {
+        // 群体对比的数据
+        //  step为一个数组, 表示对比的两个群体的step
+        updateTwoGroup(step.join('-'), 
+            {
+                "mapView": {
+                    pos2sentence,
+                    addressNode: addressMap['addressNode'],
+                    sentence2pos
+                },
+                [POSITIONS]: res.data[POSITIONS],
+                "people": people,
+                [TOPICS]: _topics,
+            }
+        )(dispatch)
 
-    if(type === 0) {
-        // 更新降维图所需要的辅助数据 
-        dispatch(addHistoryData(historyData))
-        // 更新所有图
-        // let sliderWeights = topicData.map(v=>v.weight)
-        // dispatch(initTopicWeight(sliderWeights))
-        dispatch(updateTopicView(topicData));
-        dispatch(updateSelectList({selectListData}));
-        dispatch(updateMatrix(matrixViewData));
-        dispatch(updateTimeLine(timeLineData))
-        dispatch(initPeopleCommon(peopleToDiscriptions))
-        dispatch(initDict(temp[DICT]))
+
+    } else {
+        // 更新group, step
+        updateGroupAndStep(step, 
+            {
+                "mapView": {
+                    pos2sentence,
+                    addressNode: addressMap['addressNode'],
+                    sentence2pos
+                },
+                // "dict":nodeDictKey,
+                [POSITIONS]: res.data[POSITIONS],
+                [TOPICS]: _topics,
+                "people": people,
+                "topicView": topicData,
+                "selectView": {selectListData},
+                "matrixView": matrixViewData,
+                "timelineView": timeLineData,
+                "historyData":historyData
+            }
+        )(dispatch)
+
+        if(type === 0) {
+            // 更新降维图所需要的辅助数据 
+            dispatch(addHistoryData(historyData))
+            // 更新所有图
+            // let sliderWeights = topicData.map(v=>v.weight)
+            // dispatch(initTopicWeight(sliderWeights))
+            dispatch(updateTopicView(topicData));
+            dispatch(updateSelectList({selectListData}));
+            dispatch(updateMatrix(matrixViewData));
+            dispatch(updateTimeLine(timeLineData))
+            dispatch(initPeopleCommon(peopleToDiscriptions))
+            dispatch(initDict(temp[DICT]))
+        }
+    }
+}
+
+function updateTwoGroup(step, data) {
+    return dispatch => {
+        batch(() => {
+            // !!! 注意，这里没有更新step。如果只监听了step的更新，需要手动dispatch相应的action
+            // 不清楚是否其他视图需要计算两个群体的交叉的人， 暂时这个逻辑写在降维图的视图了，
+            // 如果需要可以直接把people换算成一个数组
+            dispatch(setGroup({[step]: data}))
+            dispatch(setFlower(data[TOPICS].map(e => e['content'].join('-'))))
+
+            // 更新降维图的step
+            dispatch(setOtherStep(6, step))
+            // 更新地图
+            dispatch(setOtherStep(9, step))
+        })
     }
 }

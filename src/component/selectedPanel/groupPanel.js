@@ -9,6 +9,7 @@ function GroupPanel({title, startIndex, status=[], options=[], change, cb}) {
                 options.map((item, index) => {
                     return (
                         <div className={"person-dropdown dropdown__list-item"}
+                            key={'o-'+index}
                             onClick={()=>cb(index+startIndex)}
                             onMouseEnter={()=>cb(index+startIndex,change)}
                         >

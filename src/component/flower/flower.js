@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setVeenedStep } from '../../actions/data';
 import { DimensionFisheye } from '../dimension/DimensionFisheye';
 import * as d3 from 'd3';
@@ -29,8 +29,13 @@ const petalPath = (number, weight, proportion) => {
         r += size(weight)
     }
 
-    x = r * (0.3 + 0.05*(8-number))
-    y = r * 0.5;
+    let min = r * 0.2
+    x = r * 0.05 * (10-number);
+    if(x < min) {
+        x = min;
+    }
+    // console.log(x)
+    y = r * 0.75;
     // let quarter = (k + RADIUS)*0.2;
 
     return "M0,0 "
@@ -38,13 +43,26 @@ const petalPath = (number, weight, proportion) => {
         + `C-${x},${r} -${x},${y} 0,0 Z`
 };
 
+function getArr(leaves, topics) {
+    let arr = [], index = [];
+    let ownTopics = leaves.map(e => e['content'].join('-'))
+
+    for (let i = 0; i < topics.length; i++) {
+        let j = ownTopics.indexOf(topics[i]);
+
+        if(j!==-1) {
+            arr.push((360 / topics.length) * i);
+            index.push(j);
+        }
+    }
+    return {arr, index}
+}
 /**
  * @param {Number} type: 花朵是否展示文字
  *                    0: 展示文字； 1: 不展示
  */
 // function Flower({ number, current, marginWidth, titles, positions, _hovered, cb, step}) {
 function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, type = 1}) {
-    const [arr, setArr] = useState([]);
     const $container = useRef(null);
     const [beenVenn, setVenn] = useState(false);
     const dispatch = useDispatch();
@@ -52,14 +70,12 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ty
         step => dispatch(setVeenedStep(step)),
         [dispatch]
     )
+    const topics = useSelector(state => state.group['flower']);
 
-    useEffect(() => {
-        let _arr = [];
-        for (let i = 0; i < leaves.length; i++) {
-            _arr.push((360 / leaves.length) * i)
-        }
-        setArr(_arr);
-    }, [leaves])
+    const data = useMemo(
+        () => getArr(leaves, topics),
+        [topics, leaves]
+    )
 
     function toggleVeen() {
         setVenn(!beenVenn)
@@ -69,18 +85,28 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ty
     return (
         <g transform={"translate(" + marginWidth + ",0)"}>
             <g ref={$container}>
-                <g className="petals" transform={'translate(' + [BOX_WIDTH, BOX_WIDTH - OFFSET] + ')'}>
-                    {arr.map((angle, index) => (
-                        <g key={'petal-' + index}>
+            <g className="petals" transform={'translate(' + [BOX_WIDTH, BOX_WIDTH - OFFSET] + ')'}>
+                    {data.arr.map((angle, index) => {
+                        let current_topic = data.index[index];
+                        try {
+                            console.log(leaves[current_topic]['weight'])
+                        } catch(err) {
+                            console.log(leaves, topics, data.topicIndex)
+                        }
+                        return <g key={'petal-' + index}>
                             <g transform={`rotate(${angle})`}>
                                 <path
-                                    d={petalPath(leaves.length, leaves[index]['weight'])}
+                                    d={petalPath(topics.length, leaves[current_topic]['weight'])}
                                     stroke={COLOR}
                                     fill="transparent"
+                                    opacity='0.8'
                                 />
                                 <path
-                                    d={petalPath(leaves.length, leaves[index]['weight'], leaves[index]['ratio'])}
+                                    d={petalPath(topics.length, 
+                                        leaves[current_topic]['weight'], 
+                                        leaves[current_topic]['ratio'])}
                                     fill={COLOR}
+                                    opacity="0.8"
                                 />
                                 {/* <line x1="0" y1="200" x2="0" y2="214" stroke="black" /> */}
                             </g>
@@ -90,8 +116,8 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ty
                                     <foreignObject x={-100 + 50 * Math.cos((angle + 90) * Math.PI / 180)} y={-25 + 25* Math.sin((angle + 90) * Math.PI / 180)} width="200" height="100">
                                         <div className="flower-title">
                                             {
-                                                leaves[index]['content'] && 
-                                                    leaves[index]['content'].map((text, i) => (
+                                                leaves[current_topic]['content'] && 
+                                                    leaves[current_topic]['content'].map((text, i) => (
                                                         <p key={"title-" + i} className="g-text">{text}</p>
                                                     ))
                                             }
@@ -100,7 +126,7 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ty
                                 </g>
                             }
                         </g>
-                    ))}
+                    })}
                 </g>
                 <circle cx={BOX_WIDTH} cy={BOX_WIDTH - OFFSET} r={RADIUS} fill="white" stroke={COLOR} opacity="1" />
 
