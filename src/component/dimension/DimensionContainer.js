@@ -14,7 +14,7 @@ const style = {
 
 class DimensionContainer extends React.Component {
     render() {
-        let { positions, selectedPeople } = this.props;
+        let { positions, selectedPeople, peopleOfGroup} = this.props;
         return (
             <div style={style}>
                 <p className="g-chart-title">Figure View</p>
@@ -25,6 +25,7 @@ class DimensionContainer extends React.Component {
                                 _width={300}
                                 _height={300}
                                 _margin="translate(20,40)"
+                                peopleOfGroup = {peopleOfGroup}
                                 data={positions}
                                 selectedPeople = {selectedPeople}
                             />
@@ -37,10 +38,25 @@ class DimensionContainer extends React.Component {
 
 const mapStateToProps = state => {
     let step = state.otherStep["6"];
-    return {
-        selectedPeople: state.people,
-        positions: state.group[step] && state.group[step][POSITIONS],
+    if(isNaN(Number(step)) && state.otherStep["6"]!==undefined) {
+        console.log(step)
+        // 是群体对比的step
+        let steps = step.split('-')
+        return {
+            selectedPeople: state.people,
+            positions: state.group[step] && state.group[step][POSITIONS],
+            peopleOfGroup: [
+                Object.keys(state.group[steps[0]]['people']), 
+                Object.keys(state.group[steps[1]]['people'])
+            ]
+        }
+    } else {
+        return {
+            selectedPeople: state.people,
+            positions: state.group[step] && state.group[step][POSITIONS],
+        }
     }
+    
 }
 
 const mapDispatchToProps = dispatch => {

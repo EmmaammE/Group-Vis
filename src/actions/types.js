@@ -8,6 +8,9 @@ export const SET_GROUP = "SET_GROUP";
 export const SET_TOPICS = "SET_TOPICS";
 export const UPDATE_GROUP_DATA_BY_STEP_KEY = "UPDATE_GROUP_DATA_BY_STEP_KEY";
 
+// 设置所有的花瓣
+export const SET_FLOWER = "SET_FLOWER";
+
 // data.js
 export const SET_PERSON = "SET_PERSON";
 export const SET_VENN_STEP = "SET_VENN_STEP";
