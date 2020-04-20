@@ -98,7 +98,12 @@ class Blobs extends React.Component {
 
     notClick.sort();
 
-    let setArr = Array(...set).sort();
+    let setArr = [];
+    for(let s of set.values()) {
+      setArr.push(s);
+    }
+
+    setArr.sort();
     
     if(sets[setArr.join('-')]) {
       // 点击的所有集合的交集
@@ -108,13 +113,13 @@ class Blobs extends React.Component {
         // 要去掉所有点击的集合 和没有点击的集合的交集
         notClick.forEach(s => {
           if(e < s && sets[e+'-'+s]) {
-            sets[set].forEach(id => {
+            sets[s].forEach(id => {
               people.delete(id)
             })
           } 
 
           if(e > s && sets[s+'-'+e]) {
-            sets[set].forEach(id => {
+            sets[s].forEach(id => {
               people.delete(id)
             })
           }
@@ -128,6 +133,8 @@ class Blobs extends React.Component {
       // TODO groupIndex
       console.log(param)
       fetchTopicData(param, KEY, step, 1);
+    } else {
+      console.log(setArr)
     }
   }
 
