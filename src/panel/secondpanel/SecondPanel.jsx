@@ -22,6 +22,7 @@ class SecondPanel extends React.Component {
         this.state = {
             // grids: [],
             grid: [],
+            // grid: [{"next":1,"size":1,"selected":0,"step":[1],"positions":[{"4921":[0.3788028680828691,0.39595518113357003,"李格非"],"15378":[-0.08791303998484105,-0.7056130209753252,"李清照"],"15379":[0.21487799020170562,0.03372699978657273,"赵明诚"],"43374":[0.06103582979269742,-0.02482997164673821,"张汝舟"],"48805":[0.1914571261916407,-0.41247609633418825,"韩玉父"],"50876":[-0.9724974576870214,0.2457022407247119,"端木采"],"50879":[0.21423668340295096,0.4675346673113978,"毛晋"]}],"data":[[{"weight":0.3333271240290353,"content":["李清照","著述关系类"],"ratio":0.428571},{"weight":0.3333275022326928,"content":["李清照","著述关系类","序跋文字"],"ratio":0.428571},{"weight":0.33334537373827194,"content":["李清照"],"ratio":1}]]},{"next":-1,"size":1,"selected":0,"step":[2],"positions":[{"15378":[-0.8864821086140969,-0.29092751011475426,"李清照"],"15379":[0.325868556039981,1.103276683967385,"赵明诚"],"43374":[0.9709706066935145,-0.6883076719656546,"张汝舟"],"48805":[-0.4103570541193981,-0.12404150188697668,"韩玉父"]}],"data":[[{"weight":0.07799514924550965,"content":["建炎","正德","天会"],"ratio":0.5},{"weight":0.16957263627791203,"content":["赵明诚"],"ratio":0.5},{"weight":0.24100332520108197,"content":["韩玉父"],"ratio":0.5},{"weight":0.2414857496108262,"content":["李清照"],"ratio":1},{"weight":0.2699431396646701,"content":["张汝舟"],"ratio":0.5}]]}],
             gridBack: {},
             // [第几层， 第几个，step]
             hoverIndex: [0, 0, 0],
@@ -53,6 +54,8 @@ class SecondPanel extends React.Component {
                 this.setState({ grid: newGrid})
 
             } else {
+                // 是相似的人， 需要在同层增加花朵
+
                 let newGrid = grid.slice(0);
 
                 let currentLayer = hoverIndex[0];
@@ -138,14 +141,14 @@ class SecondPanel extends React.Component {
        
         // 更新选中的序号
         grid[thisIndex[0]].selected = thisIndex[1];
-        
-        this.updateViews(step);
 
         this.setState({
             grid,
             lastHoverIndex: step,
             hoverIndex: [...thisIndex, step],
         })
+        
+        this.updateViews(step);
     }
 
     updateViews(step) {
@@ -167,14 +170,16 @@ class SecondPanel extends React.Component {
     }
 
     toCompare() {
-        let {group, vennStep} = this.props;
+        let {group, vennStep, KEY} = this.props;
         let size = vennStep.length;
         try {
             let step1 = vennStep[size-1], step2 = vennStep[size-2];
             console.log('click compare', step1, step2)
-            compareGroup('a', 
+            compareGroup( 
+                KEY,
                 Object.keys(group[step1]['people']), 
-                Object.keys(group[step2]['people'])
+                Object.keys(group[step2]['people']),
+                [step1, step2]
             ) 
         } catch(err) {
             console.error(err)
@@ -184,6 +189,7 @@ class SecondPanel extends React.Component {
     render() {
         let { grid, hoverIndex, showIndex } = this.state;
         let detail = grid[hoverIndex[0]], y = hoverIndex[1];
+        let _value = Math.max(...grid.map(g => g.size)) - 1;
 
         return (
             <div className="second-panel">
@@ -196,16 +202,16 @@ class SecondPanel extends React.Component {
                     <div className="legend-container">
                         <img src={LEGEND} alt="" />
                     </div>
+                    {/* box-width + translate[0] = viewBox/2 : 为了留文字的空间*/}
                     {
                         detail && <div className="flower-detail">
-                            {/* box-width + translate[0] = viewBox/2 : 为了留文字的空间*/}
-                            <svg width="100%" height="100%" viewBox="0 0 600 600">
-                                <g transform="translate(50,50)">
+                            <svg width="100%" height="100%" viewBox="0 0 620 620">
+                                <g transform="translate(60,60)">
                                     <Flower
                                         type = {0}
                                         marginWidth={0} 
                                         leaves ={detail['data'][y]}
-                                        positions={detail['positions'][y]}
+                                        positions={Object.assign({}, detail['positions'][y])}
                                         step={detail['step'][y]}
                                     />
                                 </g>
@@ -213,7 +219,12 @@ class SecondPanel extends React.Component {
                         </div>
                     }
                     <div className="flower-divider"></div>
-                    <div className="flower-overview">
+                    <div className="flower-overview"
+                        // style={{ 
+                        //     paddingLeft: 15 * _value +'%',
+                        //     marginRight: -8 * _value +'%' 
+                        // }}
+                    >
                     {
                         // grids.map((grid, j) => {
                         //     return (
@@ -225,7 +236,8 @@ class SecondPanel extends React.Component {
                                             // let size = 80%current;
                                             return (
                                                 <div className="grid-line" key={'line-' + i}
-                                                    style={{width:80*item.size+'%',
+                                                    style={{
+                                                        // width:80/_value+'%',
                                                         // paddingLeft: (item.size-1)*25+'%'
                                                     }}
                                                 >
@@ -265,7 +277,8 @@ const mapStateToProps = (state) => {
         group: state.group,
         countedLayer: state.countedLayer,
         groups: state.groups,
-        vennStep: state.vennstep
+        vennStep: state.vennstep,
+        KEY: state.KEY
     }
 }
 
