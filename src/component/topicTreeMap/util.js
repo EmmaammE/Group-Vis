@@ -10,6 +10,7 @@ export function maxItem(data,that){
     let index = 0
     let nameData = []
     let len = data.length
+    let minNum = Number((len*0.3).toFixed(0))
     data.forEach(d=>{
         let singleSet = []
         d.split(", ").forEach(v=>{
@@ -93,14 +94,15 @@ export function maxItem(data,that){
     let lastNodeNumber = {}
     // 统计一定深度的序列的路径总和，频度的DFS函数
     function DFS(r,totalNumber,arraySet,level){
-        if(!r.children||level>deepestLevel){
-            let itemJoin = arraySet.join("-")
-            resultSet[itemJoin] = totalNumber
-            lastNodeNumber[itemJoin] = r.number
+        if(!r.children||r.number<minNum){
+            if(r.number>len*0.2){
+                let itemJoin = arraySet.join("-")
+                resultSet[itemJoin] = totalNumber
+                lastNodeNumber[itemJoin] = r.number
+            }
             return 
         }
         for(let v in r.children){
-            
             let tempChildren = r.children[v]
             arraySet.push(tempChildren.name)
             DFS(tempChildren,totalNumber+tempChildren.number,arraySet,level+1)
@@ -121,10 +123,14 @@ export function maxItem(data,that){
 
 
     console.log("resultArray",resultArray)
-    let output = resultArray.map(v=>`${v.name}\
-        [Ratio] :${v.minRatio}%`)
+    let output = resultArray.map(v=>{
+        let result = `${v.name}\n`
+        // result += '   ————   '
+        result += `[Ratio] :${v.minRatio}%`
+        return result
+    })
     if(output.length>3){
-        output.slice(0,3)
+        output = output.slice(0,3)
     }
     return output
 }
