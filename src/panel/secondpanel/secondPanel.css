@@ -9,8 +9,6 @@
     display: flex;
     justify-content: flex-end;
     width: 100%;
-    position: absolute;
-    top: 30px;
 }
 
 .second-panel .legend-container img {
@@ -115,4 +113,8 @@
 
 .flower-overview::-webkit-scrollbar-thumb {
     background-color: #d3d3d3;  
+}
+
+.second-panel .flower-detail {
+    margin: -15px 0;
 }
