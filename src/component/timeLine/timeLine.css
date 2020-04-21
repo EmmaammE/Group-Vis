@@ -28,9 +28,15 @@
   height: 13%;
 }
 
+.timeline-leaf-label{
+  position: absolute;
+  right:40px;
+  top:5px;
+}
+
 .timeline-clear{
   position:absolute;
-  right:15px;
+  right:20px;
   top:5px;
 }
 

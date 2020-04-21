@@ -34,7 +34,7 @@
 }
 
 #leftName{
-  width: 30%;
+  width: 40%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -42,7 +42,7 @@
 }
 
 #middleInput{
-  width: 70%;
+  width: 60%;
   position: relative;
 }
 
@@ -50,8 +50,8 @@
 #rowSlider{
   -webkit-appearance: none;
   width: 95%;
-  height: 6px;
-  border-radius: 3px;
+  height: 5px;
+  border-radius: 2.5px;
   margin-left:2%;
   margin-right: 3%;
 

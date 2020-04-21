@@ -24,12 +24,13 @@ import compare from '../../assets/icon/compare.svg'
 const btn_urls = [topic,matrix,map,list,add,minus,clear,filter,deleteIcon,flower, similiar, compare]
 const btn_urls_ = [topic_,matrix_,map_,list_,add_,minus_]
 
-const btnStyle = {
-  margin: '0 -5px',
+const btnStyle = { 
+  margin: '0 -6px',
 };
 
 const imgStyle = {
   cursor: 'pointer',
+  transform:"scale(0.9)"
 }
 
 // 传入active修改图标的样式 active=true表示点击后更新了

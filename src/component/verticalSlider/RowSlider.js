@@ -38,7 +38,7 @@ class RowSlider extends React.Component{
     }
     return (
       <div className="rowSliderContainer" >
-        <div id="leftName">{topicName}</div>
+        <div id="leftName">{"Topic weight: "}</div>
         <div id="middleInput">
           <input 
             id="rowSlider" 

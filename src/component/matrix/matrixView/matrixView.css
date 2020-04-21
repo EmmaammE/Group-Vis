@@ -7,9 +7,42 @@
   overflow: hidden;
 }
 
-.header-line div{
+
+
+.matrix-label-container{
+  position: absolute;
+  right:45px;
+  top:0px;
+  width: 35%;
+  font-size: 12px;
+}
+
+.matrix-label-event{
+  margin:0 auto;
+  text-align: center;
+}
+.matrix-label div{
+  display: inline-block;
+  width: 100%;
+  height: 15px;
+  width: 15%;
+  text-align: center;
+}
+
+.matrix-label{
+  margin-top: -5px;
+}
+
+.matrix-label .middle-rectangle{
+  width: 70%;
+  height: 8px;
+  background:linear-gradient(to right,#dddddd 0%,rgb(3,93,195) 100%); ;
+}
+
+.matrix-label div{
   display: inline-block;
 }
+
 
 .matrixView-clear{
   position:absolute;

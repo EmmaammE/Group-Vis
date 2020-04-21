@@ -16,8 +16,8 @@ class DimensionContainer extends React.Component {
     render() {
         let { positions, selectedPeople } = this.props;
         return (
-            <div style={style}>
-                <p className="g-chart-title">Figure View</p>
+            <div className="chart-wrapper" style={style}>
+                <p className="g-chart-title title">Figure View</p>
                 {
                     positions &&
                         <svg viewBox={"0 0 340 340"} style={{flex: 1}} >

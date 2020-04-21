@@ -20,7 +20,7 @@ export function scaleFactory(width,data,startColor,endColor){
   .domain([0,maxValue])
   .range(["#dddddd", endColor]);
 
-  return { xy,colorMap}
+  return { maxValue, xy,colorMap}
 }
 
 export function sortMatrixPerson(matrixView){

@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import * as d3 from 'd3';
 import Tip from '../tooltip/Tip'
 import {setPerson} from '../../actions/data'
+import CircleBtn from '../button/circlebtn';
+import leaf from '../../assets/leaf/leaf.svg'
 
 
 const WIDTH = 355;
@@ -154,7 +156,7 @@ class TimeLine extends React.Component{
 
   }
 
-  handleClear(){
+  handleClear(){ 
     timeLineData.tCircleData.forEach((d,i)=>{
         d.forEach(v=>{
           v.isChoose = false
@@ -194,12 +196,24 @@ class TimeLine extends React.Component{
     
     // let cData = circleData.map(v=>v.info)
     return (
-      <div 
-        className="chart-wrapper">
+      <div className="chart-wrapper">
         <div className="title">Timeline View</div>
-        <div className="timeline-clear" onClick={this.handleClear}>
-          <MatrixButton id="timeline-clear-button"  btnName="clear" cName="timeline-button"></MatrixButton>
+        <div className = "timeline-leaf-label">
+          <div className="topic-leaf-label">
+              <svg width="12px" height="12px">
+                <image
+                  width="100%" 
+                  height="100%" 
+                  xlinkHref={leaf}
+                />
+              </svg>
+          </div>
+          <p className="topic-leaf-label topic-label-text">Description</p>
         </div>
+        <div className="timeline-clear" onClick={this.handleClear}>
+          <CircleBtn  type={8} active={true}/>
+        </div>
+
         <div className="timeLine-container">
           <svg width={WIDTH} height={gHeight} 
             viewBox={`0 0 ${WIDTH} ${gHeight}`}

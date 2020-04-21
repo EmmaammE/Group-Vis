@@ -10,6 +10,7 @@ import {updateSelectList} from '../../../redux/selectList.redux'
 import Tip from '../../tooltip/Tip'
 import { setPerson } from '../../../actions/data'
 import MatrixButton from '../../button/MatrixButton'
+import CircleBtn from '../../button/circlebtn';
 
 // import 
 // 暂时的假数据
@@ -20,7 +21,7 @@ const END_COLOR = 'rgb(3,93,195)'
 const SINGAL_HEIGHT = 25
 let labels
 let height
-let margin={left:70,top:35,right:5,bottom:5}
+let margin={left:70,top:45,right:5,bottom:5}
 let sortedData = -1;
 let matrixData
 let matrixViewState
@@ -194,7 +195,7 @@ class MatrixView extends React.Component{
     height = HEIGHT -margin.top-margin.bottom
     let width = WIDTH-margin.left-margin.right
 
-    const {xy,colorMap}=scaleFactory(height,matrixData,START_COLOR,END_COLOR)
+    const {maxValue,xy,colorMap}=scaleFactory(height,matrixData,START_COLOR,END_COLOR)
     let tipX = margin.left+xy(this.state.highRowLabel)+this.state.targetWidth
     let tipY = margin.top+xy(this.state.highColLabel)
     tipX = tipX ? tipX:0;
@@ -203,9 +204,20 @@ class MatrixView extends React.Component{
       <div className="chart-wrapper">
         <div className="header-line">
           <div className="title">People Matrix View</div>
+          {labels.length==0?null:
+            <div className = "matrix-label-container">
+              <div className= "matrix-label-event">#Events</div>
+              <div className= "matrix-label">
+                <div className="matrix-left-num">0</div>
+                <div className="middle-rectangle"></div>
+                <div className="matrix-left-num">{maxValue}</div>
+              </div>
+            </div>
+          }
+          
           <div className="matrixView-clear" onClick={this.handleClear}>
-            <MatrixButton id="matrixView-clear-button"  btnName="clear" cName="timeline-button"></MatrixButton>
-          </div>
+            <CircleBtn  type={8} active={true}/>
+          </div> 
         </div>
         {
           <Tip

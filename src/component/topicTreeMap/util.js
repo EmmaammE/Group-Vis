@@ -9,11 +9,13 @@ export function maxItem(data,that){
     let item2Index = {}
     let index = 0
     let nameData = []
+    let len = data.length
     data.forEach(d=>{
         let singleSet = []
         d.split(", ").forEach(v=>{
             let tempName = that.props.dict[Number(v)]
-            if(tempName&&v!=="-1"&&tempName!=="0"&&tempName!=="None"&&tempName!=="1"&&tempName!=="[未详]"&&tempName!=="AssocEvent"&&tempName!=="EntryEvent"){
+            // 追加去重功能singleSet.indexOf(tempName)
+            if(tempName&&singleSet.indexOf(tempName)===-1&&v!=="-1"&&tempName!=="0"&&tempName!=="None"&&tempName!=="1"&&tempName!=="[未详]"&&tempName!=="AssocEvent"&&tempName!=="EntryEvent"){
                 if(item2Index[tempName]==undefined){
                     item2Index[tempName] = index
                     index++
@@ -24,7 +26,7 @@ export function maxItem(data,that){
                     })
                 }
                 itemSets[item2Index[tempName]].number++
-                singleSet.push(itemSets[item2Index[tempName]].name)
+                singleSet.push(tempName)
             } 
         })
         nameData.push(singleSet)
@@ -87,12 +89,14 @@ export function maxItem(data,that){
     })
 
     let resultSet = {}
-    let deepestLevel = 6
+    let deepestLevel = 4
+    let lastNodeNumber = {}
     // 统计一定深度的序列的路径总和，频度的DFS函数
     function DFS(r,totalNumber,arraySet,level){
         if(!r.children||level>deepestLevel){
             let itemJoin = arraySet.join("-")
             resultSet[itemJoin] = totalNumber
+            lastNodeNumber[itemJoin] = r.number
             return 
         }
         for(let v in r.children){
@@ -106,16 +110,23 @@ export function maxItem(data,that){
     DFS(root,0,[],0)
     let resultArray = []
     for(let v in resultSet){
+
         resultArray.push({
             name:v,
-            number:resultSet[v]
+            number:resultSet[v],
+            minRatio: Number((lastNodeNumber[v]*100/len).toFixed(0))
         })
     }
-    resultArray.sort((a,b)=>b.number-a.number)
+    resultArray.sort((a,b)=>b.minRatio-a.minRatio)
 
 
     console.log("resultArray",resultArray)
-    return resultArray.map(v=>v.name).slice(0,3)
+    let output = resultArray.map(v=>`${v.name}\
+        [Ratio] :${v.minRatio}%`)
+    if(output.length>3){
+        output.slice(0,3)
+    }
+    return output
 }
 export function maxLabel(infos){
     let maxSects = []

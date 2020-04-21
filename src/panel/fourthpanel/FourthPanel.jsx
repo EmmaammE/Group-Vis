@@ -30,7 +30,7 @@ class FourthPanel extends React.Component {
 
 
   }
-  render() {
+  render() { 
     return (
       <div className="fourth-panel">
         <Header title = "Auxiliary Views"></Header>

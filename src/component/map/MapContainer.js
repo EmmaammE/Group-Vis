@@ -48,8 +48,8 @@ class MapContainer extends React.Component {
     render() {
         let {addr} = this.state;
         let {data} = this.props;
-        return (
-            <div className="geomap">
+        return ( 
+            <div className="chart-wrapper geomap ">
                 <div className="title">Map View</div>
                 <div className="container"><Map addr={addr} pos2sentence={data && data["pos2sentence"]} sentence2pos={data && data["sentence2pos"]} /></div>
             </div>

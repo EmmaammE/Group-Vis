@@ -112,7 +112,7 @@ class RectLeaf extends React.Component{
 
           return <g 
             key={`${v.x}-${i}-${v.y}`}
-            transform={`translate(${xScale(v.x)-5},${yScale(v.y)-5})`} >
+            transform={`translate(${xScale(v.x)-rWidth/2},${yScale(v.y)-rWidth/2})`} >
               <image
                 className="reactLeaf_image"
                 info={`${index}_${i}_${v.discription}`}

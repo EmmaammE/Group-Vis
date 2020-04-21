@@ -3,7 +3,7 @@ import Lable from '../lable/Lable'
 import * as d3 from 'd3';
 import SeqCircles from '../seqCircles/SeqCircles'
 import {scaleFactory,
-      filterTimeLine,
+      filterTimeLine, 
       filterMatrixView,
       filterSelectList,
       filterBrushSelectList,
@@ -524,7 +524,7 @@ class TopicTreeMap extends React.Component{
           tipStyle:tipStyle
         })
       }catch{
-        console.error('step,key无效' );
+        console.error('显示最大频繁子序列时出错' );
       }
       
     }
@@ -576,7 +576,7 @@ class TopicTreeMap extends React.Component{
 
     return (
       <div className="chart-wrapper">
-        {/* <div className="title">Topic View</div> */}
+        
         <div  className="topic-buttons">
           <div className="btn-container">
               {
@@ -585,6 +585,7 @@ class TopicTreeMap extends React.Component{
               }
           </div>
         </div>
+        <div className="feature-title">Feature View</div>
         <div className="topicView-header">
           <div className="brush-btn-container">
               {
@@ -684,7 +685,7 @@ class TopicTreeMap extends React.Component{
                   height = {v.y1-v.y0}
                   fill= "none"
                   stroke= "#c47d3a"
-                  strokeWidth = "2"
+                  strokeWidth = "3"
                   transform={`translate(${v.x0},${v.y0})`}
                 > 
                 </rect>
