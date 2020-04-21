@@ -76,7 +76,7 @@ class FlowerContainer extends React.Component {
                         />
                     ))
                 }
-                {
+                {/* {
                     endpoints.map((point, i) => {
                         let x1 = (BOX_WIDTH * (2 * _selected + 1) + point) * 2 / 7, 
                             y1 = 360,
@@ -91,7 +91,7 @@ class FlowerContainer extends React.Component {
                             fill="transparent" stroke="black"
                         />)
                     })
-                }
+                } */}
             </svg>
         )
     }

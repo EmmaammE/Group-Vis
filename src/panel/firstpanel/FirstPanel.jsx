@@ -26,13 +26,20 @@ class FirstPanel extends React.Component {
                 { key: 'Year', title: 'Year', options: [] },
                 { key: 'Person', title: 'Related People', options: [] },
                 { key: 'Dynasty', title: 'Dynasty', options: [] },
-                { key: 'Status', title: 'Status', options: [] },
                 { key: 'Addr', title: 'Native Place', options: []},
-                { key: 'Gender', title: 'Gender', options: [{value:"765", label:'男'}, {value:"2635",label:'女'}]},
+                { key: 'PostType', title: '任职方式', options: []},
+                { key: 'PostAddress', title: '任职地址', options: []},
+                { key: 'Office', title: '官职', options: []},
+                { key: 'OfficeType', title: '官职类型', options: []},
+                { key: 'Entry', title: 'Entry', options: []},
+                { key: 'EntryType', title: 'EntryType', options: []},
+                { key: 'Status', title: 'Status', options: [] },
+                // 性别直接传文字
+                { key: 'Gender', title: 'Gender', options: [{value:"男", label:'男'}, {value:"女",label:'女'}]},
             ],
             clickStatus: {'Gender':[false,false], 'Person':[false]},
             timeRange: [0, 0],
-            _tabPanel: 1,
+            _tabPanel: 0,
             cyphers: [],
             status: false,
         }
@@ -67,14 +74,13 @@ class FirstPanel extends React.Component {
         axios.post('/init_ranges/')
             .then(res => {
                 if (res.data.is_success === true) {
-                    // 朝代 社会区分 籍贯有初始值
-                    dataSet[2].options = that.tool_handleItem(res.data[dataSet[2].key], 1);
-                    dataSet[3].options = that.tool_handleItem(res.data[dataSet[3].key], 1);
-                    dataSet[4].options = that.tool_handleItem(res.data[dataSet[4].key], 1);
-
-                    clickStatus[dataSet[2].key] = Array(dataSet[2].options.length).fill(false);
-                    clickStatus[dataSet[3].key] = Array(dataSet[3].options.length).fill(false);
-                    clickStatus[dataSet[4].key] = Array(dataSet[4].options.length).fill(false);
+                    dataSet.forEach((dset, index) => {
+                        // 时间和性别不需要初始值
+                        if(index!==0 && index !== 11) {
+                            dset.options = that.tool_handleItem(res.data[dset.key], 1);
+                            clickStatus[dset.key] = Array(dset.options.length).fill(false);
+                        }
+                    })
 
                     that.setState({
                         dataSet,
@@ -208,7 +214,7 @@ class FirstPanel extends React.Component {
                         })
                     }
 
-                    dataSet[1].options.push({value: 0, label: ALL_SIGN})
+                    // dataSet[1].options.push({value: 0, label: ALL_SIGN})
                     let size = 0;
                     for(let key in groups) {
                         for(let inner in groups[key]['group']) {
@@ -289,11 +295,19 @@ class FirstPanel extends React.Component {
         // input[i].title = dataSet[i+1].key ~ clickStates{title}
         // index = i+1 留在这里，修改顺序后可以快点修改
         let input = [
+            // title是key
             { title: "Person", data: "person_ids[]", index: 1 },
             { title: "Dynasty", data: "dynasty_ids[]", index: 2 },
-            { title: "Status", data: "status[]", index: 3 },
-            { title: "Gender", data: "genders[]", index: 5 },
-            { title: "Addr", data: "address_ids[]", index: 4},
+            { title: "Addr", data: "address_ids[]", index: 3},
+            { title: "PostType", data: "post_type_ids[]", index: 4},
+            { title: "PostAddress", data: "post_address_ids[]", index: 5},
+            { title: "Office", data: "office_ids[]", index: 6},
+            { title: "OfficeType", data: "office_type_ids[]", index: 7},
+            { title: "Entry", data: "entry_ids[]", index: 8},
+            { title: "EntryType", data: "entry_type_ids[]", index: 9},
+            // statu没有打错
+            { title: "Status", data: "statu_ids[]", index: 10},
+            { title: "Gender", data: "genders[]", index: 11},
         ]
 
         let param = new FormData();
@@ -411,7 +425,7 @@ class FirstPanel extends React.Component {
     _renderPanel() {
         let { _tabPanel, searchValue, dataSet, clickStatus, timeRange, status} = this.state;
 
-        const _titles = ["Person", "Condition", "Graph"];
+        const _titles = ["Figure", "Condition", "Graph"];
         let $titles = (
             <div className="panel-titles">
                 {
@@ -463,7 +477,7 @@ class FirstPanel extends React.Component {
 
                                         <div className="person-lists">
                                         {
-                                            Object.values(dataSet[1].groups).map(group => {
+                                            Object.values(dataSet[1].groups).map((group, index) => {
                                                 return Object.values(group['group']).map(inner => {
                                                     return (
                                                         <GroupPanel

@@ -1,4 +1,4 @@
-import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY } from "../actions/types";
+import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER } from "../actions/types";
 import {deepClone} from '../util/tools'
 export function step(state=0, action) {
     switch (action.type) {
@@ -16,6 +16,7 @@ export function step(state=0, action) {
  * group: 历史数据
  *  {   
  *      step: data
+ *      'flower': 所有的花瓣
  *  }
  */
 export function group(state={}, action) {
@@ -41,6 +42,17 @@ export function group(state={}, action) {
                 console.error('step,key无效', state, action);
                 return state;
             }
+        case SET_FLOWER:
+            let newTopics = action.data,
+                oldTopics = new Set(state['flower'])
+            
+            newTopics.forEach(e => {
+                oldTopics.add(e)
+            })
+            
+            return Object.assign({}, state, {
+                'flower': Array.from(oldTopics)
+            })
         default:
             return state;
     }

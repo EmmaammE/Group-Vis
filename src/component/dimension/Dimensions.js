@@ -5,7 +5,6 @@ import Tooltip from '../tooltip/tooltip';
 import './lasso.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {fetchTopicData} from '../../actions/step';
-import { Flowerbtn } from '../button/flowerbtn';
 import axios from 'axios';
 import { updateSelectList } from '../../redux/selectList.redux';
 import CircleBtn from '../button/circlebtn';
@@ -26,24 +25,35 @@ const getScales = (width, height, data) => {
 
 const _class = () => 'circles';
 
-const flowerClass = (status) => {
-    switch (status) {
-        case 0:
-            // 没有相似的人，不能点击
-            return 'btn-add cannot-click'
-        case 1:
-            // 可以点击， 未点击
-            return 'btn-add'
-        case 2:
-            // 已点击
-            return 'btn-add active'
-        default:
-            break;
+const color = (status) => {
+    if(status === undefined || status === 3) {
+        return '#e9dac9'
+    } else {
+        return ['#84a9ac', '#d8ebb5'][status]
     }
+}
+const getPeopleStatus = (people) => {
+    if(people === undefined) {
+        return undefined
+    }
+    let peopleStatus = {};
+    people[0].forEach(id => {
+        peopleStatus[id] = 1;
+    })
+
+    people[1].forEach(id => {
+        if(peopleStatus[id] === 1) {
+            peopleStatus[id] = 3;
+        } else {
+            peopleStatus[id] = 2;
+        }
+    })
+
+    return peopleStatus;
 }
 
 // 返回降维图的点点
-export function DimensionCircles({_width, _height, data, _margin, classCreator=_class}) {
+export function DimensionCircles({_width, _height, data, _margin, status}) {
     const scales = useMemo(() => getScales(_width, _height, data), [_width, _height, data]);
     const [tooltip, setTooltip] = useState({ x: 0, y: 0, title: '' });
     const [show, setShow] = useState(false);
@@ -61,36 +71,62 @@ export function DimensionCircles({_width, _height, data, _margin, classCreator=_
         setShow(false);
     }
 
-    return (
-        <g 
-        transform={_margin}
-        >
-            {/* {show && <Tooltip {...tooltip} />} */}
-            {
-                scales.dataArr.map((d, i) => {
-                    let person_id = d[0];
-                    let points = [scales.xScale(d[1][0]), scales.yScale(d[1][1])];
-                    return (
-                        <circle key={'cir-' + i} r={5}  
-                            className={classCreator(person_id)}
-                            strokeWidth="1px"
-                            stroke="#e9dac9"
-                            opacity = {0.5}
-                            fill={"#e9dac9"}
-                            data={person_id}
-                            style={{ cursor: 'pointer' }}
-                            cx={points[0]} 
-                            cy={points[1]} 
-                            onMouseOver={(e) => showTooltip(i, e)}
-                            onMouseOut={toggleShow} />
-                    )
-                })
-            }
-        </g>
-    )
+    if(status === undefined ) {
+        return (
+            <g transform={_margin}>
+                {/* {show && <Tooltip {...tooltip} />} */}
+                {
+                    scales.dataArr.map((d, i) => {
+                        let person_id = d[0];
+                        let points = [scales.xScale(d[1][0]), scales.yScale(d[1][1])];
+                        return (
+                            <circle key={'cir-' + i} r={5}  
+                                // className={classCreator(person_id)}
+                                strokeWidth="1px"
+                                stroke="#e9dac9"
+                                opacity = {0.5}
+                                fill={"#e9dac9"}
+                                data={person_id}
+                                style={{ cursor: 'pointer' }}
+                                cx={points[0]} 
+                                cy={points[1]} 
+                                onMouseOver={(e) => showTooltip(i, e)}
+                                onMouseOut={toggleShow} />
+                        )
+                    })
+                }
+            </g>
+        )
+    } else {
+        return (
+            <g transform={_margin}>
+                {
+                    scales.dataArr.map((d, i) => {
+                        let person_id = d[0];
+                        let points = [scales.xScale(d[1][0]), scales.yScale(d[1][1])];
+                        return (
+                            <circle key={'cir-' + i} r={5}  
+                                // className={classCreator(person_id)}
+                                strokeWidth="1px"
+                                stroke="#e9dac9"
+                                opacity = {0.5}
+                                fill={status[person_id]}
+                                data={person_id}
+                                style={{ cursor: 'pointer' }}
+                                cx={points[0]} 
+                                cy={points[1]} 
+                                onMouseOver={(e) => showTooltip(i, e)}
+                                onMouseOut={toggleShow} />
+                        )
+                    })
+                }
+            </g>
+        )
+    }
+    
 }
 
-export function DimensionFilter({ _width, _height, _margin, selectedPeople = [], data = {}}) {
+export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, selectedPeople = [], data = {}}) {
 
     const $container = useRef(null);
     // 选中的人
@@ -114,6 +150,9 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
     const topicData = useSelector(state => state.group[currentStep]["topicView"])
     const selectList = useSelector(state => state.group[currentStep]["selectView"]["selectListData"])
     const [showName, setShowName] = useState(false)
+    const peopleStatus = useMemo(() => {
+        return getPeopleStatus(peopleOfGroup)
+    }, [peopleOfGroup])
 
     useEffect(() => {
         const _lasso = lasso()
@@ -260,14 +299,12 @@ export function DimensionFilter({ _width, _height, _margin, selectedPeople = [],
         }
     }
 
-    const cbs = ['', '', clear, toFetch]
-
     return (
         <g>
             <g ref={$container}>
                 <DimensionCircles 
                     _margin={_margin} _width={_width} _height={_height} 
-                    data={data} classCreator={classCreator} 
+                    data={data} status = {peopleStatus}
                 />
                 <rect width="100%" height="100%" fill="transparent"></rect>
             </g>

@@ -21,9 +21,9 @@
 .second-panel .content-panel {
     flex-direction: column;
     display: flex;
-    overflow: auto;
     align-items: center;
     transition: all 300ms ease-in-out;
+    overflow: hidden;
 }
 
 .second-panel .grid-line {
@@ -37,25 +37,6 @@
     position: absolute;
     top: 75px;
     bottom: 0;
-}
-
-/* 滚动条 */
-.grid-line:-webkit-scrollbar-track,
-.content-panel::-webkit-scrollbar-track {
-    border: 1px solid #d3d3d3;
-    background-color: #F5F5F5;
-}
-
-.grid-line::-webkit-scrollbar ,
-.content-panel::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-    background-color: #F5F5F5;
-}
-
-.grid-line::-webkit-scrollbar-thumb ,
-.content-panel::-webkit-scrollbar-thumb {
-    background-color: #d3d3d3;  
 }
 
 .second-panel .mask {
@@ -91,6 +72,13 @@
     flex-direction: column;
 }
 
+.second-panel .flower-title .g-text {
+    font-size: 18px;
+    color: #000;
+    margin: 2px;
+    font-weight: 400;
+}
+
 .second-panel .flower-divider {
     background: linear-gradient(to right, #e9e9e9,#919191,#e9e9e9);
     height: 1px;
@@ -101,4 +89,30 @@
     position: absolute;
     top: 0;
     right: 10px;
+}
+
+.second-panel .flower-overview {
+    flex-direction: column;
+    display: flex;
+    overflow: auto;
+    align-items: center;
+    transition: height 200ms ease-in-out, 
+        padding-left 300ms ease-in-out 200ms;
+}
+
+/* 滚动条 */
+.grid-line::-webkit-scrollbar-track,
+.flower-overview::-webkit-scrollbar-track {
+    border: 1px solid #d3d3d3;
+    background-color: #F5F5F5;
+}
+
+.flower-overview::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+    background-color: #F5F5F5;
+}
+
+.flower-overview::-webkit-scrollbar-thumb {
+    background-color: #d3d3d3;  
 }

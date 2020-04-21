@@ -5,7 +5,6 @@ import Header from '../../component/header/Header';
 // import TopicViewChart from '../../component/topicView/TopicViewChart'
 // import TopicView from '../../component/topic/TopicView'
 import TopicTreeMap from '../../component/topicTreeMap/TopicTreeMap.js'
-import SelectList from '../../component/selectList/SelectList'
 import DimensionContainer from '../../component/dimension/DimensionContainer';
 
 
