@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { POSITIONS } from "../../util/name";
 import { setPerson } from "../../actions/data";
-import { DimensionFilter } from "./Dimensions";
+import { DimensionFilter } from "./DimensionFilter";
 import './lasso.css';
 
 const style = {
@@ -39,7 +39,6 @@ class DimensionContainer extends React.Component {
 const mapStateToProps = state => {
     let step = state.otherStep["6"];
     if(isNaN(Number(step)) && state.otherStep["6"]!==undefined) {
-        console.log(step)
         // 是群体对比的step
         let steps = step.split('-')
         return {

@@ -289,6 +289,11 @@ class FirstPanel extends React.Component {
         })
     }
 
+    addAnother(step) {
+        if(step > 1) {
+            sessionStorage.setItem('another', step);
+        }
+    }
     onClickSearch() {
         let { KEY, groups, step, fetchTopicData, setOtherStep } = this.props;
         let { timeRange, _tabPanel } = this.state;
@@ -311,6 +316,7 @@ class FirstPanel extends React.Component {
         ]
 
         let param = new FormData();
+        this.addAnother(step+1)
         switch (_tabPanel) {
             case 0:
                 this.tool_appendParam(input[0], param, 1);
@@ -496,7 +502,6 @@ class FirstPanel extends React.Component {
                                         }
                                         </div>
                                     </div>
-                                
                             }
                             
                         </div>
@@ -558,8 +563,6 @@ class FirstPanel extends React.Component {
                         <div className="btn-container">
                             <button className="btn" onClick={this.onClickSearch}>Search</button>
                         </div>
-
-                        
                     </div>
 
                     
@@ -592,8 +595,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // 入口，所以只作为第一步
-        fetchTopicData: (param, key, groupIndex) => dispatch(fetchTopicData(param, key, 1, 0, groupIndex)),
+        fetchTopicData: (param, key, step, groupIndex) => dispatch(fetchTopicData(param, key, step, 0, groupIndex)),
         setOtherStep: (key, step = 1)=> dispatch(setOtherStep(key, step))
     };
 };
