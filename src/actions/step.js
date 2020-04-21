@@ -104,7 +104,7 @@ function updateGroupAndStep(step, data) {
  * @param {*} person_ids2 
  * @param {*} steps: 两个群体对应的step
  */
-export function compareGroup(KEY, person_ids1 = [], person_ids2 = [], steps = []) {
+export function compareGroup(dispatch, KEY, person_ids1 = [], person_ids2 = [], steps = []) {
     let socket = new WebSocket("ws://localhost:8080/socket_compare_topics_by_person_ids/");
 
     socket.onopen = function() {
@@ -123,13 +123,11 @@ export function compareGroup(KEY, person_ids1 = [], person_ids2 = [], steps = []
         let received_json = {
             'data': JSON.parse(evt.data)
         }
-
-        return dispatch => {
-            /** type=3 表示是传入的两个群体的数据 */
-            handleTopicRes(dispatch, received_json, KEY, steps, 3);
-            
-            socket.close();
-        }
+        console.log(received_json)
+        /** type=3 表示是传入的两个群体的数据 */
+        handleTopicRes(dispatch, received_json, KEY, steps, 3);
+        
+        socket.close();
     }
 
     socket.onclose = function() {
@@ -159,8 +157,9 @@ function fetchBySocket(dispatch, param, KEY, step, type) {
         let received_json = {
             "data": JSON.parse(evt.data)
         };
-        handleTopicRes(dispatch, received_json, KEY, step, type)
         websocket.close();
+
+        handleTopicRes(dispatch, received_json, KEY, step, type)
 
     };
 
@@ -285,7 +284,7 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         //         "topic_pmi": res.data["topic_pmi"],
         //         "person_id2position2d": res.data["person_id2position2d"]
         // 
-        updateFourViews(dispatch,people,res,temp,topicId2Name,step,addressMap,type,KEY)
+        return updateFourViews(dispatch,people,res,temp,topicId2Name,step,addressMap,type,KEY)
     } else {
         console.log(res.data.bug)
     }
@@ -681,12 +680,12 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
         [TOPIC_SENTENCE_VECTOR]:res.data[TOPIC_SENTENCE_VECTOR],
         [PERSON_SENTENCE]:res.data[PERSON_SENTENCE]
     }
-
-    if(type === 3) {
-        // 群体对比的数据
-        //  step为一个数组, 表示对比的两个群体的step
-        updateTwoGroup(step.join('-'), 
-            {
+    
+    switch (type) {
+        case 3:
+            // 群体对比
+            //  step为一个数组, 表示对比的两个群体的step
+            updateTwoGroup(step.join('-'), {
                 "mapView": {
                     pos2sentence,
                     addressNode: addressMap['addressNode'],
@@ -695,32 +694,13 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 [POSITIONS]: res.data[POSITIONS],
                 "people": people,
                 [TOPICS]: _topics,
-            }
-        )(dispatch)
-
-
-    } else {
-        // 更新group, step
-        updateGroupAndStep(step, 
-            {
-                "mapView": {
-                    pos2sentence,
-                    addressNode: addressMap['addressNode'],
-                    sentence2pos
-                },
-                // "dict":nodeDictKey,
-                [POSITIONS]: res.data[POSITIONS],
-                [TOPICS]: _topics,
-                "people": people,
-                "topicView": topicData,
                 "selectView": {selectListData},
                 "matrixView": matrixViewData,
                 "timelineView": timeLineData,
                 "historyData":historyData
-            }
-        )(dispatch)
-
-        if(type === 0) {
+            })(dispatch)
+            break;
+        case 0:
             // 更新降维图所需要的辅助数据 
             dispatch(addHistoryData(historyData))
             // 更新所有图
@@ -732,7 +712,31 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             dispatch(updateTimeLine(timeLineData))
             dispatch(initPeopleCommon(peopleToDiscriptions))
             dispatch(initDict(temp[DICT]))
-        }
+        
+    // eslint-disable-next-line
+        case 1:
+            // 更新group, step
+            updateGroupAndStep(step, 
+                {
+                    "mapView": {
+                        pos2sentence,
+                        addressNode: addressMap['addressNode'],
+                        sentence2pos
+                    },
+                    // "dict":nodeDictKey,
+                    [POSITIONS]: res.data[POSITIONS],
+                    [TOPICS]: _topics,
+                    "people": people,
+                    "topicView": topicData,
+                    "selectView": {selectListData},
+                    "matrixView": matrixViewData,
+                    "timelineView": timeLineData,
+                    "historyData":historyData
+                }
+            )(dispatch);
+            break;
+        default:
+            console.log('fetch topic error')
     }
 }
 

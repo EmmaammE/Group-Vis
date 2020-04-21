@@ -88,11 +88,11 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ty
             <g className="petals" transform={'translate(' + [BOX_WIDTH, BOX_WIDTH - OFFSET] + ')'}>
                     {data.arr.map((angle, index) => {
                         let current_topic = data.index[index];
-                        try {
-                            console.log(leaves[current_topic]['weight'])
-                        } catch(err) {
-                            console.log(leaves, topics, data.topicIndex)
-                        }
+                        // try {
+                        //     console.log(leaves[current_topic]['weight'])
+                        // } catch(err) {
+                        //     console.log(leaves, topics, data.topicIndex)
+                        // }
                         return <g key={'petal-' + index}>
                             <g transform={`rotate(${angle})`}>
                                 <path
