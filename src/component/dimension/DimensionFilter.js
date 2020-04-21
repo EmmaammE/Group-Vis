@@ -233,12 +233,11 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                     <CircleBtn type={4} onClick={clear}></CircleBtn>
                     <CircleBtn type={5} onClick={clear}></CircleBtn>
                     <CircleBtn type={6} onClick={clear} active={true}></CircleBtn>
-                    {/* <CircleBtn type={7} active={true}></CircleBtn> */}
-                    <CircleBtn type={8} onClick={toFetch} active={true}></CircleBtn>
-                    <CircleBtn type={9} onClick={fetchSimiliarPerson} active={true}></CircleBtn>
+                    <CircleBtn type={9} onClick={toFetch} active={true}></CircleBtn>
+                    <CircleBtn type={10} onClick={fetchSimiliarPerson} active={true}></CircleBtn>
                 </div>
 
-                <div className="d-btn people-btn" onClick={people}>people</div> 
+                {/* <div className="d-btn people-btn" onClick={people}>people</div>  */}
             </foreignObject>
         </g>
     )

@@ -529,7 +529,7 @@ class TopicTreeMap extends React.Component{
           <div>
             <div className="brush-btn-container">
                 {
-                  Array(4).fill(null).map((e,i)=>
+                  Array(5).fill(null).map((e,i)=>
                   (<div className = "topic-brush-btn" key={'brush-btn2-'+i}>
                       <CircleBtn 
                         key={'brush-btn-'+i} 
