@@ -124,9 +124,9 @@ export function maxItem(data,that){
 
     console.log("resultArray",resultArray)
     let output = resultArray.map(v=>{
-        let result = `${v.name}\n`
+        let result = `${v.name} \n`
         // result += '   ————   '
-        result += `[Ratio] :${v.minRatio}%`
+        result += `[Ratio] : ${v.minRatio}%`
         return result
     })
     if(output.length>3){
