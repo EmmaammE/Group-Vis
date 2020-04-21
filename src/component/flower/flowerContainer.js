@@ -3,34 +3,37 @@ import Flower from './flower';
 
 const BOX_WIDTH = 250;
 
-const getEndpoints = (number) => {
+const getEndpoints = (number, current) => {
     if (number === -1) {
         return [];
     } else {
         return Array(number).fill(null)
-            .map((val, i) => BOX_WIDTH*(2*i+1) )
+            .map((val, i) => BOX_WIDTH * (1/2 + i))
     }
 }
 
-const curvePath = (startX, startY, endX, endY) => {
-    let ax = startX, ay = startY;
+const control = (p1x, p1y, p2x, p2y, offset = 30) => {
+   let mpx = (p1x + p2x) * 0.5;
+   let mpy = (p1y + p2y) * 0.5;
+   
+   let theta = Math.atan2(p2y - p1y, p2x - p1x) - Math.PI / 2;
+   
+   let c1x = mpx + offset * Math.cos(theta);
+   let c1y = mpy + offset * Math.sin(theta);
 
-    let bx = Math.abs(endX - startX) * 0.05 + startX,
-        by = startY;
-    
-    let cx = (endX - startX) * 0.06 + startX,
-        cy = startX,
-        dx = (endX - startX) * 0.33 + startX,
-        dy = endY,
-        ex = - Math.abs(endX - startX) * 0.05 + endX,
-        ey = endY;
-    
-    let fx = endX,
-        fy = endY;
-    
-    return `M${ax},${ay} L${bx},${by} 
-        C${cx},${cy} ${dx},${dy} ${ex},${ey}
-        L ${fx},${fy}`
+   return {
+       x: c1x,
+       y: c1y
+   };
+}
+
+const curvePath = (p1x, p1y, p2x, p2y) => {
+    let mdx = (p1x+p2x) * 0.5;
+    let mdy = (p2x+p2y) * 0.5;
+
+    let c1 = control(p1x, p1y, mdx, mdy);
+    let c2 = control(mdx, mdy, p2x, p2y)
+    return  `M${p1x} ${p1y} Q${c1.x} ${c1.y} ${mdx} ${mdy} M ${mdx} ${mdy}Q${c2.x} ${c2.y} ${p2x} ${p2y}` ;
 }
 class FlowerContainer extends React.Component {
     constructor(props) {
@@ -44,18 +47,17 @@ class FlowerContainer extends React.Component {
         let { next, current } = this.props;
         if (prevProps.next !== next || prevProps.current !== current) {
             this.setState({
-                endpoints: getEndpoints(next)
+                endpoints: getEndpoints(next, current)
             })
         }
     }
 
     render() {
-        // let { leaves, current, _showUpLine, _selected, _nextSelected, _hovered, titles, positions, _ratio, step } = this.props;
-        let { step, leaves, current,  _selected, _nextSelected, _hovered, positions, cb } = this.props;
+        let { width, step, leaves, current,  _selected, _nextSelected, _hovered, positions, cb } = this.props;
         let { endpoints } = this.state;
 
         return (
-            <svg width="80%" height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH }`}
+            <svg width={width} height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH }`}
                 xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <filter id="dropshadow" x="-1" y="-1" width="200" height="200">
@@ -76,22 +78,16 @@ class FlowerContainer extends React.Component {
                         />
                     ))
                 }
-                {/* {
+                {
                     endpoints.map((point, i) => {
-                        let x1 = (BOX_WIDTH * (2 * _selected + 1) + point) * 2 / 7, 
-                            y1 = 360,
-                            x2 = (BOX_WIDTH * (2 * _selected + 1) + point) * 4 / 7, 
-                            y2 = 2 * BOX_WIDTH;
-                        let mid =( BOX_WIDTH*(2*_selected+1) + point)/2;
                         return (<path
                             key={'con-' + i}
-                            d={`M${BOX_WIDTH*(2*_selected+1)},360 L${point},${2*BOX_WIDTH}`}
-                            // d = {curvePath(BOX_WIDTH*(2*_selected+1), 360, point, 2*BOX_WIDTH )}
+                            // d = {curvePath(BOX_WIDTH*(2*_selected+1), 360, point, 2*BOX_WIDTH)}
                             strokeDasharray={_nextSelected === i ? 'none' : 8}
                             fill="transparent" stroke="black"
                         />)
                     })
-                } */}
+                }
             </svg>
         )
     }

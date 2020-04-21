@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import song from '../../assets/geojson/song.json';
 // import ming from '../../assets/geojson/ming_1391.json';
 import {debounce} from '../../util/tools';
-import Tooltip from '../tooltip/tooltip';
 import Tip from '../tooltip/Tip'
 import {deepClone} from '../../util/tools'
 

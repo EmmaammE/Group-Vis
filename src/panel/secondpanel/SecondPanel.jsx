@@ -20,9 +20,7 @@ class SecondPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // grids: [],
             grid: [],
-            // grid: [{"next":1,"size":1,"selected":0,"step":[1],"positions":[{"4921":[0.3788028680828691,0.39595518113357003,"李格非"],"15378":[-0.08791303998484105,-0.7056130209753252,"李清照"],"15379":[0.21487799020170562,0.03372699978657273,"赵明诚"],"43374":[0.06103582979269742,-0.02482997164673821,"张汝舟"],"48805":[0.1914571261916407,-0.41247609633418825,"韩玉父"],"50876":[-0.9724974576870214,0.2457022407247119,"端木采"],"50879":[0.21423668340295096,0.4675346673113978,"毛晋"]}],"data":[[{"weight":0.3333271240290353,"content":["李清照","著述关系类"],"ratio":0.428571},{"weight":0.3333275022326928,"content":["李清照","著述关系类","序跋文字"],"ratio":0.428571},{"weight":0.33334537373827194,"content":["李清照"],"ratio":1}]]},{"next":-1,"size":1,"selected":0,"step":[2],"positions":[{"15378":[-0.8864821086140969,-0.29092751011475426,"李清照"],"15379":[0.325868556039981,1.103276683967385,"赵明诚"],"43374":[0.9709706066935145,-0.6883076719656546,"张汝舟"],"48805":[-0.4103570541193981,-0.12404150188697668,"韩玉父"]}],"data":[[{"weight":0.07799514924550965,"content":["建炎","正德","天会"],"ratio":0.5},{"weight":0.16957263627791203,"content":["赵明诚"],"ratio":0.5},{"weight":0.24100332520108197,"content":["韩玉父"],"ratio":0.5},{"weight":0.2414857496108262,"content":["李清照"],"ratio":1},{"weight":0.2699431396646701,"content":["张汝舟"],"ratio":0.5}]]}],
             gridBack: {},
             // [第几层， 第几个，step]
             hoverIndex: [0, 0, 0],
@@ -133,8 +131,6 @@ class SecondPanel extends React.Component {
                         _grid.data.push(group[step][TOPICS])
                     }
 
-                    // grids[grid] = newGrid
-
                     this.setState({
                         // grids: newGrid,
                         grid: newGrid,
@@ -223,9 +219,9 @@ class SecondPanel extends React.Component {
     }
 
     render() {
-        let { grid, hoverIndex, showIndex } = this.state;
+        let { grid, hoverIndex } = this.state;
         let detail = grid[hoverIndex[0]], y = hoverIndex[1];
-        let _value = Math.max(...grid.map(g => g.size)) - 1;
+        let _value = Math.max(...grid.map(g => g.size));
 
         return (
             <div className="second-panel">
@@ -255,34 +251,18 @@ class SecondPanel extends React.Component {
                         </div>
                     }
                     <div className="flower-divider"></div>
-                    <div className="flower-overview"
-                    // style={{ 
-                    //     paddingLeft: 15 * _value +'%',
-                    //     marginRight: -8 * _value +'%' 
-                    // }}
-                    >
+                    <div className="flower-overview">
                         {
-                            // grids.map((grid, j) => {
-                            //     return (
-                            //         <div className="grids-content" key={'grids-'+j}>
-                            // {
                             grid.map((item, i) => {
                                 if (item) {
-                                    // console.log(item)
-                                    // let size = 80%current;
                                     return (
-                                        <div className="grid-line" key={'line-' + i}
-                                            style={{
-                                                // width:80/_value+'%',
-                                                // paddingLeft: (item.size-1)*25+'%'
-                                            }}
-                                        >
+                                        <div className="grid-line" key={'line-' + i}>
                                             <FlowerContainer
+                                                width = {100 * item.size /_value + '%'}
                                                 step={item.step}
                                                 leaves={item.data}
                                                 current={item.size}
                                                 next={item.next}
-                                                // _ratio={i === 0 ? 1 : item.size / grid[i - 1].size}
                                                 _selected={item && item.selected}
                                                 _nextSelected={grid[i + 1] && grid[i + 1].selected}
                                                 _hovered={i === hoverIndex[0] ? hoverIndex[1] : -1}
@@ -295,10 +275,6 @@ class SecondPanel extends React.Component {
                                     return null
                                 }
                             })
-                            // }
-                            //     </div>
-                            // )
-                            // })
                         }
                     </div>
                 </div>

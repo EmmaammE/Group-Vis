@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setVeenedStep } from '../../actions/data';
 import { DimensionFisheye } from '../dimension/DimensionFisheye';
