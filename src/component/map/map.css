@@ -12,3 +12,22 @@
 .geomap .container {
     padding: 10px;
 }
+
+.mapView-label-container{
+    position: absolute;
+    right:10px;
+    top:5px;
+    width: 50%;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+.mapView-label{
+    /* flex:1; */
+}
+
+.mapView-label-text{
+    transform: scale(0.75);
+    margin: 0;
+}

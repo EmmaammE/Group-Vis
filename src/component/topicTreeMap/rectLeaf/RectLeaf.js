@@ -40,7 +40,7 @@ class RectLeaf extends React.Component{
   }
 
   render(){
-    
+    console.log("rectLeaf",this.props)
     const data = this.props.data
     const width = this.props.width-margin.left-margin.right
     const height = this.props.height-margin.top-margin.bottom

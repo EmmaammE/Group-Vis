@@ -12,6 +12,8 @@ class SelectList extends React.Component{
   }
   render(){
     let data = this.props.selectListView.selectListData
+    data.sort((a,b)=>a.localeCompare(b))
+    
     return(
       <div className="chart-wrapper content-panel">
         <div className="title">Select List</div>

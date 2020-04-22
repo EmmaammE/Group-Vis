@@ -1,7 +1,7 @@
 .listItem-out{
   display: block;
   margin-top:4px;
-  margin-bottom: 5px;
+  padding-bottom: 5px;
   margin-left:4%;
   margin-right:4%;
   margin: black;
@@ -18,6 +18,7 @@
   /* height:25px; */
   font-size: 8px;
   white-space: pre-wrap;
+
   /* overflow-x: scroll; */
   /* overflow-y:hidden; */
   /* white-space: nowrap; */

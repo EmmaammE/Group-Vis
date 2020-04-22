@@ -3,6 +3,7 @@ import './map.css';
 import Map from './map';
 import { connect } from 'react-redux';
 import axios from 'axios';
+import mapLogal from '../../assets/icon/mapLogal.svg'
 // import {data} from '../../data/ming'
 class MapContainer extends React.Component {
     state = {
@@ -21,7 +22,7 @@ class MapContainer extends React.Component {
                     param.append("address_ids[]", _key);
                 }
     
-                console.log(data);
+                // console.log(data);
                 axios.post('/search_address_by_address_ids/', param)
                     .then(res => {
                         if(res.data.is_success) {
@@ -51,6 +52,18 @@ class MapContainer extends React.Component {
         return ( 
             <div className="chart-wrapper geomap ">
                 <div className="title">Map View</div>
+                <div className = "mapView-label-container">
+                    <div className="mapView-label">
+                        <svg width="36px" height="18px">
+                            <image
+                                width="100%" 
+                                height="100%" 
+                                xlinkHref={mapLogal}
+                            />
+                        </svg>
+                    </div>
+                    <p className="mapView-label mapView-label-text">#Descriptions</p>
+                </div>
                 <div className="container"><Map addr={addr} pos2sentence={data && data["pos2sentence"]} sentence2pos={data && data["sentence2pos"]} /></div>
             </div>
         )

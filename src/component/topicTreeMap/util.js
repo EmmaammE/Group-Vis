@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
 // import * as WordCloudGenerator from './wordCloud';
-// import louvain from 'louvain'
+// import louvain from 'louvain' 
 
 export function maxItem(data,that){
     let itemSets = []
@@ -327,6 +327,7 @@ export function rectTree2(width,height,topicData){
 export function rectTree(width,height,topicData){
     // console.log(topicData)
 
+    // all_topics是数组
     let all_topics = topicData.map(elm => elm.id)
 
     let topic2index = {}, topic2data = {}
@@ -354,6 +355,7 @@ export function rectTree(width,height,topicData){
     // 先画pmi大的，pmi一样画weight大的
     let edge_data = Object.values(hash_id2rel_data)
     edge_data.sort((a,b)=> b.weight - a.weight)
+    // 取前1/4
     edge_data = edge_data.slice(0, Math.ceil(edge_data.length/4))
 
     let louvain = require('louvain');
@@ -363,6 +365,7 @@ export function rectTree(width,height,topicData){
                     .edges(edge_data)
                     // .partition_init(init_part);
     let topic2group  = community();
+    // console.log("topic2group",topic2group)
     // console.log(result, edge_data.map(elm=> elm.weight))
 
     // const getMaxWeight = elm => Math.max(...elm.t)
@@ -370,9 +373,13 @@ export function rectTree(width,height,topicData){
     // let imp_all_relation_data = all_relation_data.slice(0, Math.ceil(all_relation_data.length/5))
     // console.log(all_relation_data)
 
+    // topic2group是从topic到group的映射
     let groups = new Set(Object.values(topic2group))
+
+    // 变成数组
     groups = [...groups]
 
+    console.log("groups",groups)
     const data = {
         name:"root",
         children: groups.map(group=>{

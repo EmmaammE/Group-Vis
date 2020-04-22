@@ -27,10 +27,10 @@ export function stepCurrentStyle(lastStyle,currentStyle,propStyle,timeRatio){
   for( let v in propStyle){
     if(typeof propStyle[v] === "number"){
       let numScale = d3.scaleLinear()
-      .domain([lastStyle[v],propStyle[v]])
+      .domain([0, 1])
       // 下面代表是时间
-      .range([0, 1]);
-      styleDelta[v] = numScale[tRatio]-currentStyle[v]
+      .range([lastStyle[v],propStyle[v]]);
+      styleDelta[v] = numScale(tRatio)-currentStyle[v]
     }
   }
   return styleDelta

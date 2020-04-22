@@ -40,6 +40,7 @@ import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
 import Tip from '../tooltip/Tip'
 import leaf from '../../assets/leaf/leaf.svg'
 import {TOPICS} from '../../util/name.js'
+import Motion from '../motion/Motion'
 
 
 const btnData = [
@@ -574,6 +575,7 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleFilter)
     handleClick.push(this.handleDeleteTopic)
 
+    console.log("rectTreeData",rectTreeData)
     return (
       <div className="chart-wrapper">
         
@@ -653,27 +655,47 @@ class TopicTreeMap extends React.Component{
             preserveAspectRatio="xMinYMin"
             className = "topicTreeMap-svg"
             // onMouseMove = {this.handleSliderMouseMove}
-            // onMouseUp = {this.handleSliderMouseUp}
+            // onMouseUp = {this.handleSliderMouseUp} 
           >
             {/* 绘制矩阵子集 */}
             {
               rectTreeData.length>0&&rectTreeData.map((v,i)=>(
-                <g 
-                  onMouseOver={this.handleMouseenter}
-                  onMouseOut = {this.handleMouseout}
-                  onClick = {this.handleRectLeafClick}
-                  key={`rectLeaf-${i}`} 
-                  transform={`translate(${v.x0},${v.y0})`}
-                >   
-                  <RectLeaf
-                    index ={i}
-                    parentPos ={[v.x0,v.y0]}
-                    width = {v.x1-v.x0}
-                    height = {v.y1-v.y0}
-                    data = {topicData[i]}
+                // <RectLeaf
+                //   index ={i}
+                //   parentPos ={[v.x0,v.y0]}
+                //   width = {v.x1-v.x0}
+                //   height = {v.y1-v.y0}
+                //   data = {topicData[i]}
+                // >
+                // </RectLeaf>
+                <Motion 
+                  duration={2000} 
+                  style={{
+                      width:v.x1-v.x0,
+                      height:v.y1-v.y0,
+                      parentX:v.x0,
+                      parentY:v.y0
+                  }}
+                >
+                {({width,height,parentX,parentY}) =>
+                  <g 
+                    onMouseOver={this.handleMouseenter}
+                    onMouseOut = {this.handleMouseout}
+                    onClick = {this.handleRectLeafClick}
+                    key={`rectLeaf-${i}`} 
+                    transform={`translate(${parentX},${parentY})`}
                   >
-                  </RectLeaf>
-                </g>
+                    <RectLeaf
+                      index ={i}
+                      parentPos ={[parentX,parentY]}
+                      width = {width}
+                      height = {height}
+                      data = {topicData[i]}
+                    >
+                    </RectLeaf>
+                    
+                  </g>}
+                </Motion>  
               ))
             }
             {/* 绘制topic组的矩阵 */}
@@ -693,7 +715,7 @@ class TopicTreeMap extends React.Component{
             }
             {/* 绘制选中topic的框 */}
             {
-              rectTreeData.length>0&&<g transform={`translate(${selectedRect.x0},${selectedRect.y0})`}>
+              null&&rectTreeData.length>0&&<g transform={`translate(${selectedRect.x0},${selectedRect.y0})`}>
                 <rect
                   stroke="#333333"
                   strokeWidth = "2.5"
