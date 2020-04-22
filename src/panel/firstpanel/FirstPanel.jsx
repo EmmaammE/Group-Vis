@@ -37,7 +37,12 @@ class FirstPanel extends React.Component {
                 // 性别直接传文字
                 { key: 'Gender', title: 'Gender', options: [{value:"男", label:'男'}, {value:"女",label:'女'}]},
             ],
-            clickStatus: {'Gender':[false,false], 'Person':[false]},
+            clickStatus: { 'Gender':[false,false], 'Person':[false],
+                    "Dynasty":[],"Addr":[],"PostType" :[],
+                    "post_address":[],"Office":[],
+                    "OfficeType":[],"Entry": [],
+                    "EntryType":[],"Status":[]
+            },
             timeRange: [0, 0],
             _tabPanel: 0,
             cyphers: [],
@@ -292,6 +297,7 @@ class FirstPanel extends React.Component {
     addAnother(step) {
         if(step > 1) {
             sessionStorage.setItem('another', step);
+            console.info('setAnother', step)
         }
     }
     onClickSearch() {
@@ -320,7 +326,7 @@ class FirstPanel extends React.Component {
         switch (_tabPanel) {
             case 0:
                 this.tool_appendParam(input[0], param, 1);
-                fetchTopicData(param, KEY, step+1, groups+1);
+                fetchTopicData(param, KEY, step+1);
 
                 setOtherStep(6)
                 setOtherStep(9)
@@ -346,7 +352,7 @@ class FirstPanel extends React.Component {
                                     param.append("person_ids[]", _key);
                                     arr.push(_key)
                                 }
-                                fetchTopicData(param, KEY, step+1, groups+1);
+                                fetchTopicData(param, KEY, step+1);
                                 for (let i = 6; i <= 10; i++) {
                                     setOtherStep(i)
                                 }
@@ -378,7 +384,7 @@ class FirstPanel extends React.Component {
                         }
                     })
                 }).then(() => {
-                    fetchTopicData(_p, KEY, step+1, groups+1);
+                    fetchTopicData(_p, KEY, step+1);
                     setOtherStep(6);
                     setOtherStep(9);
                 })
@@ -595,7 +601,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchTopicData: (param, key, step, groupIndex) => dispatch(fetchTopicData(param, key, step, 0, groupIndex)),
+        fetchTopicData: (param, key, step) => dispatch(fetchTopicData(param, key, step, 0)),
         setOtherStep: (key, step = 1)=> dispatch(setOtherStep(key, step))
     };
 };

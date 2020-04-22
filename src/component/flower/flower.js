@@ -71,6 +71,7 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ty
         [dispatch]
     )
     const topics = useSelector(state => state.group['flower']);
+    // const topics = ["李清照-著述关系类","李清照-著述关系类-序跋文字","李清照","著述关系类-序跋文字","建炎-正德-天会","赵明诚","韩玉父","张汝舟","著述关系类"]
 
     const data = useMemo(
         () => getArr(leaves, topics),
