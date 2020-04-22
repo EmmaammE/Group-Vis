@@ -1,9 +1,16 @@
 import React, { useState, useRef } from 'react';
 import './selectedPanel.css';
+import { List } from 'react-virtualized';
 
 function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 	const [expanded, setExpanded] = useState(false);
 	const [value, setValue] = useState("");
+	const [_debounceTimeout, setDebounceTimeout] = useState(null);
+	const $list = useRef(null);
+	const [actual, setActual] = useState(options.map((e,i) => {
+		e['index'] = i;
+		return e;
+	}));
 
 	const $input = useRef(null);
 	function activePanel() {
@@ -12,7 +19,19 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 	}
 
 	function onChange(e) {
-		setValue(e.target.value.trim())
+		let _input = e.target.value.trim();
+		setValue(_input)
+		if (_debounceTimeout) {
+			clearTimeout(_debounceTimeout);
+		}
+		setDebounceTimeout(
+			setTimeout(
+				() => {	
+					setActual(
+						options.filter(option => option['label'].indexOf(_input)!==-1)
+					) 
+			}, 300)
+		) 
 	}
 
 	function clickEvent(event, i) {
@@ -25,11 +44,39 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 		setExpanded(!expanded)
 	}
 
+	function clickAction(index) {
+		setClicked(index);
+		setValue("");
+		setActual(options)
+	}
+	
+
+	function _renderRow({index, key, style}) {
+		// if(isScrolling) {
+		// 	return <div key = {key}  className={"dropdown__list-item"}></div>
+		// }
+
+		let option  = actual[index]
+			
+		return (
+			<div
+				key = {key}
+				value={option['label']}
+				className={"dropdown__list-item"}
+				style={style}
+				onClick={() => clickAction(option['index'])}
+			>
+				<input type="checkbox" checked={clicked[option['index']]} readOnly />
+				{index === 0 && option['value'] === 'all' ? 'Selected all  ' : option['label']}
+			</div>
+		)
+	}
+
 	return (
 		<div className="selected-panel">
 			<div className="divider"><p>{title}</p></div>
-			<ul className="dropdown">
-				<li className="dropdown__container">
+			<div className="dropdown">
+				<div className="dropdown__container">
 					<div
 						role="button"
 						aria-labelledby="dropdown-label"
@@ -65,36 +112,26 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 							<path d="M10 0L5 5 0 0z"></path>
 						</svg>
 					</div>
-				</li>
-				<li role="list" className="dropdown__list-container">
-					<ul className={expanded ? "dropdown__list open" : "dropdown__list"}
-						onMouseMove={() => setExpanded(true)}
-						// onMouseOut={() => setExpanded(false)}
-					>
-						{
-							options.map((option, index) => {
-								if (value.length === 0 || option['label'].indexOf(value) !== -1 || index === 0) {
-									return (
-										<li
-											key={`option-${index}`} value={option['label']}
-											className={"dropdown__list-item"}
-											onClick={() => {
-												setClicked(index);
-												setValue("")
-											}}
-										>
-											<input type="checkbox" checked={clicked[index]} readOnly />
-											{index === 0 && option[0] === 'all' ? 'Selected all  ' : option['label']}
-										</li>
-									)
-								} else {
-									return null
-								}
-							})
-						}
-					</ul>
-				</li>
-			</ul>
+				</div>
+				<div role="list" className="dropdown__list-container">
+					{
+						expanded && 
+						<div className="dropdown__list open">
+							<List
+								width={215}
+								height={136}
+								ref={$list}
+								rowHeight={30}
+								rowRenderer={_renderRow}
+								rowCount={actual.length}
+								// overscanRowCount={100}
+								// scrollToAlignment="start"
+								// onRowsRendered={onRowsRendered}
+							/>
+						</div>
+					}
+				</div>
+			</div>
 		</div>
 	);
 }

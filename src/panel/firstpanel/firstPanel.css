@@ -173,24 +173,6 @@
 .panel-content ::-webkit-scrollbar {
     height: 5px;
 }
- 
-.switch-panel::-webkit-scrollbar-track,
-.panel-content ::-webkit-scrollbar-track {
-    background-color: #fbfbfb;
-    border-radius: 5px;
-    border: 1px solid #aaaaaa;
-}
-
-.switch-panel::-webkit-scrollbar,
-.panel-content ::-webkit-scrollbar {
-  width: 4px;
-}
-
-.switch-panel::-webkit-scrollbar-thumb,
-.panel-content ::-webkit-scrollbar-thumb {
-    border-radius: 5px;
-    background: #919191; 
-}
     
 /* for axis of blobs */
 .custome-axis .domain {

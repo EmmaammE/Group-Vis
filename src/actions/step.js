@@ -300,26 +300,30 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
  */
 export function fetchTopicData(param, KEY, step, type) {
 
-    let people = param.getAll('person_ids[]');
-    if(people.length > 200) {
-        // 使用socket通信
+    try {
+        let people = param.getAll('person_ids[]');
+        if(people.length > 200) {
+            // 使用socket通信
+            return dispatch => {
+                fetchBySocket(dispatch, people, KEY, step, type)
+            }
+        }
+        // 加上其他参数
+        param.append('populate_ratio', p_populate_ratio);
+        param.append('max_topic', p_max_topic);
+        param.append('min_sentence', p_min_sentence);
+    
         return dispatch => {
-            fetchBySocket(dispatch, people, KEY, step, type)
-        }
+            axios.post('/search_topics_by_person_ids/', param)
+                .then(res => {
+                    // console.log(res)
+                    handleTopicRes(dispatch, res, KEY, step, type)
+                })
+                .catch(err => console.error(err))
+            }
+    } catch(err) {
+        console.error(err)
     }
-    // 加上其他参数
-    param.append('populate_ratio', p_populate_ratio);
-    param.append('max_topic', p_max_topic);
-    param.append('min_sentence', p_min_sentence);
-
-    return dispatch => {
-        axios.post('/search_topics_by_person_ids/', param)
-            .then(res => {
-                // console.log(res)
-                handleTopicRes(dispatch, res, KEY, step, type)
-            })
-            .catch(err => console.error(err))
-        }
 }
 
 /*

@@ -52,8 +52,8 @@ class Tip extends React.Component{
         </div>
         <div className="tooltip-content"> 
           {
-            data.length==1?<div>{data[0]}</div>
-            :data.map((v,i)=>(
+            data && data.length===1?<div>{data[0]}</div>
+            :data && data.map((v,i)=>(
               <ListItem 
                 data={v}
                 key={`ListItem${i}`}

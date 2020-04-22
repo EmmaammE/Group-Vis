@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import song from '../../assets/geojson/song.json';
 // import ming from '../../assets/geojson/ming_1391.json';
 import {debounce} from '../../util/tools';
-import Tooltip from '../tooltip/tooltip';
 import Tip from '../tooltip/Tip'
 import {deepClone} from '../../util/tools'
 
@@ -343,59 +342,28 @@ class Map extends React.Component {
 export default Map;
 
 function figureDrawData(addr,pos2sentence,rangeScale,projection,sentence2pos){
-  if(!addr){
-    return []
-  }
-  let resultData = []
-  Object.entries(addr).map((data, i) => {
-    let _r;
-    if(pos2sentence[data[0]]) {
-      _r = rangeScale( pos2sentence[data[0]].length )
-    } else {
-      _r  = 5;
+  let resultData = [];
+  addr && Object.entries(addr).forEach((data, i) => {
+    let result = {
+      r: 5,
+      sentence: [],
+      title: '',
+      xy: [null, null],
+      isChoose: false
     }
-    if(data[1]) {
-      let d = data[1]
-      resultData.push({
-        r:_r,
-        sentence:pos2sentence[data[0]].map( d => sentence2pos[d['sentence']]["words"]),
-        title:d['address_name'],
-        xy:projection([d['x_coord'], d['y_coord']]),
-        isChoose:false
-      })
+    if(pos2sentence[data[0]]) {
+      result["r"] = rangeScale( pos2sentence[data[0]].length );
+      result["sentence"] = pos2sentence[data[0]].map( d => sentence2pos[d['sentence']]["words"]);
     } 
+
+    if(data[1]) {
+      result["title"] = data[1]['address_name'];
+      result['xy'] = projection([data[1]['x_coord'], data[1]['y_coord']]);
+      result["isChoose"] = false
+    }
+
+    resultData.push(result)
   })
-  return resultData
+
+  return resultData;
 }
-
-
-{/* <g>
-  {
-    addr && 
-    Object.entries(addr).map((data, i) => {
-      let _r;
-      if(pos2sentence[data[0]]) {
-        _r = rangeScale( pos2sentence[data[0]].length )
-      } else {
-        _r  = 5;
-      }
-      if(data[1]) {
-        let d = data[1]
-        return (
-          <circle key={'cir-'+i} 
-            r={_r}
-            fill='#a2a4bf' fillOpacity={0.5} stroke='#898989'
-            onMouseOver = {e => this.showTooltip({
-              'sentence': pos2sentence[data[0]].map( d => sentence2pos[d['sentence']]["words"]),
-              'title': d['address_name']
-            }, [e.nativeEvent.clientX, e.nativeEvent.clientY])}
-            // projection(e, d['y_coord']]))}
-            onMouseOut = { () => this.setState({tooltip:{show: false}})}
-            transform={`translate(${projection([d['x_coord'], d['y_coord']])})`} />
-        )
-      } else {
-        return null
-      }
-    })
-  }
-</g> */}

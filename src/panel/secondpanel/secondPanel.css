@@ -96,6 +96,7 @@
     align-items: center;
     transition: height 200ms ease-in-out, 
         padding-left 300ms ease-in-out 200ms;
+    width: 100%;
 }
 
 /* 滚动条 */

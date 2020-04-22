@@ -138,7 +138,7 @@
 .dimension-btn-container {
   display: flex;
   justify-content: space-between;
-  /* margin-left: 5px; */
+  width: 120px;
   align-items: flex-end;
   margin: 8px;
 }
@@ -149,7 +149,7 @@
 }
 
 .dimension-btn-container .circle-btn img {
-  width: 30px;
+  width: 25px;
 }
 
 .third-footer circle {

@@ -50,3 +50,18 @@
   text-align:center;
   line-height:15.6px;
 }
+
+/* 滚动条 */
+div::-webkit-scrollbar-track {
+  border: 1px solid #d3d3d3;
+  background-color: #F5F5F5;
+}
+
+div::-webkit-scrollbar {
+  width: 4px;
+  background-color: #F5F5F5;
+}
+
+div::-webkit-scrollbar-thumb {
+  background-color: #d3d3d3;  
+}

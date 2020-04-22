@@ -86,6 +86,8 @@
 
 .dropdown__list-container {
   position: relative;
+  max-height: 136px;
+  overflow: auto;
 }
 
 .dropdown ul {
@@ -201,7 +203,7 @@
 .selected-panel .open {
   opacity: 1;
   overflow: auto;
-  max-height: 18vh;
+  max-height: 100%;
   z-index: 2;
   position: relative;
 }
@@ -243,21 +245,6 @@
   border: 1px solid #f77683;
 }
 /* ---end---: control panel的checkbox */
-
-/* 滚动条 */
-.dropdown__list::-webkit-scrollbar-track {
-  border: 1px solid #d3d3d3;
-  background-color: #F5F5F5;
-}
-
-.dropdown__list::-webkit-scrollbar {
-  width: 4px;
-  background-color: #F5F5F5;
-}
-
-.dropdown__list::-webkit-scrollbar-thumb {
-  background-color: #d3d3d3;  
-}
 
 /* for date Panel */
 .date-panel .dropdown__selected {
@@ -321,4 +308,8 @@
 .svg-badge {
   width: 17%;
   height: 4vh;
+}
+
+.ReactVirtualized__Grid__innerScrollContainer {
+  height: 100%;
 }

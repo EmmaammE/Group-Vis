@@ -130,9 +130,8 @@ class Blobs extends React.Component {
       for(let id of people.values()) {
         param.append('person_ids[]', id);
       }
-      // TODO groupIndex
       console.log(param)
-      fetchTopicData(param, KEY, step, 1);
+      fetchTopicData(param, KEY, step);
     } else {
       console.log(setArr)
     }
@@ -216,7 +215,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-      fetchTopicData: (param, key, step, groupIndex) => dispatch(fetchTopicData(param, key, step+1, 1, groupIndex)),
+      fetchTopicData: (param, key, step) => dispatch(fetchTopicData(param, key, step+1, 1)),
   };
 };
 
