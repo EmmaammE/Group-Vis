@@ -1,5 +1,6 @@
-import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER } from "../actions/types";
+import {SET_STEP, ADD_STEP, SET_GROUP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER, REMOVE_FLOWER } from "../actions/types";
 import {deepClone} from '../util/tools'
+import { TOPICS } from "../util/name";
 export function step(state=0, action) {
     switch (action.type) {
         case SET_STEP:
@@ -44,15 +45,58 @@ export function group(state={}, action) {
             }
         case SET_FLOWER:
             let newTopics = action.data,
-                oldTopics = new Set(state['flower'])
+                oldTopics = {...state['flower']}
             
             newTopics.forEach(e => {
-                oldTopics.add(e)
+                if(oldTopics[e] === undefined) {
+                    oldTopics[e] = 0;
+                }
+                oldTopics[e]++
             })
             
             return Object.assign({}, state, {
-                'flower': Array.from(oldTopics)
+                'flower': oldTopics
             })
+
+        // 清除一个主题
+        case REMOVE_FLOWER:
+            let {topicId, _step } = action.data;
+            let newData = state[_step];
+            let newFlower = state['flower']
+            let temp = {
+                weight: 1,
+                content: ''
+            };
+            newData[TOPICS].filter(function(item) {
+                if(item['id'] === topicId) {
+                    this.weight -= item['weight']
+                    if(item['content'].length === 1) {
+                        this.content = item['content'][0];
+                    } else {
+                        this.content = item['content'].join('-')
+                    }
+                    return true;
+                }
+                return false;
+
+            }, temp);
+
+            console.log(temp)
+            newData[TOPICS].forEach(e => e['weight'] = e['weight']/temp['weight'])
+
+            if(newFlower[temp['content']] === 1) {
+                delete newFlower[temp['content']]
+            } else {
+                newFlower[temp['content']] -= 1
+            }
+
+            sessionStorage.setItem("removeTopic", _step)
+
+            return Object.assign({}, state, {
+                'flower': newFlower,
+                [_step]: newData
+            })
+
         default:
             return state;
     }

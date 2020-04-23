@@ -39,14 +39,12 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
     const $container = useRef(null);
     // 当前视图使用lasso选中的人
     const [_people, _setPeople] = useState([]);
-    // const [_selected, _setSelected] = useState({});
     const dispatch = useDispatch();
     const KEY = useSelector(state => state.KEY)
     const fetchTopic = useCallback(
       (param, step) => dispatch(fetchTopicData(param, KEY, step+1, 1)),
       [dispatch, KEY]
     )
-    // const (btnStatus, setBtnS) = useState([false, false, false, false])
     const setSelectList = useCallback(
         (data = [] ) => dispatch(updateSelectList({selectListData: data})),[dispatch]
     )
@@ -69,25 +67,7 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                 _lasso.items()
                     .attr("fill", '#e9dac9')
             })
-            .on("draw", () => {
-
-                // Style the possible dots
-                _lasso.possibleItems()
-                    .classed("not_possible", false)
-                    .classed("possible", true);
-
-                // Style the not possible dot
-                _lasso.notPossibleItems()
-                    .classed("not_possible", true)
-                    .classed("possible", false);
-            })
             .on("end", () => {
-                // Reset the color of all dots
-                _lasso.items()
-                    .attr('fill', "#e9dac9")
-                    .classed("not_possible", false)
-                    .classed("possible", false);
-
                 // Style the selected dots
                 _lasso.selectedItems()
                     .each(function() {
@@ -111,35 +91,28 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
     }, [ _people, showName, data, setSelectList])
 
     useEffect(() => {
-        // _setSelected({});
         _setPeople([]);
-    }, [data])
-
-    useEffect(() => {
-        _setPeople([])
-    }, [selectedPeople])
-
-    function classCreator(person_id) {
-        // if(_selected[person_id]) {
-        //     return "been_selected"
-        // }
-        if(selectedPeople[person_id]) {
-            return 'topic-selected'
-        }
-    }
+    }, [data, selectedPeople])
 
     function toFetch() {
         let param = new FormData();
-        let _temp  = {};
-        _people.forEach(_key => {
-            param.append('person_ids[]', _key);
-            _temp[_key] = true
-        })
-        fetchTopic(param, _step);
 
-        // 之前选中的人
-        // _setSelected({..._selected, ..._temp});
+        if( Object.keys(selectedPeople).length !== 0) {
+            Object.keys(selectedPeople).forEach(id => {
+                param.append('person_ids[]', id);
+            })
+        } else {
+            _people.forEach(_key => {
+                param.append('person_ids[]', _key);
+            })
+        }
+        fetchTopic(param, _step);
+       
         _setPeople([]);
+        d3.select($container.current).selectAll('circle')
+            .each(function() {
+                this.classList.remove("selected");
+            })
     }
 
     async function fetchSimiliarPerson() {
@@ -173,7 +146,7 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                     param.append('person_ids[]', _key);
                     similiarParam.append('person_ids[]', _key);
                     flag++
-                    if(flag === 10) {
+                    if(flag === 20) {
                         break;
                     }
                 }
@@ -203,10 +176,18 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
 
     function clear() {
         _setPeople([])
+        
         d3.select($container.current).selectAll('circle')
             .each(function() {
                 this.classList.remove("selected");
+                this.classList.remove("topic-selected")
             })
+    }
+
+    function classCreator(person_id) {
+        if(selectedPeople[person_id]) {
+            return 'topic-selected'
+        }
     }
 
     function people() {
@@ -238,8 +219,8 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
             </g>
             <foreignObject x="-80" y="-3px" width="220px" height="50" >
                 <div className="dimension-btn-container">
-                    <CircleBtn type={4} onClick={clear}></CircleBtn>
-                    <CircleBtn type={5} onClick={clear}></CircleBtn>
+                    <CircleBtn type={4}></CircleBtn>
+                    <CircleBtn type={5}></CircleBtn>
                     <CircleBtn type={6} onClick={clear} active={true}></CircleBtn>
                     <CircleBtn type={9} onClick={toFetch} active={true}></CircleBtn>
                     <CircleBtn type={10} onClick={fetchSimiliarPerson} active={true}></CircleBtn>
