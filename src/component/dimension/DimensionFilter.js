@@ -13,6 +13,8 @@ import { DimensionCircles } from './Dimensions';
 const d3 = Object.assign(d3Base, { lasso });
 
 const getPeopleStatus = (people) => {
+
+
     if(people === undefined) {
         return undefined
     }
@@ -32,13 +34,12 @@ const getPeopleStatus = (people) => {
     return peopleStatus;
 }
 
-export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, selectedPeople = [], data = {}}) {
+export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, selectedPeople = {}, data = {}}) {
 
     const $container = useRef(null);
-    // 选中的人
+    // 当前视图使用lasso选中的人
     const [_people, _setPeople] = useState([]);
-    // 已选中的人
-    const [_selected, _setSelected] = useState({});
+    // const [_selected, _setSelected] = useState({});
     const dispatch = useDispatch();
     const KEY = useSelector(state => state.KEY)
     const fetchTopic = useCallback(
@@ -110,18 +111,22 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
     }, [ _people, showName, data, setSelectList])
 
     useEffect(() => {
-        _setSelected({});
+        // _setSelected({});
         _setPeople([]);
     }, [data])
 
-    // function classCreator(person_id) {
-    //     if(_selected[person_id]) {
-    //         return "been_selected"
-    //     }
-    //     if(selectedPeople[person_id]) {
-    //         return 'topic-selected'
-    //     }
-    // }
+    useEffect(() => {
+        _setPeople([])
+    }, [selectedPeople])
+
+    function classCreator(person_id) {
+        // if(_selected[person_id]) {
+        //     return "been_selected"
+        // }
+        if(selectedPeople[person_id]) {
+            return 'topic-selected'
+        }
+    }
 
     function toFetch() {
         let param = new FormData();
@@ -133,7 +138,7 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
         fetchTopic(param, _step);
 
         // 之前选中的人
-        _setSelected({..._selected, ..._temp});
+        // _setSelected({..._selected, ..._temp});
         _setPeople([]);
     }
 
@@ -225,8 +230,11 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                 <DimensionCircles 
                     _margin={_margin} _width={_width} _height={_height} 
                     data={data} status = {peopleStatus}
+                    classCreator={classCreator} 
                 />
-                <rect width="100%" height="100%" fill="transparent"></rect>
+                <rect 
+                    style = {{ cursor: 'pointer'}}
+                    width="100%" height="100%" fill="transparent"></rect>
             </g>
             <foreignObject x="-80" y="-3px" width="220px" height="50" >
                 <div className="dimension-btn-container">

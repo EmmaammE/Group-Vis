@@ -2,20 +2,22 @@ import React from 'react';
 import * as d3 from 'd3';
 import song from '../../assets/geojson/song.json';
 // import ming from '../../assets/geojson/ming_1391.json';
-import {debounce} from '../../util/tools';
+import { debounce } from '../../util/tools';
 import Tip from '../tooltip/Tip'
-import {deepClone} from '../../util/tools'
+import { deepClone } from '../../util/tools'
+import { setPerson } from '../../actions/data';
+import { connect } from 'react-redux';
 
 const BOX_WIDTH = 250;
 const BOX_HEIGHT = 170;
 
 
-let startLoc=[];
-let brushFlag=false;
+let startLoc = [];
+let brushFlag = false;
 let brushWidth;
 let brushHeight;
 let brushPersonsId;
-let svgWidth ,svgHeight;
+let svgWidth, svgHeight;
 let svgRatio
 let drawData
 let prevPropsData
@@ -25,14 +27,14 @@ class Map extends React.Component {
     super(props);
     this.state = {
       rScale: d3.scaleLinear()
-            .range([6,12]),
+        .range([6, 12]),
       tooltip: {
         show: false,
         data: {
           tipHasX: false,
           style: {
-            "left":1035,
-            "top":614,
+            "left": 1035,
+            "top": 614,
             "visibility": "visible"
           },
           title: '',
@@ -40,13 +42,13 @@ class Map extends React.Component {
         }
       },
       rangeScale: d3.scaleLinear()
-          .clamp(true),
+        .clamp(true),
       $d: '',
-      brushVisibility:"hidden",
-      brushTransX:0,
-      brushTransY:0,
-      brushWidth:0,
-      brushHeight:0,
+      brushVisibility: "hidden",
+      brushTransX: 0,
+      brushTransY: 0,
+      brushWidth: 0,
+      brushHeight: 0,
 
     };
     this.projection = d3.geoMercator()
@@ -55,7 +57,7 @@ class Map extends React.Component {
       .translate([BOX_WIDTH, BOX_HEIGHT]);
     this.path = d3.geoPath()
       .projection(this.projection);
-    
+
     this.$map = React.createRef();
     this.$container = React.createRef();
     this.$tooltip = React.createRef();
@@ -87,16 +89,16 @@ class Map extends React.Component {
     //           }))
     let container = this.$container.current
     // console.log("container",container.clientWidth,container.clientHeight)
-    svgWidth =  container.clientWidth
+    svgWidth = container.clientWidth
     svgHeight = container.clientHeight
-    svgRatio = svgWidth/(BOX_WIDTH*2)
+    svgRatio = svgWidth / (BOX_WIDTH * 2)
   }
 
   componentDidUpdate(prevProps) {
-    let {pos2sentence, sentence2pos} = this.props;
-    if(JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
-      let {rangeScale} = this.state;
-      rangeScale.domain(d3.extent(Object.values(pos2sentence).map(e=>e.length)))
+    let { pos2sentence, sentence2pos } = this.props;
+    if (JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
+      let { rangeScale } = this.state;
+      rangeScale.domain(d3.extent(Object.values(pos2sentence).map(e => e.length)))
         .range([5, sentence2pos.length % 20])
       this.setState({
         rangeScale
@@ -104,14 +106,14 @@ class Map extends React.Component {
     }
   }
 
-  handleClickX(){
+  handleClickX() {
     this.setState({
       tooltip: {
         show: false,
         data: {
           tipHasX: false,
           style: {
-            "left":0,
+            "left": 0,
             "top": 0,
             "visibility": "hidden"
           },
@@ -123,7 +125,7 @@ class Map extends React.Component {
   }
 
   showTooltip(e) {
-    if(!this.state.tooltip.show){
+    if (!this.state.tooltip.show) {
       let index = e.target.getAttribute("index")
       this.setState({
         tooltip: {
@@ -131,16 +133,16 @@ class Map extends React.Component {
           data: {
             tipHasX: false,
             style: {
-              "left":e.nativeEvent.clientX,
+              "left": e.nativeEvent.clientX,
               "top": e.nativeEvent.clientY,
               "visibility": "visible"
             },
             title: drawData[index].title,
-            data:  drawData[index].sentence
+            data: drawData[index].sentence
           }
         }
       })
-    } 
+    }
   }
 
   showTooltip2(e) {
@@ -151,19 +153,19 @@ class Map extends React.Component {
         data: {
           tipHasX: true,
           style: {
-            "left":e.nativeEvent.clientX,
+            "left": e.nativeEvent.clientX,
             "top": e.nativeEvent.clientY,
             "visibility": "visible"
           },
           title: drawData[index].title,
-          data:  drawData[index].sentence
+          data: drawData[index].sentence
         }
       }
     })
   }
 
   showPoints(sentenceid) {
-    let {sentence2pos, addr} = this.props;
+    let { sentence2pos, addr } = this.props;
     let points = [];
     sentence2pos[sentenceid]["pos"].forEach(pos => {
       points.push(this.projection(
@@ -173,7 +175,7 @@ class Map extends React.Component {
 
     let d = '';
     points.forEach((point, i) => {
-      if(i === 0) {
+      if (i === 0) {
         d += `M ${point[0]} ${point[1]} `
       } else {
         d += `L ${point[0]} ${point[1]} `
@@ -185,44 +187,44 @@ class Map extends React.Component {
   }
 
   // 下面三个函数为刷选框的监听函数
-  handleBrushMouseDown(v){
+  handleBrushMouseDown(v) {
     // console.log("getbox",v.nativeEvent.offsetX,v.nativeEvent.offsetY)
-    startLoc = [v.nativeEvent.offsetX/svgRatio,v.nativeEvent.offsetY/svgRatio]
-    brushFlag=true
+    startLoc = [v.nativeEvent.offsetX / svgRatio, v.nativeEvent.offsetY / svgRatio]
+    brushFlag = true
     this.setState({
-      brushTransX:startLoc[0],
-      brushTransY:startLoc[1],
-      brushVisibility:"visible"
+      brushTransX: startLoc[0],
+      brushTransY: startLoc[1],
+      brushVisibility: "visible"
     })
   }
-  handleBrushMouseMove(v){
-    if(brushFlag){
-      let nowX = v.nativeEvent.offsetX/svgRatio
-      let nowY = v.nativeEvent.offsetY/svgRatio
-      brushWidth = nowX-startLoc[0]
-      brushHeight = nowY-startLoc[1]
-      if(brushWidth<0){
-        nowX = startLoc[0]+brushWidth
-        brushWidth=Math.abs(brushWidth)
-      }else{
+  handleBrushMouseMove(v) {
+    if (brushFlag) {
+      let nowX = v.nativeEvent.offsetX / svgRatio
+      let nowY = v.nativeEvent.offsetY / svgRatio
+      brushWidth = nowX - startLoc[0]
+      brushHeight = nowY - startLoc[1]
+      if (brushWidth < 0) {
+        nowX = startLoc[0] + brushWidth
+        brushWidth = Math.abs(brushWidth)
+      } else {
         nowX = startLoc[0]
       }
-      if(brushHeight<0){
-        nowY = startLoc[1]+brushHeight
+      if (brushHeight < 0) {
+        nowY = startLoc[1] + brushHeight
         brushHeight = Math.abs(brushHeight)
-      }else{
+      } else {
         nowY = startLoc[1]
       }
       this.setState({
-        brushTransX:nowX,
-        brushTransY:nowY,
-        brushWidth:brushWidth,
-        brushHeight:brushHeight
+        brushTransX: nowX,
+        brushTransY: nowY,
+        brushWidth: brushWidth,
+        brushHeight: brushHeight
       })
     }
   }
-  handleBrushMouseUp(v){
-    let x1  = this.state.brushTransX
+  handleBrushMouseUp(v) {
+    let x1 = this.state.brushTransX
     let y1 = this.state.brushTransY
     let x2 = x1 + this.state.brushWidth
     let y2 = y1 + this.state.brushHeight
@@ -230,66 +232,81 @@ class Map extends React.Component {
     // console.log("x-----y",x1,y1,x2,y2)
     // console.log("drawData",drawData)
     let clearAll = true
-    drawData.forEach(d=>{
-      if(d.xy[0]>=x1&&d.xy[0]<=x2&&d.xy[1]>=y1&&d.xy[1]<=y2){
+    let people = {};
+
+    drawData.forEach(d => {
+      if (d.xy[0] >= x1 && d.xy[0] <= x2 && d.xy[1] >= y1 && d.xy[1] <= y2) {
         d.isChoose = true
         clearAll = false
       }
+
+      if(d.isChoose === true) {
+        d['people'] && d['people'].forEach(p => {
+          p.forEach(id => {
+            people[id] = true
+          })
+        })
+      }
     })
-    if(clearAll){
-      drawData.forEach(d=>{
+
+    if (clearAll) {
+      drawData.forEach(d => {
         d.isChoose = false
       })
+      people = {}
     }
-    brushFlag=false
+
+    // console.log(people)
+    this.props.setPerson(people)
+    brushFlag = false
     this.setState({
-      brushVisibility:"hidden",
-      brushTransX:0,
-      brushTransY:0,
-      brushWidth:0,
-      brushHeight:0
+      brushVisibility: "hidden",
+      brushTransX: 0,
+      brushTransY: 0,
+      brushWidth: 0,
+      brushHeight: 0
     })
   }
 
-  handleMouseOut(){
-    if(!this.state.tooltip.data.tipHasX){
-      this.setState({tooltip:{show: false}})
+  handleMouseOut() {
+    if (!this.state.tooltip.data.tipHasX) {
+      this.setState({ tooltip: { show: false } })
     }
-    
+
   }
 
   render() {
     let path = this.path,
-        projection = this.projection;
+      projection = this.projection;
 
-    let {addr, sentence2pos, pos2sentence} = this.props;
-    let {tooltip, rangeScale, $d} = this.state;
-    
+    let { addr, sentence2pos, pos2sentence } = this.props;
+    let { tooltip, rangeScale, $d } = this.state;
+
     // console.log("projection",projection,"addr",addr,"sentence2pos",sentence2pos,"pos2sentence",pos2sentence)
-    if(prevPropsData!=this.props){
+    if (prevPropsData != this.props) {
       prevPropsData = this.props
-      drawData = figureDrawData(addr,pos2sentence,rangeScale,projection,sentence2pos)
+      drawData = figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos)
     }
     return (
       <>
-       {tooltip.show && <Tip {...tooltip.data}  handleClickX ={this.handleClickX} /> }
+        {tooltip.show && <Tip {...tooltip.data} handleClickX={this.handleClickX} />}
 
-       <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
-          style={{position:'relative'}}
-          ref = {this.$container}
+        <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
+          style={{ position: 'relative' }}
+          ref={this.$container}
           onMouseDown={this.handleBrushMouseDown}
           onMouseMove={this.handleBrushMouseMove}
           onMouseUp={this.handleBrushMouseUp}
-          // preserveAspectRatio="xMinYMin"
-      >
-        <path d={$d} stroke="white" />
-        <g ref={this.$map}>
-          {song.features.map((d,i) => (
-              <path strokeWidth = "1"
-                stroke = {d.properties.H_SUP_PROV==="Song Dynasty"||d.properties.H_SUP_PROV===null?'#999':'#bbb'}
-                fill = {d.properties.H_SUP_PROV==="Song Dynasty"||d.properties.H_SUP_PROV===null?'#efefef':'#fff'}
+        // preserveAspectRatio="xMinYMin"
+        >
+          <path d={$d} stroke="white" />
+          <g ref={this.$map}>
+            {song.features.map((d, i) => (
+              <path strokeWidth="1"
+                stroke={d.properties.H_SUP_PROV === "Song Dynasty" || d.properties.H_SUP_PROV === null ? '#999' : '#bbb'}
+                fill={d.properties.H_SUP_PROV === "Song Dynasty" || d.properties.H_SUP_PROV === null ? '#efefef' : '#fff'}
                 d={path(d)}
-                key={'fea-'+i}
+                key={'fea-' + i}
               />
             ))}
             {/* {ming.features.map((d,i) => (
@@ -302,46 +319,54 @@ class Map extends React.Component {
             ))} */}
             <g>
               {
-                addr && 
+                addr &&
                 drawData.map((d, i) => (
-                  <circle key={'cir-'+i} 
+                  <circle key={'cir-' + i}
                     index={i}
                     r={d.r}
-                    fill={d.isChoose?"#c47d3a":'#a2a4bf'} fillOpacity={0.5} stroke='#898989'
-                    onMouseOver = {this.showTooltip}
-                    onMouseOut = {this.handleMouseOut}
-                    onClick = {this.showTooltip2}
+                    fill={'#a2a4bf'}
+                    stroke={d.isChoose ? '#898989' : ''}
+                    fillOpacity={0.5}
+                    onMouseOver={this.showTooltip}
+                    onMouseOut={this.handleMouseOut}
+                    onClick={this.showTooltip2}
                     transform={`translate(${d.xy})`} />
                 ))
               }
             </g>
-        </g>
-        {/* 绘制刷选框 */}
-        <g
-          transform = {`translate(${this.state.brushTransX},${this.state.brushTransY})`}
-          visibility={this.state.brushVisibility}
-        >
-          <rect
-            className="brush"
-            width={this.state.brushWidth}
-            height={this.state.brushHeight}
-            opacity="0.3"
-            strokeWidth="1.5"
-            stroke="black"
+          </g>
+          {/* 绘制刷选框 */}
+          <g
+            transform={`translate(${this.state.brushTransX},${this.state.brushTransY})`}
+            visibility={this.state.brushVisibility}
           >
-          </rect>
-        </g>
-        {/* <text x={80} y={200} fill="#999" fontSize="30px">Song</text> */}
-      </svg>
+            <rect
+              className="brush"
+              width={this.state.brushWidth}
+              height={this.state.brushHeight}
+              opacity="0.3"
+              strokeWidth="1.5"
+              stroke="black"
+            >
+            </rect>
+          </g>
+          {/* <text x={80} y={200} fill="#999" fontSize="30px">Song</text> */}
+        </svg>
       </>
 
     )
   }
 }
 
-export default Map;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setPerson: person => dispatch(setPerson(person))
+  }
+}
 
-function figureDrawData(addr,pos2sentence,rangeScale,projection,sentence2pos){
+export default connect(null, mapDispatchToProps)(Map);
+
+function figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos) {
   let resultData = [];
   addr && Object.entries(addr).forEach((data, i) => {
     let result = {
@@ -349,14 +374,16 @@ function figureDrawData(addr,pos2sentence,rangeScale,projection,sentence2pos){
       sentence: [],
       title: '',
       xy: [null, null],
-      isChoose: false
+      isChoose: false,
+      people: []
     }
-    if(pos2sentence[data[0]]) {
-      result["r"] = rangeScale( pos2sentence[data[0]].length );
-      result["sentence"] = pos2sentence[data[0]].map( d => sentence2pos[d['sentence']]["words"]);
-    } 
+    if (pos2sentence[data[0]]) {
+      result["r"] = rangeScale(pos2sentence[data[0]].length);
+      result["sentence"] = pos2sentence[data[0]].map(d => sentence2pos[d['sentence']]["words"]);
+      result["people"] = pos2sentence[data[0]].map(d => d["people"])
+    }
 
-    if(data[1]) {
+    if (data[1]) {
       result["title"] = data[1]['address_name'];
       result['xy'] = projection([data[1]['x_coord'], data[1]['y_coord']]);
       result["isChoose"] = false
