@@ -1,14 +1,8 @@
-import React, { useMemo, useRef, useEffect, useState, useCallback, } from 'react';
+import React, { useMemo, useState } from 'react';
 import * as d3Base from 'd3';
 import { lasso } from 'd3-lasso';
 import Tooltip from '../tooltip/tooltip';
 import './lasso.css';
-import { useDispatch, useSelector } from 'react-redux';
-import {fetchTopicData} from '../../actions/step';
-import axios from 'axios';
-import { updateSelectList } from '../../redux/selectList.redux';
-import CircleBtn from '../button/circlebtn';
-
 
 const d3 = Object.assign(d3Base, { lasso });
 
@@ -32,28 +26,9 @@ const color = (status) => {
         return ['#00bcd4', '#85a392'][status]
     }
 }
-const getPeopleStatus = (people) => {
-    if(people === undefined) {
-        return undefined
-    }
-    let peopleStatus = {};
-    people[0].forEach(id => {
-        peopleStatus[id] = 1;
-    })
-
-    people[1].forEach(id => {
-        if(peopleStatus[id] === 1) {
-            peopleStatus[id] = 3;
-        } else {
-            peopleStatus[id] = 2;
-        }
-    })
-
-    return peopleStatus;
-}
 
 // 返回降维图的点点
-export function DimensionCircles({_width, _height, data, _margin, status}) {
+export function DimensionCircles({_width, _height, data, _margin, status, classCreator = _class}) {
     const scales = useMemo(() => getScales(_width, _height, data), [_width, _height, data]);
     const [tooltip, setTooltip] = useState({ x: 0, y: 0, title: '' });
     const [show, setShow] = useState(false);
@@ -81,7 +56,7 @@ export function DimensionCircles({_width, _height, data, _margin, status}) {
                         let points = [scales.xScale(d[1][0]), scales.yScale(d[1][1])];
                         return (
                             <circle key={'cir-' + i} r={5}  
-                                // className={classCreator(person_id)}
+                                className={classCreator(person_id)}
                                 strokeWidth="1px"
                                 stroke="#e9dac9"
                                 opacity = {0.5}

@@ -25,10 +25,12 @@ class SecondPanel extends React.Component {
             gridBack: {},
             // [第几层， 第几个，step]
             hoverIndex: [0, 0, 0],
+            showIndex: [0, 0],
             // step: [第几层，第几个]
             step2index: { 1: [0, 0] },
         }
         this.clickFlower = this.clickFlower.bind(this);
+        this._hoverFlower = this._hoverFlower.bind(this);
         this.toCompare = this.toCompare.bind(this);
     }
 
@@ -177,6 +179,7 @@ class SecondPanel extends React.Component {
             grid,
             lastHoverIndex: step,
             hoverIndex: [...thisIndex, step],
+            showIndex: thisIndex
         })
 
         this.updateViews(step);
@@ -217,9 +220,17 @@ class SecondPanel extends React.Component {
         }
     }
 
+    _hoverFlower(step) {
+        let { step2index } = this.state;
+
+        this.setState({
+            showIndex: step2index[step]
+        })
+    }
+
     render() {
-        let { grid, hoverIndex } = this.state;
-        let detail = grid[hoverIndex[0]], y = hoverIndex[1];
+        let { grid, hoverIndex, showIndex} = this.state;
+        let detail = grid[showIndex[0]], y = showIndex[1];
         let _value = Math.max(...grid.map(g => g.size));
 
         return (
@@ -267,6 +278,7 @@ class SecondPanel extends React.Component {
                                                 _hovered={i === hoverIndex[0] ? hoverIndex[1] : -1}
                                                 positions={item.positions}
                                                 cb={this.clickFlower}
+                                                hovercb = {this._hoverFlower}
                                             />
                                         </div>
                                     )

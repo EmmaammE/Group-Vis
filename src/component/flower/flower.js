@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 
 const BOX_WIDTH = 250;
 const RADIUS = 90;
-const OFFSET = 15;
+const OFFSET = -10;
 const OUTER_RADIUS = 90;
 const COLOR = "#eba3ad";
 
@@ -62,7 +62,7 @@ function getArr(leaves, topics) {
  *                    0: 展示文字； 1: 不展示
  */
 // function Flower({ number, current, marginWidth, titles, positions, _hovered, cb, step}) {
-function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, type = 1}) {
+function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, hovercb, type = 1}) {
     const $container = useRef(null);
     const [beenVenn, setVenn] = useState(false);
     const dispatch = useDispatch();
@@ -167,7 +167,11 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ty
                 </g>
             </g>
 
-            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} r={RADIUS} fill="transparent" onClick={cb} />
+            <circle cx={BOX_WIDTH} cy={BOX_WIDTH-OFFSET} 
+                style={{cursor:'pointer'}}
+                r={RADIUS} fill="transparent" 
+                onClick={cb} onMouseOver={hovercb} />
+
             <foreignObject x={-120 + type * 100} y={type * 60} width="200" height="200" >
                 <div className={["flower-number", beenVenn ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
                     <p className="g-text">{step}</p>

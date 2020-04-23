@@ -37,7 +37,7 @@ import { batch } from "react-redux";
 
 //查找topic的参数
 const p_populate_ratio = 0.3;
-const p_max_topic = 10;
+const p_max_topic = 15;
 const p_min_sentence = 5;
 
 export function setStep(step) {
@@ -517,40 +517,6 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 }
             }
             
-            // addressMap["addressNode"]记录的是地点的映射：地点ID到地点名称
-            // addressMap["addressType"]记录的是地点类型的映射
-            // 提取地点事件用到地图
-            let words = vKey.split(" ");
-            // 一句话中可能涉及多个地点，但是只有一个类型
-            let _pos = [] , _type;
-            words.forEach(word => {
-                if(word !== '-1') {
-                    if(word in addressMap["addressNode"]) {
-                        _pos.push(word);
-                    } 
-                    if(word in addressMap["addressType"]) {
-                        _type = word;
-                    }
-                }
-            })
-
-            _pos.forEach(pos => {
-                if(pos2sentence[pos] === undefined) {
-                    pos2sentence[pos] = [];
-                }
-                pos2sentence[pos].push({
-                    'sentence': sentence2pos.length, 
-                    'type':  temp[DICT][_type],
-                    'topic': v
-                })
-            })
-
-            if(_pos.length!==0) {
-                sentence2pos.push({
-                    pos: _pos,
-                    words: senDiscription
-                })
-            }
 
             
             let discript = vKey.split(" ").map(vk=>{
@@ -624,6 +590,43 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             disPersons.forEach(v=>{
                 topicPerson.add(v)
             })
+
+            
+            // addressMap["addressNode"]记录的是地点的映射：地点ID到地点名称
+            // addressMap["addressType"]记录的是地点类型的映射
+            // 提取地点事件用到地图
+            let words = vKey.split(" ");
+            // 一句话中可能涉及多个地点，但是只有一个类型
+            let _pos = [] , _type;
+            words.forEach(word => {
+                if(word !== '-1') {
+                    if(word in addressMap["addressNode"]) {
+                        _pos.push(word);
+                    } 
+                    if(word in addressMap["addressType"]) {
+                        _type = word;
+                    }
+                }
+            })
+
+            _pos.forEach(pos => {
+                if(pos2sentence[pos] === undefined) {
+                    pos2sentence[pos] = [];
+                }
+                pos2sentence[pos].push({
+                    'sentence': sentence2pos.length, 
+                    'type':  temp[DICT][_type],
+                    'topic': v,
+                    'people':sentencePersonsId
+                })
+            })
+
+            if(_pos.length!==0) {
+                sentence2pos.push({
+                    pos: _pos,
+                    words: senDiscription
+                })
+            }
             
             let distance = topicSentence[vKey]
             cData.push({
