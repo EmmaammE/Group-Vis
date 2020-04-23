@@ -117,12 +117,12 @@ class MatrixView extends React.Component{
 
         // 依据框选范围判断：是框选人还是放大matrixView，看横坐标比较大那个在哪个位置
         if(that.state.brushTransX+that.state.brushWidth<margin.left&&that.state.brushWidth>10&&that.state.brushHeight>singleDis){
-          console.log("矩形刷选")
+          // console.log("矩形刷选人")
           filterPerson(that,singleDis)
         }else if(that.state.brushWidth>singleDis&&that.state.brushHeight>singleDis){
           rectFilter(that,singleDis).then(()=>{
           })
-        }else{
+        }else if((that.state.brushWidth>singleDis||that.state.brushHeight>singleDis)&&that.state.brushTransX>WIDTH-margin.right){
           sortedData = -1
         }
          // 刷选框消失
@@ -193,7 +193,6 @@ class MatrixView extends React.Component{
     // colorMap是颜色比例尺
     
     height = HEIGHT -margin.top-margin.bottom
-    let width = WIDTH-margin.left-margin.right
 
     const {maxValue,xy,colorMap}=scaleFactory(height,matrixData,START_COLOR,END_COLOR)
     let tipX = margin.left+xy(this.state.highRowLabel)+this.state.targetWidth
@@ -232,7 +231,7 @@ class MatrixView extends React.Component{
         <div  className="matrix-container">
           {
             
-            <svg width={WIDTH+40} height={HEIGHT} viewBox={`0 0 ${WIDTH+40} ${HEIGHT}`} ref={this.$container}>
+            <svg width={WIDTH+60} height={HEIGHT} viewBox={`0 0 ${WIDTH+60} ${HEIGHT}`} ref={this.$container}>
               {labels.length==0
                 ?<text 
                   transform={`translate(10,${margin.top})`}
