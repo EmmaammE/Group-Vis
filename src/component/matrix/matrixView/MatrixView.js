@@ -21,7 +21,7 @@ const END_COLOR = 'rgb(3,93,195)'
 const SINGAL_HEIGHT = 25
 let labels
 let height
-let margin={left:70,top:45,right:5,bottom:5}
+let margin={left:70,top:45,right:5,bottom:15}
 let sortedData = -1;
 let matrixData
 let matrixViewState
@@ -207,7 +207,7 @@ class MatrixView extends React.Component{
           {labels.length==0?null:
             <div className = "matrix-label-container">
               <div className= "matrix-label-event">#Events</div>
-              <div className= "matrix-label">
+              <div className= "matrix-label"> 
                 <div className="matrix-left-num">0</div>
                 <div className="middle-rectangle"></div>
                 <div className="matrix-left-num">{maxValue}</div>

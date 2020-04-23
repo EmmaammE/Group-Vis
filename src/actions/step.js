@@ -228,6 +228,7 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         }
         
         
+        let topicLrs = res.data[TOPIC_LRS]
 
         // 建立从topicId 到 名称 的映射
         let topicId2Name={}
@@ -235,7 +236,9 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         // 翻译topic_id
         res.data[TOPICS].forEach(id => {
             let idstring = id.join(" ");
-            temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
+            if(topicLrs[idstring]!=undefined){
+                temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
+            }
             topicId2Name[idstring] = id.map(_id => (temp[DICT][_id])).join('-')
         }) 
 
@@ -247,14 +250,16 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         }
 
 
-        let topicLrs = res.data[TOPIC_LRS]
+        
         // topic的排序按照他们的比重大小来排序
+        
         temp[TOPICS].sort((a,b) => topicLrs[b[0]]-topicLrs[a[0]])
+        // console.log("temp[TOPIC]",JSON.stringify(temp[TOPICS]),topicLrs)
         // 下面对topic进行过滤：将其中小于4%的部分过滤掉
         // 统计原始数据weight总值是多少
         let totalWeight = Object.values(topicLrs).reduce((a,b)=>a+b,0)
         let topicNum = Object.values(topicLrs).length
-        let minWeight = totalWeight/topicNum*0.2
+        let minWeight = totalWeight*0.04
         let minIndex = 0
         let originLength = temp[TOPICS].length
         while(minIndex < originLength && topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
@@ -671,7 +676,9 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
 
     // 计算topicData的占比
     let _topics = [];
-    for(let i=topicData.length-1; i >=0; i--) {
+    for(let i=0; i <topicData.length; i++) {
+        let tempRatio = topicData[i].weight / topicTotalWeight
+        
         if(_topics.length > 8) break;
 
         _topics.push({

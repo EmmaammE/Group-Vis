@@ -57,7 +57,7 @@ export function sortMatrixPerson(matrixView){
                   .edges(edgeData)
   let person2group  = community();
 
-  console.log("matrix-util",person2group,matrixPerson)
+  // console.log("matrix-util",person2group,matrixPerson)
   let groups = []
   for(let group in person2group){
     let groupIndex = person2group[group]
@@ -87,7 +87,7 @@ export function sortMatrixPerson(matrixView){
 
   matrixPerson = matrixPerson.filter(v=>v.number>0)
   matrixPerson.sort((a,b)=>hashMap[a.preIndex]-hashMap[b.preIndex])
-  console.log("finalIndex",finalIndex,matrixPerson)
+  // console.log("finalIndex",finalIndex,matrixPerson)
   let preToNewIndex = {}
   let newMatrixData = []
   let newMatrixPerson = matrixPerson.map((v,i)=>{
