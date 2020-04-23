@@ -290,6 +290,7 @@ class TopicTreeMap extends React.Component{
         // 重新对topicData进行排序
         // topicData中存放的weight是实际值
         topicData.sort((a,b)=>b.weight-a.weight)
+        // console.log(topicData)
         let newIndex = 0
         // 找到该topic在下一轮布局中的位置
         topicData.forEach((v,i)=>{

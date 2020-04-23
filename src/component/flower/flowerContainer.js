@@ -12,29 +12,24 @@ const getEndpoints = (number, current) => {
     }
 }
 
-const control = (p1x, p1y, p2x, p2y, offset = 30) => {
-   let mpx = (p1x + p2x) * 0.5;
-   let mpy = (p1y + p2y) * 0.5;
-   
-   let theta = Math.atan2(p2y - p1y, p2x - p1x) - Math.PI / 2;
-   
-   let c1x = mpx + offset * Math.cos(theta);
-   let c1y = mpy + offset * Math.sin(theta);
+const curvePath = (width, type) => {
+    let rx1, ry1, rx2 =  100, ry2;
 
-   return {
-       x: c1x,
-       y: c1y
-   };
+    rx1 = width - rx2;
+    ry2 = 100 / (1 + rx1/rx2)
+    ry1 = 100 - ry2
+
+    if(type === 1) {
+        return ` M 110 0 L 100 5
+            A${ry2+10},${rx2+10} 0 0 0 ${100-ry2}, ${rx2+5}
+            A${ry1},${rx1} 0 0 1 0, ${width}` 
+    } else {
+        return `M0,0
+            A${ry1},${rx1} 0 0 1 ${ry1}, ${rx1}
+            A${ry2+10},${rx2+10} 0 0 0 ${100}, ${rx1 + rx2-5} L 115 ${BOX_WIDTH}` 
+    }
 }
 
-const curvePath = (p1x, p1y, p2x, p2y) => {
-    let mdx = (p1x+p2x) * 0.5;
-    let mdy = (p2x+p2y) * 0.5;
-
-    let c1 = control(p1x, p1y, mdx, mdy);
-    let c2 = control(mdx, mdy, p2x, p2y)
-    return  `M${p1x} ${p1y} Q${c1.x} ${c1.y} ${mdx} ${mdy} M ${mdx} ${mdy}Q${c2.x} ${c2.y} ${p2x} ${p2y}` ;
-}
 class FlowerContainer extends React.Component {
     constructor(props) {
         super(props);
@@ -53,11 +48,11 @@ class FlowerContainer extends React.Component {
     }
 
     render() {
-        let { width, step, leaves, current,  _selected, _nextSelected, _hovered, positions, cb } = this.props;
+        let { width, step, leaves, current,  _selected, _nextSelected, _hovered, positions, cb, hovercb} = this.props;
         let { endpoints } = this.state;
 
         return (
-            <svg width={width} height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH }`}
+            <svg width={width} height="100%" viewBox={`0 0 ${2 * current * BOX_WIDTH} ${2 * BOX_WIDTH + 100 }`}
                 xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <filter id="dropshadow" x="-1" y="-1" width="200" height="200">
@@ -75,6 +70,7 @@ class FlowerContainer extends React.Component {
                             cb={() => {cb(step && step[i])}}
                             step={step && step[i]}
                             current={current}
+                            hovercb = {() => {hovercb(step && step[i])}}
                         />
                     ))
                 }
@@ -82,12 +78,22 @@ class FlowerContainer extends React.Component {
                     endpoints.map((point, i) => {
                         return (<path
                             key={'con-' + i}
-                            // d = {curvePath(BOX_WIDTH*(2*_selected+1), 360, point, 2*BOX_WIDTH)}
+                            transform ={`translate(${BOX_WIDTH * i},600) rotate(-90)`}
+                            // d = {curvePath(BOX_WIDTH, i)}
                             strokeDasharray={_nextSelected === i ? 'none' : 8}
                             fill="transparent" stroke="black"
                         />)
                     })
                 }
+                {/* <path 
+                    transform ={`translate(0,600) rotate(-90)`}
+                    d = "M0,0 
+                        A100, 173.20508075688772 0 0 1 100, 173.20508075688772 
+                        A100, 173.20508075688772 0 0 0 200 346.41016151377545 
+                        M 200 346.41016151377545 
+                        A100, 173.20508075688772 0 0 0 100, 519.6152422706632 
+                        A100, 173.20508075688772 0 0 1 0, 692.8203230275509" 
+                    fill="transparent" stroke="black"/> */}
             </svg>
         )
     }

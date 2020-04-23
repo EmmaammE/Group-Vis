@@ -325,7 +325,8 @@ export function rectTree2(width,height,topicData){
 }
 
 export function rectTree(width,height,topicData){
-    // console.log(topicData)
+
+    console.error(topicData)
 
     let all_topics = topicData.map(elm => elm.id)
 

@@ -65,22 +65,22 @@ class PathContainer extends React.Component {
         this._onClickUndo = this._onClickUndo.bind(this);
     }
 
-    componentDidMount() {
-        let node = this.$container.current;
-        d3.select(node)
-            .call(d3.zoom()
-                .on("zoom", function () {
-                    debounce(transform => {
-                        d3.select(node)
-                            .attr("transform", transform)
-                    }, 100)(d3.event.transform)
-                }))
-    }
+    // componentDidMount() {
+    //     let node = this.$container.current;
+    //     d3.select(node)
+    //         .call(d3.zoom()
+    //             .on("zoom", function () {
+    //                 debounce(transform => {
+    //                     d3.select(node)
+    //                         .attr("transform", transform)
+    //                 }, 100)(d3.event.transform)
+    //             }))
+    // }
 
-    componentWillMount() {
-        d3.select(this.$container.current)
-            .on("zoom", null)
-    }
+    // componentWillMount() {
+    //     d3.select(this.$container.current)
+    //         .on("zoom", null)
+    // }
 
     // NOTE 目前是将节点绑定在who上的，可能要改成边绑定
     componentDidUpdate(prevProps, prevState) {

@@ -25,10 +25,10 @@
 }
 
 .second-panel .grid-line {
-    /* padding-left: 50%; */
     display: flex;
     justify-content: center; 
     transition: padding 300ms ease-in-out;
+    margin-top: -15px;
 }
 
 .second-panel .lines {
