@@ -27,8 +27,9 @@ export function sortMatrixPerson(matrixView){
 
   let matrixPerson = matrixView.matrixPerson
   //将number为0的人过滤掉
-  matrixPerson = matrixPerson.filter(v=>v.number>0)
-  if(matrixView.matrixPerson.length==0){
+  let pIndex = matrixPerson.map(v=>v.preIndex)
+  pIndex = pIndex.filter(v=>matrixPerson[v].number>0)
+  if(pIndex.length==0){
     return matrixView
   }
   let matrixData = matrixView.matrixData
@@ -49,8 +50,6 @@ export function sortMatrixPerson(matrixView){
     }
   }
 
-
-  let pIndex = matrixPerson.map(v=>v.preIndex)
 
   let louvain = require('louvain');
   let community = louvain.jLouvain()
@@ -86,9 +85,9 @@ export function sortMatrixPerson(matrixView){
     hashMap[v] = i
   })
 
-
+  matrixPerson = matrixPerson.filter(v=>v.number>0)
   matrixPerson.sort((a,b)=>hashMap[a.preIndex]-hashMap[b.preIndex])
-  
+  console.log("finalIndex",finalIndex,matrixPerson)
   let preToNewIndex = {}
   let newMatrixData = []
   let newMatrixPerson = matrixPerson.map((v,i)=>{

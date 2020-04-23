@@ -378,8 +378,6 @@ export function rectTree(width,height,topicData){
 
     // 变成数组
     groups = [...groups]
-
-    console.log("groups",groups)
     const data = {
         name:"root",
         children: groups.map(group=>{
@@ -569,20 +567,21 @@ export function filterBrushSelectList(data){
 }
 
 export function filterMapView(data,flag){
-    let mapViewData = {}
+    let discriptionIds = []
     for(let singleData of data){
-        for(let k of singleData.cData){
+        for(let k of singleData.cData){ 
             let isChoose = flag||k.isChoose
             if(isChoose){
-                k.personsId.forEach((v,i)=>{
-                    if(!mapViewData[v]){
-                        mapViewData[v] = k.persons[i]
-                    }
-                })
+                discriptionIds.push(k.id)
+                // k.personsId.forEach((v,i)=>{
+                //     if(!mapViewData[v]){
+                //         mapViewData[v] = k.persons[i]
+                //     }
+                // })
             }
         }
     }
-    return mapViewData
+    return discriptionIds
 }
 
 export function deepClone(Obj) {   

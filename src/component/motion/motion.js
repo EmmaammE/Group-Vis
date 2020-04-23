@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import {
   getZeroStyle,
   shouldStopAnimation,
-  stepCurrentStyle
+  stepCurrentStyle,
+  propsCompare
 } from './util.js'
 
 // 上一次的状态用state中的lastStyle来记录
@@ -105,13 +106,10 @@ class Motion extends React.Component{
        timeRatio = timeRatio<0?0:timeRatio
       //  this.prevTime = currentTime
        // 计算出当下时间所需要的属性差值
-       console.log("time",this.accumulatedTime,this.prevTime,timeRatio)
-       console.log("---------this.state.currentStyle,propStyle",this.state.currentStyle,propStyle)
+      //  console.log("time",this.accumulatedTime,this.prevTime,timeRatio)
+      //  console.log("---------this.state.currentStyle,propStyle",this.state.currentStyle,propStyle)
        let styleDelta = stepCurrentStyle(this.state.lastStyle,this.state.currentStyle,propStyle,timeRatio)
-       console.log("Animation---currentStyle",styleDelta)
-      // this.setState(prevState=>({
-      //   currentStyle:currentStyle
-      // }))
+      //  console.log("Animation---currentStyle",styleDelta)
         this.setState(prevState=>{
          let newStyle = {
            lastStyle:{...prevState.lastStyle},
@@ -141,20 +139,34 @@ class Motion extends React.Component{
     }
   }
 
+  // shouldComponentUpdate(nextProps){
+  //   console.log("propsCompare",this.props.style,nextProps.style)
+  //   if(!propsCompare(this.props.style,nextProps.style)){
+  //     //  前后两次传递的props不一样的话：
+  //     this._componentWillReceiveProps(nextProps)
+  //     return true
+  //   }else{
+  //     return false
+  //   }
+  // }
   // "更新"时接收参数
   UNSAFE_componentWillReceiveProps(props){
     // 如果不存在上一次的状态，则根据当下props初始化lastStyle
-    if(!this.initFlag){
-      this.initFlag = true
-      let lastStyle = getZeroStyle(props.style)
-      this.setState({lastStyle})
-    }
+    if(!propsCompare(this.props.style,props.style)){
+      if(!this.initFlag){
+        this.initFlag = true
+        let lastStyle = getZeroStyle(props.style)
+        this.setState({lastStyle})
+      }
+      if(this.animationID == null){
 
-    if(this.animationID == null){
-      this.prevTime = clock.now()
-      // 表示该动画持续多长时间
-      this.duration = this.props.duration
-      this.startAnimationIfNecessary()
+        
+        this.prevTime = clock.now()
+        // 表示该动画持续多长时间
+        this.duration = this.props.duration
+        // console.log("this.animationID",this.prevTime,this.duration)
+        this.startAnimationIfNecessary()
+      }
     }
   }
 
@@ -172,16 +184,15 @@ class Motion extends React.Component{
     this.prevTime = clock.now()
     // 表示该动画持续多长时间
     this.duration = this.props.duration
-    console.log("motion-duration",this.duration,this.prevTime)
+    // console.log("motion-duration",this.duration,this.prevTime)
     this.startAnimationIfNecessary()
   }
 
   render(){
     // 将this.state.currentStyle放入其子组件中，就是通过这步去传递参数
-    // console.log("this.props.children",this.props.children)
     const renderedChildren = this.props.children(this.state.currentStyle);
     
-    console.log("render--currentstyle",this.state.currentStyle)
+    // console.log("render--currentstyle",this.state.currentStyle)
     
     // 当renderedChildren存在时，返回React.Children.only(renderedChildren)
     // 验证children里只有唯一的孩子并返回他。否则这个方法抛出一个错误。

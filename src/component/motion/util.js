@@ -21,9 +21,14 @@ export function shouldStopAnimation(currentStyle,propStyle){
   return false
 }
 
+export function propsCompare(currentStyle,nextStyle){
+  return JSON.stringify(currentStyle)===JSON.stringify(nextStyle)
+}
+
 export function stepCurrentStyle(lastStyle,currentStyle,propStyle,timeRatio){
   let styleDelta = {}
-  let tRatio = d3.easeCircleInOut(timeRatio)
+  // let tRatio = d3.easeCubicInOut(timeRatio)
+  let tRatio = d3.easePolyInOut(timeRatio)
   for( let v in propStyle){
     if(typeof propStyle[v] === "number"){
       let numScale = d3.scaleLinear()

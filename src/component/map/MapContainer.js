@@ -14,6 +14,7 @@ class MapContainer extends React.Component {
 
     componentDidUpdate(prevProps) {
         let {data} = this.props;
+        // console.log("mapView",data)
         if(JSON.stringify(prevProps.data)!==JSON.stringify(data)) {
             let that = this;
             if(Object.keys(data["pos2sentence"]).length!==0) {
