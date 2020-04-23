@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import exampleData from '../../assets/geojson/b.json';
 import topicData from '../../assets/geojson/a.json';
 // import * as WordCloudGenerator from './wordCloud';
-// import louvain from 'louvain'
+// import louvain from 'louvain' 
 
 export function maxItem(data,that){
     let itemSets = []
@@ -124,9 +124,9 @@ export function maxItem(data,that){
 
     console.log("resultArray",resultArray)
     let output = resultArray.map(v=>{
-        let result = `${v.name}\n`
+        let result = `${v.name} \n`
         // result += '   ————   '
-        result += `[Ratio] :${v.minRatio}%`
+        result += `[Ratio] : ${v.minRatio}%`
         return result
     })
     if(output.length>3){
@@ -328,6 +328,7 @@ export function rectTree(width,height,topicData){
 
     console.error(topicData)
 
+    // all_topics是数组
     let all_topics = topicData.map(elm => elm.id)
 
     let topic2index = {}, topic2data = {}
@@ -355,6 +356,7 @@ export function rectTree(width,height,topicData){
     // 先画pmi大的，pmi一样画weight大的
     let edge_data = Object.values(hash_id2rel_data)
     edge_data.sort((a,b)=> b.weight - a.weight)
+    // 取前1/4
     edge_data = edge_data.slice(0, Math.ceil(edge_data.length/4))
 
     let louvain = require('louvain');
@@ -364,6 +366,7 @@ export function rectTree(width,height,topicData){
                     .edges(edge_data)
                     // .partition_init(init_part);
     let topic2group  = community();
+    // console.log("topic2group",topic2group)
     // console.log(result, edge_data.map(elm=> elm.weight))
 
     // const getMaxWeight = elm => Math.max(...elm.t)
@@ -371,9 +374,11 @@ export function rectTree(width,height,topicData){
     // let imp_all_relation_data = all_relation_data.slice(0, Math.ceil(all_relation_data.length/5))
     // console.log(all_relation_data)
 
+    // topic2group是从topic到group的映射
     let groups = new Set(Object.values(topic2group))
-    groups = [...groups]
 
+    // 变成数组
+    groups = [...groups]
     const data = {
         name:"root",
         children: groups.map(group=>{
@@ -563,20 +568,21 @@ export function filterBrushSelectList(data){
 }
 
 export function filterMapView(data,flag){
-    let mapViewData = {}
+    let discriptionIds = []
     for(let singleData of data){
-        for(let k of singleData.cData){
+        for(let k of singleData.cData){ 
             let isChoose = flag||k.isChoose
             if(isChoose){
-                k.personsId.forEach((v,i)=>{
-                    if(!mapViewData[v]){
-                        mapViewData[v] = k.persons[i]
-                    }
-                })
+                discriptionIds.push(k.id)
+                // k.personsId.forEach((v,i)=>{
+                //     if(!mapViewData[v]){
+                //         mapViewData[v] = k.persons[i]
+                //     }
+                // })
             }
         }
     }
-    return mapViewData
+    return discriptionIds
 }
 
 export function deepClone(Obj) {   

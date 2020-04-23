@@ -14,9 +14,9 @@ class ListItem extends React.Component{
     return(
       <div className="listItem-out">
         <div className="listItem-out-middle">
-          <div className="listItem-line selectList-scrollbar">
+          <p className="listItem-line selectList-scrollbar">
             {data}
-          </div >
+          </p >
         </div>
         
         {/* <div className="listItem-in listFirst">

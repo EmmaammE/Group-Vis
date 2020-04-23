@@ -40,6 +40,7 @@ import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
 import Tip from '../tooltip/Tip'
 import leaf from '../../assets/leaf/leaf.svg'
 import {TOPICS} from '../../util/name.js'
+import Motion from '../motion/Motion'
 
 
 const btnData = [
@@ -326,7 +327,6 @@ class TopicTreeMap extends React.Component{
           topic_weights,
           adjust_topic_weights_params:that.props.historyData
         }
-        console.log("param-----",param)
         that.props.updateTopicLrs(JSON.stringify(param), that.props.KEY, that.props.step)
       },1000)
   }
@@ -424,6 +424,9 @@ class TopicTreeMap extends React.Component{
     let cStep = this.props.currentStep
 
     topicData.splice(this.state.selectedTopicIndex,1)
+    this.setState({
+      selectedTopicIndex:0
+    })
     this.props.updateTopicView(topicData)
     this.props.updateGroupdata("topicView",cStep,topicData)
     
@@ -478,17 +481,16 @@ class TopicTreeMap extends React.Component{
   // mapView视图按钮
   handleClickMapView(){
     let step = this.props.currentStep
-    let mapViewPersons = filterMapView(topicData)
-    console.log("mapViewPersons",mapViewPersons)
-    this.props.updateGroupdata("people",step,mapViewPersons)
+    let discriptionIds = filterMapView(topicData)
+    console.log("discriptionIds",discriptionIds)
   }
 
   handleRectLeafClick(e){
-    console.log("rest",e.target)
+    // console.log("rest",e.target)
     if(e.target.localName=="rect"||e.target.localName==="foreignObject"||e.target.localName==="p"){
       
       let index = e.target.getAttribute("index")    
-      console.log("rest",index)
+      // console.log("rest",index)
       this.setState({
         selectedTopicIndex:index
       })
@@ -574,10 +576,8 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleClear)
     handleClick.push(this.handleFilter)
     handleClick.push(this.handleDeleteTopic)
-
     return (
       <div className="chart-wrapper">
-        
         <div  className="topic-buttons">
           <div className="btn-container">
               {
@@ -654,55 +654,105 @@ class TopicTreeMap extends React.Component{
             preserveAspectRatio="xMinYMin"
             className = "topicTreeMap-svg"
             // onMouseMove = {this.handleSliderMouseMove}
-            // onMouseUp = {this.handleSliderMouseUp}
+            // onMouseUp = {this.handleSliderMouseUp} 
           >
             {/* 绘制矩阵子集 */}
             {
               rectTreeData.length>0&&rectTreeData.map((v,i)=>(
-                <g 
-                  onMouseOver={this.handleMouseenter}
-                  onMouseOut = {this.handleMouseout}
-                  onClick = {this.handleRectLeafClick}
-                  key={`rectLeaf-${i}`} 
-                  transform={`translate(${v.x0},${v.y0})`}
-                >   
-                  <RectLeaf
-                    index ={i}
-                    parentPos ={[v.x0,v.y0]}
-                    width = {v.x1-v.x0}
-                    height = {v.y1-v.y0}
-                    data = {topicData[i]}
+                // <RectLeaf
+                //   index ={i}
+                //   parentPos ={[v.x0,v.y0]}
+                //   width = {v.x1-v.x0}
+                //   height = {v.y1-v.y0}
+                //   data = {topicData[i]}
+                // >
+                // </RectLeaf>
+                <Motion 
+                  duration={2500} 
+                  key = {`${i}_motion`}
+                  style={{
+                      width:v.x1-v.x0,
+                      height:v.y1-v.y0,
+                      parentX:v.x0,
+                      parentY:v.y0
+                  }}
+                >
+                {({width,height,parentX,parentY}) =>
+                  <g 
+                    onMouseOver={this.handleMouseenter}
+                    onMouseOut = {this.handleMouseout}
+                    onClick = {this.handleRectLeafClick}
+                    key={`rectLeaf-${i}`} 
+                    transform={`translate(${parentX},${parentY})`}
                   >
-                  </RectLeaf>
-                </g>
+                    <RectLeaf
+                      index ={i}
+                      parentPos ={[parentX,parentY]}
+                      width = {width}
+                      height = {height}
+                      data = {topicData[i]}
+                    >
+                    </RectLeaf>
+                    
+                  </g>}
+                </Motion>  
               ))
             }
             {/* 绘制topic组的矩阵 */}
             {
               rectGroupData.length>0&&rectGroupData.map((v,i)=>(
-                <rect
-                  key={`rectGroup-${i}`} 
-                  width = {v.x1-v.x0}
-                  height = {v.y1-v.y0}
-                  fill= "none"
-                  stroke= "#c47d3a"
-                  strokeWidth = "3"
-                  transform={`translate(${v.x0},${v.y0})`}
-                > 
-                </rect>
+                <Motion
+                  duration={2500} 
+                  key = {`${i}_motion_group`}
+                  style={{
+                      width:v.x1-v.x0,
+                      height:v.y1-v.y0,
+                      parentX:v.x0,
+                      parentY:v.y0
+                  }}
+                >
+                {({width,height,parentX,parentY})=>
+                  <rect
+                    key={`rectGroup-${i}`} 
+                    width = {width}
+                    height = {height}
+                    fill= "none"
+                    stroke= "#c47d3a"
+                    strokeWidth = "3"
+                    transform={`translate(${parentX},${parentY})`}
+                  > 
+                  </rect>
+                }
+                </Motion>
+                
               ))
             }
             {/* 绘制选中topic的框 */}
             {
-              rectTreeData.length>0&&<g transform={`translate(${selectedRect.x0},${selectedRect.y0})`}>
-                <rect
-                  stroke="#333333"
-                  strokeWidth = "2.5"
-                  fill="none"
-                  width = {selectedRect.x1-selectedRect.x0}
-                  height = {selectedRect.y1-selectedRect.y0}
-                ></rect>
-            </g>
+              rectTreeData.length>0&&
+              <Motion
+                duration={2500} 
+                style={{
+                    width:selectedRect.x1-selectedRect.x0,
+                    height:selectedRect.y1-selectedRect.y0,
+                    parentX:selectedRect.x0,
+                    parentY:selectedRect.y0
+                }}
+              >
+                {({width,height,parentX,parentY})=>
+                  <g transform={`translate(${parentX},${parentY})`}>
+                    <rect
+                      stroke="#333333"
+                      strokeWidth = "2.5"
+                      fill="none"
+                      width = {width}
+                      height = {height}
+                    ></rect>
+                </g>
+                }
+              </Motion>
+              
+              
             }
             {/* 绘制已经存在的刷选框 */}
             <g className="exsit-brush-rects">

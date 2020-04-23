@@ -37,14 +37,14 @@ class MatrixColumn extends React.Component{
     return (
       <g transform={`translate(${xy(index)},0)`}>
         {data.map((v,i)=>(
-          <rect 
+          data[i]!=0&&<rect 
             transform={`translate(0,${xy(i)})`}
             width={xy.bandwidth()}
             height= {xy.bandwidth()}
             strokeWidth={0}
             info={`${index}_${i}_${v}`}
             // 换成颜色标尺
-            fill={data[i]?colorMap(data[i]):"#dddddd"}
+            fill={data[i]?colorMap(data[i]):"#eeeeee"}
             key={`rect_${i}`}
             onMouseOver={this.handleMouseover}
             onMouseOut={this.handleMouseout}

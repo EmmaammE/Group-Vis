@@ -24,23 +24,11 @@ class RectLeaf extends React.Component{
       highColor:""
     }
 
-    this.handleMouseover = this.handleMouseover.bind(this)
-    this.handleMouseout = this.handleMouseout.bind(this)
   }
 
-  handleMouseover(v){
-    // let tempColor = v.target.getAttribute("fill")
-    // this.setState({
-    //   highColor:tempColor
-    // })
-  }
-
-  handleMouseout(v){
-    // v.target.setAttribute("fill",this.state.highColor)
-  }
 
   render(){
-    
+    // console.log("rectLeaf",this.props)
     const data = this.props.data
     const width = this.props.width-margin.left-margin.right
     const height = this.props.height-margin.top-margin.bottom
