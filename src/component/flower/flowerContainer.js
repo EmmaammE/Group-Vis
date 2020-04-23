@@ -48,7 +48,7 @@ class FlowerContainer extends React.Component {
     }
 
     render() {
-        let { width, step, leaves, current,  _selected, _nextSelected, _hovered, positions, cb, hovercb} = this.props;
+        let { width, step, leaves, current,  _selected, _nextSelected, _hovered, positions, next, cb, hovercb} = this.props;
         let { endpoints } = this.state;
 
         return (
@@ -63,7 +63,7 @@ class FlowerContainer extends React.Component {
                     Array(current).fill(null).map((arr, i) => (
                         <Flower
                             marginWidth={BOX_WIDTH * 2 * i} key={"flo-" + i} 
-                            leaves ={leaves && leaves[i]}
+                            leaves ={ leaves[i]}
                             _selected={_selected === i}
                             _hovered={_hovered === i}
                             positions={positions && positions[i]}
@@ -79,7 +79,7 @@ class FlowerContainer extends React.Component {
                         return (<path
                             key={'con-' + i}
                             transform ={`translate(${BOX_WIDTH * i},600) rotate(-90)`}
-                            // d = {curvePath(BOX_WIDTH, i)}
+                            // d = {curvePath(BOX_WIDTH, i>_selected?1:0)}
                             strokeDasharray={_nextSelected === i ? 'none' : 8}
                             fill="transparent" stroke="black"
                         />)

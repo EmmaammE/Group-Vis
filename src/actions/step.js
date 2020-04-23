@@ -9,7 +9,7 @@ import { TOPIC_LRS,
         PERSON_SENTENCE,
         TOPIC_SENTENCE_VECTOR, 
         } from "../util/name";
-import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER } from "./types";
+import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER, REMOVE_FLOWER } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix ,initPeopleCommon, peopleToList} from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
@@ -73,6 +73,17 @@ export function setFlower(flower) {
     return {
         type: SET_FLOWER,
         data: flower
+    }
+}
+
+// 清除一个主题
+export function removeTopic(topicId, _step) {
+    return {
+        type: REMOVE_FLOWER,
+        data: {
+            topicId,
+            _step
+        }
     }
 }
 
@@ -608,20 +619,21 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                     if(word in addressMap["addressNode"]) {
                         _pos.push(word);
                     } 
-                    if(word in addressMap["addressType"]) {
-                        _type = word;
-                    }
+                    // if(word in addressMap["addressType"]) {
+                    //     _type = word;
+                    // }
                 }
             })
 
+            // 类型和topic暂时都没有用到， 就去掉了
             _pos.forEach(pos => {
                 if(pos2sentence[pos] === undefined) {
                     pos2sentence[pos] = [];
                 }
                 pos2sentence[pos].push({
                     'sentence': sentence2pos.length, 
-                    'type':  temp[DICT][_type],
-                    'topic': v,
+                    // 'type':  temp[DICT][_type],
+                    // 'topic': v,
                     'people':sentencePersonsId
                 })
             })
