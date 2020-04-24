@@ -155,8 +155,10 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                     alert('没有相似人')
                 } else {
                     fetchTopic(similiarParam, _step);
-                    // 查询出的相似的人的step将要被设置为currentStep+1
+                    // 查询出的相似的人的step将要被设置为step+1
                     sessionStorage.setItem('similiar', _step+1)
+                    // 查询的是currentStep的
+                    sessionStorage.setItem('similiar_origin', currentStep)
                     setNextParam(param)
                 }
             } else {
