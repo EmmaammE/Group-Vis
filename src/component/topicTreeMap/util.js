@@ -122,7 +122,7 @@ export function maxItem(data,that){
     resultArray.sort((a,b)=>b.minRatio-a.minRatio)
 
 
-    console.log("resultArray",resultArray)
+    // console.log("resultArray",resultArray)
     let output = resultArray.map(v=>{
         let result = `${v.name} \n`
         // result += '   ————   '

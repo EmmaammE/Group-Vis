@@ -45,8 +45,8 @@ const petalPath = (number, weight, proportion) => {
 
 function getArr(leaves, topics) {
     let arr = [], index = [];
-    let ownTopics = leaves.map(e => e['content'].join('-'))
 
+    let ownTopics = leaves.map(e => e['content'].join('-'))
     for (let i = 0; i < topics.length; i++) {
         let j = ownTopics.indexOf(topics[i]);
 
@@ -62,7 +62,7 @@ function getArr(leaves, topics) {
  *                    0: 展示文字； 1: 不展示
  */
 // function Flower({ number, current, marginWidth, titles, positions, _hovered, cb, step}) {
-function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, hovercb, type = 1}) {
+function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, hovercb, type = 1}) {
     const $container = useRef(null);
     const [beenVenn, setVenn] = useState(false);
     const dispatch = useDispatch();
@@ -70,7 +70,7 @@ function Flower({marginWidth, leaves, _hovered, positions, cb, step, current, ho
         step => dispatch(setVeenedStep(step)),
         [dispatch]
     )
-    const topics = useSelector(state => state.group['flower']);
+    const topics = useSelector(state => Object.keys(state.group['flower']));
     // const topics = ["李清照-著述关系类","李清照-著述关系类-序跋文字","李清照","著述关系类-序跋文字","建炎-正德-天会","赵明诚","韩玉父","张汝舟","著述关系类"]
 
     const data = useMemo(

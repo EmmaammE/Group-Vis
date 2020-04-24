@@ -35,114 +35,134 @@ class SecondPanel extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)
-            && prevProps.step !== this.props.step
-        ) {
-            let { grid, step2index, hoverIndex, lastHoverIndex } = this.state;
-            let { group, step } = this.props;
-            let another = sessionStorage.getItem('another');
-            if (grid.length === 0) {
-                let newGrid = [({
-                    ...GRID_ITEM_TEMPLATE,
-                    step: [1], positions: [group[1][POSITIONS]], data: [group[1][TOPICS]]
-                })]
-
-                this.setState({ grid: newGrid })
-
-            } else if(another !== null ) {
-                let newGrid = grid.slice(0);
-                let _grid = newGrid[0];
-
-                step2index[step] = [0, _grid.size];
-
-                _grid.size += 1;
-                _grid.positions.push(group[step][POSITIONS]);
-                _grid.step.push(step);
-                _grid.data.push(group[step][TOPICS])
-
-                sessionStorage.removeItem('another')
-
-                this.setState({
-                    grid: newGrid,
-                    step2index
-                })
-            } else {
-                let newGrid = grid.slice(0);
-
-                let similiarStep = sessionStorage.getItem('similiar');
-                if (step === +similiarStep) {
-                    // 是相似的人， 需要在同层增加花朵
-                    let currentLayer = hoverIndex[0];
-
-                    let newIndex = newGrid[currentLayer].next;
-
-                    newGrid[currentLayer].next += 1;
-
-                    step2index[step] = [currentLayer, newIndex];
-
-                    let _grid = newGrid[currentLayer];
+        if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
+            if(prevProps.step !== this.props.step) {
+                let { grid, step2index, hoverIndex, lastHoverIndex } = this.state;
+                let { group, step } = this.props;
+                let another = sessionStorage.getItem('another');
+                if (grid.length === 0) {
+                    let newGrid = [({
+                        ...GRID_ITEM_TEMPLATE,
+                        step: [1], positions: [group[1][POSITIONS]], data: [group[1][TOPICS]]
+                    })]
+    
+                    this.setState({ grid: newGrid })
+    
+                } else if(another !== null ) {
+                    let newGrid = grid.slice(0);
+                    let _grid = newGrid[0];
+    
+                    step2index[step] = [0, _grid.size];
+    
                     _grid.size += 1;
                     _grid.positions.push(group[step][POSITIONS]);
                     _grid.step.push(step);
                     _grid.data.push(group[step][TOPICS])
-
+    
+                    sessionStorage.removeItem('another')
+    
                     this.setState({
                         grid: newGrid,
-                        step2index,
+                        step2index
                     })
                 } else {
-                    if (step === similiarStep + 1) {
-                        // 是相似的人和当前人产生的群体， 需要在同层增加花朵并连线
-                        // 清除session
-                        sessionStorage.removeItem('similiar');
-                    }
-
-                    let currentLayer = hoverIndex[0];
-                    let lastIndex = step2index[step - 1];
-
-                    if (lastHoverIndex !== undefined) {
-                        lastIndex = step2index[lastHoverIndex]
-                    }
-
-
-                    // 被选中的这朵❀没有下一层
-                    if (currentLayer === grid.length - 1) {
-                        newGrid[lastIndex[0]].next = 1;
-                        newGrid.push({
-                            ...GRID_ITEM_TEMPLATE,
-                            step: [step],
-                            positions: [group[step][POSITIONS]],
-                            data: [group[step][TOPICS]]
-                        });
-                        // step2index[step] = [1,0];
-                        step2index[step] = [lastIndex[0] + 1, 0];
-                    } else {
-                        // 被选中的这朵❀有下一层
-                        // 新的❀是这一层的第newIndex个
-                        let newIndex = newGrid[currentLayer].next;
-
+                    let newGrid = grid.slice(0);
+    
+                    let similiarStep = sessionStorage.getItem('similiar');
+                    if (step === +similiarStep) {
+                        // 是相似的人， 需要在同层增加花朵
+                        let currentLayer = hoverIndex[0];
+    
+                        let newIndex = newGrid[currentLayer].size;
+    
                         newGrid[currentLayer].next += 1;
-
-                        step2index[step] = [currentLayer + 1, newIndex];
-
-                        let _grid = newGrid[currentLayer + 1];
+    
+                        step2index[step] = [currentLayer, newIndex];
+    
+                        let _grid = newGrid[currentLayer];
                         _grid.size += 1;
                         _grid.positions.push(group[step][POSITIONS]);
                         _grid.step.push(step);
                         _grid.data.push(group[step][TOPICS])
+    
+                        this.setState({
+                            grid: newGrid,
+                            step2index,
+                        })
+                    } else {
+                        if (step === similiarStep + 1) {
+                            // 是相似的人和当前人产生的群体， 需要在同层增加花朵并连线
+                            // 清除session
+                            sessionStorage.removeItem('similiar');
+                        }
+    
+                        let currentLayer = hoverIndex[0];
+                        let lastIndex = step2index[step - 1];
+    
+                        if (lastHoverIndex !== undefined) {
+                            lastIndex = step2index[lastHoverIndex]
+                        }
+    
+    
+                        // 被选中的这朵❀没有下一层
+                        if (currentLayer === grid.length - 1) {
+                            newGrid[lastIndex[0]].next = 1;
+                            newGrid.push({
+                                ...GRID_ITEM_TEMPLATE,
+                                step: [step],
+                                positions: [group[step][POSITIONS]],
+                                data: [group[step][TOPICS]]
+                            });
+                            // step2index[step] = [1,0];
+                            step2index[step] = [lastIndex[0] + 1, 0];
+                        } else {
+                            // 被选中的这朵❀有下一层
+                            // 新的❀是这一层的第newIndex个
+                            let newIndex = newGrid[currentLayer].size;
+    
+                            newGrid[currentLayer].next += 1;
+    
+                            step2index[step] = [currentLayer + 1, newIndex];
+    
+                            let _grid = newGrid[currentLayer + 1];
+                            _grid.size += 1;
+                            _grid.positions.push(group[step][POSITIONS]);
+                            _grid.step.push(step);
+                            _grid.data.push(group[step][TOPICS])
+                        }
+    
+                        this.setState({
+                            // grids: newGrid,
+                            grid: newGrid,
+                            step2index,
+                        })
                     }
-
-                    this.setState({
-                        // grids: newGrid,
-                        grid: newGrid,
-                        step2index,
-                    })
                 }
+            }
+
+            let removeTopic = sessionStorage.getItem('removeTopic');
+            if(removeTopic!==null) {
+                this._updateTopicAfterRemove(removeTopic)
             }
         }
 
         if (prevProps.countedLayer !== this.props.countedLayer) {
             this._updateCountedLayer();
+        }
+    }
+
+    _updateTopicAfterRemove(step) {
+        try {
+
+            let {step2index, grid} = this.state;
+            let index = step2index[step];
+            grid[index[0]]['data'][index[1]] = this.props.group[step][TOPICS];
+            this.setState({
+                grid
+            })
+            sessionStorage.removeItem('removeTopic')
+        } catch(err) {
+            sessionStorage.removeItem('removeTopic')
         }
     }
 
@@ -197,8 +217,6 @@ class SecondPanel extends React.Component {
 
         // 降维图
         setOtherStep(6, step);
-        // let topicData = group[step]["topicView"];
-        // console.log("topicData",topicData)
         updateTopicView(group[step]["topicView"]);
         addHistoryData(group[step]["historyData"])
     }

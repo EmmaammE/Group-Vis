@@ -10,6 +10,7 @@ export const UPDATE_GROUP_DATA_BY_STEP_KEY = "UPDATE_GROUP_DATA_BY_STEP_KEY";
 
 // 设置所有的花瓣
 export const SET_FLOWER = "SET_FLOWER";
+export const REMOVE_FLOWER = "REMOVE_FLOWER"
 
 // data.js
 export const SET_PERSON = "SET_PERSON";

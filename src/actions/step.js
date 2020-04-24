@@ -9,7 +9,7 @@ import { TOPIC_LRS,
         PERSON_SENTENCE,
         TOPIC_SENTENCE_VECTOR, 
         } from "../util/name";
-import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER } from "./types";
+import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER, REMOVE_FLOWER } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
 import {updateMatrix ,initPeopleCommon, peopleToList} from '../redux/matrixView.redux'
 import {updateSelectList} from '../redux/selectList.redux'
@@ -73,6 +73,17 @@ export function setFlower(flower) {
     return {
         type: SET_FLOWER,
         data: flower
+    }
+}
+
+// 清除一个主题
+export function removeTopic(topicId, _step) {
+    return {
+        type: REMOVE_FLOWER,
+        data: {
+            topicId,
+            _step
+        }
     }
 }
 
@@ -228,6 +239,7 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         }
         
         
+        let topicLrs = res.data[TOPIC_LRS]
 
         // 建立从topicId 到 名称 的映射
         let topicId2Name={}
@@ -235,7 +247,9 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         // 翻译topic_id
         res.data[TOPICS].forEach(id => {
             let idstring = id.join(" ");
-            temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
+            if(topicLrs[idstring]!=undefined){
+                temp[TOPICS].push([idstring, id.map(_id => (temp[DICT][_id]))]);
+            }
             topicId2Name[idstring] = id.map(_id => (temp[DICT][_id])).join('-')
         }) 
 
@@ -247,14 +261,16 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         }
 
 
-        let topicLrs = res.data[TOPIC_LRS]
+        
         // topic的排序按照他们的比重大小来排序
+        
         temp[TOPICS].sort((a,b) => topicLrs[b[0]]-topicLrs[a[0]])
+        // console.log("temp[TOPIC]",JSON.stringify(temp[TOPICS]),topicLrs)
         // 下面对topic进行过滤：将其中小于4%的部分过滤掉
         // 统计原始数据weight总值是多少
         let totalWeight = Object.values(topicLrs).reduce((a,b)=>a+b,0)
         let topicNum = Object.values(topicLrs).length
-        let minWeight = totalWeight/topicNum*0.2
+        let minWeight = totalWeight*0.04
         let minIndex = 0
         let originLength = temp[TOPICS].length
         while(minIndex < originLength && topicLrs[temp[TOPICS][minIndex][0]]>minWeight){
@@ -603,20 +619,21 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                     if(word in addressMap["addressNode"]) {
                         _pos.push(word);
                     } 
-                    if(word in addressMap["addressType"]) {
-                        _type = word;
-                    }
+                    // if(word in addressMap["addressType"]) {
+                    //     _type = word;
+                    // }
                 }
             })
 
+            // 类型和topic暂时都没有用到， 就去掉了
             _pos.forEach(pos => {
                 if(pos2sentence[pos] === undefined) {
                     pos2sentence[pos] = [];
                 }
                 pos2sentence[pos].push({
                     'sentence': sentence2pos.length, 
-                    'type':  temp[DICT][_type],
-                    'topic': v,
+                    // 'type':  temp[DICT][_type],
+                    // 'topic': v,
                     'people':sentencePersonsId
                 })
             })
@@ -671,7 +688,9 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
 
     // 计算topicData的占比
     let _topics = [];
-    for(let i=topicData.length-1; i >=0; i--) {
+    for(let i=0; i <topicData.length; i++) {
+        let tempRatio = topicData[i].weight / topicTotalWeight
+        
         if(_topics.length > 8) break;
 
         _topics.push({
