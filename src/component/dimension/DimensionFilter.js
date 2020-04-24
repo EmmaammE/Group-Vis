@@ -6,9 +6,9 @@ import './lasso.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {fetchTopicData} from '../../actions/step';
 import axios from 'axios';
-import { updateSelectList } from '../../redux/selectList.redux';
 import CircleBtn from '../button/circlebtn';
 import { DimensionCircles } from './Dimensions';
+import { setPerson } from '../../actions/data'
 
 const d3 = Object.assign(d3Base, { lasso });
 
@@ -34,7 +34,7 @@ const getPeopleStatus = (people) => {
     return peopleStatus;
 }
 
-export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, selectedPeople = {}, data = {}}) {
+export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, selectedPeople = {}, data = {}, cb}) {
 
     const $container = useRef(null);
     // 当前视图使用lasso选中的人
@@ -45,14 +45,12 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
       (param, step) => dispatch(fetchTopicData(param, KEY, step+1, 1)),
       [dispatch, KEY]
     )
-    const setSelectList = useCallback(
-        (data = [] ) => dispatch(updateSelectList({selectListData: data})),[dispatch]
+    const setPersonCB = useCallback(
+        people => dispatch(setPerson(people)), [dispatch]
     )
     const _step = useSelector(state => state.step);
     const currentStep = useSelector(state => state.otherStep["6"])
     const topicData = useSelector(state => state.group[currentStep]["topicView"])
-    const selectList = useSelector(state => state.group[currentStep]["selectView"]["selectListData"])
-    const [showName, setShowName] = useState(false)
     const peopleStatus = useMemo(() => {
         return getPeopleStatus(peopleOfGroup)
     }, [peopleOfGroup])
@@ -65,7 +63,10 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
             .targetArea(d3.select($container.current))
             .on("start", () => {
                 _lasso.items()
-                    .attr("fill", '#e9dac9')
+                    .each(function() {
+                        this.classList.remove("topic-selected");
+                    })
+                setPersonCB({})
             })
             .on("end", () => {
                 // Style the selected dots
@@ -81,23 +82,33 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                     })
                 
                 _setPeople(_people);
-                if(showName === true) {
-                    setSelectList(_people.map(p => data[p][2]))
-                }
-
+                cb(_people.map(p => data[p][2]))
             });
 
         d3.select($container.current).call(_lasso)
-    }, [ _people, showName, data, setSelectList])
+    }, [ _people, data, cb, setPersonCB])
 
     useEffect(() => {
         _setPeople([]);
-    }, [data, selectedPeople])
+        cb(Object.values(data).map(d => d[2]))
+    }, [data, cb])
+
+    useEffect(() => {
+        if(Object.keys(selectedPeople).length !== 0) {
+            cb(Object.keys(selectedPeople)
+                .map(d => data[d][2]))
+
+            d3.select($container.current).selectAll('circle')
+                .each(function() {
+                    this.classList.remove("selected");
+                })
+        }
+    }, [selectedPeople, data, cb])
 
     function toFetch() {
         let param = new FormData();
 
-        if( Object.keys(selectedPeople).length !== 0) {
+        if(Object.keys(selectedPeople).length !== 0) {
             Object.keys(selectedPeople).forEach(id => {
                 param.append('person_ids[]', id);
             })
@@ -109,9 +120,11 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
         fetchTopic(param, _step);
        
         _setPeople([]);
+        setPersonCB({})
         d3.select($container.current).selectAll('circle')
             .each(function() {
                 this.classList.remove("selected");
+                this.classList.remove("topic-selected")
             })
     }
 
@@ -178,6 +191,7 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
 
     function clear() {
         _setPeople([])
+        cb(Object.values(data).map(d => d[2]))
         
         d3.select($container.current).selectAll('circle')
             .each(function() {
@@ -189,21 +203,6 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
     function classCreator(person_id) {
         if(selectedPeople[person_id]) {
             return 'topic-selected'
-        }
-    }
-
-    function people() {
-        if(showName === false) {
-            if(_people.length!==0) {
-                // 显示已选中的人
-                setSelectList(_people.map(p => data[p][2]))
-            } else {
-                setSelectList(Object.values(data).map(d => d[2]))
-            }
-            setShowName(true)
-        } else {
-            setSelectList(selectList);
-            setShowName(false)
         }
     }
 
@@ -219,7 +218,7 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                     style = {{ cursor: 'pointer'}}
                     width="100%" height="100%" fill="transparent"></rect>
             </g>
-            <foreignObject x="-80" y="-3px" width="220px" height="50" >
+            <foreignObject x="0" y="-10" width="220px" height="30" >
                 <div className="dimension-btn-container">
                     <CircleBtn type={4}></CircleBtn>
                     <CircleBtn type={5}></CircleBtn>

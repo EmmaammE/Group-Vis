@@ -583,17 +583,58 @@ export function filterBrushSelectList(data){
     return newData
 }
 
-export function filterMapView(data,flag){
-    let discriptionIds = []
+export function filterMapView(data, flag, node, deleteId){
+    let sentence2pos = [],  pos2sentence = {};
+
     for(let singleData of data){
-        for(let k of singleData.cData){ 
-            let isChoose = flag||k.isChoose
-            if(isChoose){
-                discriptionIds.push(k.id)
+        if( deleteId === undefined || deleteId !== singleData['id'] ) {
+            for(let k of singleData.cData){
+                let isChoose = flag || k.isChoose 
+                if(isChoose){
+                    // sentence2pos.push({
+                    //     pos: [],
+                    //     words: k["discription"],
+                    //     id: k['id'],
+                    //     personsId: k['personsId'],
+                    //     topic: [singleData['id'], singleData['label']]
+                    // })
+    
+                    let words = k['id'].split(" ");
+                    let _pos = [];
+                    words.forEach(word => {
+                        if(word !== '-1') {
+                            if(word in node) {
+                                _pos.push(word);
+                            } 
+                        }
+                    })
+    
+                    _pos.forEach(pos => {
+                        if(pos2sentence[pos] === undefined) {
+                            pos2sentence[pos] = [];
+                        }
+                        pos2sentence[pos].push({
+                            'sentence': sentence2pos.length, 
+                            'topic': singleData['id'],
+                            'people': k['personsId']
+                        })
+                    })
+    
+                    if(_pos.length!==0) {
+                        sentence2pos.push({
+                            pos: _pos,
+                            words: k['discription']
+                        })
+                    }
+                }
             }
         }
     }
-    return discriptionIds
+    return {
+        sentence2pos,
+        pos2sentence,
+        addressNode: node
+    };
 }
 
 export function deepClone(Obj) {   

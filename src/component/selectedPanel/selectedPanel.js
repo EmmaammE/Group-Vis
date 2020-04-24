@@ -11,6 +11,7 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 		e['index'] = i;
 		return e;
 	}));
+	const [hideIcons, setHideIcons] = useState(false)
 
 	const $input = useRef(null);
 	function activePanel() {
@@ -28,7 +29,9 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 			setTimeout(
 				() => {	
 					setActual(
-						options.filter(option => option['label'].indexOf(_input)!==-1)
+						options.filter(option => 
+							option['label'].indexOf(_input)!==-1 
+							|| option['label'] === 'all')
 					) 
 			}, 300)
 		) 
@@ -45,9 +48,15 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 	}
 
 	function clickAction(index) {
-		setClicked(index);
+		if(index === 0) {
+			// 是选择全部
+			actual.forEach((e, i) => i !== 0 && setClicked(e['index']))
+		} else {
+			setClicked(index);
+		}
 		setValue("");
 		setActual(options)
+		setHideIcons(false)
 	}
 	
 
@@ -72,6 +81,14 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 		)
 	}
 
+	function toHideIcons() {
+		setHideIcons(true)
+	}
+
+	function toShowIcons() {
+		setHideIcons(false)
+	}
+
 	return (
 		<div className="selected-panel">
 			<div className="divider"><p>{title}</p></div>
@@ -84,10 +101,12 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 						style={options.length === 0 ? { pointerEvents: "none" } : {}}
 						onClick={activePanel}
 					>
-						<input className="dropdown-input" ref={$input} value={value} onChange={onChange} />
+						<input className="dropdown-input" 
+							ref={$input} value={value} onChange={onChange} 
+							onFocus={toHideIcons} onBlur = {toShowIcons} />
 						<div className="dropdown-icons">
 						{
-							options.map((val, i) => {
+							hideIcons || options.map((val, i) => {
 								if (clicked[i]) {
 									return (
 									<span key={'icon-' + i} className="icon" onClick={(e) => clickEvent(e, i)}>{val['label']}</span>)

@@ -17,7 +17,7 @@
 }
 
 :root {
-  --main-bg-color: #eae2d8;
+  --main-bg-color: #d5b086;
   --main-color: #240f39;
 }
 
@@ -39,6 +39,11 @@
   letter-spacing:-0.3px;
   line-height:36px;
   text-align:left;
+}
+
+/** 视图带margin,主要是侧面的 */
+.g-chart-title.title-margin {
+  margin: 10px 15px;
 }
 
 /** 一般的文字 */
@@ -64,4 +69,8 @@ div::-webkit-scrollbar {
 
 div::-webkit-scrollbar-thumb {
   background-color: #d3d3d3;  
+}
+
+circle {
+  cursor: pointer;
 }

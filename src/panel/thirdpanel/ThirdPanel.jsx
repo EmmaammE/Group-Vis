@@ -26,11 +26,9 @@ class ThirdPanel extends React.Component {
         </div>
         <div className="third-footer-panel">
           <div className = "third-footer">
+            <p className="g-chart-title">Figure View</p>
             <DimensionContainer />
           </div>
-          {/* <div className = "third-footer">
-            <SelectList />
-          </div> */}
         </div>
       </div>
     )
