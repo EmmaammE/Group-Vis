@@ -212,7 +212,7 @@ class MatrixView extends React.Component{
                 <div className="matrix-left-num">{maxValue}</div>
               </div>
             </div>
-          }
+          } 
           
           <div className="matrixView-clear" onClick={this.handleClear}>
             <CircleBtn  type={8} active={true}/>
@@ -316,6 +316,7 @@ export default connect(mapStateToProps,mapDispatchToProps)(MatrixView);
 
 
 function popUp(that,tipHasX,v){
+
   let infos = v.target.getAttribute("info").split("_").map(v=>Number(v))
       let name = []
       name.push(labels[infos[0]].name)
@@ -327,6 +328,8 @@ function popUp(that,tipHasX,v){
       let joinName = name.sort((a,b)=>{
           return b.localeCompare(a)
       }).join('-')
+      console.log("")
+      // 如果那两个人有共同的交集的话：
       if(that.props.peopleToList[joinName]!=undefined){
         let selectListData = that.props.peopleToList[joinName]
         let tipStyle = {
@@ -341,6 +344,7 @@ function popUp(that,tipHasX,v){
           tipHasX:tipHasX
         })
       }else{
+        // 该两人没有交集
         let tipStyle = {
             left:v.clientX,
             top:v.clientY,
