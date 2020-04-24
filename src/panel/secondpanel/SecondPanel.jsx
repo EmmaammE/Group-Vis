@@ -28,6 +28,7 @@ class SecondPanel extends React.Component {
             showIndex: [0, 0],
             // step: [第几层，第几个]
             step2index: { 1: [0, 0] },
+            similarGrid: [-1, -1]
         }
         this.clickFlower = this.clickFlower.bind(this);
         this._hoverFlower = this._hoverFlower.bind(this);
@@ -37,7 +38,7 @@ class SecondPanel extends React.Component {
     componentDidUpdate(prevProps) {
         if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
             if(prevProps.step !== this.props.step) {
-                let { grid, step2index, hoverIndex, lastHoverIndex } = this.state;
+                let { grid, step2index, hoverIndex } = this.state;
                 let { group, step } = this.props;
                 let another = sessionStorage.getItem('another');
                 if (grid.length === 0) {
@@ -48,95 +49,90 @@ class SecondPanel extends React.Component {
     
                     this.setState({ grid: newGrid })
     
-                } else if(another !== null ) {
-                    let newGrid = grid.slice(0);
-                    let _grid = newGrid[0];
-    
-                    step2index[step] = [0, _grid.size];
-    
-                    _grid.size += 1;
-                    _grid.positions.push(group[step][POSITIONS]);
-                    _grid.step.push(step);
-                    _grid.data.push(group[step][TOPICS])
-    
-                    sessionStorage.removeItem('another')
-    
-                    this.setState({
-                        grid: newGrid,
-                        step2index
-                    })
                 } else {
+                    let similarGrid = [-1, -1];
                     let newGrid = grid.slice(0);
-    
-                    let similiarStep = sessionStorage.getItem('similiar');
-                    if (step === +similiarStep) {
-                        // 是相似的人， 需要在同层增加花朵
-                        let currentLayer = hoverIndex[0];
-    
-                        let newIndex = newGrid[currentLayer].size;
-    
-                        newGrid[currentLayer].next += 1;
-    
-                        step2index[step] = [currentLayer, newIndex];
-    
-                        let _grid = newGrid[currentLayer];
+
+                    if(another !== null ) {
+                        let _grid = newGrid[0];
+        
+                        step2index[step] = [0, _grid.size];
+        
                         _grid.size += 1;
                         _grid.positions.push(group[step][POSITIONS]);
                         _grid.step.push(step);
                         _grid.data.push(group[step][TOPICS])
-    
-                        this.setState({
-                            grid: newGrid,
-                            step2index,
-                        })
+        
+                        sessionStorage.removeItem('another')
+        
                     } else {
-                        if (step === similiarStep + 1) {
-                            // 是相似的人和当前人产生的群体， 需要在同层增加花朵并连线
-                            // 清除session
-                            sessionStorage.removeItem('similiar');
-                        }
-    
-                        let currentLayer = hoverIndex[0];
-                        let lastIndex = step2index[step - 1];
-    
-                        if (lastHoverIndex !== undefined) {
-                            lastIndex = step2index[lastHoverIndex]
-                        }
-    
-    
-                        // 被选中的这朵❀没有下一层
-                        if (currentLayer === grid.length - 1) {
-                            newGrid[lastIndex[0]].next = 1;
-                            newGrid.push({
-                                ...GRID_ITEM_TEMPLATE,
-                                step: [step],
-                                positions: [group[step][POSITIONS]],
-                                data: [group[step][TOPICS]]
-                            });
-                            // step2index[step] = [1,0];
-                            step2index[step] = [lastIndex[0] + 1, 0];
-                        } else {
-                            // 被选中的这朵❀有下一层
-                            // 新的❀是这一层的第newIndex个
+                        let similiarStep = sessionStorage.getItem('similiar');
+                        if (step === +similiarStep) {
+                            // 是相似的人， 需要在同层增加花朵
+                            let currentLayer = hoverIndex[0];
+        
                             let newIndex = newGrid[currentLayer].size;
-    
-                            newGrid[currentLayer].next += 1;
-    
-                            step2index[step] = [currentLayer + 1, newIndex];
-    
-                            let _grid = newGrid[currentLayer + 1];
+        
+                            step2index[step] = [currentLayer, newIndex];
+                            
+                            if(currentLayer >= 1) {
+                                newGrid[currentLayer - 1].next += 1;
+                            }
+
+                            let _grid = newGrid[currentLayer];
                             _grid.size += 1;
                             _grid.positions.push(group[step][POSITIONS]);
                             _grid.step.push(step);
                             _grid.data.push(group[step][TOPICS])
+                        
+                        } else {
+                            let currentLayer = hoverIndex[0];
+                            
+                            // 被选中的这朵❀没有下一层
+                            if (currentLayer === grid.length - 1) {
+                                newGrid[currentLayer].next = 1;
+                                newGrid.push({
+                                    ...GRID_ITEM_TEMPLATE,
+                                    step: [step],
+                                    positions: [group[step][POSITIONS]],
+                                    data: [group[step][TOPICS]]
+                                });
+                                // step2index[step] = [1,0];
+                                step2index[step] = [currentLayer+1, 0];
+                            } else {
+                                // 被选中的这朵❀有下一层
+                                // 新的❀是下一层的第newIndex个
+                                let newIndex = newGrid[currentLayer+1].size;
+        
+                                newGrid[currentLayer].next += 1;
+        
+                                step2index[step] = [currentLayer + 1, newIndex];
+        
+                                let _grid = newGrid[currentLayer + 1];
+                                _grid.size += 1;
+                                _grid.positions.push(group[step][POSITIONS]);
+                                _grid.step.push(step);
+                                _grid.data.push(group[step][TOPICS])
+                            }
+
+                            if (step === +similiarStep + 1) {
+                                // 是相似的人和当前人产生的群体， 需要在同层增加花朵并连线
+
+                                // 推荐的相似的人的坐标
+                                similarGrid[0] = step2index[step - 1]
+                                // 合在一起的群体的坐标
+                                similarGrid[1] = step2index[step]
+                                // 清除session
+                                sessionStorage.removeItem('similiar');
+                            }
                         }
-    
-                        this.setState({
-                            // grids: newGrid,
-                            grid: newGrid,
-                            step2index,
-                        })
                     }
+
+                    this.setState({
+                        grid: newGrid,
+                        step2index,
+                        similarGrid
+                    })
                 }
             }
 
@@ -247,9 +243,14 @@ class SecondPanel extends React.Component {
     }
 
     render() {
-        let { grid, hoverIndex, showIndex} = this.state;
+        let { grid, hoverIndex, showIndex, similarGrid} = this.state;
         let detail = grid[showIndex[0]], y = showIndex[1];
         let _value = Math.max(...grid.map(g => g.size));
+        let style;
+
+        if(_value === 1 ) {
+            style = {width: '45%'}
+        }
 
         return (
             <div className="second-panel">
@@ -284,9 +285,15 @@ class SecondPanel extends React.Component {
                             grid.map((item, i) => {
                                 if (item) {
                                     return (
-                                        <div className="grid-line" key={'line-' + i}>
+                                        <div 
+                                            className="grid-line" key={'line-' + i}
+                                            style={style}
+                                        >
                                             <FlowerContainer
-                                                width = {100 * item.size /_value + '%'}
+                                                // width = {100 * item.size /_value + '%'}
+                                                similiarFlag = {similarGrid[0][0] === i ? 
+                                                    [similarGrid[0][1], similarGrid[1][1]] : []}
+                                                max = {_value}
                                                 step={item.step}
                                                 leaves={item.data}
                                                 current={item.size}

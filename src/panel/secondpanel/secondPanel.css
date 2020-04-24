@@ -28,7 +28,8 @@
     display: flex;
     justify-content: center; 
     transition: padding 300ms ease-in-out;
-    margin-top: -15px;
+    margin-top: -2%;
+    width: 95%;
 }
 
 .second-panel .lines {
@@ -96,7 +97,7 @@
     align-items: center;
     transition: height 200ms ease-in-out, 
         padding-left 300ms ease-in-out 200ms;
-    width: 100%;
+    width: 110%;
 }
 
 /* 滚动条 */
@@ -118,4 +119,20 @@
 
 .second-panel .flower-detail {
     margin: -15px 0;
+}
+
+.connect-line {
+    stroke-dasharray: 1500;
+    stroke-dashoffset: 1500;
+    animation: draw .5s linear 1 forwards;
+}
+
+.unset-line {
+    stroke-dasharray: 8;
+}
+
+@keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
 }
