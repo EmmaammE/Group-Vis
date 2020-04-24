@@ -40,7 +40,7 @@ import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
 import Tip from '../tooltip/Tip'
 import leaf from '../../assets/leaf/leaf.svg'
 import {TOPICS} from '../../util/name.js'
-import Motion from '../motion/motion'
+import Motion from '../motion/Motion'
 
 
 const btnData = [
