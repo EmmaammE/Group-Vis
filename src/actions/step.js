@@ -169,9 +169,7 @@ function fetchBySocket(dispatch, param, KEY, step, type) {
             "data": JSON.parse(evt.data)
         };
         websocket.close();
-
         handleTopicRes(dispatch, received_json, KEY, step, type)
-
     };
 
     // 关闭连接后要做的事

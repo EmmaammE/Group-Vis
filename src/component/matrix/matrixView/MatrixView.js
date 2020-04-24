@@ -183,8 +183,11 @@ class MatrixView extends React.Component{
   render(){
     if(sortedData==-1||matrixViewState!=this.props.matrixView){
       matrixViewState = this.props.matrixView
+      // console.log("matrixViewState",matrixViewState)
       sortedData = sortMatrixPerson(this.props.matrixView)
     }
+
+    
     
     // console.log("sortedData--matrixView",sortedData)
     matrixData = sortedData.matrixData
@@ -215,7 +218,7 @@ class MatrixView extends React.Component{
           } 
           
           <div className="matrixView-clear" onClick={this.handleClear}>
-            <CircleBtn  type={8} active={true}/>
+            <CircleBtn  type={6} active={true}/>
           </div> 
         </div>
         {
@@ -328,7 +331,7 @@ function popUp(that,tipHasX,v){
       let joinName = name.sort((a,b)=>{
           return b.localeCompare(a)
       }).join('-')
-      console.log("")
+      // console.log("")
       // 如果那两个人有共同的交集的话：
       if(that.props.peopleToList[joinName]!=undefined){
         let selectListData = that.props.peopleToList[joinName]

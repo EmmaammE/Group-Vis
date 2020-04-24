@@ -499,45 +499,62 @@ export function filterTimeLine(data,flag){
     return {tLabelData,tCircleData}
     
 }
-export function filterMatrixView(data,flag){
+export function filterMatrixView(that,data,flag){
     let personIndex = 0;
     let personToIndex = {}
     let matrixPerson = []
     let matrixData = []
+    let peopleToDiscriptions = {}
+
     for(let v of data){
         for(let k of v.cData){
             let isChoose = flag||k.isChoose
             if(isChoose&&k.persons.length>1){
-                for(let p of k.persons){
+                // 该叙述中出现过的人数大于1 
+                // for(let p of k.persons){
+                k.persons.forEach((p,i)=>{
                     if(personToIndex[p]==undefined){
                         personToIndex[p] = personIndex
                         matrixPerson[personIndex] = {
                             name:p,
                             number:0,
                             preIndex:personIndex,
-                            newIndex:0
+                            newIndex:0,
+                            personId:k.personsId[i]
+
                         }
                         matrixData[personIndex]=[]
                         personIndex++
                     }
                     matrixPerson[personToIndex[p]].number++
-                }
+                })
                 for(let i=0;i<k.persons.length;i++){
                     for(let j=0;j<k.persons.length;j++){
                         let a = personToIndex[k.persons[i]]
                         let b = personToIndex[k.persons[j]]
                         if(a<b){
+                            let name = []
+                            name.push(k.persons[i])
+                            name.push(k.persons[j])
+                            let joinName = name.sort((a,b)=>{
+                                return b.localeCompare(a)
+                            }).join('-')
                             if(matrixData[a][b]==undefined){
                                 matrixData[a][b]=1
+                                peopleToDiscriptions[joinName]=[]
                             }else{
-                               matrixData[a][b]+=1 
+                                matrixData[a][b]+=1 
                             }
+                            peopleToDiscriptions[joinName].push(k.discription)
                         }
                     }         
                 }
             }
         }
     }
+    // console.log("peopleToDiscriptions",peopleToDiscriptions)
+    that.props.updateMatrix({matrixData,matrixPerson})
+    that.props.initPeopleCommon(peopleToDiscriptions)
     return {matrixData,matrixPerson}
 }
 export function filterSelectList(data,flag){
@@ -573,11 +590,6 @@ export function filterMapView(data,flag){
             let isChoose = flag||k.isChoose
             if(isChoose){
                 discriptionIds.push(k.id)
-                // k.personsId.forEach((v,i)=>{
-                //     if(!mapViewData[v]){
-                //         mapViewData[v] = k.persons[i]
-                //     }
-                // })
             }
         }
     }

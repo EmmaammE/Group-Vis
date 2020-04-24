@@ -12,6 +12,8 @@ class SelectList extends React.Component{
   }
   render(){
     let data = this.props.selectListView.selectListData
+    // 对selectList数据进行去重
+    data = [...new Set(data)]
     data.sort((a,b)=>a.localeCompare(b))
     
     return(
