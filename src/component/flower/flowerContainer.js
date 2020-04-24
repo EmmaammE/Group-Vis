@@ -53,12 +53,9 @@ class FlowerContainer extends React.Component {
             })
         }
 
-        if( similiarFlag[0] !== -1 && JSON.stringify(prevProps.similiarFlag) !== JSON.stringify(similiarFlag)) {
-            let { similiarFlags } = this.state;
-            similiarFlags.push(similiarFlag);
-
+        if( similiarFlag.length !== 0 && JSON.stringify(prevProps.similiarFlag) !== JSON.stringify(similiarFlag)) {
             this.setState({
-                similiarFlags
+                similiarFlags: similiarFlag
             })
         }
     }
@@ -126,7 +123,7 @@ class FlowerContainer extends React.Component {
                                 <g key={'flag-'+index}>
                                     <path
                                         className="unset-line"
-                                        d = {`M ${BOX_WIDTH * 2 * flag[0] - BOX_WIDTH/2} ${BOX_WIDTH} L ${BOX_WIDTH * 2 * flag[0] + BOX_WIDTH/2 }, ${BOX_WIDTH} `}
+                                        d = {`M ${BOX_WIDTH * ( 2 * flag[2] + 3/2)} ${BOX_WIDTH} L ${BOX_WIDTH * (2 * flag[0] + 1/2 ) }, ${BOX_WIDTH} `}
                                         fill="transparent" stroke="black"
                                     />
                                     <path

@@ -24,11 +24,12 @@ class SecondPanel extends React.Component {
             // grid: [{"next":2,"size":1,"selected":0,"step":[1],"positions":[{"4921":[0.3788028680828691,0.39595518113357003,"李格非"],"15378":[-0.08791303998484105,-0.7056130209753252,"李清照"],"15379":[0.21487799020170562,0.03372699978657273,"赵明诚"],"43374":[0.06103582979269742,-0.02482997164673821,"张汝舟"],"48805":[0.1914571261916407,-0.41247609633418825,"韩玉父"],"50876":[-0.9724974576870214,0.2457022407247119,"端木采"],"50879":[0.21423668340295096,0.4675346673113978,"毛晋"]}],"data":[[{"weight":0.3333333333333333,"content":["李清照","著述关系类"],"ratio":0.428571},{"weight":0.3333333333333333,"content":["李清照","著述关系类","序跋文字"],"ratio":0.428571},{"weight":0.3333333333333333,"content":["李清照"],"ratio":1}]]},{"next":-1,"size":2,"selected":0,"step":[2,3],"positions":[{"15378":[-0.8864821086140969,-0.29092751011475426,"李清照"],"15379":[0.325868556039981,1.103276683967385,"赵明诚"],"43374":[0.9709706066935145,-0.6883076719656546,"张汝舟"],"48805":[-0.4103570541193981,-0.12404150188697668,"韩玉父"]},{"15378":[-0.8864821086140969,-0.29092751011475426,"李清照"],"15379":[0.325868556039981,1.103276683967385,"赵明诚"],"43374":[0.9709706066935145,-0.6883076719656546,"张汝舟"],"48805":[-0.4103570541193981,-0.12404150188697668,"韩玉父"]}],"data":[[{"weight":0.038702632318818715,"content":["著述关系类","序跋文字"],"ratio":0.5},{"weight":0.12878270608650047,"content":["建炎","正德","天会"],"ratio":0.5},{"weight":0.13982968986662211,"content":["赵明诚"],"ratio":0.5},{"weight":0.2027572593241588,"content":["韩玉父"],"ratio":0.5},{"weight":0.2111326817552329,"content":["李清照"],"ratio":1},{"weight":0.27879503064866706,"content":["张汝舟"],"ratio":0.5}],[{"weight":0.038702632318818715,"content":["著述关系类","序跋文字"],"ratio":0.5},{"weight":0.12878270608650047,"content":["建炎","正德","天会"],"ratio":0.5},{"weight":0.13982968986662211,"content":["赵明诚"],"ratio":0.5},{"weight":0.2027572593241588,"content":["韩玉父"],"ratio":0.5},{"weight":0.2111326817552329,"content":["李清照"],"ratio":1},{"weight":0.27879503064866706,"content":["张汝舟"],"ratio":0.5}]]}],
             gridBack: {},
             // [第几层， 第几个，step]
-            hoverIndex: [0, 0, 0],
+            hoverIndex: [0, 0, 1],
             showIndex: [0, 0],
             // step: [第几层，第几个]
             step2index: { 1: [0, 0] },
-            similarGrid: [-1, -1]
+            similarGrids: [],
+            gridsIndex: {}
         }
         this.clickFlower = this.clickFlower.bind(this);
         this._hoverFlower = this._hoverFlower.bind(this);
@@ -38,7 +39,7 @@ class SecondPanel extends React.Component {
     componentDidUpdate(prevProps) {
         if (JSON.stringify(prevProps.group) !== JSON.stringify(this.props.group)) {
             if(prevProps.step !== this.props.step) {
-                let { grid, step2index, hoverIndex } = this.state;
+                let { grid, step2index, hoverIndex, similarGrids, gridsIndex } = this.state;
                 let { group, step } = this.props;
                 let another = sessionStorage.getItem('another');
                 if (grid.length === 0) {
@@ -69,21 +70,35 @@ class SecondPanel extends React.Component {
                         let similiarStep = sessionStorage.getItem('similiar');
                         if (step === +similiarStep) {
                             // 是相似的人， 需要在同层增加花朵
-                            let currentLayer = hoverIndex[0];
-        
-                            let newIndex = newGrid[currentLayer].size;
-        
+                            let currentLayer = hoverIndex[0], newIndex;
+                            let _grid = newGrid[currentLayer];
+                            _grid.size += 1;
+                            
+                            let origin_step = +sessionStorage.getItem('similiar_origin');
+                            if( origin_step === step - 1) {
+
+                                newIndex = newGrid[currentLayer].size - 1;
+                                _grid.positions.push(group[step][POSITIONS]);
+                                _grid.step.push(step);
+                                _grid.data.push(group[step][TOPICS]);
+                            } else {
+
+                                newIndex = step2index[origin_step][1] + 1;
+                                _grid.positions.splice(newIndex, 0, group[step][POSITIONS]);
+                                _grid.step.splice(newIndex, 0, step);
+                                _grid.data.splice(newIndex, 0, group[step][TOPICS]);
+
+                                // 更新step的index
+                                for(let i = newIndex + 1; i< _grid.step.length; i++) {
+                                   step2index[_grid.step[i]][1] += 1;
+                                }
+                            }
+
                             step2index[step] = [currentLayer, newIndex];
                             
                             if(currentLayer >= 1) {
                                 newGrid[currentLayer - 1].next += 1;
                             }
-
-                            let _grid = newGrid[currentLayer];
-                            _grid.size += 1;
-                            _grid.positions.push(group[step][POSITIONS]);
-                            _grid.step.push(step);
-                            _grid.data.push(group[step][TOPICS])
                         
                         } else {
                             let currentLayer = hoverIndex[0];
@@ -118,12 +133,23 @@ class SecondPanel extends React.Component {
                             if (step === +similiarStep + 1) {
                                 // 是相似的人和当前人产生的群体， 需要在同层增加花朵并连线
 
+                                let x =step2index[step-1][0];
                                 // 推荐的相似的人的坐标
-                                similarGrid[0] = step2index[step - 1]
+                                similarGrid[0] = step2index[step - 1][1]
                                 // 合在一起的群体的坐标
-                                similarGrid[1] = step2index[step]
+                                similarGrid[1] = step2index[step][1]
+                                let origin_step = +sessionStorage.getItem('similiar_origin');
+                                // 被推荐的群体的坐标
+                                similarGrid[2] = step2index[origin_step][1]
                                 // 清除session
                                 sessionStorage.removeItem('similiar');
+                                sessionStorage.removeItem('similiar_origin');
+
+                                if(gridsIndex[x] === undefined) {
+                                    gridsIndex[x] = []
+                                }
+                                gridsIndex[x].push(similarGrids.length)
+                                similarGrids.push(similarGrid);
                             }
                         }
                     }
@@ -131,7 +157,8 @@ class SecondPanel extends React.Component {
                     this.setState({
                         grid: newGrid,
                         step2index,
-                        similarGrid
+                        similarGrids,
+                        gridsIndex
                     })
                 }
             }
@@ -243,7 +270,7 @@ class SecondPanel extends React.Component {
     }
 
     render() {
-        let { grid, hoverIndex, showIndex, similarGrid} = this.state;
+        let { grid, hoverIndex, showIndex, similarGrids, gridsIndex} = this.state;
         let detail = grid[showIndex[0]], y = showIndex[1];
         let _value = Math.max(...grid.map(g => g.size));
         let style;
@@ -291,8 +318,9 @@ class SecondPanel extends React.Component {
                                         >
                                             <FlowerContainer
                                                 // width = {100 * item.size /_value + '%'}
-                                                similiarFlag = {similarGrid[0][0] === i ? 
-                                                    [similarGrid[0][1], similarGrid[1][1]] : []}
+                                                similiarFlag = { gridsIndex[i] !== undefined
+                                                    ? gridsIndex[i].map(e => similarGrids[e])
+                                                    : [] }
                                                 max = {_value}
                                                 step={item.step}
                                                 leaves={item.data}
