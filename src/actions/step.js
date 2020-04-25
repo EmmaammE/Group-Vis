@@ -197,8 +197,7 @@ function label2EnName(label){
 }
 
 function handleTopicRes(dispatch, res, KEY, step, type) {
-    // console.log(Object.keys(res.data))
-
+    
     if(res.data["is_success"]) {
         // 存储label是Addr的节点的id
         let addressNode = {};
@@ -354,7 +353,7 @@ export function fetchTopicData(param, KEY, step, type) {
 
 export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addressMap, type,KEY){
 
-    console.log("返回的数据***",res.data,"temp***",temp);
+    console.log("返回的数据***",res.data,"temp***",temp,addressMap,type,KEY);
 
     let historyData = res.data["adjust_topic_weights_params"]
     // nodeDictKey用于从id到翻译好的node的名字，注意名字有中英版，此时是已经翻译好的版本

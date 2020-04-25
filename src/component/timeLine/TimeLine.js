@@ -19,6 +19,8 @@ const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
 const margin={left:50,top:10,right:10,bottom:20}
 let startLoc=[];
+
+let brushedPersons = []
 let brushWidth;
 let brushHeight;
 let svgX ,svgY;
@@ -143,7 +145,11 @@ class TimeLine extends React.Component{
     let y2 = y1 + this.state.brushHeight
     // 拿到尺寸数据反推回去
     let brushPersonsId = rectFilter(x1,y1,x2,y2,timeLineData)
-    let personsIdObject = [...brushPersonsId]
+    // 合并去重
+    brushedPersons = [...brushedPersons,...brushPersonsId]
+    brushedPersons = [...new Set(brushedPersons)]
+    // console.log("brushPersonsId",brushedPersons)
+    let personsIdObject = [...brushedPersons]
           .reduce((acc, e) => ({...acc, [e]:true}), {})
     this.props.setPerson(personsIdObject)
     brushFlag=false
@@ -158,6 +164,7 @@ class TimeLine extends React.Component{
   }
 
   handleClear(){ 
+
     timeLineData.tCircleData.forEach((d,i)=>{
         d.forEach(v=>{
           v.isChoose = false
@@ -171,6 +178,7 @@ class TimeLine extends React.Component{
       brushHeight:0
     })
     this.props.setPerson({})
+    brushedPersons = []
   }
 
   render(){
@@ -396,21 +404,27 @@ function rectFilter(x1,y1,x2,y2,data){
   let h2 = Math.floor(yScaleRT(y2))
   h2 = h2<0?0:h2
   let brushPersonsId = []
-  data.tLabelData.forEach((v,i)=>{
-    if(i>=h1&&i<=h2){
-      brushPersonsId.push(v.personId)
-    }
-  })
+  // data.tLabelData.forEach((v,i)=>{
+  //   if(i>=h1&&i<=h2){
+  //     brushPersonsId.push(v.personId)
+  //   }
+  // })
   let w1 = xScaleRT(x1)
   let w2 = xScaleRT(x2)
   // 将其标记出来
+  let tempLabelData = data.tLabelData
   data.tCircleData.forEach((d,i)=>{
     if(i>=h1&&i<=h2){
+      let chooseLeaf = false
       d.forEach(v=>{
         if(v.distance>=w1&&v.distance<=w2){
           v.isChoose = true
+          chooseLeaf = true
         }
       })
+      if(chooseLeaf){
+        brushPersonsId.push(tempLabelData[i].personId)
+      }
     }
   })
 
