@@ -11,17 +11,18 @@ import Tip from '../../tooltip/Tip'
 import { setPerson } from '../../../actions/data'
 import MatrixButton from '../../button/MatrixButton'
 import CircleBtn from '../../button/circlebtn';
+import {deepClone} from '../../../util/tools'
 
 // import 
 // 暂时的假数据
-let WIDTH = 295;
+let WIDTH = 360;
 let HEIGHT = 295;
 const START_COLOR = 'red'
 const END_COLOR = 'rgb(3,93,195)' 
 const SINGAL_HEIGHT = 25
 let labels
 let height
-let margin={left:70,top:45,right:5,bottom:15}
+let margin={left:80,top:45,right:45,bottom:15}
 let sortedData = -1;
 let matrixData
 let matrixViewState
@@ -31,6 +32,7 @@ let brushFlag=false;
 let brushWidth;
 let brushHeight;
 let singleDis ;
+let brushedPersons = []
 
 class MatrixView extends React.Component{
   constructor(props){
@@ -118,11 +120,12 @@ class MatrixView extends React.Component{
         // 依据框选范围判断：是框选人还是放大matrixView，看横坐标比较大那个在哪个位置
         if(that.state.brushTransX+that.state.brushWidth<margin.left&&that.state.brushWidth>10&&that.state.brushHeight>singleDis){
           // console.log("矩形刷选人")
+          // 框选人
           filterPerson(that,singleDis)
-        }else if(that.state.brushWidth>singleDis&&that.state.brushHeight>singleDis){
+        }else if(that.state.brushWidth>singleDis&&that.state.brushHeight>singleDis&&that.state.brushTransX+that.state.brushWidth<=WIDTH-margin.right+5){
           rectFilter(that,singleDis).then(()=>{
           })
-        }else if((that.state.brushWidth>singleDis||that.state.brushHeight>singleDis)&&that.state.brushTransX>WIDTH-margin.right){
+        }else if((that.state.brushWidth>10||that.state.brushHeight>10)&&that.state.brushTransX>WIDTH-margin.right){
           sortedData = -1
         }
          // 刷选框消失
@@ -178,13 +181,14 @@ class MatrixView extends React.Component{
       brushHeight:0
     })
     this.props.setPerson({})
+    brushedPersons = []
   }
 
   render(){
     if(sortedData==-1||matrixViewState!=this.props.matrixView){
       matrixViewState = this.props.matrixView
       // console.log("matrixViewState",matrixViewState)
-      sortedData = sortMatrixPerson(this.props.matrixView)
+      sortedData = sortMatrixPerson(deepClone(this.props.matrixView))
     }
 
     
@@ -234,7 +238,7 @@ class MatrixView extends React.Component{
         <div  className="matrix-container">
           {
             
-            <svg width={WIDTH+60} height={HEIGHT} viewBox={`0 0 ${WIDTH+60} ${HEIGHT}`} ref={this.$container}>
+            <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={this.$container}>
               {labels.length==0
                 ?<text 
                   transform={`translate(10,${margin.top})`}
@@ -411,8 +415,11 @@ function filterPerson(that,singleDis){
           brushPersonsId.push(sortedData.matrixPerson[i].id)
         }
       }
-      console.log("brushPersonId",brushPersonsId)
-      let personsIdObject = [...brushPersonsId]
+      // 合并去重
+      brushedPersons = [...brushedPersons,...brushPersonsId]
+      brushedPersons = [...new Set(brushedPersons)]
+      console.log("brushedPersons",brushedPersons)
+      let personsIdObject = [...brushedPersons]
           .reduce((acc, e) => ({...acc, [e]:true}), {})
       that.props.setPerson(personsIdObject)
     }
