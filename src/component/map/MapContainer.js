@@ -65,10 +65,11 @@ class MapContainer extends React.Component {
                 <div className="g-chart-title title-margin">Map View</div>
                 <div className = "mapView-label-container">
                     <div className="mapView-label">
-                        <svg width="36px" height="18px">
+                        <svg  width="36px" height="18px">
                             <image
-                                width="100%" 
-                                height="100%" 
+                                className="mapView-label-image"
+                                width="36" 
+                                height="16" 
                                 xlinkHref={mapLogal}
                             />
                         </svg>

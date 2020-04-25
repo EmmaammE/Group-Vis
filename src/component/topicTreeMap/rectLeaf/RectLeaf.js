@@ -65,14 +65,14 @@ class RectLeaf extends React.Component{
       ></rect>
       <rect
         transform={`translate(0,${transHeight})`}
-        fill="#f1f8f6"
+        fill="#f0dbd6"
         width = {this.props.width}
         height= {pHeight}  
         index={index} 
       >
       </rect>
       <rect
-        stroke="#c68b54"
+        stroke="#c36958"
         // rx ="5"
         // ry="5"
         fill="none"

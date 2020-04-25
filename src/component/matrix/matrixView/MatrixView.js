@@ -18,7 +18,7 @@ import {deepClone} from '../../../util/tools'
 let WIDTH = 360;
 let HEIGHT = 295;
 const START_COLOR = 'red'
-const END_COLOR = 'rgb(3,93,195)' 
+const END_COLOR = '#164a73' 
 const SINGAL_HEIGHT = 25
 let labels
 let height
@@ -293,9 +293,10 @@ class MatrixView extends React.Component{
                   className="brush"
                   width={this.state.brushWidth}
                   height={this.state.brushHeight}
-                  opacity="0.2"
+                  opacity="0.4"
                   strokeWidth="1.5"
                   stroke="black"
+                  fill="#eeeeee"
                 >
                 </rect>
               </g>

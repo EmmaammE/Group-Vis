@@ -654,13 +654,13 @@ class TopicTreeMap extends React.Component{
                 <svg width="12px" height="12px">
                   <rect
                     transform = "translate(0,6)"
-                    fill="#a8f7e0"
+                    fill="#e8c6bf"
                     width = "12px"
                     height= "6px" 
                   >
                   </rect>
                   <rect
-                    stroke="#c68b54"
+                    stroke="#c36958"
                     fill="none"
                     strokeWidth = "1.5"
                     width = "12px"
@@ -745,8 +745,8 @@ class TopicTreeMap extends React.Component{
                     width = {width}
                     height = {height}
                     fill= "none"
-                    stroke= "#c47d3a"
-                    strokeWidth = "3"
+                    stroke= "#b4432e"
+                    strokeWidth = "3.5"
                     transform={`translate(${parentX},${parentY})`}
                   > 
                   </rect>
@@ -792,7 +792,7 @@ class TopicTreeMap extends React.Component{
                     index={i}
                     className="brush"
                     points={v}
-                    style={{fill:"#eeeeee", stroke:"black", strokeWidth:2, opacity:0.4}}
+                    style={{fill:"#eeeeee", stroke:"black", strokeWidth:2, opacity:0.2}}
                   >
                   </polygon>
                  ))
@@ -806,7 +806,7 @@ class TopicTreeMap extends React.Component{
                 className="brush"
                 width={this.state.brushWidth}
                 height={this.state.brushHeight}
-                opacity="0.4"
+                opacity="0.2"
                 strokeWidth="2"
                 stroke="black"
                 fill="#eeeeee"

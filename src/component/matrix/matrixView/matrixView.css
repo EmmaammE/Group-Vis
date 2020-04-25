@@ -36,7 +36,7 @@
 .matrix-label .middle-rectangle{
   width: 70%;
   height: 6px;
-  background:linear-gradient(to right,#eeeeee 0%,rgb(3,93,195) 100%); ;
+  background:linear-gradient(to right,#eeeeee 0%,#164a73 100%); ;
 }
 
 .matrix-label div{

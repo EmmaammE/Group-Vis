@@ -2,22 +2,24 @@
   <defs>
     <style>
       .cls-1 {
-        fill: #9792d3;
+        fill: #B9DDD2;
+        stroke: #277077;
+        stroke-width: 0.5px;
       }
 
       .cls-2, .cls-3, .cls-4 {
         fill: none;
-        stroke: #8d8abc;
+        stroke: #277077;
         stroke-miterlimit: 10;
-        stroke-width: 0.25px;
+        stroke-width: 0.3px;
       }
 
       .cls-3 {
-        stroke-dasharray: 1.03 1.03;
+        stroke-dasharray: 2 2;
       }
 
       .cls-4 {
-        stroke-dasharray: 1.01 1.01;
+        stroke-dasharray: 2 2;
       }
     </style>
   </defs>

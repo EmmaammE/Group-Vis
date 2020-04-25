@@ -170,12 +170,13 @@
 }
 
 .rect-header{
-  background :#eddccb;
+  background :#cc7a69;
   width :"100%";
 }
 
 .rect-header-content{
   font-size: 12px;
   transform: scale(0.85);
+  color: white;
   margin: 0;
 }
