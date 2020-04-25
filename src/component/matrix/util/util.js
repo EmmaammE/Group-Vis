@@ -26,9 +26,10 @@ export function scaleFactory(width,data,startColor,endColor){
 export function sortMatrixPerson(matrixView){
 
   let matrixPerson = matrixView.matrixPerson
-  //将number为0的人过滤掉
+  
   let pIndex = matrixPerson.map(v=>v.preIndex)
-  pIndex = pIndex.filter(v=>matrixPerson[v].number>0)
+  //将number为0的人过滤掉
+  // pIndex = pIndex.filter(v=>matrixPerson[v].number>0)
   if(pIndex.length==0){
     return matrixView
   }
@@ -40,10 +41,15 @@ export function sortMatrixPerson(matrixView){
 
   for(let i=0;i<matrixData.length;i++){
     for(let j=0;j<matrixData[i].length;j++){
-      if(matrixData[i][j]!=undefined&&i<j){
+      if(matrixData[i][j]!=undefined){
         edgeData.push({
           source:i,
           target:j,
+          weight:matrixData[i][j]
+        })
+        edgeData.push({
+          source:j,
+          target:i,
           weight:matrixData[i][j]
         })
       }
@@ -85,11 +91,11 @@ export function sortMatrixPerson(matrixView){
     hashMap[v] = i
   })
 
-  matrixPerson = matrixPerson.filter(v=>v.number>0)
+  // matrixPerson = matrixPerson.filter(v=>v.number>0)
   matrixPerson.sort((a,b)=>hashMap[a.preIndex]-hashMap[b.preIndex])
   // console.log("finalIndex",finalIndex,matrixPerson)
   let preToNewIndex = {}
-  let newMatrixData = []
+  let newMatrixData = [] 
   let newMatrixPerson = matrixPerson.map((v,i)=>{
     newMatrixData[i] = new Array(matrixPerson.length).fill(0)
     v.newIndex = i
@@ -101,10 +107,8 @@ export function sortMatrixPerson(matrixView){
     }
   })
   for(let i=0;i<matrixData.length;i++){
-    let b = matrixData[i].length
-    for(let j=0;j<matrixData[i].length;j++){
-      let a = matrixData[i][j]
-      if(matrixData[i][j]!=undefined&&i<j){
+    for(let j=0;j<matrixData.length;j++){
+      if(matrixData[i][j]!=undefined){
         let newI = preToNewIndex[i]
         let newJ = preToNewIndex[j]
         newMatrixData[newI][newJ] = matrixData[i][j]

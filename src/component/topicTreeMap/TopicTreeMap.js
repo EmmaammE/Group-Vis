@@ -31,12 +31,12 @@ import CircleBtn from '../button/circlebtn';
 import {updateTopicView} from '../../redux/topicView.redux.js'
 import {initTopicWeight} from '../../redux/topicWeight.redux.js'
 import {updateTimeLine} from '../../redux/timeLine.redux.js'
-import {updateMatrix} from '../../redux/matrixView.redux.js'
+import {updateMatrix,initPeopleCommon} from '../../redux/matrixView.redux.js'
 import {updateSelectList} from '../../redux/selectList.redux.js'
 import {updateTopicWeight,updateTopicLrs} from '../../redux/topicWeight.redux.js'
 import RectLeaf from './rectLeaf/RectLeaf'
 import { setPerson } from '../../actions/data'
-import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
+import {updateGroupdata, fetchTopicData, removeTopic} from '../../actions/step.js'
 import Tip from '../tooltip/Tip'
 import leaf from '../../assets/leaf/leaf.svg'
 import {TOPICS} from '../../util/name.js'
@@ -135,7 +135,7 @@ class TopicTreeMap extends React.Component{
     svgHeight = container.clientHeight
     svgRatio = svgWidth/WIDTH < svgHeight/HEIGHT ? svgWidth/WIDTH : svgHeight/HEIGHT
     let svg =  d3.select(container)
-    svg.on("mousedown",function(){
+    svg.on("mousedown",function(e){
       if(!dragFlag&&d3.event.target.localName!="circle"){
         // console.log("svg-mousedown",d3.event.offsetX,d3.event.offsetY,d3.event)
         startLoc = [d3.event.offsetX/svgRatio,d3.event.offsetY/svgRatio]
@@ -415,13 +415,16 @@ class TopicTreeMap extends React.Component{
 
   handleDeleteTopic(){
     let deleteTopicId = topicData[this.state.selectedTopicIndex].id
-    console.log("deleteTopicId",deleteTopicId)
+    let that = this
+    // console.log("deleteTopicId",deleteTopicId)
     // 拿到该topic的Id，删除它，重新计算花朵数据，及右边视图数据，然后更新
     // 其实应该是先更新topicView视图的数据，然后依次去更新右边四个视图的数据
     // topicView数据本身就可以更新右边三个视图的数据
     // 在更新花朵的数据
     // 更新花朵group数据中其它视图中存储的数据
     let cStep = this.props.currentStep
+
+    this.props.removeTopic(deleteTopicId, cStep);
 
     topicData.splice(this.state.selectedTopicIndex,1)
     this.setState({
@@ -434,16 +437,16 @@ class TopicTreeMap extends React.Component{
     this.props.updateSelectList({selectListData})
     this.props.updateGroupdata("selectView",cStep,{selectListData})
 
-    let matrixViewData = filterMatrixView(topicData,true)
-    this.props.updateMatrix(matrixViewData)
+    let matrixViewData = filterMatrixView(that,topicData,true)
     this.props.updateGroupdata("matrixView",cStep,matrixViewData)
 
     let timeLineData = filterTimeLine(topicData,true)
     this.props.updateTimeLine(timeLineData)
     this.props.updateGroupdata("timelineView",cStep,timeLineData)
 
-    let mapViewPersons = filterMapView(topicData,true)
-    this.props.updateGroupdata("people",cStep,mapViewPersons)
+    let data = filterMapView(topicData, true,
+      this.props.group[cStep]["mapView"]['addressNode'], deleteTopicId)
+    this.props.updateGroupdata("mapView", cStep, data)
 
     // this
     let weights = this.props.group[cStep][TOPICS]
@@ -458,31 +461,55 @@ class TopicTreeMap extends React.Component{
     }
 
     this.props.updateGroupdata([TOPICS],cStep,weights)
-    console.log("weights",weights)
+    // console.log("weights",weights)
   }
   // 右上角的四个按钮的 注册事件
   //  selectList视图
   handleClickSelectList(){
-    let selectListData= filterSelectList(topicData)
+    let selectListData
+    if(this.state.polygons.length===0){
+      selectListData= filterSelectList(topicData,true)
+    }else{
+      selectListData= filterSelectList(topicData)
+    }
+    
     this.props.updateSelectList({selectListData})
   }
   //  Matrix View视图
   handleClickMatrixView(){
-    // console.log("matrixView",topicData)
-    let matrixViewData = filterMatrixView(topicData)
-    this.props.updateMatrix(matrixViewData)
+    let that = this
+    if(this.state.polygons.length===0){
+      filterMatrixView(that,topicData,true)
+    }else{
+      filterMatrixView(that,topicData)
+    }
+    
   }
   //  timeLine视图
   handleClickTimeLine(){
-    let timeLineData = filterTimeLine(topicData)
+    let timeLineData
+    if(this.state.polygons.length===0){
+      timeLineData = filterTimeLine(topicData,true)
+    }else{
+      timeLineData= filterTimeLine(topicData)
+    }
     this.props.updateTimeLine(timeLineData)
   }
 
   // mapView视图按钮
   handleClickMapView(){
-    let step = this.props.currentStep
-    let discriptionIds = filterMapView(topicData)
-    console.log("discriptionIds",discriptionIds)
+    let step = this.props.currentStep;
+    let data;
+    if(this.state.polygons.length===0){
+      data = filterMapView(topicData, true,
+        this.props.group[step]["mapView"]['addressNode'])
+  
+    }else{
+      data = filterMapView(topicData, undefined,
+        this.props.group[step]["mapView"]['addressNode'])
+    }
+
+    this.props.updateGroupdata("mapView", step, data)
   }
 
   handleRectLeafClick(e){
@@ -500,7 +527,6 @@ class TopicTreeMap extends React.Component{
       let tipHasX = true
       popUp(that,tipHasX,e)
     }
-
   }
 
   handleClickPolygons(e){
@@ -539,6 +565,7 @@ class TopicTreeMap extends React.Component{
     // 当topicData0时，或者this.props.topicView变化时更新
     let topicPropsUpdateFlag = false
     if(topicData.length===0||topicViewState!==this.props.topicView){
+      // 进入这个判断条件说明，数据源被切换
       topicViewState = this.props.topicView
       originTotalWeight = 0
       topicViewState.forEach(v=>{
@@ -549,6 +576,7 @@ class TopicTreeMap extends React.Component{
       })
       topicData = deepClone(this.props.topicView)
       topicPropsUpdateFlag = true
+      
     }
     let rectTreeData=[],rectGroupData=[]
     // 如果该视图依赖的props.topicView数据发生变动，则index设置为0
@@ -712,7 +740,7 @@ class TopicTreeMap extends React.Component{
                   }}
                 >
                 {({width,height,parentX,parentY})=>
-                  <rect
+                  height>0&&<rect
                     key={`rectGroup-${i}`} 
                     width = {width}
                     height = {height}
@@ -740,7 +768,7 @@ class TopicTreeMap extends React.Component{
                 }}
               >
                 {({width,height,parentX,parentY})=>
-                  <g transform={`translate(${parentX},${parentY})`}>
+                  height>0&&<g transform={`translate(${parentX},${parentY})`}>
                     <rect
                       stroke="#333333"
                       strokeWidth = "2.5"
@@ -827,7 +855,9 @@ const mapDispatchToProps = {
   updateTopicLrs,
   setPerson,
   updateGroupdata,
-  fetchTopicData
+  fetchTopicData,
+  initPeopleCommon,
+  removeTopic
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicTreeMap);

@@ -500,45 +500,62 @@ export function filterTimeLine(data,flag){
     return {tLabelData,tCircleData}
     
 }
-export function filterMatrixView(data,flag){
+export function filterMatrixView(that,data,flag){
     let personIndex = 0;
     let personToIndex = {}
     let matrixPerson = []
     let matrixData = []
+    let peopleToDiscriptions = {}
+
     for(let v of data){
         for(let k of v.cData){
             let isChoose = flag||k.isChoose
             if(isChoose&&k.persons.length>1){
-                for(let p of k.persons){
+                // 该叙述中出现过的人数大于1 
+                // for(let p of k.persons){
+                k.persons.forEach((p,i)=>{
                     if(personToIndex[p]==undefined){
                         personToIndex[p] = personIndex
                         matrixPerson[personIndex] = {
                             name:p,
                             number:0,
                             preIndex:personIndex,
-                            newIndex:0
+                            newIndex:0,
+                            personId:k.personsId[i]
+
                         }
                         matrixData[personIndex]=[]
                         personIndex++
                     }
                     matrixPerson[personToIndex[p]].number++
-                }
+                })
                 for(let i=0;i<k.persons.length;i++){
                     for(let j=0;j<k.persons.length;j++){
                         let a = personToIndex[k.persons[i]]
                         let b = personToIndex[k.persons[j]]
                         if(a<b){
+                            let name = []
+                            name.push(k.persons[i])
+                            name.push(k.persons[j])
+                            let joinName = name.sort((a,b)=>{
+                                return b.localeCompare(a)
+                            }).join('-')
                             if(matrixData[a][b]==undefined){
                                 matrixData[a][b]=1
+                                peopleToDiscriptions[joinName]=[]
                             }else{
-                               matrixData[a][b]+=1 
+                                matrixData[a][b]+=1 
                             }
+                            peopleToDiscriptions[joinName].push(k.discription)
                         }
                     }         
                 }
             }
         }
     }
+    // console.log("peopleToDiscriptions",peopleToDiscriptions)
+    that.props.updateMatrix({matrixData,matrixPerson})
+    that.props.initPeopleCommon(peopleToDiscriptions)
     return {matrixData,matrixPerson}
 }
 export function filterSelectList(data,flag){
@@ -567,22 +584,58 @@ export function filterBrushSelectList(data){
     return newData
 }
 
-export function filterMapView(data,flag){
-    let discriptionIds = []
+export function filterMapView(data, flag, node, deleteId){
+    let sentence2pos = [],  pos2sentence = {};
+
     for(let singleData of data){
-        for(let k of singleData.cData){ 
-            let isChoose = flag||k.isChoose
-            if(isChoose){
-                discriptionIds.push(k.id)
-                // k.personsId.forEach((v,i)=>{
-                //     if(!mapViewData[v]){
-                //         mapViewData[v] = k.persons[i]
-                //     }
-                // })
+        if( deleteId === undefined || deleteId !== singleData['id'] ) {
+            for(let k of singleData.cData){
+                let isChoose = flag || k.isChoose 
+                if(isChoose){
+                    // sentence2pos.push({
+                    //     pos: [],
+                    //     words: k["discription"],
+                    //     id: k['id'],
+                    //     personsId: k['personsId'],
+                    //     topic: [singleData['id'], singleData['label']]
+                    // })
+    
+                    let words = k['id'].split(" ");
+                    let _pos = [];
+                    words.forEach(word => {
+                        if(word !== '-1') {
+                            if(word in node) {
+                                _pos.push(word);
+                            } 
+                        }
+                    })
+    
+                    _pos.forEach(pos => {
+                        if(pos2sentence[pos] === undefined) {
+                            pos2sentence[pos] = [];
+                        }
+                        pos2sentence[pos].push({
+                            'sentence': sentence2pos.length, 
+                            'topic': singleData['id'],
+                            'people': k['personsId']
+                        })
+                    })
+    
+                    if(_pos.length!==0) {
+                        sentence2pos.push({
+                            pos: _pos,
+                            words: k['discription']
+                        })
+                    }
+                }
             }
         }
     }
-    return discriptionIds
+    return {
+        sentence2pos,
+        pos2sentence,
+        addressNode: node
+    };
 }
 
 export function deepClone(Obj) {   

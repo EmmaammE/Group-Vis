@@ -12,7 +12,7 @@ export function matrixView(state=initState,action){
       return action.data;
     default:
       return state;
-  }
+  } 
 }
 
 export function updateMatrix(data){

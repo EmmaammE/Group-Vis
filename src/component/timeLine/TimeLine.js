@@ -85,10 +85,11 @@ class TimeLine extends React.Component{
 
 
   handleMouseout(v){
-    if(!this.state.tipHasX){
-      let that = this
-      popDown(that)
-    }
+      if(!this.state.tipHasX){
+        let that = this
+        popDown(that)
+      }
+    
   }
 
   handleClickX(){
@@ -211,7 +212,7 @@ class TimeLine extends React.Component{
           <p className="topic-leaf-label topic-label-text">Description</p>
         </div>
         <div className="timeline-clear" onClick={this.handleClear}>
-          <CircleBtn  type={8} active={true}/>
+          <CircleBtn  type={6} active={true}/>
         </div>
 
         <div className="timeLine-container">
@@ -242,7 +243,7 @@ class TimeLine extends React.Component{
                     tCircleData.map((v,i)=>(
                       <g 
                         key={`Circle_time_${i}`}
-                        onMouseEnter={this.handleMouseenter}
+                        onMouseOver={this.handleMouseenter}
                         onMouseOut = {this.handleMouseout}
                         onClick = {this.handleClickCircle}
                         >

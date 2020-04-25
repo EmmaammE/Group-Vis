@@ -29,9 +29,21 @@ class RectLeaf extends React.Component{
 
   render(){
     // console.log("rectLeaf",this.props)
+    
     const data = this.props.data
     const width = this.props.width-margin.left-margin.right
+    //  求出标签长度占多少个字符
+    let labelLength = data.label.split("").length
+    // 算出该标题全部展开占横向距离多大，一个字符长度大概是13px
+    let pxLength = labelLength * 13
+    // 算出margin.top需要多少，一行占高度是16
+    margin.top = Math.ceil(pxLength/width)*16+5
+    // 使用差值动画的话，开始width会非常的小,可能会溢出变负
+    // console.log("Math.ceil(pxLength/width)", Math.ceil(pxLength/width),margin.bottom)
+    if(margin.top<0) return null
+    
     const height = this.props.height-margin.top-margin.bottom
+    if(height<=0) return null
     const pHeight = Number((data.personRatio*this.props.height).toFixed(0))
     const transHeight = this.props.height-pHeight
     const {xScale,yScale} = rectLeafScale(data.cData,width,height)
@@ -40,7 +52,7 @@ class RectLeaf extends React.Component{
     let rWidth = 12
     let index = this.props.index
     return (
-    <g>
+    height>0&&<g>
       <rect
         stroke="#c68b54"
         // rx ="5"
@@ -87,6 +99,14 @@ class RectLeaf extends React.Component{
           </p>
         </div>
       </foreignObject>
+      <rect
+        fill="white"
+        opacity = "0.01"
+        width = {this.props.width}
+        height= {margin.top}
+        index={index}  
+      >
+      </rect>
       <g  
         zindex="11"
         transform={`translate(${margin.left},${margin.top})`}>

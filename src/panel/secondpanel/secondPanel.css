@@ -56,12 +56,12 @@
 
     background: #fff;
     color: #000;
-    border: 1px solid #eba3ad;
+    border: 1px solid #c7ad8c;
 }
 
 /** for flower **/
 .second-panel .flower-active .g-text {
-    background: #eba3ad;                                                                                            
+    background: #c7ad8c;                                                                                            
     color: #fff;
 }
 
@@ -76,6 +76,14 @@
     color: #000;
     margin: 2px;
     font-weight: 400;
+}
+
+.second-panel .g-text.number {
+    font-size: 20px;
+}
+
+.second-panel .g-text.number span {
+    color: #945a18;
 }
 
 .second-panel .flower-divider {
