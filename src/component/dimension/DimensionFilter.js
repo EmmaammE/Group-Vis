@@ -218,7 +218,7 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                     style = {{ cursor: 'pointer'}}
                     width="100%" height="100%" fill="transparent"></rect>
             </g>
-            <foreignObject x="0" y="-10" width="220px" height="30" >
+            <foreignObject x="0" y="-5" width="220px" height="50" >
                 <div className="dimension-btn-container">
                     <CircleBtn type={4}></CircleBtn>
                     <CircleBtn type={5}></CircleBtn>

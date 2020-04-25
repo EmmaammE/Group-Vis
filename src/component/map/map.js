@@ -1,12 +1,13 @@
 import React from 'react';
 import * as d3 from 'd3';
-import song from '../../assets/geojson/song.json';
-// import ming from '../../assets/geojson/ming_1391.json';
+import china from '../../assets/geojson/china.json';
 import { debounce } from '../../util/tools';
 import Tip from '../tooltip/Tip'
 import { deepClone } from '../../util/tools'
 import { setPerson } from '../../actions/data';
 import { connect } from 'react-redux';
+import CircleBtn from '../button/circlebtn';
+import mapLogal from '../../assets/icon/mapLogal.svg'
 
 const BOX_WIDTH = 250;
 const BOX_HEIGHT = 170;
@@ -51,7 +52,7 @@ class Map extends React.Component {
     };
     this.projection = d3.geoMercator()
       .center([110, 31])
-      .scale(860)
+      .scale(500)
       .translate([BOX_WIDTH, BOX_HEIGHT]);
     this.path = d3.geoPath()
       .projection(this.projection);
@@ -289,6 +290,20 @@ class Map extends React.Component {
     return (
       <>
         {tooltip.show && <Tip {...tooltip.data} handleClickX={this.handleClickX} />}
+        <div className = "mapView-label-container">
+            <div className="mapView-label">
+                <svg  width="36px" height="18px">
+                    <image
+                        className="mapView-label-image"
+                        width="36" 
+                        height="16" 
+                        xlinkHref={mapLogal}
+                    />
+                </svg>
+            </div>
+            <p className="mapView-label mapView-label-text">#Descriptions</p>
+            {/* <CircleBtn  type={6} active={true}/> */}
+        </div>
 
         <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
           style={{ position: 'relative' }}
@@ -300,22 +315,14 @@ class Map extends React.Component {
         >
           <path d={$d} stroke="white" />
           <g ref={this.$map}>
-            {song.features.map((d, i) => (
+            {china.features.map((d, i) => (
               <path strokeWidth="1"
-                stroke={d.properties.H_SUP_PROV === "Song Dynasty" || d.properties.H_SUP_PROV === null ? '#999' : '#bbb'}
-                fill={d.properties.H_SUP_PROV === "Song Dynasty" || d.properties.H_SUP_PROV === null ? '#efefef' : '#fff'}
+                stroke="#999"
+                fill="#fff"
                 d={path(d)}
                 key={'fea-' + i}
               />
             ))}
-            {/* {ming.features.map((d,i) => (
-              <path strokeWidth = "1"
-                stroke = {d.properties["H_PROVINCE"]==="Jingshi"?'#999':'#bbb'}
-                fill = {d.properties["H_PROVINCE"]==="Jingshi"?'#efefef':'#fff'}
-                d={path(d)}
-                key={'fea-'+i}
-              /> 
-            ))} */}
             <g>
               {
                 addr &&
@@ -323,9 +330,9 @@ class Map extends React.Component {
                   <circle key={'cir-' + i}
                     index={i}
                     r={d.r}
-                    fill={'#277077'}
+                    fill="#277077"
                     stroke={d.isChoose ? '#898989' : '#277077'}
-                    fillOpacity={0.3}
+                    fillOpacity={0.2}
                     onMouseOver={this.showTooltip}
                     onMouseOut={this.handleMouseOut}
                     onClick={this.showTooltip2}
@@ -349,7 +356,6 @@ class Map extends React.Component {
             >
             </rect>
           </g>
-          {/* <text x={80} y={200} fill="#999" fontSize="30px">Song</text> */}
         </svg>
       </>
 

@@ -206,7 +206,7 @@ class TimeLine extends React.Component{
     // let cData = circleData.map(v=>v.info)
     return (
       <div className="chart-wrapper">
-        <div className="title">Figure Timeline</div>
+        <div className="g-chart-title title-margin">Figure Timeline</div>
         <div className = "timeline-leaf-label">
           <div className="topic-leaf-label">
               <svg width="12px" height="12px">

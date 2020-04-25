@@ -2,7 +2,6 @@ import React from 'react';
 import './firstPanel.css';
 import 'react-virtualized/styles.css';
 import slogo from '../../assets/search.svg';
-import Blobs from '../../component/blob/blob';
 import SelectedPanel from '../../component/selectedPanel/selectedPanel';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -586,14 +585,12 @@ class FirstPanel extends React.Component {
     }
 
     render() {
-        let {showVenn} = this.props;
-
         return (
             <div className="first-panel">
                 <Header title="CohortVA" cstyle={{textAlign: 'center', fontSize:'30px', margin:'0 auto'}} />
                 <div className="content-container">
                     <div className="control-panel">
-                        <div className="title"><p className="g-chart-title">Control Panel</p></div>
+                        <div className="title"><p className="g-chart-title">Figure Searcher</p></div>
 
                         {this._renderPanel()}
 
@@ -601,20 +598,6 @@ class FirstPanel extends React.Component {
                             <button className="btn" onClick={this.onClickSearch}>Search</button>
                         </div>
                     </div>
-
-                    
-                    {
-                        showVenn ?
-                        <div className="venn-container show-venn">
-                            <p className="title g-chart-title">Venn</p>
-                            <Blobs />
-                        </div>
-                         : 
-                        <div className="venn-container vennshow">
-                            <p className="title g-chart-title">Venn</p>
-                        </div>
-                    } 
-                    
                 </div>
             </div>
         )
@@ -626,7 +609,6 @@ const mapStateToProps = (state) => {
         KEY: state.KEY,
         step: state.step,
         groups: state.groups,
-        showVenn: state.vennstep.length > 0
     }
 }
 

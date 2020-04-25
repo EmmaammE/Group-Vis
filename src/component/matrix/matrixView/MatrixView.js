@@ -209,7 +209,7 @@ class MatrixView extends React.Component{
     return (
       <div className="chart-wrapper">
         <div className="header-line">
-          <div className="title">Interpersonal Events</div>
+          <div className="g-chart-title title-margin">Interpersonal Events</div>
           {labels.length==0?null:
             <div className = "matrix-label-container">
               <div className= "matrix-label-event">#Events</div>

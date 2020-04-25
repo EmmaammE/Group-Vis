@@ -84,7 +84,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 15px 0 2px;
 }
 
 .first-panel .btn {
@@ -167,7 +166,7 @@
 .first-panel .panel-content.border {
     border: 1px solid #919191;
     justify-content: stretch;
-    max-height: 90%;
+    max-height: 95%;
 }
 
 .panel-content ::-webkit-scrollbar {

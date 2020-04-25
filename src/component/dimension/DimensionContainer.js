@@ -60,7 +60,7 @@ class DimensionContainer extends React.Component {
                 <div className="list-wrapper">
                     <div className='dimension-legend'>
                         <span className='example'></span>
-                        <span className='g-text title'>Figure Projection</span>
+                        <span className='g-text title'>Figure Embedding</span>
                     </div>
                     <div className="list-container">
                         {

@@ -33,7 +33,7 @@ class FourthPanel extends React.Component {
   render() { 
     return (
       <div className="fourth-panel">
-        <Header title = "Auxiliary Views"></Header>
+        <Header title = "Description Explorer"></Header>
         <div className="fourth-panel-arrow">
           <div className="arrow" onClick={this.hideAndShow}></div>
         </div>
