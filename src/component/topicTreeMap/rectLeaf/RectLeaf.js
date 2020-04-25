@@ -66,6 +66,7 @@ class RectLeaf extends React.Component{
       <rect
         transform={`translate(0,${transHeight})`}
         fill="#f0dbd6"
+        opacity="0.5"
         width = {this.props.width}
         height= {pHeight}  
         index={index} 
