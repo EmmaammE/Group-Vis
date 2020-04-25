@@ -16,6 +16,7 @@ import {scaleFactory,
       addOpacity,
       filterRelationData,
       maxItem,
+      dealCompare,
       maxLabel} from './util';
 import {deepClone} from '../../util/tools'
 import Arrow from'./Arrow'
@@ -614,7 +615,7 @@ class TopicTreeMap extends React.Component{
               }
           </div>
         </div>
-        <div className="feature-title">Feature View</div>
+        <div className="feature-title">Feature Explorer</div>
         <div className="topicView-header">
           <div className="brush-btn-container">
               {
@@ -831,6 +832,7 @@ class TopicTreeMap extends React.Component{
   }
 }
 
+
 const mapStateToProps = (state)=>({
   topicView:state.topicView,
   topicWeight:state.topicWeight,
@@ -843,6 +845,44 @@ const mapStateToProps = (state)=>({
   dict:state.dict,
   group: state.group
 })
+// const mapStateToProps = (state)=>{
+
+//   let step = state.otherStep["6"];
+//     if(isNaN(Number(step)) && state.otherStep["6"]!==undefined) {
+//         // 是群体对比的step
+//         let steps = step.split('-')
+//         let topicDataA = state.group[steps[0]]['topicView']
+//         let topicDataB = state.group[steps[1]]['topicView']
+//         let topicDataAB = state.group[step.join("-")]['topicView']
+
+//         return {
+//           topicView:dealCompare(topicDataA,topicDataB,topicDataAB),
+//           topicWeight:state.topicWeight,
+//           historyData:state.historyData,
+//           step: state.otherStep["6"],
+//           currentStep:state.otherStep["9"],
+//           KEY: state.KEY,
+//           // 最新的step
+//           latestStep: state.step,
+//           dict:state.dict,
+//           group: state.group
+//         }
+//     } else {
+//         // 非对比的情况
+//         return {
+//           topicView:state.topicView,
+//           topicWeight:state.topicWeight,
+//           historyData:state.historyData,
+//           step: state.otherStep["6"],
+//           currentStep:state.otherStep["9"],
+//           KEY: state.KEY,
+//           // 最新的step
+//           latestStep: state.step,
+//           dict:state.dict,
+//           group: state.group
+//         }
+//     }
+//   }
 
 
 const mapDispatchToProps = {

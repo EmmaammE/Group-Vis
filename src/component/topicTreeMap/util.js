@@ -4,6 +4,43 @@ import topicData from '../../assets/geojson/a.json';
 // import * as WordCloudGenerator from './wordCloud';
 // import louvain from 'louvain' 
 
+
+export function dealCompare(topicDataA,topicDataB,topicDataAB){
+    // 辨别该叙述是属于A还是属于B,或者属于共同的
+    let discription2Part = {}
+    topicDataA.forEach(topic=>{
+        topic.cData.forEach(leaf=>{
+            if(discription2Part[leaf.id]==undefined){
+                discription2Part[leaf.id] = 'A'
+            }
+        })
+    })
+    topicDataB.forEach(topic=>{
+        topic.cData.forEach(leaf=>{
+            if(discription2Part[leaf.id]==undefined){
+                discription2Part[leaf.id] = 'B'
+            }else if(discription2Part[leaf.id]=='A'){
+                discription2Part[leaf.id]='AB'
+            }
+        })
+    })
+    // topicDataAB的每个叶子打上类别标签，分为3类
+    topicDataAB.forEach(topic=>{
+        topic.cData.forEach(leaf=>{
+            if(discription2Part[leaf.id]==undefined){
+                leaf.part = 3
+            }else if(discription2Part[leaf.id] =='A'){
+                leaf.part = 0
+            }else if(discription2Part[leaf.id] =='B'){
+                leaf.part = 1
+            }else{
+                leaf.part = 2
+            }
+        })
+    })
+    return topicDataAB
+}
+
 export function maxItem(data,that){
     let itemSets = []
     let item2Index = {}
@@ -286,9 +323,9 @@ export function rectLeafScale(data,width,height){
         .range([0,height])
     return {xScale,yScale}
 }
-
+/*
 export function rectTree2(width,height,topicData){
-    console.log(topicData)
+    // console.log(topicData)
 
     let all_relation_data
     let weightData = topicData.map(v=>v.weight)
@@ -323,10 +360,11 @@ export function rectTree2(width,height,topicData){
     }))
     return rectTreeData
 }
+*/
 
 export function rectTree(width,height,topicData){
 
-    console.error(topicData)
+    // console.error(topicData)
 
     // all_topics是数组
     let all_topics = topicData.map(elm => elm.id)

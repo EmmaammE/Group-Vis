@@ -26,13 +26,15 @@ export function scaleFactory(width,data,startColor,endColor){
 export function sortMatrixPerson(matrixView){
 
   let matrixPerson = matrixView.matrixPerson
-  
   let pIndex = matrixPerson.map(v=>v.preIndex)
-  //将number为0的人过滤掉
+    //将number为0的人过滤掉
   // pIndex = pIndex.filter(v=>matrixPerson[v].number>0)
   if(pIndex.length==0){
     return matrixView
   }
+
+
+  // 此时的matrixData里面其实只存储了对称二维数组的一半的数据
   let matrixData = matrixView.matrixData
 
   // if()

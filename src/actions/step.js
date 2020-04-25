@@ -197,7 +197,7 @@ function label2EnName(label){
 }
 
 function handleTopicRes(dispatch, res, KEY, step, type) {
-    
+
     if(res.data["is_success"]) {
         // 存储label是Addr的节点的id
         let addressNode = {};
@@ -676,7 +676,26 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
         topicData[tIndex].personRatio = Number((topicPerson.size/personIndex).toFixed(6))
         tIndex++
     }
-    // let topicData = {labelData,cData,relationData,fData}
+
+    // 过滤matrixView的数据，将其中为数量为0 的人删除掉
+    let mIndex = matrixPerson.length-1
+    // console.log("matrixPerson",JSON.stringify(matrixPerson))
+    while(mIndex>=0){
+        if(matrixPerson[mIndex].number==0){
+            matrixPerson.splice(mIndex,1)
+            matrixData.splice(mIndex,1)
+            matrixData.forEach(mData=>{
+                mData.splice(mIndex,1)
+            })
+        }
+         mIndex--
+    }
+    // 重新赋予新的preIndex标号
+    matrixPerson.forEach((v,i)=>{
+        v.preIndex = i
+    })
+    
+
     let matrixViewData = {matrixData,matrixPerson}
     let timeLineData = {tLabelData,tCircleData}
     console.log("step****右边视图的数据",topicData,timeLineData,matrixViewData,peopleToDiscriptions)
@@ -697,12 +716,9 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             'ratio': topicData[i].personRatio
         })
     }
+
     
-    // topicData.forEach(v=>{
-    //     // 按比例调整每个topic的weight，使其总和为100
-    //     // 其实不该修改weight值
-    //     v.weight = Number((v.weight/topicTotalWeight*100).toFixed(2))
-    // }),k[[,[]]]
+    
     
     switch (type) {
         case 3:
