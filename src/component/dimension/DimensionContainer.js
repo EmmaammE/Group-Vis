@@ -36,7 +36,7 @@ class DimensionContainer extends React.Component {
     }
 
     render() {
-        let { selectedPeople, peopleOfGroup, positions} = this.props;
+        let { selectedPeople, peopleStatus, positions} = this.props;
         let { data } = this.state;
 
         return (
@@ -49,7 +49,7 @@ class DimensionContainer extends React.Component {
                                     _width={280}
                                     _height={280}
                                     _margin="translate(20,20)"
-                                    peopleOfGroup = {peopleOfGroup}
+                                    peopleStatus = {peopleStatus}
                                     data={positions}
                                     selectedPeople = {selectedPeople}
                                     cb = {this._modifyPeople}
@@ -82,14 +82,10 @@ const mapStateToProps = state => {
     let step = state.otherStep["6"];
     if(isNaN(Number(step)) && state.otherStep["6"]!==undefined) {
         // 是群体对比的step
-        let steps = step.split('-')
         return {
             selectedPeople: state.people,
             positions: state.group[step] && state.group[step][POSITIONS],
-            peopleOfGroup: [
-                Object.keys(state.group[steps[0]]['people']), 
-                Object.keys(state.group[steps[1]]['people'])
-            ]
+            peopleStatus: state.group[step] && state.group[step]["people"]
         }
     } else {
         return {
