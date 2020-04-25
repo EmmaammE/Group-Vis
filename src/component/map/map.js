@@ -26,8 +26,6 @@ class Map extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rScale: d3.scaleLinear()
-        .range([6, 12]),
       tooltip: {
         show: false,
         data: {
@@ -98,8 +96,10 @@ class Map extends React.Component {
     let { pos2sentence, sentence2pos } = this.props;
     if (JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
       let { rangeScale } = this.state;
-      rangeScale.domain(d3.extent(Object.values(pos2sentence).map(e => e.length)))
-        .range([5, sentence2pos.length % 20])
+      let extent = d3.extent(Object.values(pos2sentence).map(e => e.length))
+      console.log(extent)
+      rangeScale.domain(extent)
+        .range([5, 12])
       this.setState({
         rangeScale
       })
@@ -282,8 +282,7 @@ class Map extends React.Component {
     let { addr, sentence2pos, pos2sentence } = this.props;
     let { tooltip, rangeScale, $d } = this.state;
 
-    // console.log("projection",projection,"addr",addr,"sentence2pos",sentence2pos,"pos2sentence",pos2sentence)
-    if (prevPropsData != this.props) {
+    if (JSON.stringify(prevPropsData) !== JSON.stringify(this.props)) {
       prevPropsData = this.props
       drawData = figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos)
     }
@@ -324,9 +323,9 @@ class Map extends React.Component {
                   <circle key={'cir-' + i}
                     index={i}
                     r={d.r}
-                    fill={'#a2a4bf'}
-                    stroke={d.isChoose ? '#898989' : ''}
-                    fillOpacity={0.5}
+                    fill={'#277077'}
+                    stroke={d.isChoose ? '#898989' : '#277077'}
+                    fillOpacity={0.3}
                     onMouseOver={this.showTooltip}
                     onMouseOut={this.handleMouseOut}
                     onClick={this.showTooltip2}

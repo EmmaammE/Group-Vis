@@ -622,7 +622,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 }
             })
 
-            // 类型和topic暂时都没有用到， 就去掉了
+            // 类型暂时都没有用到， 就去掉了
             _pos.forEach(pos => {
                 if(pos2sentence[pos] === undefined) {
                     pos2sentence[pos] = [];
@@ -630,7 +630,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 pos2sentence[pos].push({
                     'sentence': sentence2pos.length, 
                     // 'type':  temp[DICT][_type],
-                    // 'topic': v,
+                    'topic': v[0],
                     'people':sentencePersonsId
                 })
             })

@@ -36,11 +36,11 @@ import {updateSelectList} from '../../redux/selectList.redux.js'
 import {updateTopicWeight,updateTopicLrs} from '../../redux/topicWeight.redux.js'
 import RectLeaf from './rectLeaf/RectLeaf'
 import { setPerson } from '../../actions/data'
-import {updateGroupdata, fetchTopicData} from '../../actions/step.js'
+import {updateGroupdata, fetchTopicData, removeTopic} from '../../actions/step.js'
 import Tip from '../tooltip/Tip'
 import leaf from '../../assets/leaf/leaf.svg'
 import {TOPICS} from '../../util/name.js'
-import Motion from '../motion/Motion'
+import Motion from '../motion/motion'
 
 
 const btnData = [
@@ -291,6 +291,7 @@ class TopicTreeMap extends React.Component{
         // 重新对topicData进行排序
         // topicData中存放的weight是实际值
         topicData.sort((a,b)=>b.weight-a.weight)
+        // console.log(topicData)
         let newIndex = 0
         // 找到该topic在下一轮布局中的位置
         topicData.forEach((v,i)=>{
@@ -423,6 +424,8 @@ class TopicTreeMap extends React.Component{
     // 更新花朵group数据中其它视图中存储的数据
     let cStep = this.props.currentStep
 
+    this.props.removeTopic(deleteTopicId, cStep);
+
     topicData.splice(this.state.selectedTopicIndex,1)
     this.setState({
       selectedTopicIndex:0
@@ -441,8 +444,9 @@ class TopicTreeMap extends React.Component{
     this.props.updateTimeLine(timeLineData)
     this.props.updateGroupdata("timelineView",cStep,timeLineData)
 
-    let mapViewPersons = filterMapView(topicData,true)
-    this.props.updateGroupdata("people",cStep,mapViewPersons)
+    let data = filterMapView(topicData, true,
+      this.props.group[cStep]["mapView"]['addressNode'], deleteTopicId)
+    this.props.updateGroupdata("mapView", cStep, data)
 
     // this
     let weights = this.props.group[cStep][TOPICS]
@@ -494,14 +498,18 @@ class TopicTreeMap extends React.Component{
 
   // mapView视图按钮
   handleClickMapView(){
-    let step = this.props.currentStep
-    let discriptionIds
+    let step = this.props.currentStep;
+    let data;
     if(this.state.polygons.length===0){
-      discriptionIds = filterMapView(topicData,true)
+      data = filterMapView(topicData, true,
+        this.props.group[step]["mapView"]['addressNode'])
+  
     }else{
-      discriptionIds = filterMapView(topicData)
+      data = filterMapView(topicData, undefined,
+        this.props.group[step]["mapView"]['addressNode'])
     }
-    console.log("discriptionIds",discriptionIds)
+
+    this.props.updateGroupdata("mapView", step, data)
   }
 
   handleRectLeafClick(e){
@@ -519,7 +527,6 @@ class TopicTreeMap extends React.Component{
       let tipHasX = true
       popUp(that,tipHasX,e)
     }
-
   }
 
   handleClickPolygons(e){
@@ -849,7 +856,8 @@ const mapDispatchToProps = {
   setPerson,
   updateGroupdata,
   fetchTopicData,
-  initPeopleCommon
+  initPeopleCommon,
+  removeTopic
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(TopicTreeMap);

@@ -6,32 +6,74 @@ import { DimensionFilter } from "./DimensionFilter";
 import './lasso.css';
 
 const style = {
-    position: 'relative',
-    display: 'flex',
-    height: '100%',
-    flexDirection: 'column'
+   display: 'flex',
+   justifyContent: 'center',
+   alignItems: 'center'
 }
 
 class DimensionContainer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: props.positions
+        }
+
+        this._modifyPeople = this._modifyPeople.bind(this);
+    }
+
+    componentDidUpdate(prevProps) {
+        if(JSON.stringify(prevProps.positions) !== JSON.stringify(this.props.positions)) {
+            this.setState({
+                data: Object.values(this.props.positions).map(d => d[2])
+            })
+        }
+    }
+
+    _modifyPeople(data) {
+        this.setState({
+            data
+        })
+    }
+
     render() {
-        let { positions, selectedPeople, peopleOfGroup} = this.props;
+        let { selectedPeople, peopleOfGroup, positions} = this.props;
+        let { data } = this.state;
+
         return (
-            <div className="chart-wrapper" style={style}>
-                <p className="g-chart-title title">Figure View</p>
-                {
-                    positions &&
-                        <svg viewBox={"0 0 340 340"} style={{flex: 1}} >
-                            <DimensionFilter 
-                                _width={300}
-                                _height={300}
-                                _margin="translate(20,40)"
-                                peopleOfGroup = {peopleOfGroup}
-                                data={positions}
-                                selectedPeople = {selectedPeople}
-                            />
-                        </svg>
-                }
+            <div className="dimension-container">
+                <div className="chart-wrapper" style={style}>
+                    {
+                        data &&
+                            <svg viewBox={"0 0 340 340"} width="85%" height="85%">
+                                <DimensionFilter 
+                                    _width={280}
+                                    _height={280}
+                                    _margin="translate(20,20)"
+                                    peopleOfGroup = {peopleOfGroup}
+                                    data={positions}
+                                    selectedPeople = {selectedPeople}
+                                    cb = {this._modifyPeople}
+                                />
+                            </svg>
+                    }
+                </div>
+                <div className="list-wrapper">
+                    <div className='dimension-legend'>
+                        <span className='example'></span>
+                        <span className='g-text title'>Figure Projection</span>
+                    </div>
+                    <div className="list-container">
+                        {
+                            data && Object.values(data).map((d,i)=> (
+                                <div key={i} className='g-text d-list-item'>
+                                    {d}
+                                </div>
+                            ))
+                        }
+                    </div>
+                </div>
             </div>
+            
         );
     }
 }

@@ -1,17 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './selectedPanel.css'
 
-function GroupPanel({title, startIndex, status=[], options=[], change, cb}) {
+function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_all, allStatus}) {
+    const [expanded, setExpanded] = useState(false)
+
+    function expand() {
+        setExpanded(true)
+    }
+
+    function toggle() {
+        setExpanded(!expanded)
+    }
     return (
-        <div className="dropdown__list-container">
-            <div className="group-title">{title}</div>
+        <div>
+            <div className="group-title">
+                <p className='g-text'>{title}</p>
+                <div className='svgs'>
+                    <input type="checkbox"
+                        onChange = {cb_all}
+                        checked = {allStatus}
+                    />
+
+                    <div className="svg-badge"
+                            onMouseOver={expand}
+                            onClick = {toggle}
+                        >
+                        <svg
+                            className={["dropdown__arrow", expanded ? "expanded" : ""].join(" ")}
+                            width="10"
+                            height="5"
+                            viewBox="0 0 10 5"
+                            fillRule="evenodd"
+                        >
+                            <title>Open drop down</title>
+                            <path d="M10 0L5 5 0 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div  className="dropdown__list-container">
             {
-                options.map((item, index) => {
+                expanded && options.map((item, index) => {
                     return (
                         <div className={"person-dropdown dropdown__list-item"}
                             key={'o-'+index}
                             onClick={()=>cb(index+startIndex)}
-                            onMouseEnter={()=>cb(index+startIndex,change)}
+                            // onMouseEnter={()=>cb(index+startIndex,change)}
                         >
                             <input type="checkbox" checked={status[index]} readOnly />
                             <div className="item-container">
@@ -22,6 +56,7 @@ function GroupPanel({title, startIndex, status=[], options=[], change, cb}) {
                     )
                 })
             }
+            </div>
         </div>
         
     )

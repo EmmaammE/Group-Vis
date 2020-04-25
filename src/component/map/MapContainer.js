@@ -29,8 +29,9 @@ class MapContainer extends React.Component {
                         if(res.data.is_success) {
                             let addr = {};
                             for(let _data in res.data["Addr"]) {
-                                addr[_data] = res.data["Addr"][_data][0];
-                                if(addr[_data]) {
+                                let curr  = res.data["Addr"][_data][0];
+                                if(curr && curr['x_coord']!== null && curr['y_coord']!==null) {
+                                    addr[_data] = res.data["Addr"][_data][0];
                                     addr[_data]['address_name'] = data["addressNode"][_data]
                                 }
                             }
@@ -50,9 +51,18 @@ class MapContainer extends React.Component {
     render() {
         let {addr} = this.state;
         let {data} = this.props;
+        
+        if(data && addr) {
+            for(let key in data['pos2sentence']) {
+                if(addr[key] === undefined ) {
+                    delete data['pos2sentence'][key]
+                }
+            }
+        }
+
         return ( 
             <div className="chart-wrapper geomap ">
-                <div className="title">Map View</div>
+                <div className="g-chart-title title-margin">Map View</div>
                 <div className = "mapView-label-container">
                     <div className="mapView-label">
                         <svg width="36px" height="18px">

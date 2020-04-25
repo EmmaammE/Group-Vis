@@ -52,6 +52,7 @@ class FirstPanel extends React.Component {
         this.onInputChange = this.onInputChange.bind(this);
         this.onClickSearch = this.onClickSearch.bind(this);
         this.setStatus = this.setStatus.bind(this);
+        this.setStatusAll = this.setStatusAll.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
         this._renderRow = this._renderRow.bind(this);
     }
@@ -102,23 +103,47 @@ class FirstPanel extends React.Component {
             })
     }
 
+    setStatusAll(groupKey, start, count) {
+        return () => {
+            let {clickStatus, dataSet } = this.state;
+
+            let status = dataSet[1].groups[groupKey].allStatus;
+            // ['allStatus'];
+            dataSet[1].groups[groupKey].allStatus = !status
+            clickStatus['Person'].splice(start, count, ...Array(count).fill(!status));
+
+            this.setState({
+                clickStatus,
+                dataSet
+            })
+        }
+    }
+
     // 选择框的click事件 TODO 修改调用
     setStatus(name, is_all) {
         //现在is_all只和类别名称有关了
         if(name!=='Gender') {
             is_all = true;
         }
-        return (index, status) => {
-            let { clickStatus } = this.state;
+        return (index, status, groupKey) => {
+            let { clickStatus,dataSet } = this.state;
             let _status;
             // 如果是Person, click, 改变onEnter时的状态
-            if(status ===  undefined) {
+            // if(status ===  undefined) {
                 if (is_all && index === 0) {
                     // 选择了"选择全部"选项
                     let _last = clickStatus[name][0];
                     clickStatus[name] = new Array(clickStatus[name].length).fill(!_last);
                     _status = !_last;
+                    if(is_all && name === 'Person') {
+                        Object.values(dataSet[1].groups).forEach(group => {
+                            group['allStatus'] = true
+                        })
+                    }
                 } else {
+                    if(groupKey !== undefined) {
+                        dataSet[1].groups[groupKey]['allStatus'] = false;
+                    }
                     if (is_all) {
                         // 有"选择全部"选项， 但选择了其他选项
                         clickStatus[name][0] = false;
@@ -126,27 +151,27 @@ class FirstPanel extends React.Component {
                     _status = clickStatus[name][index] = !clickStatus[name][index];
                 }
 
-            } else {
-                if (is_all && index === 0) {
-                    clickStatus[name] = new Array(clickStatus[name].length).fill(status);
-                } else {
-                    if (is_all && status === false) {
-                        clickStatus[name][0] = false;
-                    }
-                    clickStatus[name][index] = status;
-                }
-            }
+            // } else {
+            //     if (is_all && index === 0) {
+            //         clickStatus[name] = new Array(clickStatus[name].length).fill(status);
+            //     } else {
+            //         if (is_all && status === false) {
+            //             clickStatus[name][0] = false;
+            //         }
+            //         clickStatus[name][index] = status;
+            //     }
+            // }
 
-            if(name === 'Person' && _status !== undefined) {
-                this.setState({
-                    clickStatus,
-                    status: _status
-                })
-            } else {
+            // if(name === 'Person' && _status !== undefined) {
+            //     this.setState({
+            //         clickStatus,
+            //         status: _status
+            //     })
+            // } else {
                 this.setState({
                     clickStatus
                 })
-            }
+            // }
         }
     }
 
@@ -209,13 +234,15 @@ class FirstPanel extends React.Component {
                             if(groups[parentType]['group'][_order] === undefined) {
                                 groups[parentType]['group'][_order] = {
                                     'title': parent2[_order][KEY],
-                                    'people': []
+                                    'people': [],
                                 }
                             }
     
                             groups[parentType]['group'][_order]['people'].push(
                                 {value: key, label: data[key][KEY], r: r[KEY]}
                             )
+
+                            groups[parentType]['allStatus'] = false;
                         })
                     }
 
@@ -489,8 +516,10 @@ class FirstPanel extends React.Component {
 
                                         <div className="person-lists">
                                         {
-                                            Object.values(dataSet[1].groups).map((group, index) => {
+                                            Object.keys(dataSet[1].groups).map((groupKey, index) => {
+                                                let group = dataSet[1].groups[groupKey];
                                                 return Object.values(group['group']).map(inner => {
+                                                    let start = count;
                                                     return (
                                                         <GroupPanel
                                                             key={count}
@@ -500,6 +529,8 @@ class FirstPanel extends React.Component {
                                                             options={inner['people']}
                                                             change ={status}
                                                             cb={this.setStatus("Person")}
+                                                            allStatus={group['allStatus']}
+                                                            cb_all = {this.setStatusAll(groupKey, start, inner['people'].length)}
                                                         >
                                                         </GroupPanel>
                                                     )
