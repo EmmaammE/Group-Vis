@@ -341,6 +341,13 @@ class TopicTreeMap extends React.Component{
     clearChoosed(topicData)
     // 取消XXX-view所有高亮的人
     this.props.setPerson({});
+
+    let cStep = this.props.currentStep;
+    let originData = this.props.group[cStep]["mapView"];
+    for(let key in originData['sentence2pos']) {
+        originData['sentence2pos'][key].show = true;
+    }
+    this.props.updateGroupdata("mapView", cStep, originData)
   }
 
   // 此为切换加选还是减选框的按钮事件函数
@@ -445,9 +452,16 @@ class TopicTreeMap extends React.Component{
     this.props.updateTimeLine(timeLineData)
     this.props.updateGroupdata("timelineView",cStep,timeLineData)
 
-    let data = filterMapView(topicData, true,
-      this.props.group[cStep]["mapView"]['addressNode'], deleteTopicId)
-    this.props.updateGroupdata("mapView", cStep, data)
+    let data = filterMapView(topicData, true, deleteTopicId);
+    let originData = this.props.group[cStep]["mapView"];
+    for(let key in originData['sentence2pos']) {
+      if(data.has(key)) {
+        originData['sentence2pos'][key].show = false;
+      } else {
+        originData['sentence2pos'][key].show = true;
+      }
+    }
+    this.props.updateGroupdata("mapView", cStep, originData)
 
     // this
     let weights = this.props.group[cStep][TOPICS]
@@ -502,15 +516,21 @@ class TopicTreeMap extends React.Component{
     let step = this.props.currentStep;
     let data;
     if(this.state.polygons.length===0){
-      data = filterMapView(topicData, true,
-        this.props.group[step]["mapView"]['addressNode'])
-  
+      data = filterMapView(topicData, true)
     }else{
-      data = filterMapView(topicData, undefined,
-        this.props.group[step]["mapView"]['addressNode'])
+      data = filterMapView(topicData)
     }
 
-    this.props.updateGroupdata("mapView", step, data)
+    let originData = this.props.group[step]["mapView"];
+    for(let key in originData['sentence2pos']) {
+      if(data.has(key)) {
+        originData['sentence2pos'][key].show = false;
+      } else {
+        originData['sentence2pos'][key].show = true;
+      }
+    }
+
+    this.props.updateGroupdata("mapView", step, originData)
   }
 
   handleRectLeafClick(e){
@@ -606,30 +626,30 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleFilter)
     handleClick.push(this.handleDeleteTopic)
     return (
-      <div className="chart-wrapper">
-        <div  className="topic-buttons">
-          <div className="btn-container">
-              {
-                Array(4).fill(null).map((e,i)=>
-                (<CircleBtn key={'btn2-'+i} type={i} onClick={handleClick[i]} />))
-              }
-          </div>
+      <div className=" chart-wrapper topic-view-container">
+        <div className="topic-buttons btns-container">
+            {
+              Array(4).fill(null).map((e,i)=>
+              (<CircleBtn key={'btn2-'+i} type={i} onClick={handleClick[i]} />))
+            }
         </div>
-        <div className="feature-title">Feature Explorer</div>
         <div className="topicView-header">
-          <div className="brush-btn-container">
-              {
-                Array(5).fill(null).map((e,i)=>
-                (<div className = "topic-brush-btn" key={'brush-btn2-'+i}>
-                    <CircleBtn 
-                      key={'brush-btn-'+i} 
-                      active={(i+4)==this.state.activeBtnIndex?false:true}
-                      type={i+4} 
-                      onClick={handleClick[i+4]} 
-                    />
-                  </div>))
-              }
-          </div> 
+          
+          <div className="header-left">
+            <div className="g-chart-title">Feature Explorer</div>
+            <div className="brush-btn-container">
+                {
+                  Array(5).fill(null).map((e,i)=> (
+                  <CircleBtn 
+                        key={'brush-btn-'+i} 
+                        active={(i+4)==this.state.activeBtnIndex?false:true}
+                        type={i+4} 
+                        onClick={handleClick[i+4]} 
+                  />))
+                }
+            </div> 
+          </div>
+
           {
             topicData.length>0&&<div className = "rowSlider-container">
               <RowSlider
@@ -637,9 +657,10 @@ class TopicTreeMap extends React.Component{
                 weight = {selectedWeight}
                 topicName = {topicData[index].label}
               ></RowSlider>
-              <div id = "rightRatio"  ref={this.$ratio} className="rightRatio">{`${selectedWeight}%`}</div>
+              <div id = "rightRatio"  ref={this.$ratio} className="rightRatio g-text">{`${selectedWeight}%`}</div>
             </div>
           }
+          
           <div className = "topicView-label-container">
             <div className="topic-leaf-label">
                 <svg width="12px" height="12px">
@@ -649,8 +670,8 @@ class TopicTreeMap extends React.Component{
                     xlinkHref={leaf}
                   />
                 </svg>
+              <p className="g-text">Description</p>
             </div>
-            <p className="topic-leaf-label topic-label-text">Description</p>
             <div className="topic-leaf-label">
                 <svg width="12px" height="12px">
                   <rect
@@ -669,8 +690,8 @@ class TopicTreeMap extends React.Component{
                   >
                   </rect>
                 </svg>
+                <p className="g-text">Proportion</p>
             </div>
-            <p className="topic-leaf-label topic-label-text">Proportion</p>
           </div>
         </div>
         <div  className="topicViewChart-container">
@@ -678,7 +699,7 @@ class TopicTreeMap extends React.Component{
             ref={this.$container}
             width="100%"
             height="100%"
-            viewBox = {`0 0 ${WIDTH} ${HEIGHT}`}
+            viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             opacity = {this.state.opacity}
             preserveAspectRatio="xMinYMin"
             className = "topicTreeMap-svg"

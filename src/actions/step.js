@@ -465,8 +465,8 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
     // pos2sentence[pos] = [ {sentence: Number, type: 'string', topic: 'vKey'} ]
     let pos2sentence = {};
     // 描述包含的事件
-    // pos2sentence[---上面的sentence---] = [pos, pos...]
-    let sentence2pos = [];
+    // pos2sentence[---上面的sentence---] = {sentenceId: {pos:[], words:""}}
+    let sentence2pos = {};
 
     for(let v of temp[TOPICS]){
 
@@ -659,7 +659,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                     pos2sentence[pos] = [];
                 }
                 pos2sentence[pos].push({
-                    'sentence': sentence2pos.length, 
+                    'sentence': vKey, 
                     // 'type':  temp[DICT][_type],
                     'topic': v[0],
                     'people':sentencePersonsId
@@ -667,10 +667,11 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             })
 
             if(_pos.length!==0) {
-                sentence2pos.push({
+                sentence2pos[vKey] = {
                     pos: _pos,
-                    words: senDiscription
-                })
+                    words: senDiscription,
+                    show: true
+                }
             }
             
             let distance = topicSentence[vKey]

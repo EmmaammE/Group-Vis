@@ -24,21 +24,18 @@ import compare from '../../assets/icon/compare.svg'
 const btn_urls = [topic,matrix,map,list,add,minus,clear,filter,deleteIcon,flower, similiar, compare]
 const btn_urls_ = [topic_,matrix_,map_,list_,add_,minus_]
 
-const btnStyle = { 
-  margin: '0 -6px',
-};
-
+// 7,8,9,10
 const imgStyle = {
   cursor: 'pointer',
-  transform:"scale(0.9)"
 }
 
 // 传入active修改图标的样式 active=true表示点击后更新了
 function CircleBtn({type, active, onClick}) {
   // console.log("circle",type,active)
   return (
-    <div className="circle-btn" style={btnStyle} onClick={onClick}>
-      <img style={imgStyle} src={active?btn_urls[type]:btn_urls_[type]} alt="" />
+    <div className="circle-btn" onClick={onClick}>
+      <img style={imgStyle} 
+        src={active?btn_urls[type]:btn_urls_[type]} alt="" />
     </div>
   );
 }

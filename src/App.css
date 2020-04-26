@@ -28,7 +28,7 @@
   color:#240f39;
   letter-spacing:0;
   line-height:14px;
-  margin-left: 1em;
+  margin: 10px 1em!important;
 }
 
 /** 每部分视图的名字：如Detail Views */

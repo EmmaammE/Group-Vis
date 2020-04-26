@@ -221,7 +221,7 @@ class MatrixView extends React.Component{
             </div>
           } 
           
-          <div className="matrixView-clear" onClick={this.handleClear}>
+          <div className="detail-clear" onClick={this.handleClear}>
             <CircleBtn  type={6} active={true}/>
           </div> 
         </div>

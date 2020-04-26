@@ -14,4 +14,5 @@ export const REMOVE_FLOWER = "REMOVE_FLOWER"
 
 // data.js
 export const SET_PERSON = "SET_PERSON";
+export const SET_ADDRESS = "SET_ADDRESS";
 export const SET_VENN_STEP = "SET_VENN_STEP";

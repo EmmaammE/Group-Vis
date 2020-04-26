@@ -30,8 +30,13 @@
 
 .timeline-leaf-label{
   position: absolute;
-  right:40px;
-  top:5px;
+  right:30px;
+  top: 10px;
+  display: flex;
+}
+
+.topic-leaf-label.g-text {
+  font-size: 12px;
 }
 
 .timeline-clear{

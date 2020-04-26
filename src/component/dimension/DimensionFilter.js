@@ -182,28 +182,32 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
     }
 
     return (
-        <g>
-            <g ref={$container}>
-                <DimensionCircles 
-                    _margin={_margin} _width={_width} _height={_height} 
-                    data={data} status = {peopleStatus}
-                    classCreator={classCreator} 
-                />
-                <rect 
-                    style = {{ cursor: 'pointer'}}
-                    width="100%" height="100%" fill="transparent"></rect>
-            </g>
-            <foreignObject x="0" y="-5" width="220px" height="50" >
-                <div className="dimension-btn-container">
-                    <CircleBtn type={4}></CircleBtn>
-                    <CircleBtn type={5}></CircleBtn>
-                    <CircleBtn type={6} onClick={clear} active={true}></CircleBtn>
-                    <CircleBtn type={9} onClick={toFetch} active={true}></CircleBtn>
+        <div>
+            <div className="brush-btn-container">
+                <CircleBtn type={4}></CircleBtn>
+                <CircleBtn type={5}></CircleBtn>
+                <CircleBtn type={6} onClick={clear} active={true}></CircleBtn>
+                <CircleBtn type={9} onClick={toFetch} active={true}></CircleBtn>
+                <div className="similar-btn">
                     <CircleBtn type={10} onClick={fetchSimiliarPerson} active={true}></CircleBtn>
                 </div>
-
-                {/* <div className="d-btn people-btn" onClick={people}>people</div>  */}
-            </foreignObject>
-        </g>
+            </div>
+            <div className="dimension-svg">
+            {
+                data && <svg viewBox={"0 0 340 340"} width="85%" height="85%">
+                    <g ref={$container}>
+                        <DimensionCircles 
+                            _margin={_margin} _width={_width} _height={_height} 
+                            data={data} status = {peopleStatus}
+                            classCreator={classCreator} 
+                        />
+                        <rect 
+                            style = {{ cursor: 'pointer'}}
+                            width="100%" height="100%" fill="transparent"></rect>
+                    </g>
+                </svg>
+            }
+            </div>
+        </div>
     )
 }

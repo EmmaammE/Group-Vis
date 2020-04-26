@@ -217,9 +217,9 @@ class TimeLine extends React.Component{
                 />
               </svg>
           </div>
-          <p className="topic-leaf-label topic-label-text">Description</p>
+          <p className="topic-leaf-label g-text">Description</p>
         </div>
-        <div className="timeline-clear" onClick={this.handleClear}>
+        <div className="detail-clear" onClick={this.handleClear}>
           <CircleBtn  type={6} active={true}/>
         </div>
 

@@ -21,23 +21,16 @@
 
 .rowSliderContainer div{
   display: inline-block;
-  vertical-align: top;
 }
 
 .rowSliderContainer{
-  width: 85%;
-  height: 35px;
+
   font-size: 12px;
   /* overflow-y: hidden; */
-  display: inline-block;
-  vertical-align: top;
 }
 
 #leftName{
-  width: 40%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
 
 }
 

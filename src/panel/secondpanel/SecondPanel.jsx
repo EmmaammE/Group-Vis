@@ -23,7 +23,7 @@ class SecondPanel extends React.Component {
         this.state = {
             grid: [],
             // grid: [{"next":2,"size":1,"selected":0,"step":[1],"positions":[{"4921":[0.3788028680828691,0.39595518113357003,"李格非"],"15378":[-0.08791303998484105,-0.7056130209753252,"李清照"],"15379":[0.21487799020170562,0.03372699978657273,"赵明诚"],"43374":[0.06103582979269742,-0.02482997164673821,"张汝舟"],"48805":[0.1914571261916407,-0.41247609633418825,"韩玉父"],"50876":[-0.9724974576870214,0.2457022407247119,"端木采"],"50879":[0.21423668340295096,0.4675346673113978,"毛晋"]}],"data":[[{"weight":0.3333333333333333,"content":["李清照","著述关系类"],"ratio":0.428571},{"weight":0.3333333333333333,"content":["李清照","著述关系类","序跋文字"],"ratio":0.428571},{"weight":0.3333333333333333,"content":["李清照"],"ratio":1}]]},{"next":-1,"size":2,"selected":0,"step":[2,3],"positions":[{"15378":[-0.8864821086140969,-0.29092751011475426,"李清照"],"15379":[0.325868556039981,1.103276683967385,"赵明诚"],"43374":[0.9709706066935145,-0.6883076719656546,"张汝舟"],"48805":[-0.4103570541193981,-0.12404150188697668,"韩玉父"]},{"15378":[-0.8864821086140969,-0.29092751011475426,"李清照"],"15379":[0.325868556039981,1.103276683967385,"赵明诚"],"43374":[0.9709706066935145,-0.6883076719656546,"张汝舟"],"48805":[-0.4103570541193981,-0.12404150188697668,"韩玉父"]}],"data":[[{"weight":0.038702632318818715,"content":["著述关系类","序跋文字"],"ratio":0.5},{"weight":0.12878270608650047,"content":["建炎","正德","天会"],"ratio":0.5},{"weight":0.13982968986662211,"content":["赵明诚"],"ratio":0.5},{"weight":0.2027572593241588,"content":["韩玉父"],"ratio":0.5},{"weight":0.2111326817552329,"content":["李清照"],"ratio":1},{"weight":0.27879503064866706,"content":["张汝舟"],"ratio":0.5}],[{"weight":0.038702632318818715,"content":["著述关系类","序跋文字"],"ratio":0.5},{"weight":0.12878270608650047,"content":["建炎","正德","天会"],"ratio":0.5},{"weight":0.13982968986662211,"content":["赵明诚"],"ratio":0.5},{"weight":0.2027572593241588,"content":["韩玉父"],"ratio":0.5},{"weight":0.2111326817552329,"content":["李清照"],"ratio":1},{"weight":0.27879503064866706,"content":["张汝舟"],"ratio":0.5}]]}],
-            gridBack: {},
+            // gridBack: {},
             // [第几层， 第几个，step]
             hoverIndex: [0, 0, 1],
             showIndex: [0, 0, 1],
@@ -86,16 +86,37 @@ class SecondPanel extends React.Component {
                             } else {
 
                                 newIndex = step2index[origin_step][1] + 1;
+
                                 _grid.positions.splice(newIndex, 0, group[step][POSITIONS]);
                                 _grid.step.splice(newIndex, 0, step);
                                 _grid.data.splice(newIndex, 0, group[step][TOPICS]);
 
+
+                                let connections = {};
                                 // 更新step的index
                                 for(let i = newIndex + 1; i< _grid.step.length; i++) {
-                                   step2index[_grid.step[i]][1] += 1;
+                                    if(step2index[_grid.step[i]]) {
+                                        let index = step2index[_grid.step[i]][1];
+                                        step2index[_grid.step[i]][1] += 1;
+                                        if(_grid.connections[index]) {
+                                            connections[index+1] = _grid.connections[index];
+                                            delete _grid.connections[index]
+                                        }
+                                    }
+                                }
+                                _grid.connections = {..._grid.connections, ...connections}
+
+                                // 更新链接
+                                if(currentLayer >= 1) {
+                                    for(let key in newGrid[currentLayer-1].connections) {
+                                        newGrid[currentLayer-1].connections[key].co.forEach(e => {
+                                            if(e >= newIndex) {
+                                                e+=1
+                                            }
+                                        })
+                                    }
                                 }
                             }
-
                             step2index[step] = [currentLayer, newIndex];
                             
                             if(currentLayer >= 1) {
@@ -141,25 +162,84 @@ class SecondPanel extends React.Component {
                                         newGrid[currentLayer].connections[hoverIndex[1]] = [newIndex]
                                     }
                                 }
-        
+
                                 step2index[step] = [currentLayer + 1, newIndex];
-        
+    
                                 let _grid = newGrid[currentLayer + 1];
                                 _grid.size += 1;
                                 _grid.positions.push(group[step][POSITIONS]);
                                 _grid.step.push(step);
                                 _grid.data.push(group[step][TOPICS])
+
+                                // 重排序
+
+                                // 根据该行所有花朵的父节点（选中的❀这一层）的排列顺序重排
+                                let order = new Array(_grid.size).fill(_grid.size);
+
+                                // 原顺序
+                                let origin = {};
+                                let originIndex2step = {};
+                                _grid.step.forEach((step, i) => {
+                                    origin[step] = i;
+                                    originIndex2step[i] = step;
+                                })
+
+                                for(let key in newGrid[currentLayer].connections) {
+                                    newGrid[currentLayer].connections[key].forEach(child => {
+                                        order[child] = key;
+                                    })
+                                }
+
+                                _grid.step.sort((a, b) => {
+                                    return order[origin[a]] - order[origin[b]]
+                                })
+                            
+                                let newOrder = {};
+                                _grid.step.forEach((step, i) => {
+                                    newOrder[i] = step;
+                                    // 更新已存的index
+                                    step2index[step][1] = i;
+                                })
+
+                                let posArr = [], dataArr = [];
+                                for(let i=0; i<_grid.size; i++) {
+                                    let step = newOrder[i];
+                                    let _origin = origin[step];
+                                    posArr.push(_grid.positions[_origin])
+                                    dataArr.push(_grid.data[_origin])
+                                }
+
+                                _grid.positions = posArr;
+                                _grid.data = dataArr;
+                            
+                                // 如果这一层有链接
+                                let connections = {};
+                                for(let key in _grid.connections) {
+                                    let newIndex = step2index[originIndex2step[key]][1];
+                                    connections[newIndex] = _grid.connections[key];
+                                }
+                                _grid.connections = connections;
+
+                                // 如果有链接到这一层
+                                for(let key in newGrid[currentLayer].connections) {
+                                    newGrid[currentLayer].connections[key] = 
+                                        newGrid[currentLayer].connections[key].map(index => 
+                                            step2index[originIndex2step[index]][1]
+                                        )
+                                }
                             } 
                             
                             if(similiarFlag) {
                                 let x =step2index[step-1][0];
-                                // 推荐的相似的人的坐标
-                                similarGrid[0] = step2index[step - 1][1]
+                                // similarGrid[0] = step2index[step - 1][1]
                                 // 合在一起的群体的坐标
-                                similarGrid[1] = step2index[step][1]
+                                // similarGrid[1] = step2index[step][1]
                                 let origin_step = +sessionStorage.getItem('similiar_origin');
                                 // 被推荐的群体的坐标
-                                similarGrid[2] = step2index[origin_step][1]
+                                // similarGrid[2] = step2index[origin_step][1]
+
+                                // 推荐的相似的人的坐标 合在一起的群体的坐标 被推荐的群体的坐标
+                                similarGrid = [step-1, step, origin_step]
                                 // 清除session
                                 sessionStorage.removeItem('similiar');
                                 sessionStorage.removeItem('similiar_origin');
@@ -170,6 +250,7 @@ class SecondPanel extends React.Component {
                                 gridsIndex[x].push(similarGrids.length)
                                 similarGrids.push(similarGrid);
                             }
+
                         }
                     }
 
@@ -267,7 +348,7 @@ class SecondPanel extends React.Component {
     }
 
     render() {
-        let { grid, hoverIndex, showIndex, similarGrids, gridsIndex} = this.state;
+        let { grid, hoverIndex, showIndex, similarGrids, gridsIndex, step2index} = this.state;
         let { vennStep } = this.props;
         let detail = grid[showIndex[0]], y = showIndex[1], step = showIndex[2];
         let _value = Math.max(...grid.map(g => g.size));
@@ -280,7 +361,7 @@ class SecondPanel extends React.Component {
         return (
             <div className="second-panel">
                 <Header title="Cohort-level Analyzer"></Header>
-                <div className="btn-container">
+                <div className="btns-container">
                     <CircleBtn type={11} active={true} onClick={this.toCompare} />
                 </div>
                 <div className="content-panel">
@@ -332,7 +413,8 @@ class SecondPanel extends React.Component {
                                             <FlowerContainer
                                                 // width = {100 * item.size /_value + '%'}
                                                 similiarFlag = { gridsIndex[i] !== undefined
-                                                    ? gridsIndex[i].map(e => similarGrids[e])
+                                                    ? gridsIndex[i].map(e => similarGrids[e]
+                                                        .map(step => step2index[step][1]))
                                                     : [] }
                                                 max = {_value}
                                                 step={item.step}

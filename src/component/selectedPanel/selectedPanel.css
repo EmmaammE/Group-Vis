@@ -97,7 +97,6 @@
 }
 
 .dropdown__list-item {
-  font-family: Lato, sans-serif;
   color: #444444;
   padding: 0 10px;
   transition: background-color 0.1s linear, color 0.1s linear;
@@ -146,7 +145,6 @@
   display: flex;
 }
 .dropdown__selected {
-  font-family: Lato, sans-serif;
   color: #444444;
   margin-left: 25px;
   list-style-position: inside;
@@ -300,12 +298,19 @@
 
 .group-title {
   text-align: left;
-  margin: 2px;
-  background: #eee;
-  padding: 5px 10px;
+  /* margin: 2px; */
+  padding: 0 7px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
+  font-weight: bold;
+  background: #eee;
+
+}
+
+.group-sub-title {
+  font-weight: bold;
+
 }
 
 .group-title p {
@@ -314,9 +319,9 @@
   text-align: left;
 }
 
-.svgs {
+.group-title .left {
   display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .svg-badge {

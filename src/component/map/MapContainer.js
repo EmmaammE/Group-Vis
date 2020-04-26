@@ -34,6 +34,9 @@ class MapContainer extends React.Component {
                                     addr[_data]['address_name'] = data["addressNode"][_data]
                                 }
                             }
+
+                           
+
                             that.setState({
                                 addr
                             })
@@ -50,19 +53,27 @@ class MapContainer extends React.Component {
     render() {
         let {addr} = this.state;
         let {data} = this.props;
-        
-        if(data && addr) {
-            for(let key in data['pos2sentence']) {
-                if(addr[key] === undefined ) {
-                    delete data['pos2sentence'][key]
+        let sentence2pos = {}, pos2sentence = {}
+
+        if(data) {
+            sentence2pos = Object.assign({}, data['sentence2pos'])
+            pos2sentence = Object.assign({}, data['pos2sentence'])
+    
+            if(data && addr) {
+                for(let key in pos2sentence) {
+                    
+                    pos2sentence[key] = pos2sentence[key]
+                        .filter(d => sentence2pos[d["sentence"]]['show'] === true)
                 }
-            }
+            } 
         }
 
         return ( 
             <div className="chart-wrapper geomap ">
                 <div className="g-chart-title title-margin">Figure Traces</div>
-                <div className="container"><Map addr={addr} pos2sentence={data && data["pos2sentence"]} sentence2pos={data && data["sentence2pos"]} /></div>
+                <div className="container">
+                    <Map addr={addr} sentence2pos={addr && sentence2pos} pos2sentence={addr && pos2sentence} />
+                </div>
             </div>
         )
     }
