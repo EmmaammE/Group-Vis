@@ -211,7 +211,7 @@ class MatrixView extends React.Component{
         <div className="header-line">
           <div className="g-chart-title">Interpersonal Events</div>
           {labels.length==0?null:
-            <div className = "matrix-label-container">
+            <div className = "matrix-label-container g-text">
               <div className= "matrix-label-event">#Events</div>
               <div className= "matrix-label"> 
                 <div className="matrix-left-num">0</div>

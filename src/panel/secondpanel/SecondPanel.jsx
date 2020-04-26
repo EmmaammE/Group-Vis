@@ -362,7 +362,7 @@ class SecondPanel extends React.Component {
             <div className="second-panel">
                 <Header title="Cohort-level Analyzer"></Header>
                 <div className="btns-container">
-                    <CircleBtn type={11} active={true} onClick={this.toCompare} />
+                    <CircleBtn type={10} active={true} onClick={this.toCompare} />
                 </div>
                 <div className="content-panel">
                     {/* box-width + translate[0] = viewBox/2 : 为了留文字的空间*/}
