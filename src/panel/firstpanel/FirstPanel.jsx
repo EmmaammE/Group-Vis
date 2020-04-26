@@ -476,7 +476,7 @@ class FirstPanel extends React.Component {
             </div>
         )
 
-        let count = 1;
+        let count = 2;
 
         switch (_tabPanel) {
             case 0:
@@ -513,27 +513,44 @@ class FirstPanel extends React.Component {
                                             </div>
                                         </div>
 
+                                        <div className={"person-dropdown dropdown__list-item"} 
+                                            style={{minHeight: '4vh'}}
+                                            onClick={() => this.setStatus('Person')(1)}
+                                        >
+                                            <input type="checkbox"
+                                                checked={clickStatus['Person'][1]}  
+                                                readOnly />
+                                            <div className="item-container">
+                                                <span className="first-item">{dataSet[1]['options'][1]['label']}</span>
+                                                <span>{dataSet[1]['options'][1]['r']}</span>
+                                            </div>
+
+                                        </div>
+
                                         <div className="person-lists">
                                         {
                                             Object.keys(dataSet[1].groups).map((groupKey, index) => {
-                                                let group = dataSet[1].groups[groupKey];
-                                                return Object.values(group['group']).map(inner => {
-                                                    let start = count;
-                                                    return (
-                                                        <GroupPanel
-                                                            key={count}
-                                                            title={inner['title']}
-                                                            startIndex={count}
-                                                            status ={clickStatus["Person"].slice(count, count += inner['people'].length)}
-                                                            options={inner['people']}
-                                                            change ={status}
-                                                            cb={this.setStatus("Person")}
-                                                            allStatus={group['allStatus']}
-                                                            cb_all = {this.setStatusAll(groupKey, start, inner['people'].length)}
-                                                        >
-                                                        </GroupPanel>
-                                                    )
-                                                })
+                                                if(groupKey !== "0") {
+                                                    let group = dataSet[1].groups[groupKey];
+                                                    return Object.values(group['group']).map(inner => {
+                                                        let start = count;
+                                                        return (
+                                                            <GroupPanel
+                                                                key={count}
+                                                                title={inner['title']}
+                                                                startIndex={count}
+                                                                status ={clickStatus["Person"].slice(count, count += inner['people'].length)}
+                                                                options={inner['people']}
+                                                                change ={status}
+                                                                cb={this.setStatus("Person")}
+                                                                allStatus={group['allStatus']}
+                                                                cb_all = {this.setStatusAll(groupKey, start, inner['people'].length)}
+                                                            >
+                                                            </GroupPanel>
+                                                        )
+                                                    })
+                                                } 
+                                                return null;
                                             })
                                         }
                                         </div>

@@ -94,10 +94,16 @@
     width: 80%;
 }
 
-.second-panel .btn-container {
+.btns-container {
     position: absolute;
     top: 0;
     right: 10px;
+}
+
+.btns-container img {
+    width: 40px;
+    height: 40px;
+    margin: 0 -4px;
 }
 
 .second-panel .flower-overview {

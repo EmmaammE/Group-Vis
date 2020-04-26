@@ -9,8 +9,8 @@ import { connect } from 'react-redux';
 import CircleBtn from '../button/circlebtn';
 import mapLogal from '../../assets/icon/mapLogal.svg'
 
-const BOX_WIDTH = 250;
-const BOX_HEIGHT = 170;
+const BOX_WIDTH = 260;
+const BOX_HEIGHT = 190;
 
 
 let startLoc = [];
@@ -41,6 +41,7 @@ class Map extends React.Component {
         }
       },
       rangeScale: d3.scaleLinear()
+        .range([5, 5]).domain([1,999])
         .clamp(true),
       $d: '',
       brushVisibility: "hidden",
@@ -71,6 +72,7 @@ class Map extends React.Component {
     this.showTooltip2 = this.showTooltip2.bind(this)
     this.handleClickX = this.handleClickX.bind(this)
     this.handleMouseOut = this.handleMouseOut.bind(this)
+    this.handleClear = this.handleClear.bind(this)
 
   }
 
@@ -94,13 +96,16 @@ class Map extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    let { pos2sentence, sentence2pos } = this.props;
+    let { pos2sentence, addr } = this.props;
     if (JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
       let { rangeScale } = this.state;
-      let extent = d3.extent(Object.values(pos2sentence).map(e => e.length))
-      console.log(extent)
-      rangeScale.domain(extent)
-        .range([5, 12])
+      if(addr) {
+        let extent = d3.extent(Object.values(pos2sentence).filter( e => addr[e]!== undefined).map(e => e.length))
+        if(extent[0] !== undefined) {
+          rangeScale.range([5, 12]).domain(extent)
+        }
+      }
+      
       this.setState({
         rangeScale
       })
@@ -276,6 +281,20 @@ class Map extends React.Component {
 
   }
 
+  handleClear() {
+    drawData.forEach(d => {
+      d.isChoose = false
+    })
+    this.setState({
+      brushVisibility:"hidden",
+      brushTransX:0,
+      brushTransY:0,
+      brushWidth:0,
+      brushHeight:0
+    })
+    this.props.setPerson({})
+  }
+
   render() {
     let path = this.path,
       projection = this.projection;
@@ -284,15 +303,16 @@ class Map extends React.Component {
     let { tooltip, rangeScale, $d } = this.state;
 
     if (JSON.stringify(prevPropsData) !== JSON.stringify(this.props)) {
-      prevPropsData = this.props
+      prevPropsData = this.props;
       drawData = figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos)
+      console.log(drawData)
     }
     return (
       <>
         {tooltip.show && <Tip {...tooltip.data} handleClickX={this.handleClickX} />}
         <div className = "mapView-label-container">
             <div className="mapView-label">
-                <svg  width="36px" height="18px">
+                <svg  width="40px" height="20px">
                     <image
                         className="mapView-label-image"
                         width="36" 
@@ -301,8 +321,11 @@ class Map extends React.Component {
                     />
                 </svg>
             </div>
-            <p className="mapView-label mapView-label-text">#Descriptions</p>
+            <p className="mapView-label g-text">#Descriptions</p>
             {/* <CircleBtn  type={6} active={true}/> */}
+            <div className="detail-clear" onClick={this.handleClear}>
+              <CircleBtn  type={6} active={true}/>
+            </div> 
         </div>
 
         <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
@@ -383,15 +406,21 @@ function figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos
       people: []
     }
     if (pos2sentence[data[0]]) {
-      result["r"] = rangeScale(pos2sentence[data[0]].length);
-      result["sentence"] = pos2sentence[data[0]].map(d => sentence2pos[d['sentence']]["words"]);
-      result["people"] = pos2sentence[data[0]].map(d => d["people"])
-    }
-
-    if (data[1]) {
-      result["title"] = data[1]['address_name'];
-      result['xy'] = projection([data[1]['x_coord'], data[1]['y_coord']]);
-      result["isChoose"] = false
+      if(pos2sentence[data[0]].length > 0) {
+        result["r"] = rangeScale(pos2sentence[data[0]].length);
+        if(isNaN(result["r"])) {
+          result["r"] = 5;
+          console.log(data)
+        }
+        result["sentence"] = pos2sentence[data[0]].map(d => sentence2pos[d['sentence']]["words"]);
+        result["people"] = pos2sentence[data[0]].map(d => d["people"])
+  
+        if (data[1]) {
+          result["title"] = data[1]['address_name'];
+          result['xy'] = projection([data[1]['x_coord'], data[1]['y_coord']]);
+          result["isChoose"] = false
+        }
+      }
     }
 
     resultData.push(result)

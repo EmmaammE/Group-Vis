@@ -96,3 +96,14 @@
 .content-panel .box:first-child {
   border: none;
 }
+
+.detail-clear {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}
+
+.detail-clear img {
+  height: 18px;
+  width: 17px;
+}

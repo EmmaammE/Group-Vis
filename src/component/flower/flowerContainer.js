@@ -20,14 +20,15 @@ const curvePath = (currPos, point) => {
 
     let margin = BOX_WIDTH * currPos;
     let diff = point - currPos;
+    let offset = width / 25
     if(diff > 0) {
         // 朝向右边
-        return ` M 115 ${margin} L 100 ${margin + 5}
-            A${ry2+10},${rx2+10} 0 0 0 ${ry1}, ${margin + rx2+5}
+        return ` M 115 ${margin} L 100 ${margin + offset/2}
+            A${ry2+offset},${rx2+offset} 0 0 0 ${ry1}, ${margin + rx2+offset/2}
             A${ry1},${rx1} 0 0 1 0, ${width+margin}` 
     } else if(diff < 0 ){
         return `M 115 ${margin} L 100 ${margin - 5}
-            A${ry2+10},${rx2+10} 0 0 1 ${ry1}, ${margin - rx2 - 5} 
+            A${ry2+offset},${rx2+offset} 0 0 1 ${ry1}, ${margin - rx2 - offset/2} 
             A${ry1},${rx1} 0 0 0 0, ${margin - width}`
     } else {
         return `M115, ${margin} L0, ${margin}`
@@ -99,6 +100,7 @@ class FlowerContainer extends React.Component {
                             step={step && step[i]}
                             current={current}
                             hovercb = {() => {hovercb(step && step[i])}}
+                            max = {max}
                         />
                     ))
                 }

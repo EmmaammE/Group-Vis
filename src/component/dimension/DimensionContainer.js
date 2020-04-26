@@ -5,12 +5,6 @@ import { setPerson } from "../../actions/data";
 import { DimensionFilter } from "./DimensionFilter";
 import './lasso.css';
 
-const style = {
-   display: 'flex',
-   justifyContent: 'center',
-   alignItems: 'center'
-}
-
 class DimensionContainer extends React.Component {
     constructor(props) {
         super(props);
@@ -41,20 +35,17 @@ class DimensionContainer extends React.Component {
 
         return (
             <div className="dimension-container">
-                <div className="chart-wrapper" style={style}>
+                <div className="dimension-wrapper">
                     {
-                        data &&
-                            <svg viewBox={"0 0 340 340"} width="85%" height="85%">
-                                <DimensionFilter 
-                                    _width={280}
-                                    _height={280}
-                                    _margin="translate(20,20)"
-                                    peopleStatus = {peopleStatus}
-                                    data={positions}
-                                    selectedPeople = {selectedPeople}
-                                    cb = {this._modifyPeople}
-                                />
-                            </svg>
+                        data && <DimensionFilter 
+                            _width={280}
+                            _height={280}
+                            _margin="translate(20,20)"
+                            peopleStatus = {peopleStatus}
+                            data={positions}
+                            selectedPeople = {selectedPeople}
+                            cb = {this._modifyPeople}
+                        />
                     }
                 </div>
                 <div className="list-wrapper">

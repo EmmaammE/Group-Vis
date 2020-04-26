@@ -623,51 +623,20 @@ export function filterBrushSelectList(data){
     return newData
 }
 
-export function filterMapView(data, flag, node, deleteId){
-    let sentence2pos = [],  pos2sentence = {};
+export function filterMapView(data, flag, deleteId){
+    // 隐藏的sentenceId
+    let hideIds = new Set();
 
     for(let singleData of data){
-        if( deleteId === undefined || deleteId !== singleData['id'] ) {
-            for(let k of singleData.cData){
-                let isChoose = flag || k.isChoose 
-                if(isChoose){
-    
-                    let words = k['id'].split(" ");
-                    let _pos = [];
-                    words.forEach(word => {
-                        if(word !== '-1') {
-                            if(word in node) {
-                                _pos.push(word);
-                            } 
-                        }
-                    })
-    
-                    _pos.forEach(pos => {
-                        if(pos2sentence[pos] === undefined) {
-                            pos2sentence[pos] = [];
-                        }
-                        pos2sentence[pos].push({
-                            'sentence': sentence2pos.length, 
-                            'topic': singleData['id'],
-                            'people': k['personsId']
-                        })
-                    })
-    
-                    if(_pos.length!==0) {
-                        sentence2pos.push({
-                            pos: _pos,
-                            words: k['discription']
-                        })
-                    }
-                }
+        for(let k of singleData.cData){
+            let isChoose = flag || k.isChoose 
+            if(!isChoose || deleteId === singleData['id']){
+                hideIds.add(k.id)
             }
         }
     }
-    return {
-        sentence2pos,
-        pos2sentence,
-        addressNode: node
-    };
+
+    return hideIds;
 }
 
 export function deepClone(Obj) {   

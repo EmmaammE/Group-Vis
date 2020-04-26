@@ -37,7 +37,7 @@ class RowSlider extends React.Component{
       backgroundSize:`${weight}% 100%`
     }
     return (
-      <div className="rowSliderContainer" >
+      <div className="rowSliderContainer g-text" >
         <div id="leftName">{"Topic weight: "}</div>
         <div id="middleInput">
           <input 

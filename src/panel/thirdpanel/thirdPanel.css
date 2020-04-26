@@ -1,12 +1,14 @@
 .third-panel {
-  /* display: flex; */
-  /* flex-direction: column; */
+  display: flex; 
+  flex-direction: column;
   position: relative;
   height: calc(100vh - 24px);
   user-select: none;
   overflow: hidden;
+  justify-content: stretch;
 }
 
+/* 
 .third-panel .topicView-panel{
   width: 100%;
   position: absolute;
@@ -35,4 +37,14 @@
 
 .third-footer .figure-embedding{
   left:10px !important;
+} */
+
+
+
+.third-panel .topicView-panel {
+  flex: 1;
+}
+
+.third-panel .third-footer-panel{
+  height: 36vh;
 }

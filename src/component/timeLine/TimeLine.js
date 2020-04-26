@@ -206,7 +206,7 @@ class TimeLine extends React.Component{
     // let cData = circleData.map(v=>v.info)
     return (
       <div className="chart-wrapper">
-        <div className="g-chart-title title-margin">Figure Timeline</div>
+        <div className="g-chart-title">Figure Timeline</div>
         <div className = "timeline-leaf-label">
           <div className="topic-leaf-label">
               <svg width="12px" height="12px">
@@ -219,7 +219,7 @@ class TimeLine extends React.Component{
           </div>
           <p className="topic-leaf-label topic-label-text">Description</p>
         </div>
-        <div className="timeline-clear" onClick={this.handleClear}>
+        <div className=" detail-clear timeline-clear" onClick={this.handleClear}>
           <CircleBtn  type={6} active={true}/>
         </div>
 
@@ -248,7 +248,7 @@ class TimeLine extends React.Component{
                 {/* 绘制圆点及水平向分割线 */}
                 <g transform={`translate(${margin.left},0)`} className="timeLine_circle_rows">
                   {
-                    tCircleData.map((v,i)=>(
+                    tCircleData.map((v,i)=>( 
                       <g 
                         key={`Circle_time_${i}`}
                         onMouseOver={this.handleMouseenter}

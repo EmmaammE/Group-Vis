@@ -209,7 +209,7 @@ class MatrixView extends React.Component{
     return (
       <div className="chart-wrapper">
         <div className="header-line">
-          <div className="g-chart-title title-margin">Interpersonal Events</div>
+          <div className="g-chart-title">Interpersonal Events</div>
           {labels.length==0?null:
             <div className = "matrix-label-container">
               <div className= "matrix-label-event">#Events</div>
@@ -221,7 +221,7 @@ class MatrixView extends React.Component{
             </div>
           } 
           
-          <div className="matrixView-clear" onClick={this.handleClear}>
+          <div className="detail-clear" onClick={this.handleClear}>
             <CircleBtn  type={6} active={true}/>
           </div> 
         </div>
