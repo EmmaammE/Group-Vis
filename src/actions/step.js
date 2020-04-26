@@ -568,7 +568,8 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                                 distance:time,
                                 sentenceId:vKey,
                                 topicId:v[0],
-                                isChoose:false
+                                isChoose:false,
+                                category:0
                             }) 
                         }
                           
@@ -653,7 +654,8 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 x:distance[0],
                 y:distance[1],
                 id:vKey,
-                label:sentenceLabel[vKey]
+                label:sentenceLabel[vKey],
+                category:0
             })
         }
 
@@ -724,6 +726,13 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
         case 3:
             // 群体对比
             //  step为一个数组, 表示对比的两个群体的step
+            // 对topicData和timeLineData进行处理
+            let personMap
+            let addData = addCategory(personMap,topicData,timeLineData)
+            timeLineData = addData.timeLineData
+            topicData = addData.topicData
+            console.log("addData",addData)
+
             updateTwoGroup(step.join('-'), {
                 "mapView": {
                     pos2sentence,
@@ -738,6 +747,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 "timelineView": timeLineData,
                 "historyData":historyData
             })(dispatch)
+
             break;
         case 0:
             // 更新降维图所需要的辅助数据 
@@ -794,4 +804,72 @@ function updateTwoGroup(step, data) {
             dispatch(setOtherStep(9, step))
         })
     }
+}
+
+function addCategory(personMap,topicData,timeLineData){
+    // 为每个描述，添加类别，0是AB类，1是A类，2是B类
+    topicData.forEach(topic=>{
+        let sumMap = {}
+        let sumNum = 0
+        let aMap = {}
+        let aNum = 0
+        let bMap = {}
+        let bNum = 0
+        topic.cData.forEach(v=>{
+            let flagA = false
+            let flagB = false
+            let flagAB = false
+            for(let i=0;i<v.personsId.length;i++){
+                let p = v.personsId[i]
+                if(personMap[p]=='AB'){
+                    flagAB = true
+                    if(sumMap[p]==undefined){
+                        sumMap[p] = 1
+                        sumNum++
+                    }
+                }else if(personMap[p]=='A'){
+                    flagA = true
+                    if(aMap[p]==undefined){
+                        aMap[p] = 1
+                        aNum++
+                    }
+                }else if(personMap[p]=='B'){
+                    flagB = true
+                    if(bMap[p]==undefined){
+                        bMap[p] = 1
+                        bNum++
+                    }
+                }
+            }
+            if(flagAB){
+                v.category = 0
+            }else{
+                if(flagA&&flagB){
+                    v.category = 0
+                }else if(flagA){
+                    v.category = 1
+                }else{
+                    v.category = 2
+                }
+            }
+        })
+        let sum = sumNum+aNum+bNum
+        let a = sumNum+aNum
+        let b = sumNum+bNum
+        
+        topic.abRatio = [a/sum*topic.personRatio,b/sum*topic.personRatio]
+        topic.personRatio = -1
+    })
+
+    // 给timeLineData.tLabelData添加类别
+    timeLineData.tLabelData.forEach(v=>{
+        if(personMap[v.personId]=='AB'){
+            v.category = 0
+        }else if(personMap[v.personId]=='A'){
+            v.category = 1
+        }else{
+            v.category = 2
+        }
+    })
+    return {topicData,timeLineData}
 }

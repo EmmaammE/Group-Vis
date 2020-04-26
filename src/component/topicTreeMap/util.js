@@ -630,13 +630,6 @@ export function filterMapView(data, flag, node, deleteId){
             for(let k of singleData.cData){
                 let isChoose = flag || k.isChoose 
                 if(isChoose){
-                    // sentence2pos.push({
-                    //     pos: [],
-                    //     words: k["discription"],
-                    //     id: k['id'],
-                    //     personsId: k['personsId'],
-                    //     topic: [singleData['id'], singleData['label']]
-                    // })
     
                     let words = k['id'].split(" ");
                     let _pos = [];

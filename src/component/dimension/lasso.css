@@ -165,13 +165,15 @@
 
 .dimension-legend {
   display: flex;
+  justify-content: flex-start;
   align-items: center;
   margin: 4px 4px 15px 0;
 }
 
 .dimension-legend .title {
   width: max-content;
-  margin-left: 4px;
+  /* margin-left: 4px; */
+  left:5px !important ;
 }
 
 .dimension-legend .example{
@@ -179,6 +181,7 @@
   width: 12px;
   height: 12px;
   background-color: var(--main-bg-color);
+  
 }
 
 .dimension-container .list-container {

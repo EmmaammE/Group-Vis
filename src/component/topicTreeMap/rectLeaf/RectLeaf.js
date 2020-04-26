@@ -10,11 +10,30 @@ import leaf2_choose from '../../../assets/leaf/leaf2_choose.svg'
 import leaf3 from '../../../assets/leaf/leaf3.svg'
 import leaf3_choose from '../../../assets/leaf/leaf3_choose.svg'
 
+import leaf_a from '../../../assets/leaf-a/leaf.svg'
+import leaf_choose_a  from '../../../assets/leaf-a/leaf_choose.svg'
+import leaf2_a  from '../../../assets/leaf-a/leaf2.svg'
+import leaf2_choose_a  from '../../../assets/leaf-a/leaf2_choose.svg'
+import leaf3_a  from '../../../assets/leaf-a/leaf3.svg'
+import leaf3_choose_a  from '../../../assets/leaf-a/leaf3_choose.svg'
+
+import leaf_b from '../../../assets/leaf-b/leaf.svg'
+import leaf_choose_b from '../../../assets/leaf-b/leaf_choose.svg'
+import leaf2_b from '../../../assets/leaf-b/leaf2.svg'
+import leaf2_choose_b from '../../../assets/leaf-b/leaf2_choose.svg'
+import leaf3_b from '../../../assets/leaf-b/leaf3.svg'
+import leaf3_choose_b from '../../../assets/leaf-b/leaf3_choose.svg'
+
 import '../topicTreeMap.css'
-const margin = {top:25,bottom:12,left:12,right:12}
+const margin = {top:25,bottom:8,left:8,right:8}
 
 let leafSrc = [leaf,leaf2,leaf3]
 let leafSrcChoose = [leaf_choose,leaf2_choose,leaf3_choose]
+let leafArr = [
+  [[leaf,leaf2,leaf3],[leaf_choose,leaf2_choose,leaf3_choose]],
+  [[leaf_a,leaf2_a,leaf3_a],[leaf_choose_a,leaf2_choose_a,leaf3_choose_a]],
+  [[leaf_b,leaf2_b,leaf3_b],[leaf_choose_b,leaf2_choose_b,leaf3_choose_b]]
+]
 
 
 class RectLeaf extends React.Component{
@@ -33,17 +52,28 @@ class RectLeaf extends React.Component{
     const data = this.props.data
     const width = this.props.width-margin.left-margin.right
     //  求出标签长度占多少个字符
-    let labelLength = data.label.split("").length
+    let labelStr = data.label.split("")
+    let singleWordWidth
+    if((labelStr[0]>='a'&&labelStr[0]<='z')||(labelStr[0]>='A'&&labelStr[0]<='Z')){
+      singleWordWidth = 6
+    }else{
+      singleWordWidth = 13
+    }
+    let labelLength = labelStr.length
     // 算出该标题全部展开占横向距离多大，一个字符长度大概是13px
-    let pxLength = labelLength * 13
+    let pxLength = labelLength * singleWordWidth
     // 算出margin.top需要多少，一行占高度是16
     margin.top = Math.ceil(pxLength/width)*16+5
     // 使用差值动画的话，开始width会非常的小,可能会溢出变负
     // console.log("Math.ceil(pxLength/width)", Math.ceil(pxLength/width),margin.bottom)
     if(margin.top<0) return null
     
-    const height = this.props.height-margin.top-margin.bottom
-    if(height<=0) return null
+    let height = this.props.height-margin.top-margin.bottom
+    while(height<=0&&margin.top>16){
+      margin.top = margin.top-16
+      height = this.props.height-margin.top-margin.bottom
+    }
+    if(height<=0)return null
     const pHeight = Number((data.personRatio*this.props.height).toFixed(0))
     const transHeight = this.props.height-pHeight
     const {xScale,yScale} = rectLeafScale(data.cData,width,height)
@@ -61,8 +91,9 @@ class RectLeaf extends React.Component{
         strokeWidth = "1.5"
         width = {this.props.width}
         height= {this.props.height}
-        index={index}  
+        index={index}   
       ></rect>
+
       <rect
         transform={`translate(0,${transHeight})`}
         fill="#f0dbd6"

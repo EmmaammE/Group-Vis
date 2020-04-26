@@ -281,7 +281,7 @@ class SecondPanel extends React.Component {
 
         return (
             <div className="second-panel">
-                <Header title="Overview"></Header>
+                <Header title="Cohort-level Analyzer"></Header>
                 <div className="btn-container">
                     <CircleBtn type={11} active={true} onClick={this.toCompare} />
                 </div>

@@ -20,13 +20,13 @@ class ThirdPanel extends React.Component {
   render() {
     return (
       <div className="third-panel">
-        <Header title = "Detail Views"></Header>
+        <Header title = "Figure-level Analyzer"></Header>
         <div className="topicView-panel">
             <TopicTreeMap></TopicTreeMap>
         </div>
         <div className="third-footer-panel">
-          <div className = "third-footer">
-            <p className="g-chart-title">Figure View</p>
+          <div className = "third-footer chart-wrapper">
+            <p className="feature-title figure-embedding">Figure Embedding</p>
             <DimensionContainer />
           </div>
         </div>

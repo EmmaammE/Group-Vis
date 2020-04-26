@@ -62,7 +62,7 @@ class MapContainer extends React.Component {
 
         return ( 
             <div className="chart-wrapper geomap ">
-                <div className="g-chart-title title-margin">Map View</div>
+                <div className="title">Figure Traces</div>
                 <div className = "mapView-label-container">
                     <div className="mapView-label">
                         <svg  width="36px" height="18px">

@@ -16,7 +16,7 @@
   flex:1;
   height: 77%;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: auto; 
 }
 .timeLine_underLabel{
   overflow: hidden;
