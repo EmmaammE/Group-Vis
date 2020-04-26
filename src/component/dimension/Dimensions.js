@@ -21,7 +21,7 @@ const _class = () => 'circles';
 
 const color = (status) => {
     if(status === undefined || status === 3) {
-        return '#d5b086'
+        return '#c7ad8c'
     } else {
         return ['#00bcd4', '#85a392'][status]
     }
@@ -59,7 +59,7 @@ export function DimensionCircles({_width, _height, data, _margin, status, classC
                                 className={classCreator(person_id)}
                                 strokeWidth="1px"
                                 opacity = {0.5}
-                                fill="#d5b086"
+                                fill="#c7ad8c"
                                 data={person_id}
                                 style={{ cursor: 'pointer' }}
                                 cx={points[0]} 
@@ -82,7 +82,7 @@ export function DimensionCircles({_width, _height, data, _margin, status, classC
                             <circle key={'cir-' + i} r={5}  
                                 // className={classCreator(person_id)}
                                 strokeWidth="1px"
-                                stroke="#d5b086"
+                                stroke="#c7ad8c"
                                 opacity = {0.5}
                                 fill={color(status[person_id])}
                                 data={person_id}

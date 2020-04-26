@@ -41,6 +41,10 @@ name: 中文
     
     actions/step.js | function compareGroup 
 
+- 两个群体的人的状态：
+
+    actions/step.js | function getPeopleStatus(people
+
 - 数据存储：
 
     为了方便，直接存储在group中，键为 step1-step2 (String)

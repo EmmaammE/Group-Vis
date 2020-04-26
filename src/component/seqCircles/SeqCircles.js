@@ -1,5 +1,5 @@
 import React from 'react';
-import './seqCircles.css'
+import './seqCircles.css' 
 import leaf from '../../assets/leaf/leaf.svg'
 import leaf_choose from '../../assets/leaf/leaf_choose.svg'
 import leaf2 from '../../assets/leaf/leaf2.svg'
@@ -7,8 +7,19 @@ import leaf2_choose from '../../assets/leaf/leaf2_choose.svg'
 import leaf3 from '../../assets/leaf/leaf3.svg'
 import leaf3_choose from '../../assets/leaf/leaf3_choose.svg'
 
+import leaf_a from '../../assets/leaf-a/leaf.svg'
+import leaf_choose_a  from '../../assets/leaf-a/leaf_choose.svg'
+
+import leaf_b from '../../assets/leaf-b/leaf.svg'
+import leaf_choose_b from '../../assets/leaf-b/leaf_choose.svg'
+
 let leafSrc = [leaf,leaf2,leaf3]
 let leafSrcChoose = [leaf_choose,leaf2_choose,leaf3_choose]
+let leafArr = [
+  [leaf,leaf_choose],
+  [leaf_a,leaf_choose_a],
+  [leaf_b,leaf_choose_b]
+]
 
 class SeqCircles extends React.Component{
   constructor(props){
@@ -41,23 +52,17 @@ class SeqCircles extends React.Component{
     let rWidth = 12
     return (
       <g  transform={`translate(${rowOrColumn?0:gxy(index)},${rowOrColumn?gxy(index):0})`}>
-        {data.map((v,i)=>(
-          
-              // <circle
-              //   className = "seqCircle_timeLine"
-              //   key={`text_${i}`}
-              //   cx={rowOrColumn?xy(v.distance):0}
-              //   cy={rowOrColumn?0:xy(v.distance)}
-              //   onMouseOver={this.handleMouseover}
-              //   onMouseOut={this.handleMouseout}
-              //   info={`${index}_${v.distance}_${v.discription}`}
-              //   r = {r?r:5}
-              //   fill={v.isChoose?"red":"gray"}
-              //   stroke="white"
-              //   opacity={opacity?opacity:1}
-              // >
-              // </circle>
-              <image
+        {data.map((v,i)=>{
+            let category = v.category
+            category = category==undefined?0:category
+            let isCh = v.isChoose?1:0
+            let leafResource
+            if(leafArr[category][isCh]){
+              leafResource = leafArr[category][isCh]
+            }else{
+              leafResource = leaf
+            }
+              return <image
                 key={`timeline_image_${i}`}
                 className="timeline_image"
                 x={rowOrColumn?xy(v.distance)-rWidth/2:-rWidth/2}
@@ -68,10 +73,10 @@ class SeqCircles extends React.Component{
                 info={`${index}_${v.distance}_${v.discription}`}
                 width={rWidth} 
                 height={rWidth}
-                xlinkHref={v.isChoose?leafSrcChoose[0]:leafSrc[0]}
+                xlinkHref={leafResource}
               />
             
-          ))
+          })
         }
       </g>     
       

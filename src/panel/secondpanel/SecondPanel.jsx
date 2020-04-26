@@ -14,6 +14,7 @@ import { addHistoryData } from '../../redux/history.redux';
 import LEGEND from '../../assets/legend/flower.png';
 import Flower from '../../component/flower/flower';
 import CircleBtn from '../../component/button/circlebtn';
+import Blobs from '../../component/blob/blob';
 
 const GRID_ITEM_TEMPLATE = { next: -1, size: 1, selected: 0 };
 class SecondPanel extends React.Component {
@@ -25,11 +26,11 @@ class SecondPanel extends React.Component {
             gridBack: {},
             // [第几层， 第几个，step]
             hoverIndex: [0, 0, 1],
-            showIndex: [0, 0],
+            showIndex: [0, 0, 1],
             // step: [第几层，第几个]
             step2index: { 1: [0, 0] },
             similarGrids: [],
-            gridsIndex: {}
+            gridsIndex: {},
         }
         this.clickFlower = this.clickFlower.bind(this);
         this._hoverFlower = this._hoverFlower.bind(this);
@@ -45,13 +46,14 @@ class SecondPanel extends React.Component {
                 if (grid.length === 0) {
                     let newGrid = [({
                         ...GRID_ITEM_TEMPLATE,
+                        connections: {},
                         step: [1], positions: [group[1][POSITIONS]], data: [group[1][TOPICS]]
                     })]
     
                     this.setState({ grid: newGrid })
     
                 } else {
-                    let similarGrid = [-1, -1];
+                    let similarGrid = [-1, -1, -1];
                     let newGrid = grid.slice(0);
 
                     if(another !== null ) {
@@ -99,15 +101,27 @@ class SecondPanel extends React.Component {
                             if(currentLayer >= 1) {
                                 newGrid[currentLayer - 1].next += 1;
                             }
-                        
                         } else {
                             let currentLayer = hoverIndex[0];
+                            let similiarFlag = false;
+                            if (step === +similiarStep + 1) {
+                                similiarFlag = true;
+                                // 是相似的人和当前人产生的群体， 需要在同层增加花朵并连线
+                            }
                             
                             // 被选中的这朵❀没有下一层
                             if (currentLayer === grid.length - 1) {
                                 newGrid[currentLayer].next = 1;
+
+                                if(!similiarFlag) {
+                                    newGrid[currentLayer].connections[hoverIndex[1]] 
+                                        = [0]
+                                }
+                                
+
                                 newGrid.push({
                                     ...GRID_ITEM_TEMPLATE,
+                                    connections: {},
                                     step: [step],
                                     positions: [group[step][POSITIONS]],
                                     data: [group[step][TOPICS]]
@@ -120,6 +134,13 @@ class SecondPanel extends React.Component {
                                 let newIndex = newGrid[currentLayer+1].size;
         
                                 newGrid[currentLayer].next += 1;
+                                if(!similiarFlag) {
+                                    if(newGrid[currentLayer].connections[hoverIndex[1]]) {
+                                        newGrid[currentLayer].connections[hoverIndex[1]].push(newIndex)
+                                    } else {
+                                        newGrid[currentLayer].connections[hoverIndex[1]] = [newIndex]
+                                    }
+                                }
         
                                 step2index[step] = [currentLayer + 1, newIndex];
         
@@ -128,11 +149,9 @@ class SecondPanel extends React.Component {
                                 _grid.positions.push(group[step][POSITIONS]);
                                 _grid.step.push(step);
                                 _grid.data.push(group[step][TOPICS])
-                            }
-
-                            if (step === +similiarStep + 1) {
-                                // 是相似的人和当前人产生的群体， 需要在同层增加花朵并连线
-
+                            } 
+                            
+                            if(similiarFlag) {
                                 let x =step2index[step-1][0];
                                 // 推荐的相似的人的坐标
                                 similarGrid[0] = step2index[step - 1][1]
@@ -192,37 +211,15 @@ class SecondPanel extends React.Component {
     clickFlower(step) {
         let thisIndex = this.state.step2index[step];
         // 设置这一层的selected
-        let { grid, gridBack, hoverIndex } = this.state;
-
-        let hasNext = false;
-        // 如果选中的这一层已经有了下一层，且不是在该花朵所在的层选择该花朵时创建的
-        if (thisIndex[0] + 1 <= grid.length - 1 && grid[thisIndex[0]].selected !== thisIndex[1]) {
-            // 当前被选中的step 
-            hasNext = true;
-            gridBack[hoverIndex[2]] = grid.slice(thisIndex[0] + 1);
-            grid = grid.slice(0, thisIndex[0] + 1);
-            grid[thisIndex[0]].next = -1;
-        }
-        // 如果该🌼已有备份
-        if (gridBack[step] !== undefined && grid[thisIndex[0]].selected !== thisIndex[1]) {
-            // 如果选中该❀前，同层的❀已有下一层
-            if (hasNext === true) {
-                grid = grid.slice(0, thisIndex[0] + 1);
-            }
-            gridBack[step].forEach(e => {
-                grid.push(e)
-            })
-            grid[thisIndex[0]].next = gridBack[step][0].size;
-        }
+        let { grid } = this.state;
 
         // 更新选中的序号
         grid[thisIndex[0]].selected = thisIndex[1];
 
         this.setState({
             grid,
-            lastHoverIndex: step,
             hoverIndex: [...thisIndex, step],
-            showIndex: thisIndex
+            showIndex: [...thisIndex, step]
         })
 
         this.updateViews(step);
@@ -265,13 +262,14 @@ class SecondPanel extends React.Component {
         let { step2index } = this.state;
 
         this.setState({
-            showIndex: step2index[step]
+            showIndex: [...step2index[step], step]
         })
     }
 
     render() {
         let { grid, hoverIndex, showIndex, similarGrids, gridsIndex} = this.state;
-        let detail = grid[showIndex[0]], y = showIndex[1];
+        let { vennStep } = this.props;
+        let detail = grid[showIndex[0]], y = showIndex[1], step = showIndex[2];
         let _value = Math.max(...grid.map(g => g.size));
         let style;
 
@@ -285,29 +283,44 @@ class SecondPanel extends React.Component {
                 <div className="btn-container">
                     <CircleBtn type={11} active={true} onClick={this.toCompare} />
                 </div>
-
                 <div className="content-panel">
-                    <div className="legend-container">
-                        <img src={LEGEND} alt="" />
-                    </div>
                     {/* box-width + translate[0] = viewBox/2 : 为了留文字的空间*/}
                     {
-                        detail && <div className="flower-detail">
-                            <svg width="100%" height="100%" viewBox="0 0 620 620">
-                                <g transform="translate(60,60)">
-                                    <Flower
-                                        type={0}
-                                        marginWidth={0}
-                                        leaves={detail['data'][y]}
-                                        positions={Object.assign({}, detail['positions'][y])}
-                                        step={detail['step'][y]}
-                                    />
-                                </g>
-                            </svg>
+                        detail && 
+                        <div className="flower-detail">
+                           <div>
+                                <p className="g-chart-title">Cohort Metaphor</p>
+                                <svg width="100%" height="100%" viewBox="0 0 620 620">
+                                    <g transform="translate(60,60)">
+                                        <Flower
+                                            type={0}
+                                            marginWidth={0}
+                                            leaves={detail['data'][y]}
+                                            positions={Object.assign({}, detail['positions'][y])}
+                                            step={detail['step'][y]}
+                                            venned={vennStep.indexOf(step)!==-1}
+                                        />
+                                    </g>
+                                </svg>
+                           </div>
+                            {
+                                vennStep.length > 0 && 
+                                <div>
+                                    <p className="g-chart-title">Cohort Set Analyzer</p>
+                                    <div className="venn-container">
+                                        <Blobs />
+                                    </div>
+                                </div>
+                            } 
                         </div>
+
                     }
                     <div className="flower-divider"></div>
+                    <p className="g-chart-title">Cohorts Manipulator</p>
                     <div className="flower-overview">
+                        <div className="legend-container">
+                            <img src={LEGEND} alt="" />
+                        </div>
                         {
                             grid.map((item, i) => {
                                 if (item) {
@@ -332,6 +345,7 @@ class SecondPanel extends React.Component {
                                                 positions={item.positions}
                                                 cb={this.clickFlower}
                                                 hovercb = {this._hoverFlower}
+                                                connections = {item.connections}
                                             />
                                         </div>
                                     )

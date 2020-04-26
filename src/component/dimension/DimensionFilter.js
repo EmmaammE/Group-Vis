@@ -12,29 +12,7 @@ import { setPerson } from '../../actions/data'
 
 const d3 = Object.assign(d3Base, { lasso });
 
-const getPeopleStatus = (people) => {
-
-
-    if(people === undefined) {
-        return undefined
-    }
-    let peopleStatus = {};
-    people[0].forEach(id => {
-        peopleStatus[id] = 1;
-    })
-
-    people[1].forEach(id => {
-        if(peopleStatus[id] === 1) {
-            peopleStatus[id] = 3;
-        } else {
-            peopleStatus[id] = 2;
-        }
-    })
-
-    return peopleStatus;
-}
-
-export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, selectedPeople = {}, data = {}, cb}) {
+export function DimensionFilter({ _width, _height, _margin, peopleStatus, selectedPeople = {}, data = {}, cb}) {
 
     const $container = useRef(null);
     // 当前视图使用lasso选中的人
@@ -51,9 +29,6 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
     const _step = useSelector(state => state.step);
     const currentStep = useSelector(state => state.otherStep["6"])
     const topicData = useSelector(state => state.group[currentStep]["topicView"])
-    const peopleStatus = useMemo(() => {
-        return getPeopleStatus(peopleOfGroup)
-    }, [peopleOfGroup])
 
     const [nextParam, setNextParam] = useState({})
 
@@ -218,7 +193,7 @@ export function DimensionFilter({ _width, _height, _margin,  peopleOfGroup, sele
                     style = {{ cursor: 'pointer'}}
                     width="100%" height="100%" fill="transparent"></rect>
             </g>
-            <foreignObject x="0" y="-10" width="220px" height="30" >
+            <foreignObject x="0" y="-5" width="220px" height="50" >
                 <div className="dimension-btn-container">
                     <CircleBtn type={4}></CircleBtn>
                     <CircleBtn type={5}></CircleBtn>

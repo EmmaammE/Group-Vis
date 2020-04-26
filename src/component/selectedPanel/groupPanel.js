@@ -4,9 +4,9 @@ import './selectedPanel.css'
 function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_all, allStatus}) {
     const [expanded, setExpanded] = useState(false)
 
-    function expand() {
-        setExpanded(true)
-    }
+    // function expand() {
+    //     setExpanded(true)
+    // }
 
     function toggle() {
         setExpanded(!expanded)
@@ -14,15 +14,14 @@ function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_al
     return (
         <div>
             <div className="group-title">
-                <p className='g-text'>{title}</p>
-                <div className='svgs'>
-                    <input type="checkbox"
+                <input type="checkbox"
                         onChange = {cb_all}
                         checked = {allStatus}
-                    />
-
+                />
+                <p className='g-text'>{title}</p>
+                <div className='svgs'>
                     <div className="svg-badge"
-                            onMouseOver={expand}
+                            // onMouseOver={expand}
                             onClick = {toggle}
                         >
                         <svg

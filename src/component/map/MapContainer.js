@@ -3,7 +3,6 @@ import './map.css';
 import Map from './map';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import mapLogal from '../../assets/icon/mapLogal.svg'
 // import {data} from '../../data/ming'
 class MapContainer extends React.Component {
     state = {
@@ -63,19 +62,6 @@ class MapContainer extends React.Component {
         return ( 
             <div className="chart-wrapper geomap ">
                 <div className="title">Figure Traces</div>
-                <div className = "mapView-label-container">
-                    <div className="mapView-label">
-                        <svg  width="36px" height="18px">
-                            <image
-                                className="mapView-label-image"
-                                width="36" 
-                                height="16" 
-                                xlinkHref={mapLogal}
-                            />
-                        </svg>
-                    </div>
-                    <p className="mapView-label mapView-label-text">#Descriptions</p>
-                </div>
                 <div className="container"><Map addr={addr} pos2sentence={data && data["pos2sentence"]} sentence2pos={data && data["sentence2pos"]} /></div>
             </div>
         )

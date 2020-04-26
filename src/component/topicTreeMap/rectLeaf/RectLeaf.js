@@ -54,6 +54,7 @@ class RectLeaf extends React.Component{
     //  求出标签长度占多少个字符
     let labelStr = data.label.split("")
     let singleWordWidth
+    // 说明改名字是英文
     if((labelStr[0]>='a'&&labelStr[0]<='z')||(labelStr[0]>='A'&&labelStr[0]<='Z')){
       singleWordWidth = 6
     }else{
@@ -65,7 +66,6 @@ class RectLeaf extends React.Component{
     // 算出margin.top需要多少，一行占高度是16
     margin.top = Math.ceil(pxLength/width)*16+5
     // 使用差值动画的话，开始width会非常的小,可能会溢出变负
-    // console.log("Math.ceil(pxLength/width)", Math.ceil(pxLength/width),margin.bottom)
     if(margin.top<0) return null
     
     let height = this.props.height-margin.top-margin.bottom
@@ -74,10 +74,24 @@ class RectLeaf extends React.Component{
       height = this.props.height-margin.top-margin.bottom
     }
     if(height<=0)return null
-    const pHeight = Number((data.personRatio*this.props.height).toFixed(0))
-    const transHeight = this.props.height-pHeight
+    let compareFlag = false
+    let pHeight,transHeight
+    if(data.personRatio===-1){
+      compareFlag = true
+      pHeight = []
+      transHeight = []
+      let tempH = Number((data.abRatio[0]*this.props.height).toFixed(0))
+      pHeight.push(tempH)
+      transHeight.push(this.props.height-tempH)
+      tempH = Number((data.abRatio[1]*this.props.height).toFixed(0))
+      pHeight.push(tempH)
+      transHeight.push(this.props.height-tempH)
+    }else{
+      pHeight = Number((data.personRatio*this.props.height).toFixed(0))
+      transHeight = this.props.height-pHeight
+    }
+   
     const {xScale,yScale} = rectLeafScale(data.cData,width,height)
-    // console.log("xScale,yScale",xScale,yScale)
     const parentPos= this.props.parentPos
     let rWidth = 12
     let index = this.props.index
@@ -93,20 +107,40 @@ class RectLeaf extends React.Component{
         height= {this.props.height}
         index={index}   
       ></rect>
-
-      <rect
-        transform={`translate(0,${transHeight})`}
-        fill="#f0dbd6"
-        opacity="0.5"
-        width = {this.props.width}
-        height= {pHeight}  
-        index={index} 
-      >
-      </rect>
+      {
+        compareFlag?
+        <g>
+          <rect
+            transform={`translate(0,${transHeight[0]})`}
+            fill="#f0dbd6"
+            opacity="0.5"
+            width = {this.props.width/2}
+            height= {pHeight[0]}  
+            index={index} 
+          >
+          </rect>
+          <rect
+            transform={`translate(${this.props.width/2},${transHeight[1]})`}
+            fill="#164a73"
+            opacity="0.2"
+            width = {this.props.width/2}
+            height= {pHeight[1]}  
+            index={index} 
+          >
+          </rect>
+        </g>
+        :<rect
+          transform={`translate(0,${transHeight})`}
+          fill="#f0dbd6"
+          opacity="0.5"
+          width = {this.props.width}
+          height= {pHeight}  
+          index={index} 
+        >
+        </rect>
+      }
       <rect
         stroke="#c36958"
-        // rx ="5"
-        // ry="5"
         fill="none"
         strokeWidth = "1.5"
         width = {this.props.width}
@@ -147,9 +181,18 @@ class RectLeaf extends React.Component{
             // 记录此花朵在整个svg中的位置
             data.cData[i].tx = parentPos[0]+margin.left+xScale(v.x)
             data.cData[i].ty = parentPos[1]+margin.top+yScale(v.y)
+            let category = v.category
+            let isCh = v.isChoose?1:0
             let len = v.persons.length
+            
             len = len>3?3:len===2?2:1
-
+            len--
+            let leafResource
+            if(leafArr[category][isCh][len]){
+              leafResource = leafArr[category][isCh][len]
+            }else{
+              leafResource = leaf
+            }
           return <g 
             key={`${v.x}-${i}-${v.y}`}
             transform={`translate(${xScale(v.x)-rWidth/2},${yScale(v.y)-rWidth/2})`} >
@@ -159,7 +202,7 @@ class RectLeaf extends React.Component{
                 discription = {v.discription}
                 width={rWidth} 
                 height={rWidth}
-                xlinkHref={v.isChoose?leafSrcChoose[len-1]:leafSrc[len-1]}
+                xlinkHref={leafResource}
               />
           </g> 
         })

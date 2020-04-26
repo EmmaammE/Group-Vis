@@ -26,7 +26,7 @@ class ThirdPanel extends React.Component {
         </div>
         <div className="third-footer-panel">
           <div className = "third-footer chart-wrapper">
-            <p className="feature-title figure-embedding">Figure Embedding</p>
+            <p className="title figure-embedding">Figure Embedding</p>
             <DimensionContainer />
           </div>
         </div>

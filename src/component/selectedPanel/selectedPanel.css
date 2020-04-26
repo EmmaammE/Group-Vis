@@ -322,6 +322,7 @@
 .svg-badge {
   width: 17%;
   height: 4vh;
+  cursor: pointer;
 }
 
 .ReactVirtualized__Grid__innerScrollContainer {

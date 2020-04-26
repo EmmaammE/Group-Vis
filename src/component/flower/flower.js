@@ -62,7 +62,7 @@ function getArr(leaves, topics) {
  *                    0: 展示文字； 1: 不展示
  */
 // function Flower({ number, current, marginWidth, titles, positions, _hovered, cb, step}) {
-function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, hovercb, type = 1}) {
+function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, hovercb, type = 1, venned}) {
     const $container = useRef(null);
     const [beenVenn, setVenn] = useState(false);
     const dispatch = useDispatch();
@@ -173,12 +173,12 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
                 onClick={cb} onMouseOver={hovercb} />
 
             <foreignObject x={-120 + type * 100} y={type * 60} width="200" height="200" >
-                    <div className={["flower-number", beenVenn ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
+                    <div className={["flower-number", beenVenn || venned ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
                         <p className="g-text">{step}</p>
                     </div>
             </foreignObject>
 
-            <foreignObject x={400 - type * 70} y={type * 60} width="200" height="80" >
+            <foreignObject x={390 - type * 85} y={type * 60} width="200" height="80" >
                 <p className="g-text number">{"#Figure: "}  
                     <span>{Object.keys(positions).length}</span>
                 </p>

@@ -132,7 +132,8 @@ export function compareGroup(dispatch, KEY, person_ids1 = [], person_ids2 = [], 
 
     socket.onmessage = function(evt) {
         let received_json = {
-            'data': JSON.parse(evt.data)
+            'data': JSON.parse(evt.data),
+            'people': [person_ids1, person_ids2]
         }
         console.log(received_json)
         /** type=3 表示是传入的两个群体的数据 */
@@ -276,14 +277,18 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         temp[TOPICS].splice(minIndex,originLength-minIndex)
         console.log("topic原始数量",topicNum,"总topic的值：",totalWeight,"topic去掉节段",minIndex,originLength)
 
-
-        // 地图查询的人
         let people = {};
         Object.keys(res.data[POSITIONS]).forEach(id => {
             //  _positions[temp[DICT][id]] = res.data[POSITIONS][id]
             people[id] = temp[DICT][id]
             res.data[POSITIONS][id].push(temp[DICT][id]);
         })
+
+        let peopleStatus;
+
+        if(type === 3) {
+            peopleStatus = getPeopleStatus(res['people'])
+        }
 
         let addressMap = {
             addressNode,
@@ -297,10 +302,35 @@ function handleTopicRes(dispatch, res, KEY, step, type) {
         //         "topic_pmi": res.data["topic_pmi"],
         //         "person_id2position2d": res.data["person_id2position2d"]
         // 
-        return updateFourViews(dispatch,people,res,temp,topicId2Name,step,addressMap,type,KEY)
+        return updateFourViews(dispatch,people,res,temp,topicId2Name,step,addressMap,type,KEY, peopleStatus)
     } else {
         console.log(res.data.bug)
     }
+}
+
+/**
+ * 求两个群体的people状态
+ * @param {arr} people 
+ *      [peopleids1[], peopleids2[]]
+ */
+function getPeopleStatus(people) {
+    let peopleStatus = {};
+    people[0].forEach(id => {
+        // 群体1
+        peopleStatus[id] = 1;
+    })
+
+    people[1].forEach(id => {
+        if(peopleStatus[id] === 1) {
+            //两个群体都存在
+            peopleStatus[id] = 3;
+        } else {
+            // 群体2
+            peopleStatus[id] = 2;
+        }
+    })
+
+    return peopleStatus;
 }
 /**
  * 
@@ -348,10 +378,11 @@ export function fetchTopicData(param, KEY, step, type) {
  * @topicId2Name，是对象，是从topic的id到其名字的映射
  * 其中dispatch和res、temp应该是必须的。
  * people/topicId2Name，可以由其它数据合成
+ * peopleStatus：用于群体对比的人的状态
  * 
 */
 
-export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addressMap, type,KEY){
+export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addressMap, type,KEY, peopleStatus){
 
     console.log("返回的数据***",res.data,"temp***",temp,addressMap,type,KEY);
 
@@ -707,7 +738,6 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
     // 计算topicData的占比
     let _topics = [];
     for(let i=0; i <topicData.length; i++) {
-        let tempRatio = topicData[i].weight / topicTotalWeight
         
         if(_topics.length > 8) break;
 
@@ -718,20 +748,18 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             'ratio': topicData[i].personRatio
         })
     }
-
-    
-    
     
     switch (type) {
         case 3:
             // 群体对比
             //  step为一个数组, 表示对比的两个群体的step
             // 对topicData和timeLineData进行处理
-            let personMap
+            let personMap = peopleStatus
+            console.log("peopleStatus",peopleStatus)
             let addData = addCategory(personMap,topicData,timeLineData)
             timeLineData = addData.timeLineData
             topicData = addData.topicData
-            console.log("addData",addData)
+            // console.log("addData",addData)
 
             updateTwoGroup(step.join('-'), {
                 "mapView": {
@@ -740,7 +768,8 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                     sentence2pos
                 },
                 [POSITIONS]: res.data[POSITIONS],
-                "people": people,
+                // 为一个对象 | 详情查看函数
+                "people": peopleStatus,
                 [TOPICS]: _topics,
                 "selectView": {selectListData},
                 "matrixView": matrixViewData,
@@ -748,13 +777,20 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                 "historyData":historyData
             })(dispatch)
 
+             // 更新降维图所需要的辅助数据 
+             dispatch(addHistoryData(historyData))
+             // 更新所有图
+             dispatch(updateTopicView(topicData));
+             dispatch(updateSelectList({selectListData}));
+             dispatch(updateMatrix(matrixViewData));
+             dispatch(updateTimeLine(timeLineData))
+             dispatch(initPeopleCommon(peopleToDiscriptions))
+             dispatch(initDict(temp[DICT]))
             break;
         case 0:
             // 更新降维图所需要的辅助数据 
             dispatch(addHistoryData(historyData))
             // 更新所有图
-            // let sliderWeights = topicData.map(v=>v.weight)
-            // dispatch(initTopicWeight(sliderWeights))
             dispatch(updateTopicView(topicData));
             dispatch(updateSelectList({selectListData}));
             dispatch(updateMatrix(matrixViewData));
@@ -793,8 +829,6 @@ function updateTwoGroup(step, data) {
     return dispatch => {
         batch(() => {
             // !!! 注意，这里没有更新step。如果只监听了step的更新，需要手动dispatch相应的action
-            // 不清楚是否其他视图需要计算两个群体的交叉的人， 暂时这个逻辑写在降维图的视图了，
-            // 如果需要可以直接把people换算成一个数组
             dispatch(setGroup({[step]: data}))
             dispatch(setFlower(data[TOPICS].map(e => e['content'].join('-'))))
 
@@ -808,6 +842,7 @@ function updateTwoGroup(step, data) {
 
 function addCategory(personMap,topicData,timeLineData){
     // 为每个描述，添加类别，0是AB类，1是A类，2是B类
+    let discpMap = {}
     topicData.forEach(topic=>{
         let sumMap = {}
         let sumNum = 0
@@ -821,19 +856,19 @@ function addCategory(personMap,topicData,timeLineData){
             let flagAB = false
             for(let i=0;i<v.personsId.length;i++){
                 let p = v.personsId[i]
-                if(personMap[p]=='AB'){
-                    flagAB = true
+                if(personMap[p]=='3'){
+                    flagAB = true 
                     if(sumMap[p]==undefined){
                         sumMap[p] = 1
                         sumNum++
                     }
-                }else if(personMap[p]=='A'){
+                }else if(personMap[p]=='1'){
                     flagA = true
                     if(aMap[p]==undefined){
                         aMap[p] = 1
                         aNum++
                     }
-                }else if(personMap[p]=='B'){
+                }else if(personMap[p]=='2'){
                     flagB = true
                     if(bMap[p]==undefined){
                         bMap[p] = 1
@@ -843,13 +878,17 @@ function addCategory(personMap,topicData,timeLineData){
             }
             if(flagAB){
                 v.category = 0
+                discpMap[v.id] = 0
             }else{
                 if(flagA&&flagB){
                     v.category = 0
+                    discpMap[v.id] = 0
                 }else if(flagA){
                     v.category = 1
+                    discpMap[v.id] = 1
                 }else{
                     v.category = 2
+                    discpMap[v.id] = 2
                 }
             }
         })
@@ -861,11 +900,22 @@ function addCategory(personMap,topicData,timeLineData){
         topic.personRatio = -1
     })
 
+    timeLineData.tCircleData.forEach(personTimeLine=>{
+        personTimeLine.forEach(v=>{
+            if(discpMap[v.sentenceId]!=undefined){
+                v.category = discpMap[v.sentenceId]
+            }else{
+                v.category = 0
+            }
+
+        })
+    })
+
     // 给timeLineData.tLabelData添加类别
     timeLineData.tLabelData.forEach(v=>{
-        if(personMap[v.personId]=='AB'){
+        if(personMap[v.personId]=='3'){
             v.category = 0
-        }else if(personMap[v.personId]=='A'){
+        }else if(personMap[v.personId]=='1'){
             v.category = 1
         }else{
             v.category = 2

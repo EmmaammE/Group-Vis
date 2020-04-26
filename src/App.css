@@ -5,7 +5,7 @@
 
 .App {
   display: grid;
-  grid-template-columns: 18% auto 33% 21%;
+  grid-template-columns: 18% auto 30% 21%;
   grid-template-rows: calc(100vh - 22px);
   margin: 8px;
   border: 3px solid #d3d3d3;
@@ -17,14 +17,14 @@
 }
 
 :root {
-  --main-bg-color: #d5b086;
+  --main-bg-color: #c7ad8c;
   --main-color: #240f39;
 }
 
 /** 每个视图的名字 */
 .g-chart-title {
   font-family:Helvetica;
-  font-size:20px;
+  font-size:16px;
   color:#240f39;
   letter-spacing:0;
   line-height:14px;

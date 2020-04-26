@@ -3,13 +3,11 @@ import Flower from './flower';
 
 const BOX_WIDTH = 250;
 
-const getEndpoints = (next, current) => {
-    if( next === -1 ) {
-        return [];
+const getEndpoints = (points, next, current) => {
+    if(next === -1) {
+        return []
     }
-
-    return Array(next).fill(null)
-        .map((val, i) => 2*i+1+(current - next))
+    return points.map(val => [val, 2*val+1+(current - next)])
 }
 
 const curvePath = (currPos, point) => {
@@ -36,20 +34,31 @@ const curvePath = (currPos, point) => {
     }
 }
 
+const _getPoints = (connections, next, current) => {
+    let endpoints = {};
+    for(let key in connections) {
+        endpoints[key] = getEndpoints(connections[key], next, current)
+    }
+    return endpoints;
+}
+
 class FlowerContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            endpoints: getEndpoints(props.next),
+            // { 选中的花朵： [花朵下的endpoints数组] }
+            endpoints: _getPoints(props.connections, props.next, props.current),
             similiarFlags: []
         }
     }
 
     componentDidUpdate(prevProps) {
-        let { next, current, similiarFlag } = this.props;
-        if (prevProps.next !== next || prevProps.current !== current) {
+        let { next, current, similiarFlag, connections } = this.props;
+        if (JSON.stringify(connections)!==JSON.stringify(prevProps.connections)
+            || next !== prevProps.next || current !== prevProps.current
+        ) {
             this.setState({
-                endpoints: getEndpoints(next, current)
+                endpoints: _getPoints(connections, next, current)
             })
         }
 
@@ -60,14 +69,14 @@ class FlowerContainer extends React.Component {
         }
     }
 
+    
+
     render() {
         let {  max,
                 step, leaves, current,  
                 _selected, _nextSelected, _hovered, 
                 positions, next, cb, hovercb} = this.props;
         let { endpoints, similiarFlags } = this.state;
-
-        let $currPos = 2 * _selected + 1;
 
         return (
             <svg width="100%" height="100%" viewBox={`0 0 ${2 * max * BOX_WIDTH} ${2 * BOX_WIDTH + 100 }`}
@@ -94,15 +103,18 @@ class FlowerContainer extends React.Component {
                     ))
                 }
                 {
-                    endpoints.map((point, i) => {
-                        return (<path
-                            key={'con-' + i}
-                            className={[i === endpoints.length-1 ? "connect-line" : ''
-                                , _nextSelected !== i ? 'unset-line': ''].join(' ')}
-                            transform ={`translate(0, 600) rotate(-90)`}
-                            d = {curvePath($currPos, point)} 
-                            fill="transparent" stroke="black"
-                        />)
+                    Object.keys(endpoints).map(key => {
+                        let _endpoints = endpoints[key];
+                        return _endpoints.map( points => (
+                            <path
+                                key={'con-' + points}
+                                // className={[key === points[0] ? "connect-line" : ''
+                                //     , _nextSelected !== key ? 'unset-line': ''].join(' ')}
+                                transform ={`translate(0, 600) rotate(-90)`}
+                                d = {curvePath(2*key+1, points[1])} 
+                                fill="transparent" stroke="black"
+                            />
+                        ))
                     })
                 }
                 </g>
@@ -117,24 +129,36 @@ class FlowerContainer extends React.Component {
                     fill="transparent" stroke="black"/> */}
                 {
                     similiarFlags.length !== 0 &&
-                        similiarFlags.map((flag, index) => 
-                            flag[0]-1 === _selected 
-                            ? (
-                                <g key={'flag-'+index}>
-                                    <path
-                                        className="unset-line"
-                                        d = {`M ${BOX_WIDTH * ( 2 * flag[2] + 3/2)} ${BOX_WIDTH} L ${BOX_WIDTH * (2 * flag[0] + 1/2 ) }, ${BOX_WIDTH} `}
-                                        fill="transparent" stroke="black"
-                                    />
-                                    <path
-                                        transform ={`translate(0, 600) rotate(-90)`}
-                                        className="unset-line"
-                                        d = {curvePath(2*flag[0]+1, endpoints[flag[1]])}
-                                        fill="transparent" stroke="black"
-                                    />
-                                </g> )
-                            : null
-                        )
+                        similiarFlags.map((flag, index) => {
+                            let start, end;
+                            if(current > next) {
+                                start = 2 * flag[2] + 1;
+                                end = 2 * flag[1] + 1 + current - next;
+                            } else {
+                                start = 2 * flag[2] + 1 + next - current;
+                                end = 2 * flag[1] + 1;
+                            }
+
+                            return <g key={'flag-'+index}>
+                                <path
+                                    className="unset-line"
+                                    d = {`M ${BOX_WIDTH * (start + 1/2)} ${BOX_WIDTH} L ${BOX_WIDTH * (start + 3/2 ) }, ${BOX_WIDTH} `}
+                                    fill="transparent" stroke="black"
+                                />
+                                <path
+                                    transform ={`translate(0, 600) rotate(-90)`}
+                                    className="unset-line"
+                                    d = {curvePath(start + 2, end)}
+                                    fill="transparent" stroke="black"
+                                />
+                                <path
+                                    transform ={`translate(0, 600) rotate(-90)`}
+                                    className="unset-line"
+                                    d = {curvePath(start, end)}
+                                    fill="transparent" stroke="black"
+                                />
+                            </g> 
+                        })
                 }
             </svg>
         )

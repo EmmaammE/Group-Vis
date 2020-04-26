@@ -51,8 +51,8 @@ const btnData = [
     ]
 let addOrMinus = true;
 let margin={left:15,top:10,right:15,bottom:15}
-const WIDTH = 600;
-const HEIGHT = 450
+const WIDTH = 520;
+const HEIGHT = 500
 
 // const apriori = require('simple-apriori');
 let brushPersons = {}
@@ -263,6 +263,7 @@ class TopicTreeMap extends React.Component{
       // 填充滑块有值部分，backgound-size转化为驼峰命名的方法
       e.target.style.backgroundSize = `${temp}% 100%`
 
+      this.handleClear()
       if(sliderTimer){
         clearTimeout(sliderTimer)
       }
@@ -332,7 +333,7 @@ class TopicTreeMap extends React.Component{
       },1000)
   }
 
-  handleClear(v){
+  handleClear(){
     // 框选框数据都进行消除
     polygons = []
     this.setState({polygons})
@@ -585,7 +586,7 @@ class TopicTreeMap extends React.Component{
     let selectedRect
     let selectedWeight
     if(topicData.length>0){
-      let tempData = rectTree(WIDTH,HEIGHT,topicData)
+      let tempData = rectTree(WIDTH-margin.right,HEIGHT-margin.bottom,topicData)
       rectTreeData = tempData.rectTreeData
       rectGroupData = tempData.rectGroupData
       sliderWeights = topicData.map((v,i)=>{
@@ -793,7 +794,7 @@ class TopicTreeMap extends React.Component{
                     index={i}
                     className="brush"
                     points={v}
-                    style={{fill:"#eeeeee", stroke:"black", strokeWidth:2, opacity:0.2}}
+                    style={{fill:"#eeeeee", stroke:"black", strokeWidth:2, opacity:0.4}}
                   >
                   </polygon>
                  ))
@@ -807,7 +808,7 @@ class TopicTreeMap extends React.Component{
                 className="brush"
                 width={this.state.brushWidth}
                 height={this.state.brushHeight}
-                opacity="0.4"
+                opacity="0.5"
                 strokeWidth="2"
                 stroke="black"
                 fill="#eeeeee"
