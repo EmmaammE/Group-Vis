@@ -17,7 +17,7 @@ const HEIGHT = 200;
 const SINGAL_HEIGHT = 25
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
-const margin={left:50,top:10,right:10,bottom:20}
+const margin={left:65,top:10,right:10,bottom:20}
 let startLoc=[];
 
 let brushedPersons = []
@@ -78,7 +78,7 @@ class TimeLine extends React.Component{
     }
   }
   handleMouseenter(v){
-    if(v.target.localName=="image"){
+    if(v.target.localName=="path"){
       let that = this
       let tipHasX = false
       popUp(that,tipHasX,v) 
@@ -234,13 +234,13 @@ class TimeLine extends React.Component{
             {flag?null
             :<g transform={`translate(0,${margin.top})`}>
                 {/* 绘制左边标签 */}
-                <g className="timeLine_Lables" >
+                <g className="timeLine_Lables" transform={`translate(${margin.left-10},0)`} >
                   <Lable  
                     translate={`(0,0)`}  
                     rowOrColumn = {false} 
                     data={tLabelData}
                     rotate={0}
-                    anchor={"start"}
+                    anchor={"end"}
                     highLable={this.state.highRowLabel}
                     xy={yScale}>
                   </Lable>
@@ -325,7 +325,7 @@ class TimeLine extends React.Component{
               {/* 绘制底下时间轴坐标 */}
               <g transform={`translate(0,0)`}>
                 <rect
-                  width={WIDTH}
+                  width={WIDTH+5}
                   height={20}
                   fill={"#cccccc"}
                 >  

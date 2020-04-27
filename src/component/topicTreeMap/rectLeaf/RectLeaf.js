@@ -24,6 +24,8 @@ import leaf2_choose_b from '../../../assets/leaf-b/leaf2_choose.svg'
 import leaf3_b from '../../../assets/leaf-b/leaf3.svg'
 import leaf3_choose_b from '../../../assets/leaf-b/leaf3_choose.svg'
 
+import Leaf from '../../leaf/Leaf'
+
 import '../topicTreeMap.css'
 const margin = {top:25,bottom:8,left:8,right:8}
 
@@ -196,14 +198,23 @@ class RectLeaf extends React.Component{
           return <g 
             key={`${v.x}-${i}-${v.y}`}
             transform={`translate(${xScale(v.x)-rWidth/2},${yScale(v.y)-rWidth/2})`} >
-              <image
+              <g
+                className="reactLeaf_image"
+                info={`${index}_${i}_${v.discription}`}
+                discription = {v.discription}
+                fill="none"
+                // r={rWidth} 
+              >
+                <Leaf category= {category} len={len} isChoose={v.isChoose} info={`${index}_${i}`} discription={v.discription} ></Leaf>
+              </g>
+              {/* <image
                 className="reactLeaf_image"
                 info={`${index}_${i}_${v.discription}`}
                 discription = {v.discription}
                 width={rWidth} 
                 height={rWidth}
                 xlinkHref={leafResource}
-              />
+              /> */}
           </g> 
         })
         }

@@ -539,7 +539,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
                         break;
                     case "亲属":
                         senDiscription = familyTemplateEn(vKey,temp[DICT],nodeEdgeDict )
-                        break;
+                        break; 
                     case "社会区分":
                         senDiscription = socialDisTemplateEn(vKey,temp[DICT],nodeEdgeDict )
                         break;
@@ -754,13 +754,13 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
         case 3:
             // 群体对比
             //  step为一个数组, 表示对比的两个群体的step
-            // 对topicData和timeLineData进行处理
+            // 对topicData和timeLineData进行处理 
             let personMap = peopleStatus
             console.log("peopleStatus",peopleStatus)
             let addData = addCategory(personMap,topicData,timeLineData)
             timeLineData = addData.timeLineData
             topicData = addData.topicData
-            // console.log("addData",addData)
+            console.log("addData",addData)
 
             updateTwoGroup(step.join('-'), {
                 "mapView": {

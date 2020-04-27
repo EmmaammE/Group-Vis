@@ -233,7 +233,7 @@ class TopicTreeMap extends React.Component{
 
   // 下面两个函数为hover之后弹出tooltip的事件处理函数
   handleMouseenter(v){
-    if(v.target.localName=="image"){
+    if(v.target.localName=="path"){
       let that = this
       let tipHasX = false
       popUp(that,tipHasX,v)
@@ -544,7 +544,7 @@ class TopicTreeMap extends React.Component{
         selectedTopicIndex:index
       })
     }
-    if(e.target.localName=="image"){
+    if(e.target.localName=="path"){
       let that = this
       let tipHasX = true
       popUp(that,tipHasX,e)
