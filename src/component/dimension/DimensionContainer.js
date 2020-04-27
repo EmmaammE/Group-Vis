@@ -40,7 +40,7 @@ class DimensionContainer extends React.Component {
                         data && <DimensionFilter 
                             _width={280}
                             _height={280}
-                            _margin="translate(20,20)"
+                            _margin="translate(0,0)"
                             peopleStatus = {peopleStatus}
                             data={positions}
                             selectedPeople = {selectedPeople}

@@ -5,7 +5,8 @@
 
 .App {
   display: grid;
-  grid-template-columns: 18% auto 30% 21%;
+  /* grid-template-columns: 18% auto 25% 21%; */
+  grid-template-columns: auto 35% 28.5% 20%;
   grid-template-rows: calc(100vh - 22px);
   margin: 8px;
   border: 3px solid #d3d3d3;

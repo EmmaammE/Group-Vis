@@ -194,7 +194,7 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
             </div>
             <div className="dimension-svg">
             {
-                data && <svg viewBox={"0 0 340 340"} width="85%" height="85%">
+                data && <svg viewBox={"0 0 340 340"} width="100%" height="100%">
                     <g ref={$container}>
                         <DimensionCircles 
                             _margin={_margin} _width={_width} _height={_height} 

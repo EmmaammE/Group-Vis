@@ -109,7 +109,7 @@ class SecondPanel extends React.Component {
                                 // 更新链接
                                 if(currentLayer >= 1) {
                                     for(let key in newGrid[currentLayer-1].connections) {
-                                        newGrid[currentLayer-1].connections[key].co.forEach(e => {
+                                        newGrid[currentLayer-1].connections[key].forEach(e => {
                                             if(e >= newIndex) {
                                                 e+=1
                                             }
@@ -355,7 +355,7 @@ class SecondPanel extends React.Component {
         let style;
 
         if(_value === 1 ) {
-            style = {width: '45%'}
+            style = {width: '40%'}
         }
 
         return (

@@ -240,7 +240,7 @@ class TimeLine extends React.Component{
                     rowOrColumn = {false} 
                     data={tLabelData}
                     rotate={0}
-                    anchor={"end"}
+                    anchor={"start"}
                     highLable={this.state.highRowLabel}
                     xy={yScale}>
                   </Lable>

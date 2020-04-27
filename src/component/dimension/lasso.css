@@ -184,13 +184,13 @@
 }
 
 .dimension-wrapper .brush-btn-container{
-  width: 100px;
+  width: 93px;
 }
 
 .similar-btn {
   position: absolute;
-  top: 69px;
-  left: 128px;
+  top: 70px;
+  left: 125px;
 }
 
 .similar-btn img {
@@ -202,4 +202,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 15px;
 }

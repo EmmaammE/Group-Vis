@@ -26,7 +26,7 @@ function GroupPanel({title, startIndex, status={}, options=[], change, cb, cb_al
 
     function clickAll() {
         cb(options.map(e => e['value']))
-        cb_all();
+        // cb_all();
     }
     
     let tempTitle = "";
@@ -69,7 +69,7 @@ function GroupPanel({title, startIndex, status={}, options=[], change, cb, cb_al
                             <div className={"person-dropdown group-sub-title dropdown__list-item "}
                                 key={'t-'+start}
                                 onClick={() =>cb(thisArr)}
-                                onMouseEnter={() =>cb(thisArr)}
+                                // onMouseEnter={() =>cb(thisArr)}
                             >
                                 <input type="checkbox" checked={thisArr.filter(e => !status[e]).length === 0} readOnly />
                                 <div className="item-container g-text">
@@ -81,7 +81,7 @@ function GroupPanel({title, startIndex, status={}, options=[], change, cb, cb_al
                             <div className={"person-dropdown dropdown__list-item"}
                                 key={'o-'+index}
                                 onClick={()=>cb([item['value']])}
-                                onMouseEnter={()=>cb([item['value']])}
+                                // onMouseEnter={()=>cb([item['value']])}
                             >
                                 <input type="checkbox" checked={status[item['value']]} readOnly />
                                 <div className="item-container g-text">
@@ -100,7 +100,7 @@ function GroupPanel({title, startIndex, status={}, options=[], change, cb, cb_al
                             <div className={"person-dropdown dropdown__list-item"}
                                 key={'o-'+index}
                                 onClick={()=>cb([item['value']])}
-                                onMouseEnter={()=>cb([item['value']])}
+                                // onMouseEnter={()=>cb([item['value']])}
                             >
                                 <input type="checkbox" checked={status[item['value']]} readOnly />
                                 <div className="item-container g-text">
