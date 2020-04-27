@@ -280,7 +280,7 @@ class FirstPanel extends React.Component {
 
                     dataSet[1]['groups'] =  groupsArr;
                     clickStatus['Person'] = statusArr;
-                    console.log(statusArr)
+                    // console.log(statusArr)
 
                     that.setState({
                         dataSet,
@@ -599,19 +599,18 @@ class FirstPanel extends React.Component {
                                                     <span>{myself['r']}</span>
                                                 </div>
                                             </div>
-                                            <div className="person-info g-text">
+                                            {myself['address'] && <div className="person-info g-text">
                                                 {/* <span className="first-item">Native Place</span> */}
                                                 <span>{myself['address']}</span>
-                                            </div>
-                                            <div className="person-info g-text">
-                                                {/* <span className="first-item">Dynasty</span> */}
+                                            </div>}
+                                            {myself['dynasty'] && <div className="person-info g-text">
                                                 <span>{myself['dynasty']}</span>
-                                            </div> 
-                                            <div className="person-info g-text">
+                                            </div> }
+                                            {myself['status'] && <div className="person-info g-text">
                                                 {/* <span className="first-item">Status</span> */}
                                                 {/* <span></span> */}
                                                 {myself['status'].slice(0, 2).join(',')}
-                                            </div>
+                                            </div>}
 
                                             <div className="person-lists">
                                             {

@@ -52,7 +52,10 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
                             _people.splice(_people.indexOf(this.getAttribute("data")),1);
                         } else {
                             this.classList.add("selected");
-                            _people.push(this.getAttribute("data"))
+                            let da = this.getAttribute("data");
+                            if(da!==null) {
+                                _people.push(this.getAttribute("data"))
+                            }
                         }
                     })
                 

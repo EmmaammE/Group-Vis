@@ -36,24 +36,27 @@ class DimensionContainer extends React.Component {
         return (
             <div className="dimension-container">
                 <div className="dimension-wrapper">
+                    
                     {
                         data && <DimensionFilter 
                             _width={280}
                             _height={280}
-                            _margin="translate(0,0)"
+                            _margin="translate(0,5)"
                             peopleStatus = {peopleStatus}
                             data={positions}
                             selectedPeople = {selectedPeople}
                             cb = {this._modifyPeople}
                         />
                     }
+
                 </div>
                 <div className="list-wrapper">
                     <div className='dimension-legend'> 
                         <span className='example'></span>
-                        <span className='g-text title'>Figure Projection</span>
+                        <span className='g-text title'>Figure</span>
                     </div>
-                    <div className="list-container">
+                    <div className="list-container g-text">
+                        <div>Names</div>
                         {
                             data && Object.values(data).map((d,i)=> (
                                 <div key={i} className='g-text d-list-item'>

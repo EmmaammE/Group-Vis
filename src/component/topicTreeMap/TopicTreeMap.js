@@ -624,8 +624,8 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleAdd)
     handleClick.push(this.handleMinus)
     handleClick.push(this.handleClear)
-    handleClick.push(this.handleFilter)
     handleClick.push(this.handleDeleteTopic)
+    handleClick.push(this.handleFilter)
     return (
       <div className=" chart-wrapper topic-view-container">
         <div className="topic-buttons btns-container">

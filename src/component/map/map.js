@@ -305,7 +305,7 @@ class Map extends React.Component {
     if (JSON.stringify(prevPropsData) !== JSON.stringify(this.props)) {
       prevPropsData = this.props;
       drawData = figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos)
-      console.log(drawData)
+      // console.log(drawData)
     }
     return (
       <>

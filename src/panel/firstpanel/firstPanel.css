@@ -170,6 +170,7 @@
     border: 1px solid #919191;
     justify-content: stretch;
     max-height: 95%;
+    overflow: auto
 }
 
 .panel-content ::-webkit-scrollbar {
@@ -201,7 +202,7 @@
     display: flex;
     justify-content: flex-start;
 }
-.first-panel .item-container span::after {
+/* .first-panel .item-container span::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -209,6 +210,10 @@
     background: #444;
     right: 0;
     left: 65%;
+} */
+
+.first-panel .item-container span  {
+    border-bottom: 1px solid #000;
 }
 
 .first-panel .item-container .first-item::after {

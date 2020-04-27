@@ -190,15 +190,19 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
                 r={RADIUS} fill="transparent" 
                 onClick={cb} onMouseOver={hovercb} />
 
-            <foreignObject x={-120 + type * 100} y={type * 80} width="250" height="200" >
+            <foreignObject x={-120 + type * 100} y={type * 80} width="100%" height="200" >
                     <div className={["flower-number", beenVenn || venned ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
-                        <p style={{fontSize: 20*Math.sqrt(max)+'px'}} className="g-text">{step}</p>
+                        <p 
+                            style={{ fontSize: max===1?'20px':16*Math.log(max+1)+'px',}} 
+                            className="g-text">{step}</p>
                     </div>
                     <p style={{
-                            fontSize: 16+max+'px',
-                            position: 'relative',
-                            top: '7px',
-                            left: '52px'
+                            fontSize: max===1?'20px':16*Math.log(max+1)+'px',
+                            // position: 'relative',
+                            // top: '7px',
+                            // left: '52px',
+                            textAlign: 'left',
+                            marginLeft: '120px'
                         }} 
                         className="g-text number">{"#Figure: "}  
                         <span>{Object.keys(positions).length}</span>
