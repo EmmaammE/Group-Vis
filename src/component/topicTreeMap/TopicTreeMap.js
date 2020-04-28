@@ -51,8 +51,8 @@ const btnData = [
     ]
 let addOrMinus = true;
 let margin={left:15,top:10,right:15,bottom:15}
-const WIDTH = 520;
-const HEIGHT = 500
+const WIDTH = 510;
+const HEIGHT = 550
 
 // const apriori = require('simple-apriori');
 let brushPersons = {}
@@ -624,8 +624,8 @@ class TopicTreeMap extends React.Component{
     handleClick.push(this.handleAdd)
     handleClick.push(this.handleMinus)
     handleClick.push(this.handleClear)
-    handleClick.push(this.handleFilter)
     handleClick.push(this.handleDeleteTopic)
+    handleClick.push(this.handleFilter)
     return (
       <div className=" chart-wrapper topic-view-container">
         <div className="topic-buttons btns-container">

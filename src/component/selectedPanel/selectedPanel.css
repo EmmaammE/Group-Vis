@@ -122,7 +122,8 @@
   position: absolute;
   background: #444;
   top: 90%; */
-  position: relative;
+  /* position: relative; */
+  width: 80%;
 }
 
 .person-dropdown.dropdown__list-item:hover,

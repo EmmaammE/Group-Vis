@@ -30,20 +30,22 @@
 
 .timeline-leaf-label{
   position: absolute;
-  right:40px;
-  top: 6px;  
+  right: 30px;
+  top: 11px;
   display: flex;
+  align-items:flex-start ;
 }
 
-.topic-leaf-label {
+.timeline-leaf-label .g-text{
   font-size: 12px;
+  margin: 0 5px;
 }
 
-.timeline-clear{
+/* .timeline-clear{
   position:absolute;
   right:20px;
   top:5px;
-}
+} */
 
 /* 滚动条 */
 .timeLine-container::-webkit-scrollbar-track {

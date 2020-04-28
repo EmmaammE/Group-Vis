@@ -77,6 +77,7 @@
 
 .search-icon svg {
     fill: var(--main-bg-color);
+    cursor: pointer;
 }
 
 .first-panel .btn-container {
@@ -84,12 +85,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-bottom: 3px;
 }
 
 .first-panel .btn {
     height: 36px;
-    width: 16vw;
-    border-radius: 3px;
+    width: 220px;
+    border-radius: 5px;
     background: #fff;
     border: 1px solid #a3a3a3;
     margin: 5px 0;
@@ -155,18 +157,20 @@
 /* panel-content */
 .first-panel .panel-content {
     border-radius: 5px;
-    margin: 10px;
-    display: flex;
+    margin: 9px 9px 0 11px;
     flex-direction: column;
     justify-content: space-between;
     border: 1px solid transparent;
-    flex: 1;
+    flex: 1 1;
+    width: 218px;
+    align-items: center;
 }
 
 .first-panel .panel-content.border {
     border: 1px solid #919191;
     justify-content: stretch;
     max-height: 95%;
+    overflow: auto
 }
 
 .panel-content ::-webkit-scrollbar {
@@ -195,30 +199,33 @@
 }
 
 .first-panel .item-container {
-    min-width: 10vw;
     display: flex;
     justify-content: flex-start;
 }
-.first-panel .item-container span::after {
+/* .first-panel .item-container span::after {
     content: '';
     position: absolute;
     bottom: 0;
     height: 1px;
     background: #444;
     right: 0;
-    left: 45%;
+    left: 65%;
+} */
+
+.first-panel .item-container span  {
+    border-bottom: 1px solid #000;
 }
 
 .first-panel .item-container .first-item::after {
     left: 0px;
-    width: 35%;
+    width: 60%;
 }
 
 .first-panel .item-container .first-item {
     margin-right: 10px;
     display: inline-block;
-    width: 35%;
-    min-width: 35%;
+    width: 60%;
+    min-width: 60%;
     border-bottom: 1px solid #000;
 }
 
@@ -267,3 +274,21 @@
 .venn path {
     fill: rgb(231, 142, 33)!important;
 }
+
+.person-info {
+    text-align: left;
+    padding: 4px 0;
+    border-bottom: 1px solid #000;
+    margin: 4px 30px;
+}
+
+/* .person-info:after {
+    content: '';
+    position: absolute;
+    height: 1px;
+    width: 100%;
+    background: #000;
+    display:inline-block;
+    left:0;
+    bottom:0;
+} */

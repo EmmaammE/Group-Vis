@@ -24,11 +24,9 @@ class ThirdPanel extends React.Component {
         <div className="topicView-panel">
             <TopicTreeMap></TopicTreeMap>
         </div>
-        <div className="third-footer-panel ">
-          <div className = "third-footer chart-wrapper">
-            <p className="g-chart-title">Figure Embedding</p>
-            <DimensionContainer />
-          </div>
+        <div className="third-footer-panel">
+          <p className="g-chart-title">Figure Embedding</p>
+          <DimensionContainer />
         </div>
       </div>
     )

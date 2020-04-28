@@ -144,27 +144,30 @@
   border-bottom: 1px solid #c9c9c9;
   padding: 3px 5px;
   margin: 5px;
+  font-size: 12px;
 }
 
 .dimension-legend {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin: 4px 4px 15px 0;
+  position: absolute;
+  right: 100px;
+  top: 15px;
 }
 
 .dimension-legend .title {
   width: max-content;
-  /* margin-left: 4px; */
   left:5px !important ;
+  font-size: 12px;
 }
 
 .dimension-legend .example{
   border-radius: 50%;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background-color: var(--main-bg-color);
-  
+  margin: 6px;
 }
 
 .dimension-container .list-container {
@@ -174,6 +177,7 @@
 
 .dimension-container .list-wrapper {
   margin: 0 12px;
+  position: relative;
 }
 
 .dimension-wrapper {
@@ -184,13 +188,13 @@
 }
 
 .dimension-wrapper .brush-btn-container{
-  width: 100px;
+  width: 93px;
 }
 
 .similar-btn {
   position: absolute;
-  top: 69px;
-  left: 128px;
+  top: 70px;
+  left: 130px;
 }
 
 .similar-btn img {
@@ -202,4 +206,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 15px;
 }

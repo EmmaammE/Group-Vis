@@ -36,7 +36,9 @@ class FirstPanel extends React.Component {
                 // 性别直接传文字
                 { key: 'Gender', title: 'Gender', options: [{value:"男", label:'男'}, {value:"女",label:'女'}]},
             ],
-            clickStatus: { 'Gender':[false,false], 'Person':[false],
+            clickStatus: { 'Gender':[false,false],
+                     'Person': { "0": false },
+                    // 人的点击状态使用对象表示， 0对应选择全部
                     "Dynasty":[],"Addr":[],"PostType" :[],
                     "post_address":[],"Office":[],
                     "OfficeType":[],"Entry": [],
@@ -54,6 +56,7 @@ class FirstPanel extends React.Component {
         this.setStatusAll = this.setStatusAll.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
         this._renderRow = this._renderRow.bind(this);
+        this.setPersonStatus = this.setPersonStatus.bind(this);
     }
 
     tool_handleItem(data, type) {
@@ -102,17 +105,17 @@ class FirstPanel extends React.Component {
             })
     }
 
-    setStatusAll(groupKey, start, count) {
+    setStatusAll(groupKey, innerKey) {
         return () => {
-            let {clickStatus, dataSet } = this.state;
+            let { dataSet } = this.state;
 
-            let status = dataSet[1].groups[groupKey].allStatus;
+            let status = dataSet[1].groups[groupKey]['group'][innerKey].allStatus;
             // ['allStatus'];
             dataSet[1].groups[groupKey].allStatus = !status
-            clickStatus['Person'].splice(start, count, ...Array(count).fill(!status));
+            // clickStatus['Person'].splice(start, count, ...Array(count).fill(!status));
 
             this.setState({
-                clickStatus,
+                // clickStatus,
                 dataSet
             })
         }
@@ -197,68 +200,87 @@ class FirstPanel extends React.Component {
         let bdata = new FormData();
         bdata.append('name', searchValue);
 
+
         axios
             .post('/search_relation_person_by_name/', bdata)
             .then(res => {
                 if (res.data.is_success) {
-                    let data = res.data["Person"][0]
-                    // SECTION update dataSet
+                    let groupsArr = [];
+                    let statusArr = [];
                     let { dataSet } = that.state;
 
-                    // "Person", 有相关人的relation
-                    let groups = {
-                        // key: {
-                        //     'title': kinkey,
-                        //     'people': [
-                        //         [person_id, name, relationship]
-                        //     ]
-                        // }
-                    };
+                    res.data['Person'].forEach(data => {
 
-                    for(let key in data) {
-                        // console.log(data[key])
-                        data[key]["relation"].forEach(r => {
-                            let _order = order[r["name"]];
-                            if(_order === undefined) {
-                                // 属于其他亲属类
-                                _order = "1106"
+                        // let data = Object.values(datap)[0];
+                        if(Object.keys(data).length > 1) {
+                            let _status = {'0': false};
+                            
+                            // "Person", 有相关人的relation
+                            let groups = {
+                                // key: {
+                                //     'title': kinkey,
+                                //     'people': [
+                                //         [person_id, name, relationship]
+                                //     ]
+                                // }
+                            };
+
+                            for(let key in data) {
+                                // console.log(data[key])
+                                data[key]["relation"].forEach(r => {
+                                    let _order = order[r["name"]];
+                                    if(_order === undefined) {
+                                        // 属于其他亲属类
+                                        _order = "1106"
+                                    }
+                                    let parentType = +(_order[0]+_order[1]);
+                                    if(groups[parentType]===undefined) {
+                                        groups[parentType] = {
+                                            'title': parent[parentType][KEY],
+                                            'group': {}
+                                        }
+                                    }
+                                    if(groups[parentType]['group'][_order] === undefined) {
+                                        groups[parentType]['group'][_order] = {
+                                            'title': parent2[_order][KEY],
+                                            'people': [],
+                                            'allStatus':false
+                                        }
+                                    }
+                                    
+                                        
+                                    let op = {value: key, label: data[key][KEY], r: r[KEY]};
+                                    if(r['address']) { op['address'] = r['address'][KEY];}
+                                    if(r['dynasty']) { op['dynasty'] = r['dynasty'][KEY];}
+                                    if(r['status'] ) {op['status'] = r['status'].map(e => e[KEY])}
+                    
+                                    groups[parentType]['group'][_order]['people'].push(op)
+
+                                    _status[key] = false;
+                                })
                             }
-                            let parentType = +(_order[0]+_order[1]);
-                            if(groups[parentType]===undefined) {
-                                groups[parentType] = {
-                                    'title': parent[parentType][KEY],
-                                    'group': {}
+
+                            statusArr.push(_status)
+                            // console.log(clickStatus['Person'])
+                            // dataSet[1].options.push({value: 0, label: ALL_SIGN})
+                            // let size = 0;
+                            for(let key in groups) {
+                                for(let inner in groups[key]['group']) {
+                                    groups[key]['group'][inner]['people'].sort((a, b) => {
+                                        return a['r'].localeCompare(b['r'])
+                                    })
+                                    // dataSet[1].options.push(...groups[key]['group'][inner]['people'])
+                                    // size += groups[key]['group'][inner]['people'].length;
                                 }
                             }
-                            if(groups[parentType]['group'][_order] === undefined) {
-                                groups[parentType]['group'][_order] = {
-                                    'title': parent2[_order][KEY],
-                                    'people': [],
-                                }
-                            }
-    
-                            groups[parentType]['group'][_order]['people'].push(
-                                {value: key, label: data[key][KEY], r: r[KEY]}
-                            )
-
-                            groups[parentType]['allStatus'] = false;
-                        })
-                    }
-
-                    // dataSet[1].options.push({value: 0, label: ALL_SIGN})
-                    let size = 0;
-                    for(let key in groups) {
-                        for(let inner in groups[key]['group']) {
-                            groups[key]['group'][inner]['people'].sort((a, b) => {
-                                return a['r'].localeCompare(b['r'])
-                            })
-                            dataSet[1].options.push(...groups[key]['group'][inner]['people'])
-                            size += groups[key]['group'][inner]['people'].length;
+            
+                            groupsArr.push(groups)
                         }
-                    }
-           
-                    dataSet[1]['groups'] =  groups;
-                    clickStatus["Person"] = Array(size+1).fill(false);
+                    })
+
+                    dataSet[1]['groups'] =  groupsArr;
+                    clickStatus['Person'] = statusArr;
+                    // console.log(statusArr)
 
                     that.setState({
                         dataSet,
@@ -273,6 +295,22 @@ class FirstPanel extends React.Component {
 
             })
             .catch((error) => console.error(error))
+    }
+
+    tool_appendPerson(param) {
+        let {clickStatus} = this.state;
+        clickStatus['Person'].forEach((person, index) => {
+            let flag = person["0"];
+        
+            for(let key in person) {
+               if(key !== '0') {
+                if(person[key] === true || flag) {
+                    param.append('person_ids[]', key)
+                }
+               }
+            }
+        })
+        
     }
 
     // appendParam:  {title: "Person", data: "person_ids[]", index:1},
@@ -351,7 +389,7 @@ class FirstPanel extends React.Component {
         this.addAnother(step+1)
         switch (_tabPanel) {
             case 0:
-                this.tool_appendParam(input[0], param, 1);
+                this.tool_appendPerson(param);
                 fetchTopicData(param, KEY, step+1);
 
                 setOtherStep(6)
@@ -460,6 +498,39 @@ class FirstPanel extends React.Component {
         }
     }
 
+    setPersonStatus(groupIndex) {
+        return (personsId, _status) => {
+            let {clickStatus} = this.state;
+            let status;
+            if(_status !== undefined) {
+                if(personsId === 0) {
+                    for(let key in clickStatus['Person'][groupIndex]) {
+                        status = clickStatus['Person'][groupIndex][key] = _status;
+                    }
+                } else {
+                    personsId.forEach(id => {
+                        status = clickStatus['Person'][groupIndex][id] = _status;
+                    })
+                } 
+            } else {
+                if(personsId === 0) {
+                    for(let key in clickStatus['Person'][groupIndex]) {
+                        status = clickStatus['Person'][groupIndex][key] = !clickStatus['Person'][groupIndex][key];
+                    }
+                } else {
+                    personsId.forEach(id => {
+                        status = clickStatus['Person'][groupIndex][id] = !clickStatus['Person'][groupIndex][id]
+                    })
+                }
+            }
+
+            this.setState({
+                clickStatus,
+                status
+            })
+        }
+    }
+
     _renderPanel() {
         let { _tabPanel, searchValue, dataSet, clickStatus, timeRange, status} = this.state;
 
@@ -475,8 +546,6 @@ class FirstPanel extends React.Component {
                 }
             </div>
         )
-
-        let count = 2;
 
         switch (_tabPanel) {
             case 0:
@@ -497,64 +566,83 @@ class FirstPanel extends React.Component {
                                 </span>
                             </div>
                             {
-                                dataSet[1].groups && 
-                                    <div className="person-dropdown-container"
-                                        style={{overflow:'hidden', flex: 1}}>
+                                dataSet[1].groups && dataSet[1].groups.map((group, statusIndex)=> {
+
+                                    let myself = group["0"]['group']["0000"]['people'][0];
+                                    let cb = this.setPersonStatus(statusIndex);
+                                    return (
+                                        <div className="person-dropdown-container"
+                                            key = {'person-'+statusIndex}
+                                            style={{overflow:'hidden', flex: 1}}>
                                         
-                                        <div className={"person-dropdown dropdown__list-item"} 
-                                            style={{minHeight: '4vh'}}
-                                            onClick={() => this.setStatus('Person')(0)}
-                                        >
-                                            <input type="checkbox"
-                                                checked={clickStatus['Person'][0]}  
-                                                readOnly />
-                                            <div className="item-container">
-                                                Select all
-                                            </div>
-                                        </div>
-
-                                        <div className={"person-dropdown dropdown__list-item"} 
-                                            style={{minHeight: '4vh'}}
-                                            onClick={() => this.setStatus('Person')(1)}
-                                        >
-                                            <input type="checkbox"
-                                                checked={clickStatus['Person'][1]}  
-                                                readOnly />
-                                            <div className="item-container">
-                                                <span className="first-item">{dataSet[1]['options'][1]['label']}</span>
-                                                <span>{dataSet[1]['options'][1]['r']}</span>
+                                            <div className={"person-dropdown dropdown__list-item"} 
+                                                style={{minHeight: '4vh'}}
+                                                onClick={() => cb(0)}
+                                            >
+                                                <input type="checkbox"
+                                                    checked={clickStatus['Person'][statusIndex][0]}  
+                                                    readOnly />
+                                                <div className="item-container g-text">
+                                                    Select all
+                                                </div>
                                             </div>
 
-                                        </div>
+                                            <div className={"person-dropdown dropdown__list-item"} 
+                                                style={{minHeight: '4vh'}}
+                                                onClick={() => cb([myself['value']])}
+                                            >
+                                                <input type="checkbox"
+                                                    checked={clickStatus['Person'][statusIndex][myself['value']]}  
+                                                    readOnly />
+                                                <div className="item-container g-text">
+                                                    <span className="first-item">{myself['label']}</span>
+                                                    <span>{myself['r']}</span>
+                                                </div>
+                                            </div>
+                                            {myself['address'] && <div className="person-info g-text">
+                                                {/* <span className="first-item">Native Place</span> */}
+                                                <span>{myself['address']}</span>
+                                            </div>}
+                                            {myself['dynasty'] && <div className="person-info g-text">
+                                                <span>{myself['dynasty']}</span>
+                                            </div> }
+                                            {myself['status'] && <div className="person-info g-text">
+                                                {/* <span className="first-item">Status</span> */}
+                                                {/* <span></span> */}
+                                                {myself['status'].slice(0, 2).join(',')}
+                                            </div>}
 
-                                        <div className="person-lists">
-                                        {
-                                            Object.keys(dataSet[1].groups).map((groupKey, index) => {
-                                                if(groupKey !== "0") {
-                                                    let group = dataSet[1].groups[groupKey];
-                                                    return Object.values(group['group']).map(inner => {
-                                                        let start = count;
-                                                        return (
-                                                            <GroupPanel
-                                                                key={count}
-                                                                title={inner['title']}
-                                                                startIndex={count}
-                                                                status ={clickStatus["Person"].slice(count, count += inner['people'].length)}
-                                                                options={inner['people']}
-                                                                change ={status}
-                                                                cb={this.setStatus("Person")}
-                                                                allStatus={group['allStatus']}
-                                                                cb_all = {this.setStatusAll(groupKey, start, inner['people'].length)}
-                                                            >
-                                                            </GroupPanel>
-                                                        )
-                                                    })
-                                                } 
-                                                return null;
-                                            })
-                                        }
-                                        </div>
+                                            <div className="person-lists">
+                                            {
+                                                Object.keys(group).map((groupKey, index) => {
+                                                    if(groupKey !== "0") {
+                                                        let _group = group[groupKey];
+                                                        return Object.keys(_group['group']).map(innerKey => {
+                                                            let inner = _group['group'][innerKey];
+                                                            return (
+                                                                <GroupPanel
+                                                                    key={'g-'+index+innerKey}
+                                                                    title={inner['title']}
+                                                                    // startIndex={count}
+                                                                    status ={clickStatus['Person'][statusIndex]}
+                                                                    options={inner['people']}
+                                                                    change ={status}
+                                                                    cb={cb}
+                                                                    allStatus={inner['allStatus']}
+                                                                    // cb_all = {this.setStatusAll(groupKey, innerKey)}
+                                                                >
+                                                                </GroupPanel>
+                                                            )
+                                                        })
+                                                    } 
+                                                    return null;
+                                                })
+                                            }
+                                            </div>
                                     </div>
+                                    )
+                                })
+                              
                             }
                             
                         </div>

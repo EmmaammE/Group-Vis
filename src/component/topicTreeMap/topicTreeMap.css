@@ -75,10 +75,10 @@
 }
 
 .brush-btn-container{
-  width: 120px;
+  width: 110px;
   display: flex;
   justify-content: space-evenly;
-  margin: 0 12px;
+  margin: 0 15px;
 }
 
 .brush-btn-container .circle-btn img{
@@ -106,7 +106,7 @@
 .rowSlider-container{
   height: 18px;
   display: flex;
-  margin: 8px 10px;
+  margin: 8px 18px;
 }
 
 .rowSlider-container .g-text {
@@ -122,8 +122,9 @@
 .topicView-label-container{
   display: flex;
   position: absolute;
-  right: 10px;
+  right: 15px;
   top: 48px;
+  align-items: baseline;
   /* flex-direction: column; */
 }
 
@@ -132,7 +133,7 @@
 }
 .topic-leaf-label{
   display: flex;
-  align-items: center;
+  align-items: baseline;
   margin: 0px 2px;
 }
 
@@ -148,14 +149,11 @@
 .topicViewChart-container{
   box-sizing: content-box;
   position: relative;
-  margin-top:5px;
+  margin-top:8px;
   margin-left: 3%;
   margin-right: 1%;
-  /* padding:0px 10px 10px 10px; */
   width: 96%;
-  height: 85%;
-  /* overflow-y: scroll; */
-  /* overflow-x:hidden; */
+  height: 88%;
 }
 
 .topicTreeMap-svg{

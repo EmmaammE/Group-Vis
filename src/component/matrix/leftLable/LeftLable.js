@@ -15,6 +15,7 @@ class LeftLable extends React.Component{
     const xy = this.props.xy
     const highLable = this.props.highLable
     // transform={`translate(${l},${t})`} 
+    const rotate = this.props.rotate
     return (
       <g className="matrix_lable" transform={`translate(${l},${t})`} >
         {
@@ -27,7 +28,7 @@ class LeftLable extends React.Component{
                 y={rowOrColumn?0:10}
                 fontSize="0.65em"
                 textAnchor="end"
-                transform="rotate(45) scale(0.9)"
+                transform={`rotate(${rotate}) scale(0.85)`}
                 fill={`${v.isChoose||highLable==i?"red":"black"}`}
               >
                 {v.name}

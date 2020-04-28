@@ -15,14 +15,14 @@ import {deepClone} from '../../../util/tools'
 
 // import 
 // 暂时的假数据
-let WIDTH = 360;
-let HEIGHT = 295;
+let WIDTH = 350;
+let HEIGHT = 315;
 const START_COLOR = 'red'
 const END_COLOR = '#164a73' 
 const SINGAL_HEIGHT = 25
 let labels
-let height
-let margin={left:80,top:45,right:45,bottom:15}
+let width
+let margin={left:80,top:60,right:30,bottom:10}
 let sortedData = -1;
 let matrixData
 let matrixViewState
@@ -115,7 +115,7 @@ class MatrixView extends React.Component{
         brushFlag=false
 
         // 计算筛选的数据
-        let singleDis = labels.length?height/labels.length:height
+        let singleDis = labels.length?width/labels.length:width
 
         // 依据框选范围判断：是框选人还是放大matrixView，看横坐标比较大那个在哪个位置
         if(that.state.brushTransX+that.state.brushWidth<margin.left&&that.state.brushWidth>10&&that.state.brushHeight>singleDis){
@@ -199,9 +199,9 @@ class MatrixView extends React.Component{
     // xy是比例尺，因为是方型所以，横竖方向使用一个
     // colorMap是颜色比例尺
     
-    height = HEIGHT -margin.top-margin.bottom
+    width  = WIDTH -margin.left-margin.right
 
-    const {maxValue,xy,colorMap}=scaleFactory(height,matrixData,START_COLOR,END_COLOR)
+    const {maxValue,xy,colorMap}=scaleFactory(width,matrixData,START_COLOR,END_COLOR)
     let tipX = margin.left+xy(this.state.highRowLabel)+this.state.targetWidth
     let tipY = margin.top+xy(this.state.highColLabel)
     tipX = tipX ? tipX:0;
@@ -211,7 +211,7 @@ class MatrixView extends React.Component{
         <div className="header-line">
           <div className="g-chart-title">Interpersonal Events</div>
           {labels.length==0?null:
-            <div className = "matrix-label-container">
+            <div className = "matrix-label-container g-text"> 
               <div className= "matrix-label-event">#Events</div>
               <div className= "matrix-label"> 
                 <div className="matrix-left-num">0</div>
@@ -244,7 +244,7 @@ class MatrixView extends React.Component{
                   transform={`translate(10,${margin.top})`}
                   fontSize = "0.8em">{"No Concerned People"}</text>
                 :<g transform="translate(0,0)">
-                {/* 绘制坐标轴 */}
+                {/* 绘制坐标轴 */} 
                 {
                   labels.length>25 
                   ?null
@@ -255,15 +255,17 @@ class MatrixView extends React.Component{
                         rowOrColumn = {true} 
                         data={labels} 
                         xy={xy}
+                        rotate={45}
                         highLable={this.state.highRowLabel}
                       ></LeftLable>
                     </g>
-                    <g transform={`translate(${margin.left*0.7},${margin.top})`}>
+                    <g transform={`translate(${margin.left*0.95},${margin.top})`}>
                       <LeftLable 
                         key={`lable_column`} 
                         rowOrColumn = {false} 
                         data={labels} 
                         xy={xy}
+                        rotate={0}
                         highLable={this.state.highColLabel}
                       ></LeftLable>
                     </g>

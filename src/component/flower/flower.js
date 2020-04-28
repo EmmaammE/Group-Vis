@@ -8,7 +8,7 @@ const BOX_WIDTH = 250;
 const RADIUS = 90;
 const OFFSET = -10;
 const OUTER_RADIUS = 90;
-const COLOR = "#c36756";
+const COLOR = "#b4412c";
 
 // 映射花瓣半径和花瓣所占比重（如百分之5等）
 const size = d3.scaleSqrt()
@@ -107,15 +107,30 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
                                     d={petalPath(topics.length, 
                                         leaves[current_topic]['weight'], 
                                         leaves[current_topic]['ratio'])}
-                                    fill={COLOR}
+                                    fill={"#c36756"}
                                     opacity="0.8"
                                 />
                                 {/* <line x1="0" y1="200" x2="0" y2="214" stroke="black" /> */}
                             </g>
                             {
                                 type === 0 && 
-                                <g x="0" y="0" transform={`translate(${200 * Math.cos((angle + 90) * Math.PI / 180)},${200 * Math.sin((angle + 90) * Math.PI / 180)})`}>
-                                    <foreignObject x={-100 + 50 * Math.cos((angle + 90) * Math.PI / 180)} y={-25 + 25* Math.sin((angle + 90) * Math.PI / 180)} width="200" height="100">
+                                <text x="0" y={-leaves[current_topic]['content'].length*10} 
+                                    transform={`translate(${230*Math.cos((angle+90)*Math.PI/180)},${230*Math.sin((angle+90)*Math.PI/180)})`}>
+                                    {
+                                        leaves[current_topic]['content'] && 
+                                            leaves[current_topic]['content'].map((text, i) => (
+                                                <tspan 
+                                                    key={"t-"+i}
+                                                    style={{fontSize: '20px'}}
+                                                    className="g-text"
+                                                    textAnchor="middle" 
+                                                    x="0" y={i*20} 
+                                                >{text}</tspan>
+                                            ))
+                                    }
+                                </text>
+                                // <g x="0" y="0" transform={`translate(${200 * Math.cos((angle + 90) * Math.PI / 180)},${200 * Math.sin((angle + 90) * Math.PI / 180)})`}>
+                                    /* <foreignObject x={-100 + 50 * Math.cos((angle + 90) * Math.PI / 180)} y={-25 + 25* Math.sin((angle + 90) * Math.PI / 180)} width="200" height="100">
                                         <div className="flower-title">
                                             {
                                                 leaves[current_topic]['content'] && 
@@ -124,8 +139,10 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
                                                     ))
                                             }
                                         </div>
-                                    </foreignObject>
-                                </g>
+                                    </foreignObject> */
+
+                                    
+                                // </g>
                             }
                         </g>
                     })}
@@ -173,18 +190,34 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
                 r={RADIUS} fill="transparent" 
                 onClick={cb} onMouseOver={hovercb} />
 
-            <foreignObject x={-120 + type * 100} y={type * 60} width="200" height="200" >
+            <foreignObject x={-120 + type * 100} y={type * 80} width="100%" height="200" >
                     <div className={["flower-number", beenVenn || venned ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
-                        <p style={{fontSize: 16+max+'px'}} className="g-text">{step}</p>
+                        <p 
+                            style={{ fontSize: max===1?'20px':16*Math.log(max+1)+'px',}} 
+                            className="g-text">{step}</p>
                     </div>
+                    <p style={{
+                            fontSize: max===1?'20px':16*Math.log(max+1)+'px',
+                            // position: 'relative',
+                            // top: '7px',
+                            // left: '52px',
+                            textAlign: 'left',
+                            marginLeft: '120px'
+                        }} 
+                        className="g-text number">{"#Figure: "}  
+                        <span>{Object.keys(positions).length}</span>
+                    </p>
             </foreignObject>
-
-            <foreignObject x={390 - type * 85} y={type * 60} width="200" height="80" >
-                <p style={{fontSize: 16+max+'px'}} className="g-text number">{"#Figure: "}  
-                    <span>{Object.keys(positions).length}</span>
-                </p>
-            </foreignObject>
-
+           
+            {/* <text className="g-text number" style={{fontSize: 20*Math.sqrt(max)+'px'}}>
+                <tspan 
+                    x="100" y="100">{"#Figure: "}
+                </tspan>
+                <tspan 
+                    fill="#c4ad8b"
+                    x="180" y="100">{Object.keys(positions).length}
+                </tspan>
+            </text> */}
         </g>
     )
 }

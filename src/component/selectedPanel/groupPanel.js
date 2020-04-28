@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import './selectedPanel.css'
 
-function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_all, allStatus}) {
+const handleData = data => {
+    let tempTitle = "";
+    let groups = [];
+    data.forEach((d, index) => {
+        if(d['r'] !== tempTitle) {
+            groups.push(index);
+            tempTitle = d['r']
+        }
+    })
+    groups.push(data.length)
+    return groups;
+}
+function GroupPanel({title, startIndex, status={}, options=[], change, cb, cb_all, allStatus}) {
     const [expanded, setExpanded] = useState(false)
-
+    const groups = useMemo(() => handleData(options),[options])
     // function expand() {
     //     setExpanded(true)
     // }
@@ -12,14 +24,20 @@ function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_al
         setExpanded(!expanded)
     }
 
+    function clickAll() {
+        cb(options.map(e => e['value']))
+        // cb_all();
+    }
+    
     let tempTitle = "";
+    let start = 0;
     return (
         <div>
             <div className="group-title">
                 <div className="left">
                     <input type="checkbox"
-                            onChange = {cb_all}
-                            checked = {allStatus}
+                        onChange = {clickAll}
+                        checked = { options.filter(e=>!status[e['value']]).length === 0}
                     />
                     <p className='g-text'>{title}</p>
                 </div>
@@ -44,14 +62,16 @@ function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_al
                 expanded && options.map((item, index) => {
                     if(tempTitle !== item['r']) {
                         tempTitle = item['r']
-                        return (
+
+                        let thisArr = options.slice(groups[start], groups[start+1]).map(e=>e['value'])
+                        let $ele = (
                             <>
                             <div className={"person-dropdown group-sub-title dropdown__list-item "}
-                                key={'t-'+index}
-                                onClick={()=>cb(index+startIndex)}
-                                // onMouseEnter={()=>cb(index+startIndex,change)}
+                                key={'t-'+start}
+                                onClick={() =>cb(thisArr)}
+                                // onMouseEnter={() =>cb(thisArr)}
                             >
-                                <input type="checkbox" checked={status[index]} readOnly />
+                                <input type="checkbox" checked={thisArr.filter(e => !status[e]).length === 0} readOnly />
                                 <div className="item-container g-text">
                                     {item['r']}
                                     {/* <span className="first-item">{item['label']}</span>
@@ -60,10 +80,10 @@ function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_al
                             </div>
                             <div className={"person-dropdown dropdown__list-item"}
                                 key={'o-'+index}
-                                onClick={()=>cb(index+startIndex)}
-                                // onMouseEnter={()=>cb(index+startIndex,change)}
+                                onClick={()=>cb([item['value']])}
+                                // onMouseEnter={()=>cb([item['value']])}
                             >
-                                <input type="checkbox" checked={status[index]} readOnly />
+                                <input type="checkbox" checked={status[item['value']]} readOnly />
                                 <div className="item-container g-text">
                                     {item['label']}
                                     {/* <span className="first-item">{item['label']}</span>
@@ -72,14 +92,17 @@ function GroupPanel({title, startIndex, status=[], options=[], change, cb, cb_al
                             </div>
                             </>
                         )
+
+                        start += 1;
+                        return $ele;
                     } else {
                         return (
                             <div className={"person-dropdown dropdown__list-item"}
                                 key={'o-'+index}
-                                onClick={()=>cb(index+startIndex)}
-                                // onMouseEnter={()=>cb(index+startIndex,change)}
+                                onClick={()=>cb([item['value']])}
+                                // onMouseEnter={()=>cb([item['value']])}
                             >
-                                <input type="checkbox" checked={status[index]} readOnly />
+                                <input type="checkbox" checked={status[item['value']]} readOnly />
                                 <div className="item-container g-text">
                                     {item['label']}
 {/* 

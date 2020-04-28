@@ -83,13 +83,13 @@
 }
 .content-panel .mapContainer-box{
   box-sizing: border-box;
-  height: 33%;
+  height: 35%;
   border-top: 5px solid #eaeaea;
 }
 
 .content-panel .matrix-box{
   box-sizing: border-box;
-  height: 38%;
+  height: 36%;
   border-top: 5px solid #eaeaea;
 }
 
@@ -99,8 +99,8 @@
 
 .detail-clear {
   position: absolute;
-  right: 10px;
-  top: 8px;
+  right: 8px!important;
+  top: 6px;
 }
 
 .detail-clear img {

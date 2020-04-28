@@ -305,14 +305,14 @@ class Map extends React.Component {
     if (JSON.stringify(prevPropsData) !== JSON.stringify(this.props)) {
       prevPropsData = this.props;
       drawData = figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos)
-      console.log(drawData)
+      // console.log(drawData)
     }
     return (
       <>
         {tooltip.show && <Tip {...tooltip.data} handleClickX={this.handleClickX} />}
-        <div className = "mapView-label-container">
+        <div className = "mapView-label-container"> 
             <div className="mapView-label">
-                <svg  width="40px" height="20px">
+                <svg  width="36px" height="16px">
                     <image
                         className="mapView-label-image"
                         width="36" 
@@ -322,11 +322,10 @@ class Map extends React.Component {
                 </svg>
             </div>
             <p className="mapView-label g-text">#Descriptions</p>
-            {/* <CircleBtn  type={6} active={true}/> */}
-            <div className="detail-clear" onClick={this.handleClear}>
-              <CircleBtn  type={6} active={true}/>
-            </div> 
         </div>
+        <div className="detail-clear" onClick={this.handleClear}>
+          <CircleBtn  type={6} active={true}/>
+        </div> 
 
         <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
           style={{ position: 'relative' }}

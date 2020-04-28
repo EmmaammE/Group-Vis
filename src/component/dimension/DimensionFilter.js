@@ -52,7 +52,10 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
                             _people.splice(_people.indexOf(this.getAttribute("data")),1);
                         } else {
                             this.classList.add("selected");
-                            _people.push(this.getAttribute("data"))
+                            let da = this.getAttribute("data");
+                            if(da!==null) {
+                                _people.push(this.getAttribute("data"))
+                            }
                         }
                     })
                 
@@ -187,14 +190,14 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
                 <CircleBtn type={4}></CircleBtn>
                 <CircleBtn type={5}></CircleBtn>
                 <CircleBtn type={6} onClick={clear} active={true}></CircleBtn>
-                <CircleBtn type={9} onClick={toFetch} active={true}></CircleBtn>
+                <CircleBtn type={8} onClick={toFetch} active={true}></CircleBtn>
                 <div className="similar-btn">
-                    <CircleBtn type={10} onClick={fetchSimiliarPerson} active={true}></CircleBtn>
+                    <CircleBtn type={9} onClick={fetchSimiliarPerson} active={true}></CircleBtn>
                 </div>
             </div>
             <div className="dimension-svg">
             {
-                data && <svg viewBox={"0 0 340 340"} width="85%" height="85%">
+                data && <svg viewBox={"0 0 340 340"} width="100%" height="100%">
                     <g ref={$container}>
                         <DimensionCircles 
                             _margin={_margin} _width={_width} _height={_height} 
