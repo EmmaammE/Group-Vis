@@ -13,7 +13,7 @@
 }
 
 .second-panel .legend-2 {
-    left: 40%;
+    left: 45%;
 }
 .second-panel .legend-container img {
     width: 8vw;
@@ -116,7 +116,6 @@
     transition: height 200ms ease-in-out, 
         padding-left 300ms ease-in-out 200ms;
     width: 110%;
-    position: ;
 }
 
 /* 滚动条 */

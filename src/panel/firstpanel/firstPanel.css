@@ -275,12 +275,12 @@
 .person-info {
     text-align: left;
     padding: 4px 0;
-    margin: 4px 30px;
+    margin: 6px 35px;
 }
 
 .two-column {
     display: grid;
-    grid-template-columns: 12rem 10rem;
+    grid-template-columns: 10rem 8rem;
 }
 
 .two-column span {

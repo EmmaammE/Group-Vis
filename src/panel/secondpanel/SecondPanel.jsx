@@ -11,7 +11,7 @@ import { updateSelectList } from '../../redux/selectList.redux';
 import { updateTimeLine } from '../../redux/timeLine.redux';
 import { initTopicWeight } from '../../redux/topicWeight.redux';
 import { addHistoryData } from '../../redux/history.redux';
-import LEGEND from '../../assets/legend/flower.svg';
+import LEGEND from '../../assets/legend/flower.png';
 import Flower from '../../component/flower/flower';
 import CircleBtn from '../../component/button/circlebtn';
 import Blobs from '../../component/blob/blob';

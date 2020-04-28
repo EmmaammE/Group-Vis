@@ -102,6 +102,7 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
                                     stroke={COLOR}
                                     fill="transparent"
                                     opacity='0.8'
+                                    strokeWidth = "2"
                                 />
                                 <path
                                     d={petalPath(topics.length, 
@@ -193,15 +194,17 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
             <foreignObject x={-120 + type * 100} y={type * 80} width="100%" height="200" >
                     <div className={["flower-number", beenVenn || venned ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
                         <p 
-                            style={{ fontSize: max===1?'26px':12*max+'px',}} 
+                            style={{ fontSize: max===1?'26px':12*Math.log(max)+'px',}} 
                             className="g-text">{step}</p>
                     </div>
             </foreignObject>
            
-            <foreignObject x={390 - type * 85} y={480-60*type} width="200" height="80" >
+            <foreignObject x={400} y={480-70*type} width={200} height="80" >
                 <p 
-                    style={{ fontSize: max===1?'20px':12*max+'px'}}
-                    className="g-text number">{"#Figure: "}  
+                    style={{ 
+                        fontSize: max===1?'20px':12*Math.log(max)+'px',
+                    }}
+                    className="g-text number">{"#Figures: "}  
                     <span>{Object.keys(positions).length}</span>
                 </p>
             </foreignObject>

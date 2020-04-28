@@ -5,6 +5,7 @@
     justify-content: space-between;
     background: var(--main-bg-color);
     height: 5rem;
+    min-height: 5rem;
     align-items: center;
 }
 

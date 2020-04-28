@@ -66,6 +66,7 @@ html {
   font-family:Helvetica;
   font-weight:100;
   font-size: 1.2rem;
+  transform: scale(0.85);
   color:#333333;
 }
 
