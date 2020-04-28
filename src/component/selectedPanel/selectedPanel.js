@@ -137,7 +137,7 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 						expanded && 
 						<div className="dropdown__list open">
 							<List
-								width={215}
+								width={260}
 								height={136}
 								ref={$list}
 								rowHeight={30}

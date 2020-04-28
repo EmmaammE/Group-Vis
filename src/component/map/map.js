@@ -10,13 +10,13 @@ import CircleBtn from '../button/circlebtn';
 import mapLogal from '../../assets/icon/mapLogal.svg'
 
 const BOX_WIDTH = 260;
-const BOX_HEIGHT = 190;
+const BOX_HEIGHT = 208;
 
 const path2 = d3.geoPath()
     .projection(d3.geoMercator()
     .center([110,11])
     .scale(250)
-    .translate([465, 340]));
+    .translate([465, 365]));
 
 let startLoc = [];
 let brushFlag = false;
@@ -341,7 +341,7 @@ class Map extends React.Component {
         // preserveAspectRatio="xMinYMin"
         >
           <clipPath id="myClip">
-            <rect x="450" y="270" width="70" height="110" stroke="black" fill="transparent" />
+            <rect x="450" y="300" width="70" height="110" stroke="black" fill="transparent" />
           </clipPath>
           <path d={$d} stroke="white" />
           <g ref={this.$map}>
@@ -389,7 +389,7 @@ class Map extends React.Component {
             </rect>
           </g>
 
-          <rect x="450" y="270" width="70" height="110" stroke="black" fill="transparent" />
+          <rect x="450" y="300" width="70" height="110" stroke="black" fill="transparent" />
           <g clipPath="url(#myClip)">
             {china.features.map((d, i) => (
                 <path 

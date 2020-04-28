@@ -656,6 +656,10 @@ class FirstPanel extends React.Component {
                         {$titles}
                         <div className="panel-content">
                             {dataSet.map((datum, index) => {
+                                if(index === 1) {
+                                    return null;
+                                }
+                                
                                 if (index !== 11) {
                                     return (
                                         <SelectedPanel
