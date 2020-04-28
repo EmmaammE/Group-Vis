@@ -22,17 +22,17 @@ class FirstPanel extends React.Component {
             searchValue: "",
             /* options：[[0,'All'],[id,data]] */
             dataSet: [
-                { key: 'Year', title: 'Year', options: [] },
-                { key: 'Person', title: 'Related People', options: [] },
                 { key: 'Dynasty', title: 'Dynasty', options: [] },
+                { key: 'Person', title: 'Related People', options: [] },
+                { key: 'Status', title: 'Status', options: [] },
                 { key: 'Addr', title: 'Native Place', options: []},
-                { key: 'PostType', title: '任职方式', options: []},
-                { key: 'post_address', title: '任职地址', options: []},
-                { key: 'Office', title: '官职', options: []},
-                { key: 'OfficeType', title: '官职类型', options: []},
+                { key: 'PostType', title: 'Holding Post', options: []},
+                { key: 'post_address', title: 'Post Address', options: []},
+                { key: 'Office', title: 'Official Position', options: []},
+                { key: 'OfficeType', title: 'Official Type', options: []},
                 { key: 'Entry', title: 'Entry', options: []},
                 { key: 'EntryType', title: 'EntryType', options: []},
-                { key: 'Status', title: 'Status', options: [] },
+                { key: 'Year', title: 'Year', options: [] },
                 // 性别直接传文字
                 { key: 'Gender', title: 'Gender', options: [{value:"男", label:'男'}, {value:"女",label:'女'}]},
             ],
@@ -372,7 +372,7 @@ class FirstPanel extends React.Component {
         let input = [
             // title是key
             { title: "Person", data: "person_ids[]", index: 1 },
-            { title: "Dynasty", data: "dynasty_ids[]", index: 2 },
+            { title: "Dynasty", data: "dynasty_ids[]", index: 0 },
             { title: "Addr", data: "address_ids[]", index: 3},
             { title: "PostType", data: "post_type_ids[]", index: 4},
             { title: "post_address", data: "post_address_ids[]", index: 5},
@@ -381,7 +381,7 @@ class FirstPanel extends React.Component {
             { title: "Entry", data: "entry_ids[]", index: 8},
             { title: "EntryType", data: "entry_type_ids[]", index: 9},
             // statu没有打错
-            { title: "Status", data: "statu_ids[]", index: 10},
+            { title: "Status", data: "statu_ids[]", index: 2},
             { title: "Gender", data: "genders[]", index: 11},
         ]
 
@@ -576,40 +576,42 @@ class FirstPanel extends React.Component {
                                             style={{overflow:'hidden', flex: 1}}>
                                         
                                             <div className={"person-dropdown dropdown__list-item"} 
-                                                style={{minHeight: '4vh'}}
-                                                onClick={() => cb(0)}
+                                                style={{minHeight: '3.6rem'}}
                                             >
                                                 <input type="checkbox"
                                                     checked={clickStatus['Person'][statusIndex][0]}  
-                                                    readOnly />
-                                                <div className="item-container g-text">
+                                                    onChange = {(event) => cb(0, event.target.checked)}
+                                                    />
+                                                <div className="item-container">
                                                     Select all
                                                 </div>
                                             </div>
 
                                             <div className={"person-dropdown dropdown__list-item"} 
-                                                style={{minHeight: '4vh'}}
+                                                style={{minHeight: '3.6rem'}}
                                                 onClick={() => cb([myself['value']])}
                                             >
                                                 <input type="checkbox"
                                                     checked={clickStatus['Person'][statusIndex][myself['value']]}  
                                                     readOnly />
-                                                <div className="item-container g-text">
-                                                    <span className="first-item">{myself['label']}</span>
+                                                <div className="two-column" style={{width: '100%'}}>
+                                                    <span>{myself['label']}</span>
                                                     <span>{myself['r']}</span>
                                                 </div>
                                             </div>
-                                            {myself['address'] && <div className="person-info g-text">
+                                            {myself['address'] && <div className="person-info two-column">
                                                 {/* <span className="first-item">Native Place</span> */}
+                                                <span>Address: </span>
                                                 <span>{myself['address']}</span>
                                             </div>}
-                                            {myself['dynasty'] && <div className="person-info g-text">
+                                            {myself['dynasty'] && <div className="person-info two-column">
+                                                <span>Dynasty: </span>
                                                 <span>{myself['dynasty']}</span>
                                             </div> }
-                                            {myself['status'] && <div className="person-info g-text">
+                                            {myself['status'] && <div className="person-info two-column">
                                                 {/* <span className="first-item">Status</span> */}
-                                                {/* <span></span> */}
-                                                {myself['status'].slice(0, 2).join(',')}
+                                                <span>Status: </span>
+                                                <span>{myself['status'].slice(0, 1).join(',')}</span>
                                             </div>}
 
                                             <div className="person-lists">
@@ -621,7 +623,7 @@ class FirstPanel extends React.Component {
                                                             let inner = _group['group'][innerKey];
                                                             return (
                                                                 <GroupPanel
-                                                                    key={'g-'+index+innerKey}
+                                                                    key={'g-'+groupKey+innerKey}
                                                                     title={inner['title']}
                                                                     // startIndex={count}
                                                                     status ={clickStatus['Person'][statusIndex]}
@@ -653,14 +655,12 @@ class FirstPanel extends React.Component {
                     <div className="switch-panel">
                         {$titles}
                         <div className="panel-content">
-                            <DatePanel
-                                title={dataSet[0].title}
-                                setClicked={this.setTimeRange}
-                                range={timeRange}
-                                options={dataSet[0].options}
-                            />
                             {dataSet.map((datum, index) => {
-                                if (index > 1) {
+                                if(index === 1) {
+                                    return null;
+                                }
+                                
+                                if (index !== 11) {
                                     return (
                                         <SelectedPanel
                                             key={`datum-${index}`} title={datum.title} clicked={clickStatus[datum.key]}
@@ -669,7 +669,14 @@ class FirstPanel extends React.Component {
                                         />
                                     )
                                 } else {
-                                    return null;
+                                    return (
+                                        <DatePanel
+                                            title={dataSet[index].title}
+                                            setClicked={this.setTimeRange}
+                                            range={timeRange}
+                                            // options={dataSet[index].options}
+                                        />
+                                    )
                                 }
                             })}
                         </div>
@@ -692,10 +699,10 @@ class FirstPanel extends React.Component {
     render() {
         return (
             <div className="first-panel">
-                <Header title="CohortVA" cstyle={{textAlign: 'center', fontSize:'30px', margin:'0 auto'}} />
+                <Header title="CohortVA" cstyle={{textAlign: 'center', fontSize:'3rem', margin:'0 auto', letterSpacing: 0}} />
                 <div className="content-container">
                     <div className="control-panel">
-                        <div className="title"><p className="g-chart-title">Figure Searcher</p></div>
+                        <div><p className="g-chart-title">Figure Searcher</p></div>
 
                         {this._renderPanel()}
 

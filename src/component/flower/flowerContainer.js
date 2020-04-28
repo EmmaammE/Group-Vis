@@ -114,7 +114,7 @@ class FlowerContainer extends React.Component {
                                 //     , _nextSelected !== key ? 'unset-line': ''].join(' ')}
                                 transform ={`translate(0, 600) rotate(-90)`}
                                 d = {curvePath(2*key+1, points[1])} 
-                                fill="transparent" stroke="black"
+                                fill="transparent" stroke="#9a9a9a"
                             />
                         ))
                     })
@@ -128,7 +128,7 @@ class FlowerContainer extends React.Component {
                         M 200 346.41016151377545 
                         A100, 173.20508075688772 0 0 0 100, 519.6152422706632 
                         A100, 173.20508075688772 0 0 1 0, 692.8203230275509" 
-                    fill="transparent" stroke="black"/> */}
+                    fill="transparent" stroke="#9a9a9a"/> */}
                 {
                     similiarFlags.length !== 0 &&
                         similiarFlags.map((flag, index) => {
@@ -145,19 +145,19 @@ class FlowerContainer extends React.Component {
                                 <path
                                     className="unset-line"
                                     d = {`M ${BOX_WIDTH * (start + 1/2)} ${BOX_WIDTH} L ${BOX_WIDTH * (start + 3/2 ) }, ${BOX_WIDTH} `}
-                                    fill="transparent" stroke="black"
+                                    fill="transparent" stroke="#9a9a9a"
                                 />
                                 <path
                                     transform ={`translate(0, 600) rotate(-90)`}
                                     className="unset-line"
                                     d = {curvePath(start + 2, end)}
-                                    fill="transparent" stroke="black"
+                                    fill="transparent" stroke="#9a9a9a"
                                 />
                                 <path
                                     transform ={`translate(0, 600) rotate(-90)`}
                                     className="unset-line"
                                     d = {curvePath(start, end)}
-                                    fill="transparent" stroke="black"
+                                    fill="transparent" stroke="#9a9a9a"
                                 />
                             </g> 
                         })

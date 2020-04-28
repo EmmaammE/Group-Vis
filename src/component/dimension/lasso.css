@@ -27,7 +27,7 @@
 
 .topic-selected ,
 .selected {
-  fill: #c7ad8c;
+  fill: #c38f53;
   stroke: black;
   transition: all 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -144,7 +144,6 @@
   border-bottom: 1px solid #c9c9c9;
   padding: 3px 5px;
   margin: 5px;
-  font-size: 12px;
 }
 
 .dimension-legend {
@@ -152,14 +151,13 @@
   justify-content: flex-start;
   align-items: center;
   position: absolute;
-  right: 100px;
-  top: 15px;
+  top: -30px;
+  left: 50px;
 }
 
 .dimension-legend .title {
   width: max-content;
   left:5px !important ;
-  font-size: 12px;
 }
 
 .dimension-legend .example{
@@ -171,6 +169,10 @@
 }
 
 .dimension-container .list-container {
+  margin-top: 18px;
+}
+
+.dimension-container .list-item-container {
   max-height: 27vh;
   overflow: auto;
 }
@@ -178,6 +180,18 @@
 .dimension-container .list-wrapper {
   margin: 0 12px;
   position: relative;
+  width: 12rem;
+  text-align: center;
+  line-height: 2rem;
+}
+
+.list-title {
+  border-style: solid;
+  border-image: linear-gradient(to right, #e9e9e9,#919191,#e9e9e9)100% 1;
+  border-width: 1px;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 12px;
 }
 
 .dimension-wrapper {
@@ -188,18 +202,19 @@
 }
 
 .dimension-wrapper .brush-btn-container{
-  width: 93px;
+  width: 11rem;
+  margin: 0 0.3rem;
 }
 
 .similar-btn {
   position: absolute;
-  top: 70px;
-  left: 130px;
+  top: 8.8rem;
+  left: 17.1rem;
 }
 
 .similar-btn img {
-  width: 20px!important;
-  height: 20px!important;
+  width: 2.2rem!important;
+  height: 2.4rem!important;
 }
 
 .dimension-svg {

@@ -3,6 +3,7 @@
   flex-direction: column;
   align-items: center;
   position: relative;
+  margin: 0.7rem 0;
 }
 
 .selected-panel li {
@@ -38,14 +39,19 @@
   right: 1vw;
 }
 
+.selected-panel .dropdown-container {
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+}
 .selected-panel .dropdown {
   list-style: none;
   position: relative;
-  border: 2px solid #e5e5e5;
-  border-bottom-left-radius: 2px;
-  border-bottom-right-radius: 2px;
+  border: 1px solid #bdbdbd;
+  border-radius: 5px;
+  /* border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px; */
   width: 90%;
-  height: 4vh;
+  height: 3.6rem;
   cursor: pointer;
   padding: 0;
   margin: 0;
@@ -105,8 +111,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   background: #e5e5e5;
-  height: 4vh;
-  line-height: 4vh;
+  height: 3.6rem;
+  line-height: 3rem;
   display: flex;
   align-items: center;
 }
@@ -152,8 +158,8 @@
   white-space: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
-  height: 4vh;
-  line-height: 4vh;
+  height: 3.6rem;
+  line-height: 3.6rem;
   width: 90%;
 }
 
@@ -165,7 +171,7 @@
   z-index: 1;
   bottom: -7px;
   left: 4px;
-  height: 4vh;
+  height: 3.6rem;
   width: 18px;
 }
 
@@ -208,7 +214,7 @@
 }
 
 .selected-panel .dropdown__mask {
-  height: 24vh;
+  height: 23.6rem;
   position: absolute;
   top: 0;
   width: 100%;
@@ -284,7 +290,7 @@
 }
 
 .dropdown-icons {
-  height: 4vh;
+  height: 3.6rem;
   width: 75%;
   overflow-y: hidden;
   overflow-x: auto;
@@ -323,12 +329,15 @@
 .group-title .left {
   display: flex;
   width: 100%;
+  align-items: center;
 }
 
 .svg-badge {
   width: 17%;
-  height: 4vh;
+  height: 3.6rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .ReactVirtualized__Grid__innerScrollContainer {

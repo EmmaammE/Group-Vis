@@ -22,7 +22,7 @@
 }
 
 .topic-view-container .g-chart-title{
-  margin: 10px 1em;
+  margin-bottom: 10px;
 }
 
 .topic-buttons{
@@ -75,32 +75,36 @@
 }
 
 .brush-btn-container{
-  width: 110px;
+  width: 142px;
   display: flex;
-  justify-content: space-evenly;
-  margin: 0 15px;
+  justify-content: space-between;
+  margin: 0 2.5rem;
 }
 
 .brush-btn-container .circle-btn img{
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 /** 这几个按钮不完全一样大*/
 .brush-btn-container .circle-btn:nth-child(1) img {
   height: auto;
-  width: 22px;
+  width: 2.4rem;
 }
 
 .brush-btn-container .circle-btn:nth-child(2) img {
-  height: 24px;
-  width: 22px;
+  width: 25px;
+  height: 26px;
 }
 
 .brush-btn-container .circle-btn:nth-child(3) img {
-  height: 21px;
-  width: 21px;
-  transform: scale(0.99);
+  height: 23px;
+  width: 22px;
+}
+
+.brush-btn-container .circle-btn:nth-child(4) img {
+  height: 24px;
+  width: 22px;
 }
 
 .rowSlider-container{
@@ -110,7 +114,6 @@
 }
 
 .rowSlider-container .g-text {
-  font-size: 12px;
   line-height: 18px;
 }
 #rightRatio{
@@ -122,9 +125,8 @@
 .topicView-label-container{
   display: flex;
   position: absolute;
-  right: 15px;
-  top: 48px;
-  align-items: baseline;
+  right: 10px;
+  top: 6.5rem;
   /* flex-direction: column; */
 }
 
@@ -140,7 +142,6 @@
 .topic-leaf-label .g-text {
   margin: 0;
   line-height: 15px;
-  font-size: 12px;
 }
 
 
@@ -184,7 +185,6 @@
 .rect-header{
   background :#cc7a69;
   width :"100%";
-  background :#cc7a69;
   /* background :#164a73; */
   /* background :#71a3ca; */
 }
