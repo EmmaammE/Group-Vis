@@ -29,17 +29,17 @@
                             <g id="Group-20" filter="url(#filter-1)">
                                 <g id="Oval-6">
                                     <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
-                                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-2"></use>
+                                    <use fill="#f4e2b4" fill-rule="evenodd" xlink:href="#path-2"></use>
                                 </g>
                             </g>
                         </g>
                     </g>
-                    <g id="Group-175" transform="translate(6.500000, 6.000000)" stroke="#2E1A42" stroke-width="0.8">
+                    <g id="Group-175" transform="translate(6.500000, 6.000000)" stroke="#b97841" stroke-width="0.8">
                         <g id="Group-153">
                             <g id="Group-169">
-                                <rect id="Rectangle" transform="translate(6.500000, 6.500000) scale(-1, 1) translate(-6.500000, -6.500000) " x="0.4" y="0.4" width="12.2" height="12.2" rx="1"></rect>
+                                <rect stroke="#b97841" id="Rectangle" transform="translate(6.500000, 6.500000) scale(-1, 1) translate(-6.500000, -6.500000) " x="0.4" y="0.4" width="12.2" height="12.2" rx="1"></rect>
                             </g>
-                            <path d="M6.5,9.13047415e-13 L6.5,12.9867347" id="Path-54" stroke-dasharray="1"></path>
+                            <path stroke="#b97841" d="M6.5,9.13047415e-13 L6.5,12.9867347" id="Path-54" stroke-dasharray="1"></path>
                         </g>
                     </g>
                 </g>
