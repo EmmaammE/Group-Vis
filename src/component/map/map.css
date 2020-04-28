@@ -16,7 +16,7 @@
 .mapView-label-container{
     position: absolute;
     right:30px;
-    top:8px;
+    top:14px;
     /* width: 50%; */
     display: flex;
     flex-wrap: nowrap;

@@ -14,7 +14,7 @@
   margin-right: 10px;
   /* width: 100%; */
   flex:1;
-  height: 77%;
+  height: 73%;
   overflow-x: visible;
   overflow-y: auto; 
 }
@@ -31,7 +31,7 @@
 .timeline-leaf-label{
   position: absolute;
   right: 30px;
-  top: 11px;
+  top: 17px;
   display: flex;
   align-items:flex-start ;
 }
