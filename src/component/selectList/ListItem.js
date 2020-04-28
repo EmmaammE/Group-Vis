@@ -14,7 +14,7 @@ class ListItem extends React.Component{
     return(
       <div className="listItem-out">
         <div className="listItem-out-middle">
-          <p className="listItem-line selectList-scrollbar">
+          <p className="listItem-line selectList-scrollbar"> 
             {data}
           </p >
         </div>

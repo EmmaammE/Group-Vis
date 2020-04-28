@@ -15,7 +15,7 @@
   /* width: 100%; */
   flex:1;
   height: 77%;
-  overflow-x: hidden;
+  overflow-x: visible;
   overflow-y: auto; 
 }
 .timeLine_underLabel{
@@ -39,6 +39,10 @@
 .timeline-leaf-label .g-text{
   font-size: 12px;
   margin: 0 5px;
+}
+
+.timeLine-svg{
+  overflow: visible;
 }
 
 /* .timeline-clear{

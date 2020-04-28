@@ -12,18 +12,21 @@ import CircleBtn from '../button/circlebtn';
 import leaf from '../../assets/leaf/leaf.svg'
 
 
-const WIDTH = 355;
+const WIDTH = 340;
 const HEIGHT = 200;
 const SINGAL_HEIGHT = 25
 const START_COLOR = 'rgb(3,93,195)'
 const END_COLOR = 'red' 
-const margin={left:65,top:10,right:10,bottom:20}
+const margin={left:80,top:10,right:15,bottom:20}
 let startLoc=[];
 
 let brushedPersons = []
 let brushWidth;
 let brushHeight;
 let svgX ,svgY;
+let svgWidth ,svgHeight;
+let svgRatio
+
 let brushFlag=false;
 let timeLineData
 let xScaleRT
@@ -68,10 +71,13 @@ class TimeLine extends React.Component{
     let currentY = container.getBoundingClientRect().y
     svgX=currentX
     svgY=currentY
+    svgWidth =  container.clientWidth
+    svgHeight = container.clientHeight
+    svgRatio = svgWidth/WIDTH
   }
 
   handleClickCircle(v){
-    if(v.target.localName=="image"){
+    if(v.target.localName=="path"){
       let that = this
       let tipHasX = true
       popUp(that,tipHasX,v) 
@@ -104,7 +110,7 @@ class TimeLine extends React.Component{
   // 下面三个函数为刷选框的监听函数
   handleBrushMouseDown(v){
     // console.log("getbox",v.nativeEvent.offsetX,v.nativeEvent.offsetY)
-    startLoc = [v.nativeEvent.offsetX,v.nativeEvent.offsetY]
+    startLoc = [v.nativeEvent.offsetX/svgRatio,v.nativeEvent.offsetY/svgRatio]
     brushFlag=true
     this.setState({
       brushTransX:startLoc[0],
@@ -114,8 +120,8 @@ class TimeLine extends React.Component{
   }
   handleBrushMouseMove(v){
     if(brushFlag){
-      let nowX = v.nativeEvent.offsetX
-      let nowY = v.nativeEvent.offsetY
+      let nowX = v.nativeEvent.offsetX/svgRatio
+      let nowY = v.nativeEvent.offsetY/svgRatio
       brushWidth = nowX-startLoc[0]
       brushHeight = nowY-startLoc[1]
       if(brushWidth<0){
@@ -144,14 +150,19 @@ class TimeLine extends React.Component{
     let x2 = x1 + this.state.brushWidth
     let y2 = y1 + this.state.brushHeight
     // 拿到尺寸数据反推回去
-    let brushPersonsId = rectFilter(x1,y1,x2,y2,timeLineData)
-    // 合并去重
-    brushedPersons = [...brushedPersons,...brushPersonsId]
-    brushedPersons = [...new Set(brushedPersons)]
-    // console.log("brushPersonsId",brushedPersons)
-    let personsIdObject = [...brushedPersons]
-          .reduce((acc, e) => ({...acc, [e]:true}), {})
-    this.props.setPerson(personsIdObject)
+    // 防止随便点击就去筛选
+
+    if(this.state.brushWidth>8&&this.state.brushHeight>8){
+      let brushPersonsId = rectFilter(x1,y1,x2,y2,timeLineData)
+      // 合并去重
+      brushedPersons = [...brushedPersons,...brushPersonsId]
+      brushedPersons = [...new Set(brushedPersons)]
+      // console.log("brushPersonsId",brushedPersons)
+      let personsIdObject = [...brushedPersons]
+            .reduce((acc, e) => ({...acc, [e]:true}), {})
+      this.props.setPerson(personsIdObject)
+    }
+    
     brushFlag=false
     this.setState({
       brushVisibility:"hidden",
@@ -224,8 +235,14 @@ class TimeLine extends React.Component{
         </div>
 
         <div className="timeLine-container">
-          <svg width={WIDTH} height={gHeight} 
+          <svg 
+            // width={WIDTH} 
+            // height={gHeight}
+            className = "timeLine-svg" 
+            width="100%" 
+            height={gHeight} 
             viewBox={`0 0 ${WIDTH} ${gHeight}`}
+            preserveAspectRatio="xMinYMin"
             ref={this.$container}
             onMouseDown={this.handleBrushMouseDown}
             onMouseMove={this.handleBrushMouseMove}
@@ -319,13 +336,13 @@ class TimeLine extends React.Component{
           </svg>
         </div>
         <div className="timeLine_underLabel">
-          <svg width={WIDTH} height={margin.bottom} viewBox={`0 0 ${WIDTH} ${margin.bottom}`}>
+          <svg width="100%" height={margin.bottom} viewBox={`0 0 ${WIDTH} ${margin.bottom}`}>
             {rownum==0?null
             :<g transform={`translate(0,0)`}>
               {/* 绘制底下时间轴坐标 */}
               <g transform={`translate(0,0)`}>
                 <rect
-                  width={WIDTH+5}
+                  width={WIDTH+12}
                   height={20}
                   fill={"#cccccc"}
                 >  

@@ -25,9 +25,9 @@ class LeftLable extends React.Component{
               key={`text_${l}_${i}`}>
               <text
                 x={rowOrColumn?2:0}
-                y={rowOrColumn?0:10}
-                fontSize="0.65em"
-                textAnchor="end"
+                y={rowOrColumn?0:5}
+                fontSize="12px"
+                textAnchor={rowOrColumn?"start":"end"}
                 transform={`rotate(${rotate}) scale(0.85)`}
                 fill={`${v.isChoose||highLable==i?"red":"black"}`}
               >

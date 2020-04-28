@@ -33,6 +33,8 @@ let brushWidth;
 let brushHeight;
 let singleDis ;
 let brushedPersons = []
+let svgWidth ,svgHeight;
+let svgRatio
 
 class MatrixView extends React.Component{
   constructor(props){
@@ -69,11 +71,15 @@ class MatrixView extends React.Component{
   componentDidMount(){
     const that = this
     let container = this.$container.current
+
+    svgWidth =  container.clientWidth
+    svgHeight = container.clientHeight
+    svgRatio = svgWidth/WIDTH < svgHeight/HEIGHT ? svgWidth/WIDTH : svgHeight/HEIGHT
     let svg =  d3.select(container)
     svg.on("mousedown",function(){
       // if(d3.event.target.localName!="circle"){
         // console.log("svg-mousedown",d3.event.offsetX,d3.event.offsetY,d3.event)
-      startLoc = [d3.event.offsetX,d3.event.offsetY]
+      startLoc = [d3.event.offsetX/svgRatio,d3.event.offsetY/svgRatio]
       brushFlag=true
       that.setState({
         brushTransX:startLoc[0],
@@ -84,8 +90,8 @@ class MatrixView extends React.Component{
     })
     svg.on("mousemove",function(){
       if(brushFlag){
-        let nowX = d3.event.offsetX
-        let nowY = d3.event.offsetY
+        let nowX = d3.event.offsetX/svgRatio
+        let nowY = d3.event.offsetY/svgRatio
         brushWidth = nowX-startLoc[0]
         brushHeight = nowY-startLoc[1]
         if(brushWidth<0){
@@ -113,7 +119,7 @@ class MatrixView extends React.Component{
         startLoc[0] = that.state.brushTransX
         startLoc[1] = that.state.brushTransY
         brushFlag=false
-
+ 
         // 计算筛选的数据
         let singleDis = labels.length?width/labels.length:width
 
@@ -123,8 +129,7 @@ class MatrixView extends React.Component{
           // 框选人
           filterPerson(that,singleDis)
         }else if(that.state.brushWidth>singleDis&&that.state.brushHeight>singleDis&&that.state.brushTransX+that.state.brushWidth<=WIDTH-margin.right+5){
-          rectFilter(that,singleDis).then(()=>{
-          })
+          rectFilter(that,singleDis)
         }else if((that.state.brushWidth>10||that.state.brushHeight>10)&&that.state.brushTransX>WIDTH-margin.right){
           sortedData = -1
         }
@@ -207,9 +212,9 @@ class MatrixView extends React.Component{
     tipX = tipX ? tipX:0;
     tipY = tipY ? tipY:0;
     return (
-      <div className="chart-wrapper">
+      <div className="chart-wrapper"> 
         <div className="header-line">
-          <div className="g-chart-title">Interpersonal Events</div>
+          <div className="g-chart-title">Interpersonal Events</div> 
           {labels.length==0?null:
             <div className = "matrix-label-container g-text"> 
               <div className= "matrix-label-event">#Events</div>
@@ -238,11 +243,19 @@ class MatrixView extends React.Component{
         <div  className="matrix-container">
           {
             
-            <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={this.$container}>
+            <svg 
+              // width={WIDTH} 
+              // height={HEIGHT} 
+              width="100%"
+              height="100%"
+              viewBox={`0 0 ${WIDTH} ${HEIGHT}`} 
+              preserveAspectRatio="xMinYMin"
+              ref={this.$container}
+            >
               {labels.length==0
                 ?<text 
-                  transform={`translate(10,${margin.top})`}
-                  fontSize = "0.8em">{"No Concerned People"}</text>
+                  transform={`translate(8,15)`}
+                  fontSize = "15px">{"No Concerned People"}</text>
                 :<g transform="translate(0,0)">
                 {/* 绘制坐标轴 */} 
                 {
@@ -255,7 +268,7 @@ class MatrixView extends React.Component{
                         rowOrColumn = {true} 
                         data={labels} 
                         xy={xy}
-                        rotate={45}
+                        rotate={-45}
                         highLable={this.state.highRowLabel}
                       ></LeftLable>
                     </g>
@@ -337,7 +350,7 @@ function popUp(that,tipHasX,v){
       })
       let joinName = name.sort((a,b)=>{
           return b.localeCompare(a)
-      }).join('-')
+      }).join('-') 
       // console.log("")
       // 如果那两个人有共同的交集的话：
       if(that.props.peopleToList[joinName]!=undefined){
@@ -407,8 +420,9 @@ function rectFilter(that,singleDis){
 
 function filterPerson(that,singleDis){
     let startIndex = figureXY(that.state.brushTransY,singleDis,margin.top,true)
-    let endIndex= figureXY(that.state.brushTransY+that.state.brushHeight,singleDis,margin.top,false)+1
+    let endIndex= figureXY(that.state.brushTransY+that.state.brushHeight,singleDis,margin.top,false)
     // 取并集
+    console.log("filterPerson",singleDis,startIndex,endIndex)
     
     if(startIndex<= endIndex){
       let brushPersonsId = []
@@ -437,8 +451,10 @@ function figureXY(brushDis,singleDis,margin,flag){
     let tempDis = brushDis-margin
     result  = Math.floor(tempDis/singleDis)
     // 如果过半
-    if(tempDis-result*singleDis>singleDis*0.5){
+    if(tempDis-result*singleDis>=singleDis*0.5){
       result= result + (flag?1:0)
+    }else{
+      result= result + (flag?0:-1)
     }
   }
   result = result<0?0:result

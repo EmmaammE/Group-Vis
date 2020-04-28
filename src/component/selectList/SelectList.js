@@ -18,7 +18,7 @@ class SelectList extends React.Component{
     
     return(
       <div className="chart-wrapper content-panel">
-        <div className="title">Select List</div>
+        <div className="g-chart-title">Select List</div>
         <div className="selectList-container"> 
           {
             data&&data.map((v,i)=>(

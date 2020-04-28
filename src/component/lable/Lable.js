@@ -33,10 +33,10 @@ class Lable extends React.Component{
               <text
                 x={0}
                 y={3}
-                fontSize={fontSize?fontSize:"0.7em"}
+                fontSize="12px"
                 textAnchor={anchor}
                 fill={`${highLable==i?"red":(colorful?colorScheme[i]:"black")}`}
-                transform={`rotate(${rotate}) scale(0.8)`}
+                transform={`scale(0.85)`}
               >
                 {v}
               </text>
