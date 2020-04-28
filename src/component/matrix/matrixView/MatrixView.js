@@ -254,7 +254,7 @@ class MatrixView extends React.Component{
             >
               {labels.length==0
                 ?<text 
-                  transform={`translate(8,15)`}
+                  transform={`translate(15,15)`}
                   fontSize = "15px">{"No Concerned People"}</text>
                 :<g transform="translate(0,0)">
                 {/* 绘制坐标轴 */} 
