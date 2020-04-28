@@ -12,6 +12,11 @@ import mapLogal from '../../assets/icon/mapLogal.svg'
 const BOX_WIDTH = 260;
 const BOX_HEIGHT = 190;
 
+const path2 = d3.geoPath()
+    .projection(d3.geoMercator()
+    .center([110,11])
+    .scale(250)
+    .translate([465, 340]));
 
 let startLoc = [];
 let brushFlag = false;
@@ -53,7 +58,7 @@ class Map extends React.Component {
     };
     this.projection = d3.geoMercator()
       .center([110, 31])
-      .scale(500)
+      .scale(800)
       .translate([BOX_WIDTH, BOX_HEIGHT]);
     this.path = d3.geoPath()
       .projection(this.projection);
@@ -335,8 +340,12 @@ class Map extends React.Component {
           onMouseUp={this.handleBrushMouseUp}
         // preserveAspectRatio="xMinYMin"
         >
+          <clipPath id="myClip">
+            <rect x="450" y="270" width="70" height="110" stroke="black" fill="transparent" />
+          </clipPath>
           <path d={$d} stroke="white" />
           <g ref={this.$map}>
+            <g>
             {china.features.map((d, i) => (
               <path strokeWidth="1"
                 stroke="#999"
@@ -345,6 +354,7 @@ class Map extends React.Component {
                 key={'fea-' + i}
               />
             ))}
+            </g>
             <g>
               {
                 addr &&
@@ -378,9 +388,21 @@ class Map extends React.Component {
             >
             </rect>
           </g>
-        </svg>
-      </>
 
+          <rect x="450" y="270" width="70" height="110" stroke="black" fill="transparent" />
+          <g clipPath="url(#myClip)">
+            {china.features.map((d, i) => (
+                <path 
+                  stroke="#999"
+                  fill="#fff"
+                  strokeWidth="1"
+                  d={path2(d)}
+                  key={'fea-' + i}
+                />
+              ))}
+          </g>
+      </svg>
+      </>
     )
   }
 }

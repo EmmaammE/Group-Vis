@@ -53,17 +53,19 @@ class DimensionContainer extends React.Component {
                 <div className="list-wrapper">
                     <div className='dimension-legend'> 
                         <span className='example'></span>
-                        <span className='g-text title'>Figure</span>
+                        <span className='g-legend-text title'>Figure</span>
                     </div>
-                    <div className="list-container g-text">
-                        <div>Names</div>
+                    <div className='list-container'>
+                        <div className='list-title'>Name List</div>
+                        <div className="list-item-container">
                         {
                             data && Object.values(data).map((d,i)=> (
-                                <div key={i} className='g-text d-list-item'>
+                                <div key={i} className='d-list-item'>
                                     {d}
                                 </div>
                             ))
                         }
+                        </div>
                     </div>
                 </div>
             </div>

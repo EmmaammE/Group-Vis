@@ -24,8 +24,8 @@ function GroupPanel({title, startIndex, status={}, options=[], change, cb, cb_al
         setExpanded(!expanded)
     }
 
-    function clickAll() {
-        cb(options.map(e => e['value']))
+    function clickAll(event) {
+        cb(options.map(e => e['value']), event.target.checked)
         // cb_all();
     }
     

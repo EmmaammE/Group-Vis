@@ -193,31 +193,18 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
             <foreignObject x={-120 + type * 100} y={type * 80} width="100%" height="200" >
                     <div className={["flower-number", beenVenn || venned ? 'flower-active' : ''].join(' ')} onClick={toggleVeen}>
                         <p 
-                            style={{ fontSize: max===1?'20px':16*Math.log(max+1)+'px',}} 
+                            style={{ fontSize: max===1?'26px':12*max+'px',}} 
                             className="g-text">{step}</p>
                     </div>
-                    <p style={{
-                            fontSize: max===1?'20px':16*Math.log(max+1)+'px',
-                            // position: 'relative',
-                            // top: '7px',
-                            // left: '52px',
-                            textAlign: 'left',
-                            marginLeft: '120px'
-                        }} 
-                        className="g-text number">{"#Figure: "}  
-                        <span>{Object.keys(positions).length}</span>
-                    </p>
             </foreignObject>
            
-            {/* <text className="g-text number" style={{fontSize: 20*Math.sqrt(max)+'px'}}>
-                <tspan 
-                    x="100" y="100">{"#Figure: "}
-                </tspan>
-                <tspan 
-                    fill="#c4ad8b"
-                    x="180" y="100">{Object.keys(positions).length}
-                </tspan>
-            </text> */}
+            <foreignObject x={390 - type * 85} y={480-60*type} width="200" height="80" >
+                <p 
+                    style={{ fontSize: max===1?'20px':12*max+'px'}}
+                    className="g-text number">{"#Figure: "}  
+                    <span>{Object.keys(positions).length}</span>
+                </p>
+            </foreignObject>
         </g>
     )
 }

@@ -188,7 +188,7 @@ class Blobs extends React.Component {
     ).call(
       venn.VennDiagram()
         .width(150)
-        .height(150)
+        .height(228)
     )
   }
 

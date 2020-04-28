@@ -11,7 +11,7 @@ import { updateSelectList } from '../../redux/selectList.redux';
 import { updateTimeLine } from '../../redux/timeLine.redux';
 import { initTopicWeight } from '../../redux/topicWeight.redux';
 import { addHistoryData } from '../../redux/history.redux';
-import LEGEND from '../../assets/legend/flower.png';
+import LEGEND from '../../assets/legend/flower.svg';
 import Flower from '../../component/flower/flower';
 import CircleBtn from '../../component/button/circlebtn';
 import Blobs from '../../component/blob/blob';
@@ -369,10 +369,10 @@ class SecondPanel extends React.Component {
                     {
                         detail && 
                         <div className="flower-detail">
-                           <div>
+                           <div className='flower-wrapper'>
                                 <p className="g-chart-title">Cohort Metaphor</p>
-                                <svg width="100%" height="100%" viewBox="0 0 620 620">
-                                    <g transform="translate(60,60)">
+                                <svg width="100%" height="100%" viewBox="0 0 680 620">
+                                    <g transform="translate(70,60)">
                                         <Flower
                                             type={0}
                                             marginWidth={0}
@@ -381,13 +381,13 @@ class SecondPanel extends React.Component {
                                             step={detail['step'][y]}
                                             venned={vennStep.indexOf(step)!==-1}
                                         />
-                                    </g>
+                                   </g>
                                 </svg>
                            </div>
                             {
                                 vennStep.length > 0 && 
                                 <div>
-                                    <p className="g-chart-title">Cohort Set Analyzer</p>
+                                    <p className="g-chart-title" style={{margin: '1.5rem 10px'}}>Cohort Set Analyzer</p>
                                     <div className="venn-container">
                                         <Blobs />
                                     </div>
@@ -399,7 +399,7 @@ class SecondPanel extends React.Component {
                     <div className="flower-divider"></div>
                     <p className="g-chart-title">Cohorts Manipulator</p>
                     <div className="flower-overview">
-                        <div className="legend-container">
+                        <div className={['legend-container', vennStep.length > 0? 'legend-2' :''].join(' ')}>
                             <img src={LEGEND} alt="" />
                         </div>
                         {
