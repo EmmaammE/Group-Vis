@@ -122,7 +122,7 @@ class FirstPanel extends React.Component {
         }
     }
 
-    // 选择框的click事件 TODO 修改调用
+    // 选择框的click事件
     setStatus(name, is_all) {
         //现在is_all只和类别名称有关了
         if(name!=='Gender') {
@@ -372,7 +372,7 @@ class FirstPanel extends React.Component {
         // index = i+1 留在这里，修改顺序后可以快点修改
         let input = [
             // title是key
-            { title: "Person", data: "person_ids[]", index: 1 },
+            // { title: "Person", data: "person_ids[]", index: 1 },
             { title: "Dynasty", data: "dynasty_ids[]", index: 0 },
             { title: "Addr", data: "address_ids[]", index: 3},
             { title: "PostType", data: "post_type_ids[]", index: 4},
