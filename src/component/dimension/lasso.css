@@ -142,7 +142,7 @@
 
 .dimension-container .d-list-item {
   border-bottom: 1px solid #c9c9c9;
-  padding: 3px 5px;
+  padding: 3px 7px;
   margin: 5px;
 }
 
@@ -151,8 +151,8 @@
   justify-content: flex-start;
   align-items: center;
   position: absolute;
-  top: -30px;
-  left: 50px;
+  top: 0;
+  left: -90px;
 }
 
 .dimension-legend .title {
@@ -169,7 +169,7 @@
 }
 
 .dimension-container .list-container {
-  margin-top: 18px;
+  margin: -5px -18px 0 0;
 }
 
 .dimension-container .list-item-container {
@@ -192,6 +192,7 @@
   font-size: 12px;
   font-weight: bold;
   padding: 3px 12px;
+  margin: 0 10px;
 }
 
 .dimension-wrapper {

@@ -13,8 +13,8 @@ const BOX_WIDTH = 260;
 const BOX_HEIGHT = 208;
 
 const path2 = d3.geoPath()
-    .projection(d3.geoMercator()
-    .center([110,11])
+  .projection(d3.geoMercator()
+    .center([110, 11])
     .scale(250)
     .translate([465, 365]));
 
@@ -46,7 +46,7 @@ class Map extends React.Component {
         }
       },
       rangeScale: d3.scaleLinear()
-        .range([5, 5]).domain([1,999])
+        .range([5, 5]).domain([1, 999])
         .clamp(true),
       $d: '',
       brushVisibility: "hidden",
@@ -100,22 +100,23 @@ class Map extends React.Component {
     svgRatio = svgWidth / (BOX_WIDTH * 2)
   }
 
-  componentDidUpdate(prevProps) {
-    let { pos2sentence, addr } = this.props;
-    if (JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
-      let { rangeScale } = this.state;
-      if(addr) {
-        let extent = d3.extent(Object.values(pos2sentence).filter( e => addr[e]!== undefined).map(e => e.length))
-        if(extent[0] !== undefined) {
-          rangeScale.range([5, 12]).domain(extent)
-        }
-      }
-      
-      this.setState({
-        rangeScale
-      })
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   let { pos2sentence, addr } = this.props;
+  //   if (JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
+  //     let { rangeScale } = this.state;
+  //     if(addr) {
+  //       let extent = d3.extent(Object.keys(pos2sentence).filter(e => addr[e]).map(e => pos2sentence[e].length))
+  //       console.log(extent)
+  //       if(extent[0] !== undefined) {
+  //         rangeScale.range([5, 12]).domain(extent)
+  //       }
+  //     }
+
+  //     this.setState({
+  //       rangeScale
+  //     })
+  //   }
+  // }
 
   handleClickX() {
     this.setState({
@@ -251,7 +252,7 @@ class Map extends React.Component {
         clearAll = false
       }
 
-      if(d.isChoose === true) {
+      if (d.isChoose === true) {
         d['people'] && d['people'].forEach(p => {
           p.forEach(id => {
             people[id] = true
@@ -291,11 +292,11 @@ class Map extends React.Component {
       d.isChoose = false
     })
     this.setState({
-      brushVisibility:"hidden",
-      brushTransX:0,
-      brushTransY:0,
-      brushWidth:0,
-      brushHeight:0
+      brushVisibility: "hidden",
+      brushTransX: 0,
+      brushTransY: 0,
+      brushWidth: 0,
+      brushHeight: 0
     })
     this.props.setPerson({})
   }
@@ -305,32 +306,32 @@ class Map extends React.Component {
       projection = this.projection;
 
     let { addr, sentence2pos, pos2sentence } = this.props;
-    let { tooltip, rangeScale, $d } = this.state;
+    let { tooltip, $d } = this.state;
 
     if (JSON.stringify(prevPropsData) !== JSON.stringify(this.props)) {
       prevPropsData = this.props;
-      drawData = figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos)
+      drawData = figureDrawData(addr, pos2sentence, projection, sentence2pos)
       // console.log(drawData)
     }
     return (
       <>
         {tooltip.show && <Tip {...tooltip.data} handleClickX={this.handleClickX} />}
-        <div className = "mapView-label-container"> 
-            <div className="mapView-label">
-                <svg  width="36px" height="16px">
-                    <image
-                        className="mapView-label-image"
-                        width="36" 
-                        height="16" 
-                        xlinkHref={mapLogal}
-                    />
-                </svg>
-            </div>
-            <p className="mapView-label g-text">#Descriptions</p>
+        <div className="mapView-label-container">
+          <div className="mapView-label">
+            <svg width="36px" height="16px">
+              <image
+                className="mapView-label-image"
+                width="36"
+                height="16"
+                xlinkHref={mapLogal}
+              />
+            </svg>
+          </div>
+          <p className="mapView-label g-text">#Descriptions</p>
         </div>
         <div className="detail-clear" onClick={this.handleClear}>
-          <CircleBtn  type={6} active={true}/>
-        </div> 
+          <CircleBtn type={6} active={true} />
+        </div>
 
         <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
           style={{ position: 'relative' }}
@@ -346,14 +347,14 @@ class Map extends React.Component {
           <path d={$d} stroke="white" />
           <g ref={this.$map}>
             <g>
-            {china.features.map((d, i) => (
-              <path strokeWidth="1"
-                stroke="#999"
-                fill="#fff"
-                d={path(d)}
-                key={'fea-' + i}
-              />
-            ))}
+              {china.features.map((d, i) => (
+                <path strokeWidth="1"
+                  stroke="#999"
+                  fill="#fff"
+                  d={path(d)}
+                  key={'fea-' + i}
+                />
+              ))}
             </g>
             <g>
               {
@@ -392,16 +393,16 @@ class Map extends React.Component {
           <rect x="450" y="300" width="70" height="110" stroke="black" fill="transparent" />
           <g clipPath="url(#myClip)">
             {china.features.map((d, i) => (
-                <path 
-                  stroke="#999"
-                  fill="#fff"
-                  strokeWidth="1"
-                  d={path2(d)}
-                  key={'fea-' + i}
-                />
-              ))}
+              <path
+                stroke="#999"
+                fill="#fff"
+                strokeWidth="1"
+                d={path2(d)}
+                key={'fea-' + i}
+              />
+            ))}
           </g>
-      </svg>
+        </svg>
       </>
     )
   }
@@ -415,37 +416,47 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(null, mapDispatchToProps)(Map);
 
-function figureDrawData(addr, pos2sentence, rangeScale, projection, sentence2pos) {
+function figureDrawData(addr, pos2sentence, projection, sentence2pos) {
   let resultData = [];
-  addr && Object.entries(addr).forEach((data, i) => {
-    let result = {
-      r: 5,
-      sentence: [],
-      title: '',
-      xy: [null, null],
-      isChoose: false,
-      people: []
-    }
-    if (pos2sentence[data[0]]) {
-      if(pos2sentence[data[0]].length > 0) {
-        result["r"] = rangeScale(pos2sentence[data[0]].length);
-        if(isNaN(result["r"])) {
-          result["r"] = 5;
-          console.log(data)
-        }
-        result["sentence"] = pos2sentence[data[0]].map(d => sentence2pos[d['sentence']]["words"]);
-        result["people"] = pos2sentence[data[0]].map(d => d["people"])
-  
-        if (data[1]) {
-          result["title"] = data[1]['address_name'];
-          result['xy'] = projection([data[1]['x_coord'], data[1]['y_coord']]);
-          result["isChoose"] = false
+
+  if (addr && pos2sentence) {
+    let rangeScale = d3.scaleLinear()
+      .range([5, 12])
+      .domain(d3.extent(Object.keys(pos2sentence)
+        .filter(e => addr[e])
+        .map(e => pos2sentence[e].length)))
+
+    // console.log(rangeScale.domain())
+    addr && Object.entries(addr).forEach((data, i) => {
+      let result = {
+        r: 5,
+        sentence: [],
+        title: '',
+        xy: [null, null],
+        isChoose: false,
+        people: []
+      }
+      if (pos2sentence[data[0]]) {
+        if (pos2sentence[data[0]].length > 0) {
+          result["r"] = rangeScale(pos2sentence[data[0]].length);
+          if (isNaN(result["r"])) {
+            result["r"] = 5;
+            console.log(data);
+          }
+          result["sentence"] = pos2sentence[data[0]].map(d => sentence2pos[d['sentence']]["words"]);
+          result["people"] = pos2sentence[data[0]].map(d => d["people"])
+
+          if (data[1]) {
+            result["title"] = data[1]['address_name'];
+            result['xy'] = projection([data[1]['x_coord'], data[1]['y_coord']]);
+            result["isChoose"] = false
+          }
         }
       }
-    }
 
-    resultData.push(result)
-  })
+      resultData.push(result)
+    })
+  }
 
   return resultData;
 }

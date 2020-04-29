@@ -355,7 +355,7 @@ class SecondPanel extends React.Component {
         let style;
 
         if(_value === 1 ) {
-            style = {width: '40%'}
+            style = {width: '45%'}
         }
 
         return (
@@ -372,7 +372,7 @@ class SecondPanel extends React.Component {
                            <div className='flower-wrapper'>
                                 <p className="g-chart-title">Cohort Metaphor</p>
                                 <svg width="100%" height="100%" viewBox="0 0 680 620">
-                                    <g transform="translate(70,60)">
+                                    <g transform="translate(90,60)">
                                         <Flower
                                             type={0}
                                             marginWidth={0}

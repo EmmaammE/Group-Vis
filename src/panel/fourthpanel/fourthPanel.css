@@ -18,7 +18,7 @@
 
 .fourth-panel .fourth-panel-selectlist{
   position: absolute;
-  top:40px;
+  top: 6rem;
   height: calc(100vh - 60px);
   width: 100%;
   z-index: 99;
@@ -55,7 +55,7 @@
 .fourth-panel .fourth-panel-arrow{
   position: absolute;
   right:30px;
-  top:15px;
+  top:20px;
 }
 
 .arrow{
@@ -63,7 +63,8 @@
   height: 12px;
   /* content: " "; */
   border-width: 1.5px 1.5px 0 0 ;
-  border-color:#808088;
+  border-color:#f2e2b3;
+  opacity: 0.8;
   border-style: solid;
   /* border-top:1px solid black; */
   /* border-right:1px solid black; */
