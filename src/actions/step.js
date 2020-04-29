@@ -762,7 +762,7 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
             topicData = addData.topicData
             console.log("addData",addData)
 
-            updateTwoGroup(step.join('-'), {
+            updateTwoGroup(step.join('-'), { 
                 "mapView": {
                     pos2sentence,
                     addressNode: addressMap['addressNode'],
@@ -842,7 +842,23 @@ function updateTwoGroup(step, data) {
 }
 
 function addCategory(personMap,topicData,timeLineData){
+    // personMap，记录每个人的类别，是个对象。键是人的id，值是(1,2,3)
+    // 1代表A群体。2代表B群体。3代表AB交集群体
     // 为每个描述，添加类别，0是AB类，1是A类，2是B类
+    let aSum = 0
+    let bSum = 0
+    let abSum = 0
+    for(let personId in personMap){
+        if(personMap[personId]=='3'){
+            abSum++
+        }else if(personMap[personId]=='1'){
+            aSum++
+        }else{
+            bSum++
+        }
+    }
+    aSum += abSum
+    bSum += abSum
     let discpMap = {}
     topicData.forEach(topic=>{
         let sumMap = {}
@@ -893,11 +909,11 @@ function addCategory(personMap,topicData,timeLineData){
                 }
             }
         })
-        let sum = sumNum+aNum+bNum
         let a = sumNum+aNum
         let b = sumNum+bNum
-        
-        topic.abRatio = [a/sum*topic.personRatio,b/sum*topic.personRatio]
+        a = aSum>0?a/aSum:0
+        b = bSum>0?b/bSum:0
+        topic.abRatio = [Number(a.toFixed(2)),Number(b.toFixed(2))]
         topic.personRatio = -1
     })
 
