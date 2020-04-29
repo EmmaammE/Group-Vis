@@ -138,7 +138,7 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 						<div className="dropdown__list open">
 							<List
 								width={260}
-								height={136}
+								height={actual.length < 8 ? 30*actual.length : 136}
 								ref={$list}
 								rowHeight={30}
 								rowRenderer={_renderRow}

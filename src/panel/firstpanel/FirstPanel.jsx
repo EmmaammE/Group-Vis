@@ -22,6 +22,7 @@ class FirstPanel extends React.Component {
             searchValue: "",
             /* options：[[0,'All'],[id,data]] */
             dataSet: [
+                // 修改顺序需要修改init接口调用、append_param和render的地方
                 { key: 'Dynasty', title: 'Dynasty', options: [] },
                 { key: 'Person', title: 'Related People', options: [] },
                 { key: 'Status', title: 'Status', options: [] },
@@ -83,8 +84,8 @@ class FirstPanel extends React.Component {
             .then(res => {
                 if (res.data.is_success === true) {
                     dataSet.forEach((dset, index) => {
-                        // 时间和性别不需要初始值
-                        if(index!==0 && index !== 11) {
+                        // Person\Year\Gender不需要初始值
+                        if(index!==1 && index < 10) {
                             dset.options = that.tool_handleItem(res.data[dset.key], 1);
                             clickStatus[dset.key] = Array(dset.options.length).fill(false);
                         }
@@ -660,7 +661,7 @@ class FirstPanel extends React.Component {
                                     return null;
                                 }
                                 
-                                if (index !== 11) {
+                                if (index !== 10) {
                                     return (
                                         <SelectedPanel
                                             key={`datum-${index}`} title={datum.title} clicked={clickStatus[datum.key]}

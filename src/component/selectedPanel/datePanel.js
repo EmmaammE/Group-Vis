@@ -133,9 +133,9 @@ function DatePanel({ title, setClicked, range = [0, 0], options = [] }) {
                     }
                     </ul>
                 </li>
-                <li className="dropdown__mask" onMouseOut={()=>{
+                {/* <li className="dropdown__mask" onMouseOut={()=>{
                   setExpanded(false);
-                }}></li>
+                }}></li> */}
             </ul>
         </div>
     );
