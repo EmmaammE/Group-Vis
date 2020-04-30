@@ -2,11 +2,11 @@ import React from "react";
 
 import list from '../../assets/icon/list.svg';
 import matrix from '../../assets/icon/matrix.svg';
-import topic from '../../assets/icon/topic.svg';
+import timeline from '../../assets/icon/timeline.svg';
 import map from '../../assets/icon/map.svg';
 import list_ from '../../assets/list.svg';
 import matrix_ from '../../assets/matrix.svg';
-import topic_ from '../../assets/topic.svg';
+import topic_ from '../../assets/icon/map.svg';
 import map_ from '../../assets/map.svg';
 import add from '../../assets/brush/add.svg';
 import minus from '../../assets/brush/minus.svg'
@@ -21,8 +21,8 @@ import similiar from '../../assets/icon/similiar.svg'
 import compare from '../../assets/icon/compare.svg'
 
 // 对应 7\8\9\10图的顺序                  +|-|清空|clear|删除   生成新的花朵|相似的人|群体对比 (10)
-const btn_urls = [topic,matrix,map,list,add,minus,clear,deleteIcon,flower, similiar, compare]
-const btn_urls_ = [topic_,matrix_,map_,list_,add_,minus_]
+const btn_urls = [timeline,matrix,map,list,add,minus,clear,deleteIcon,flower, similiar, compare]
+const btn_urls_ = [timeline,matrix,map,list,add_,minus_]
 
 // 7,8,9,10
 const imgStyle = {

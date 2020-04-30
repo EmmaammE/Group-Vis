@@ -73,8 +73,13 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
 
     useEffect(() => {
         if(Object.keys(selectedPeople).length !== 0) {
-            cb(Object.keys(selectedPeople)
-                .map(d => data[d][2]))
+            let people = [];
+            for(let key in selectedPeople) {
+                if(data[key] && data[key][2]) {
+                    people.push(data[key][2])
+                }
+            }
+            cb(people)
 
             d3.select($container.current).selectAll('circle')
                 .each(function() {
