@@ -48,9 +48,11 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 	}
 
 	function clickAction(index) {
-		if(index === 0) {
+		if(index === 0 && actual.length !== options.length) {
 			// 是选择全部
-			actual.forEach((e, i) => i !== 0 && setClicked(e['index']))
+			let indexes = [];
+			actual.forEach((e, i) => i !== 0 && indexes.push(e['index']));
+			setClicked(0, indexes);
 		} else {
 			setClicked(index);
 		}

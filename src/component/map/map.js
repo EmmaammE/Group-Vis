@@ -432,7 +432,7 @@ function figureDrawData(addr, pos2sentence, projection, sentence2pos) {
         r: 5,
         sentence: [],
         title: '',
-        xy: [null, null],
+        xy: [0, 0],
         isChoose: false,
         people: []
       }

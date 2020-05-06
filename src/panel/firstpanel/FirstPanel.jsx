@@ -128,53 +128,32 @@ class FirstPanel extends React.Component {
         if(name!=='Gender') {
             is_all = true;
         }
-        return (index, status, groupKey) => {
-            let { clickStatus,dataSet } = this.state;
-            let _status;
-            // 如果是Person, click, 改变onEnter时的状态
-            // if(status ===  undefined) {
-                if (is_all && index === 0) {
-                    // 选择了"选择全部"选项
-                    let _last = clickStatus[name][0];
-                    clickStatus[name] = new Array(clickStatus[name].length).fill(!_last);
-                    _status = !_last;
-                    if(is_all && name === 'Person') {
-                        Object.values(dataSet[1].groups).forEach(group => {
-                            group['allStatus'] = true
-                        })
-                    }
+        //!!第二个参数修改了，只有selectedPanel里的是新的
+        return (index, statusArr) => {
+            let { clickStatus } = this.state;
+            if (is_all && index === 0) {
+                // 选择了"选择全部"选项
+                let _last = clickStatus[name][0];
+                // 如果是部分全部
+                if(statusArr!==undefined) {
+                    statusArr.forEach(index => {
+                        clickStatus[name][index] = !_last;
+                    })
                 } else {
-                    if(groupKey !== undefined) {
-                        dataSet[1].groups[groupKey]['allStatus'] = false;
-                    }
-                    if (is_all) {
-                        // 有"选择全部"选项， 但选择了其他选项
-                        clickStatus[name][0] = false;
-                    }
-                    _status = clickStatus[name][index] = !clickStatus[name][index];
+                    clickStatus[name] = new Array(clickStatus[name].length).fill(!_last);
                 }
+                
+            } else {
+                if (is_all) {
+                    // 有"选择全部"选项， 但选择了其他选项
+                    clickStatus[name][0] = false;
+                }
+                clickStatus[name][index] = !clickStatus[name][index];
+            }
 
-            // } else {
-            //     if (is_all && index === 0) {
-            //         clickStatus[name] = new Array(clickStatus[name].length).fill(status);
-            //     } else {
-            //         if (is_all && status === false) {
-            //             clickStatus[name][0] = false;
-            //         }
-            //         clickStatus[name][index] = status;
-            //     }
-            // }
-
-            // if(name === 'Person' && _status !== undefined) {
-            //     this.setState({
-            //         clickStatus,
-            //         status: _status
-            //     })
-            // } else {
-                this.setState({
-                    clickStatus
-                })
-            // }
+            this.setState({
+                clickStatus
+            })
         }
     }
 
