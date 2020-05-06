@@ -176,6 +176,8 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
                 try {
                     fetchTopic(nextParam, _step);
                 } catch(err) {
+                    sessionStorage.removeItem('similiar');
+                    sessionStorage.removeItem('similiar_origin');
                     console.error(err)
                 }
             }
