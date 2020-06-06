@@ -30,7 +30,9 @@ const petalPath = (number, weight, proportion) => {
     }
 
     let min = r * 0.2
-    x = r * 0.05 * (10-number);
+    // x = r * 0.05 * (9-number);
+    x = r * (0.2+ 0.05 * (9-number));
+
     if(x < min) {
         x = min;
     }
@@ -70,7 +72,18 @@ function Flower({marginWidth, leaves , _hovered, positions, cb, step, current, h
         [dispatch]
     )
     const topics = useSelector(state => Object.keys(state.group['flower']));
-    // const topics = ["李清照-著述关系类","李清照-著述关系类-序跋文字","李清照","著述关系类-序跋文字","建炎-正德-天会","赵明诚","韩玉父","张汝舟","著述关系类"]
+    // const topics = [
+    // "李清照-著述关系类",
+    // '毛晋'
+    // '张汝舟',
+    // '端木采',
+    // '赵明诚',
+    // '韩玉父',
+    // '李格非',
+    // "李清照-著述关系类-序跋文字",
+    // "李清照"
+// ]
+    // ,"著述关系类-序跋文字",'建炎-正德-天会']
 
     const data = useMemo(
         () => getArr(leaves, topics),

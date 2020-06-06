@@ -20,10 +20,13 @@ const getScales = (width, height, data) => {
 const _class = () => 'circles';
 
 const color = (status) => {
-    if(status === undefined || status === 3) {
+    if(status === undefined) {
         return '#c38f53'
+    } else if(status === 3) {
+        return '#35777f78'
     } else {
-        return ['#00bcd4', '#85a392'][status]
+        // TODO xiugai
+        return ['#e4c1b7','#6faaee'][status-1]
     }
 }
 
