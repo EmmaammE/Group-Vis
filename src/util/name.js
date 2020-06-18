@@ -21,3 +21,6 @@ export const TOPIC_SENTENCE_VECTOR = "topic_id2sentence_ids2vector"
 
 // flower.js fisheye.js 单位鱼眼半径
 export const LENS = 50;
+
+// backend url
+export const HOST_URL = "://localhost:8000";
