@@ -197,25 +197,24 @@
 
 .dimension-wrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
   width: 70%;
+  padding: 0 0 0 20px;
 }
 
 .dimension-wrapper .brush-btn-container{
-  width: 11rem;
   margin: 0 0.3rem;
 }
 
 .similar-btn {
-  position: absolute;
-  top: 8.8rem;
-  left: 17.3rem;
+  /* position: relative;
+  bottom: 62vh;
+  left: 2.2rem; */
 }
 
 .similar-btn img {
-  width: 2.2rem!important;
-  height: 2.4rem!important;
+  width: 19px!important;
+  height: 21px!important;
 }
 
 .dimension-svg {

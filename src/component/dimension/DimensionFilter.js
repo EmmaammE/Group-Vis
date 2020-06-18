@@ -5,7 +5,7 @@ import Tooltip from '../tooltip/tooltip';
 import './lasso.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {fetchTopicData} from '../../actions/step';
-import axios from 'axios';
+import axios from '../../util/http';
 import CircleBtn from '../button/circlebtn';
 import { DimensionCircles } from './Dimensions';
 import { setPerson } from '../../actions/data'

@@ -1,8 +1,22 @@
 {
   "name": "group-vis",
   "version": "0.1.0",
+  "description": "<CohortVA>",
+  "author": "<VAG>",
+  "build": {
+    "appId": "<111>",
+    "files": [
+      "build/**/*"
+    ],
+    "extraFiles": [
+      "dataset",
+      "services",
+      "manage.exe"
+    ]
+  },
+  "homepage": "./",
   "private": true,
-  "proxy": "http://localhost:8080",
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -10,6 +24,8 @@
     "axios": "^0.19.2",
     "d3": "^5.15.0",
     "d3-lasso": "skokenes/d3-lasso",
+    "electron-is-dev": "^1.2.0",
+    "find-process": "^1.4.3",
     "louvain": "^1.2.0",
     "polybooljs": "^1.2.0",
     "react": "^16.12.0",
@@ -23,11 +39,17 @@
     "venn.js": "^0.2.20"
   },
   "scripts": {
-    "start": "react-scripts --max_old_space_size=12288 start ",
-    "build": "react-scripts build",
+    "react-start": "react-scripts --max_old_space_size=12288 start",
+    "react-build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron-start": "electron .",
+    "electron-build": "electron-builder",
+    "start": "concurrently -r \" yarn react-start \" \" wait-on http://localhost:3000/ && yarn electron-start \" ",
+    "release": "yarn react-build && electron-builder --publish=always",
+    "build": "yarn react-build && yarn electron-build"
   },
+  "main": "public/electron.js",
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -42,5 +64,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0",
+    "electron": "^9.0.2",
+    "electron-builder": "^22.7.0",
+    "wait-on": "^5.0.1"
   }
 }

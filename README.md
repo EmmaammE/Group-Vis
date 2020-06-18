@@ -1,19 +1,28 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+、
+后端： http://localhost:8080
+
+## 命令说明
+
+### `yarn react-start` 
+
+启动react项目<br />
+
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+可能会因为内存不足，网页崩溃， 所以设置了最大内存
+
+### `yarn electron-start`
+
+通过electron启动app
 
 ### `yarn start`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+上面两个命令合在一起
 
-后端： http://localhost:8080
+## 配置说明
 
-## 备注
-
-可能会因为内存不足，网页崩溃
-
-"start": "react-scripts --max_old_space_size=6144 start "
-
-并注释掉 actions/step.js 中的 dispatch(updateMatrix(matrixViewData));
+- .env文件: 设置不默认打开浏览器页面
 
 ## 样式
 

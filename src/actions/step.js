@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from '../util/http';
 import { TOPIC_LRS,
         TOPICS,EDGE_DICT, 
         NODE_DICT,DICT, 

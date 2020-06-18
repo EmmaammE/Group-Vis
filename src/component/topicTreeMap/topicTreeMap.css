@@ -73,38 +73,41 @@
   margin-bottom: 5px;
   /* top:5px; */
 }
+.header-left .g-chart-title {
+  width: max-content;
+}
 
 .brush-btn-container{
-  width: 142px;
+  width: 1.4rem;
   display: flex;
   justify-content: space-between;
   margin: 0 2.5rem;
 }
 
 .brush-btn-container .circle-btn img{
-  width: 22px;
-  height: 22px;
+  width: 19px;
+  height: 20px;
 }
 
 /** 这几个按钮不完全一样大*/
 .brush-btn-container .circle-btn:nth-child(1) img {
+  width: 21px;
   height: auto;
-  width: 2.4rem;
 }
 
 .brush-btn-container .circle-btn:nth-child(2) img {
-  width: 25px;
-  height: 26px;
+  width: 21px;
+  height: 23px;
 }
 
 .brush-btn-container .circle-btn:nth-child(3) img {
-  height: 23px;
-  width: 22px;
+  height: 20px;
+  width: 19px;
 }
 
 .brush-btn-container .circle-btn:nth-child(4) img {
-  height: 24px;
-  width: 22px;
+  height: 21px;
+  width: 19px;
 }
 
 .rowSlider-container{

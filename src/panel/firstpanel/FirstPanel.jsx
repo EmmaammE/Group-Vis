@@ -3,7 +3,7 @@ import './firstPanel.css';
 import 'react-virtualized/styles.css';
 import slogo from '../../assets/search.svg';
 import SelectedPanel from '../../component/selectedPanel/selectedPanel';
-import axios from 'axios';
+import axios from '../../util/http';
 import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
 import PathContainer from '../../component/pathContainer/PathContainer';
@@ -77,7 +77,7 @@ class FirstPanel extends React.Component {
         return arr;
     }
 
-    componentDidMount() {
+    getInitConditions() {
         let { dataSet, clickStatus } = this.state;
         let that = this;
         axios.post('/init_ranges/')
@@ -93,7 +93,8 @@ class FirstPanel extends React.Component {
 
                     that.setState({
                         dataSet,
-                        clickStatus
+                        clickStatus,
+                        _tabPanel: 1
                     })
                 } else {
                     if (res.data.bug) {
@@ -105,6 +106,10 @@ class FirstPanel extends React.Component {
                 console.log(err);
             })
     }
+
+    // componentDidMount() {
+        
+    // }
 
     setStatusAll(groupKey, innerKey) {
         return () => {
@@ -439,9 +444,13 @@ class FirstPanel extends React.Component {
     }
 
     onSwitchPanel(index) {
-        this.setState({
-            _tabPanel: index
-        })
+        if(index === 1) {
+            this.getInitConditions();
+        } else {
+            this.setState({
+                _tabPanel: index
+            })
+        }
     }
 
     _renderRow(name) {

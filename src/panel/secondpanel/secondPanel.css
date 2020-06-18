@@ -94,9 +94,12 @@
 }
 
 .btns-container {
+    height: 5.3rem;
     position: absolute;
-    top: 0.4rem;
+    top: 0;
     right: 10px;
+    display: flex;
+    align-items: center;
 }
 
 /* .btns-container img {

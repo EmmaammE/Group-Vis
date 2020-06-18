@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from '../util/http';
 import { updateGroupdata } from "../actions/step";
 import { POSITIONS } from "../util/name";
 const INITTOPICWEIGHT = 'INITOPICWEIGHT'

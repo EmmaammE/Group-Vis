@@ -2,7 +2,7 @@ import React from 'react';
 import './map.css';
 import Map from './map';
 import { connect } from 'react-redux';
-import axios from 'axios';
+import axios from '../../util/http';
 // import {data} from '../../data/ming'
 class MapContainer extends React.Component {
     state = {
