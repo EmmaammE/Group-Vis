@@ -77,7 +77,7 @@ class FirstPanel extends React.Component {
         return arr;
     }
 
-    getInitConditions() {
+    componentDidMount() {
         let { dataSet, clickStatus } = this.state;
         let that = this;
         axios.post('/init_ranges/')
@@ -94,7 +94,6 @@ class FirstPanel extends React.Component {
                     that.setState({
                         dataSet,
                         clickStatus,
-                        _tabPanel: 1
                     })
                 } else {
                     if (res.data.bug) {
@@ -106,10 +105,6 @@ class FirstPanel extends React.Component {
                 console.log(err);
             })
     }
-
-    // componentDidMount() {
-        
-    // }
 
     setStatusAll(groupKey, innerKey) {
         return () => {
@@ -444,13 +439,9 @@ class FirstPanel extends React.Component {
     }
 
     onSwitchPanel(index) {
-        if(index === 1) {
-            this.getInitConditions();
-        } else {
-            this.setState({
-                _tabPanel: index
-            })
-        }
+        this.setState({
+            _tabPanel: index
+        })
     }
 
     _renderRow(name) {

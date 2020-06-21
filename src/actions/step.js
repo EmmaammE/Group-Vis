@@ -116,7 +116,7 @@ function updateGroupAndStep(step, data) {
  * @param {*} steps: 两个群体对应的step
  */
 export function compareGroup(dispatch, KEY, person_ids1 = [], person_ids2 = [], steps = []) {
-    let socket = new WebSocket("ws://localhost:8080/socket_compare_topics_by_person_ids/");
+    let socket = new WebSocket("ws://localhost:8000/socket_compare_topics_by_person_ids/");
 
     socket.onopen = function() {
         let p = JSON.stringify({
@@ -149,7 +149,7 @@ export function compareGroup(dispatch, KEY, person_ids1 = [], person_ids2 = [], 
 
 function fetchBySocket(dispatch, param, KEY, step, type) {
     // 新建WebSocket连接
-    let websocket = new WebSocket("ws://localhost:8080/socket_search_topics_by_person_ids/");
+    let websocket = new WebSocket("ws://localhost:8000/socket_search_topics_by_person_ids/");
     
     // 连接打开事件，打开连接后发送数据
     websocket.onopen = function () {

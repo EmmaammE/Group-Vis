@@ -1,29 +1,56 @@
-// 引入electron并创建一个Browserwindow
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, remote } = require('electron');
 const path = require('path');
 const isDev = require("electron-is-dev");
 const net = require('net');
+const { spawn, exec } = require('child_process');
 
-const exec = require('child_process').execFile;
-
-let loader = exec('manage.exe', ['runserver'], (err, data) => {
-  console.log(err)
-  console.log(data.toString());
+let loader = spawn('python', [ 'manage.py', 'runserver', '127.0.0.1:8000'], {
+  cwd: path.join(__dirname, '../group_anaysis/'),
+  // detached: true,
+  // windowsHide: true
 });
 
-let m_pid = loader.pid;
+// let loader = exec('python manage.py runserver 127.0.0.1:8000', {
+//   cwd: path.join(__dirname, '../group_anaysis/'),
+//   detached: true
+// }, (err, data) => {
+//   console.log(err)
+//   console.log(data.toString());
+// });
 
-let mainWindow;
-
+let mainWindow, loading;
 
 function createWindowHelper() {
-  mainWindow = new BrowserWindow({
-    // width: 1080, height: 960,
-    // webPreferences: { webSecurity: false },
-    // show: false
+  loading = new BrowserWindow({
+    width: 640, height: 500,
+    show: false,
+    // frame: false
   })
 
- 
+  // global.sharedObject = {
+  //   establisted: false
+  // }
+
+  // remote.getGlobal('sharedObject').someProperty = 'new value';
+
+  loading.once('show', () => {
+    mainWindow = new BrowserWindow({
+      // width: 1080, height: 960,
+      // webPreferences: { webSecurity: false },
+      show: false,
+    })
+
+    mainWindow.webContents.once('dom-ready', () => {
+      console.log('main loaded')
+      mainWindow.show()
+      loading.hide()
+      loading.close()
+    })
+  })
+
+  loading.loadURL(`${path.join(__dirname, "../build/loading.html")}`)
+  loading.show()
+
   let establisted = false;
   let count = 0
   let id;
@@ -35,7 +62,7 @@ function createWindowHelper() {
 
       if (value === false && count < 50) {
         count++;
-        id = setTimeout(tick, 5000);
+        id = setTimeout(tick, 1500);
       } else if (value === true) {
         clearTimeout(id);
 
@@ -45,7 +72,7 @@ function createWindowHelper() {
         }
       }
     })
-  }, 5000)
+  }, 1500)
 }
 
 function createWindow() {
@@ -61,7 +88,7 @@ function createWindow() {
   //   // }, 2000);
   // })
 
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // 关闭window时触发下列事件.
   mainWindow.on('closed', function () {
@@ -107,25 +134,10 @@ app.on('activate', function () {
   }
 })
 
-// app.on('before-quit', (e) => {
-//   find('port', 8000)
-//     .then(function (list) {
-//       if (list[0] != null) {
-//         process.kill(list[0].pid, 'SIGHUP');
-//         console.log('kill')
-//       }
-//     }.catch((e) => {
-//       console.log(e.stack || e);
-//     }));
-// });
-
 app.on('before-quit', function () {
-  process.kill(m_pid, function (err) {
-    if (err) {
-      throw new Error(err);
-    }
-    else {
-      console.log('Process %s has been killed!', m_pid);
-    }
-  });
-});
+  try {
+    loader.kill();
+  } catch(err) {
+    console.error(err)
+  }
+})         

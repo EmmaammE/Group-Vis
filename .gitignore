@@ -27,5 +27,6 @@ yarn-error.log*
 /dataset
 /services
 manage.exe
+/group-anaysis
 
 /temp

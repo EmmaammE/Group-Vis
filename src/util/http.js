@@ -1,15 +1,16 @@
 import axios from 'axios';
+import { HOST_URL } from './name';
 
 let BASE_URL;
 if (process.env.NODE_ENV === "development") {
   BASE_URL = "http://localhost:3000";
 } else {
-  BASE_URL = "http://localhost:8000";
+  BASE_URL = "http" + HOST_URL;
 }
 
 axios.defaults.baseURL = BASE_URL;
-axios.defaults.adapter = require('axios/lib/adapters/http');
-
+// axios.defaults.adapter = require('axios/lib/adapters/http');
+// axios.defaults.headers.common['Connection'] = 'Upgrade';
 // 请求拦截  设置统一header
 axios.interceptors.request.use(
     config => {
