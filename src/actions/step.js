@@ -7,7 +7,8 @@ import { TOPIC_LRS,
         TOPIC_PMI, 
         SENTENCE_DICT,
         PERSON_SENTENCE,
-        TOPIC_SENTENCE_VECTOR, 
+        TOPIC_SENTENCE_VECTOR,
+        HOST_URL, 
         } from "../util/name";
 import {SET_STEP, SET_GROUP, ADD_STEP, UPDATE_GROUP_DATA_BY_STEP_KEY, SET_FLOWER, REMOVE_FLOWER } from "./types";
 import {updateTopicView} from '../redux/topicView.redux'
@@ -116,7 +117,7 @@ function updateGroupAndStep(step, data) {
  * @param {*} steps: 两个群体对应的step
  */
 export function compareGroup(dispatch, KEY, person_ids1 = [], person_ids2 = [], steps = []) {
-    let socket = new WebSocket("ws://localhost:8000/socket_compare_topics_by_person_ids/");
+    let socket = new WebSocket("ws" + HOST_URL + "/socket_compare_topics_by_person_ids/");
 
     socket.onopen = function() {
         let p = JSON.stringify({
@@ -149,7 +150,7 @@ export function compareGroup(dispatch, KEY, person_ids1 = [], person_ids2 = [], 
 
 function fetchBySocket(dispatch, param, KEY, step, type) {
     // 新建WebSocket连接
-    let websocket = new WebSocket("ws://localhost:8000/socket_search_topics_by_person_ids/");
+    let websocket = new WebSocket("ws" + HOST_URL + "socket_search_topics_by_person_ids/");
     
     // 连接打开事件，打开连接后发送数据
     websocket.onopen = function () {
