@@ -25,6 +25,7 @@
     "d3": "^5.15.0",
     "d3-lasso": "skokenes/d3-lasso",
     "electron-is-dev": "^1.2.0",
+    "find-process": "^1.4.3",
     "louvain": "^1.2.0",
     "polybooljs": "^1.2.0",
     "react": "^16.12.0",

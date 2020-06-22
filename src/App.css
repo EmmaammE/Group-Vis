@@ -1,60 +1,90 @@
-@font-face{
-  font-family: 'DFPSongW9';
-  src : url('../src/assets/fonts/DFPSongW9.ttf');
+@font-face {
+  font-family: "DFPSongW9";
+  src: url("../src/assets/fonts/DFPSongW9.ttf");
 }
 
-@media all
-and (-moz-min-device-pixel-ratio: 1.09) and (-moz-max-device-pixel-ratio: 1.18),
-    (-webkit-min-device-pixel-ratio: 1.09) and (-webkit-max-device-pixel-ratio: 1.18),
-    (min-resolution: 1.09dppx) and (max-resolution: 1.18dppx) {
-    :root {
-        font-size: 9px;
-    }
+@media all and (-moz-min-device-pixel-ratio: 1.09) and (-moz-max-device-pixel-ratio: 1.18),
+  (-webkit-min-device-pixel-ratio: 1.09) and (-webkit-max-device-pixel-ratio: 1.18),
+  (min-resolution: 1.09dppx) and (max-resolution: 1.18dppx) {
+  :root {
+    font-size: 9px;
+  }
 }
-@media all
-and (-moz-min-device-pixel-ratio: 1.19) and (-moz-max-device-pixel-ratio: 1.28),
-    (-webkit-min-device-pixel-ratio: 1.19) and (-webkit-max-device-pixel-ratio: 1.28),
-    (min-resolution: 1.19dppx) and (max-resolution: 1.28dppx) {
-    :root {
-        font-size: 8px;
-    }
+@media all and (-moz-min-device-pixel-ratio: 1.19) and (-moz-max-device-pixel-ratio: 1.28),
+  (-webkit-min-device-pixel-ratio: 1.19) and (-webkit-max-device-pixel-ratio: 1.28),
+  (min-resolution: 1.19dppx) and (max-resolution: 1.28dppx) {
+  :root {
+    font-size: 8px;
+  }
 }
-@media all
-and (-moz-min-device-pixel-ratio: 1.29) and (-moz-max-device-pixel-ratio: 1.4),
-    (-webkit-min-device-pixel-ratio: 1.29) and (-webkit-max-device-pixel-ratio: 1.4),
-    (min-resolution: 1.29dppx) and (max-resolution: 1.4dppx) {
-    :root {
-        font-size: 7px;
-    }
+@media all and (-moz-min-device-pixel-ratio: 1.29) and (-moz-max-device-pixel-ratio: 1.4),
+  (-webkit-min-device-pixel-ratio: 1.29) and (-webkit-max-device-pixel-ratio: 1.4),
+  (min-resolution: 1.29dppx) and (max-resolution: 1.4dppx) {
+  :root {
+    font-size: 7px;
+  }
 }
-@media all
-and (-moz-min-device-pixel-ratio: 1.41) and (-moz-max-device-pixel-ratio: 1.6),
-    (-webkit-min-device-pixel-ratio: 1.41) and (-webkit-max-device-pixel-ratio: 1.6),
-    (min-resolution: 1.41dppx) and (max-resolution: 1.6dppx) {
-    :root {
-        font-size: 6px;
-    }
+@media all and (-moz-min-device-pixel-ratio: 1.41) and (-moz-max-device-pixel-ratio: 1.6),
+  (-webkit-min-device-pixel-ratio: 1.41) and (-webkit-max-device-pixel-ratio: 1.6),
+  (min-resolution: 1.41dppx) and (max-resolution: 1.6dppx) {
+  :root {
+    font-size: 6px;
+  }
 }
-@media all
-and (-moz-min-device-pixel-ratio: 1.61) and (-moz-max-device-pixel-ratio: 1.8),
-    (-webkit-min-device-pixel-ratio: 1.61) and (-webkit-max-device-pixel-ratio: 1.8),
-    (min-resolution: 1.61dppx) and (max-resolution: 1.8dppx) {
-    :root {
-        font-size: 5px;
-    }
+@media all and (-moz-min-device-pixel-ratio: 1.61) and (-moz-max-device-pixel-ratio: 1.8),
+  (-webkit-min-device-pixel-ratio: 1.61) and (-webkit-max-device-pixel-ratio: 1.8),
+  (min-resolution: 1.61dppx) and (max-resolution: 1.8dppx) {
+  :root {
+    font-size: 5px;
+  }
 }
-@media all
-and (-moz-min-device-pixel-ratio: 1.81) and (-moz-max-device-pixel-ratio: 2.1),
-    (-webkit-min-device-pixel-ratio: 1.81) and (-webkit-max-device-pixel-ratio: 2.1),
-    (min-resolution: 1.81dppx) and (max-resolution: 2.1dppx) {
-    :root {
-        font-size: 4px;
-    }
+@media all and (-moz-min-device-pixel-ratio: 1.81) and (-moz-max-device-pixel-ratio: 2.1),
+  (-webkit-min-device-pixel-ratio: 1.81) and (-webkit-max-device-pixel-ratio: 2.1),
+  (min-resolution: 1.81dppx) and (max-resolution: 2.1dppx) {
+  :root {
+    font-size: 4px;
+  }
 }
+/* 
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
+  }
+}
+@media (min-width: 1100px) {
+  html {
+    font-size: 20px;
+  }
+}
+@media (min-width: 1280px) {
+  html {
+    font-size: 22px;
+  }
+}
+@media (min-width: 1366px) {
+  html {
+    font-size: 24px;
+  }
+}
+@media (min-width: 1440px) {
+  html {
+    font-size: 62.5%;
+  }
+}
+@media (min-width: 1680px) {
+  html {
+    font-size: 50%;
+  }
+}
+@media (min-width: 1920px) {
+  html {
+    font-size: 62.5%;
+  }
+} */
 
 html {
   font-size: 62.5%;
-  font-family:Helvetica;
+  font-family: Helvetica;
 }
 
 .App {
@@ -80,21 +110,21 @@ html {
 
 /** 每个视图的名字 */
 .g-chart-title {
-  font-family:Helvetica;
+  font-family: Helvetica;
   font-size: 2rem;
-  color:#240f39;
-  letter-spacing:0;
-  line-height:1.4rem;
+  color: #240f39;
+  letter-spacing: 0;
+  line-height: 1.4rem;
   margin: 1.5rem 2.6rem;
 }
 
 /** 每部分视图的名字：如Detail Views */
 .g-view-title {
-  font-family:DFPSongW9;
-  font-size:2.5rem;
-  color:#240f39;
-  letter-spacing:-0.03rem;
-  text-align:left;
+  font-family: DFPSongW9;
+  font-size: 2.5rem;
+  color: #240f39;
+  letter-spacing: -0.03rem;
+  text-align: left;
 }
 
 /** 视图带margin,主要是侧面的 */
@@ -104,36 +134,44 @@ html {
 
 /** 一般的文字 */
 .g-text {
-  font-size:1.1rem;
-  color:#6e6e6e;
-  letter-spacing:0.064rem;
-  text-align:center;
-  line-height:1.56rem;
+  font-size: 1.1rem;
+  color: #6e6e6e;
+  letter-spacing: 0.064rem;
+  text-align: center;
+  line-height: 1.56rem;
 }
 
 .g-legend-text {
-  font-family:Helvetica;
-  font-weight:100;
+  font-family: Helvetica;
+  font-weight: 100;
   font-size: 1.2rem;
   transform: scale(0.85);
-  color:#333333;
+  color: #333333;
 }
 
 /* 滚动条 */
 div::-webkit-scrollbar-track {
   border: 1px solid #d3d3d3;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 div::-webkit-scrollbar {
   width: 4px;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 div::-webkit-scrollbar-thumb {
-  background-color: #d3d3d3;  
+  background-color: #d3d3d3;
 }
 
 circle {
   cursor: pointer;
+}
+
+/* for brush area */
+.selection {
+  opacity: 0.6;
+  stroke-width: 3;
+  stroke: #555;
+  shape-rendering: auto;
 }

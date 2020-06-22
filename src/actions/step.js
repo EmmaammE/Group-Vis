@@ -117,35 +117,59 @@ function updateGroupAndStep(step, data) {
  * @param {*} steps: 两个群体对应的step
  */
 export function compareGroup(dispatch, KEY, person_ids1 = [], person_ids2 = [], steps = []) {
-    let socket = new WebSocket("ws" + HOST_URL + "/socket_compare_topics_by_person_ids/");
+    let param = new FormData();
 
-    socket.onopen = function() {
-        let p = JSON.stringify({
-            "populate_ratio": p_populate_ratio,
-            "max_topic": p_max_topic,
-            "min_sentence": p_min_sentence,
-            "person_ids1[]": person_ids1,
-            "person_ids2[]": person_ids2,
-        })
-        console.log(p)
-        socket.send(p);
+    for (const id of person_ids1) {
+        param.append("person_ids1[]", id);
     }
 
-    socket.onmessage = function(evt) {
-        let received_json = {
-            'data': JSON.parse(evt.data),
-            'people': [person_ids1, person_ids2]
+    for (const id of person_ids2) {
+        param.append("person_ids2[]", id);
+    }
+
+    param.append('populate_ratio', p_populate_ratio);
+    param.append('max_topic', p_max_topic);
+    param.append('min_sentence', p_min_sentence);
+
+    // let param = JSON.stringify({
+    //     "populate_ratio": p_populate_ratio,
+    //     "max_topic": p_max_topic,
+    //     "min_sentence": p_min_sentence,
+    //     "person_ids1[]": person_ids1,
+    //     "person_ids2[]": person_ids2,
+    // })
+
+    return dispatch => {
+        axios.post('/compared_topics_by_person_ids/', param)
+            .then(res => {
+                // console.log(res)
+                if(res['statusText'] === 'OK') {
+                    let { data } = res;
+                    if(data['is_success'] === true) {
+                        new Promise((reslove, reject) => {
+                            let fileParam = new FormData();
+                            fileParam.append('file_name', data['file_name']);
+                            
+                            poll(fileParam, reslove, reject);
+
+                        }).then(res => {
+
+                            let received_json = {
+                                'data': res['data'],
+                                'people': [person_ids1, person_ids2]
+                            }
+                            console.log(received_json)
+                            /** type=3 表示是传入的两个群体的数据 */
+                            handleTopicRes(dispatch, received_json, KEY, steps, 3);
+                        }, err => console.log(err))
+                    }
+                } else {
+                    console.error(res)
+                }
+                
+            })
+            .catch(err => console.error(err))
         }
-        console.log(received_json)
-        /** type=3 表示是传入的两个群体的数据 */
-        handleTopicRes(dispatch, received_json, KEY, steps, 3);
-        
-        socket.close();
-    }
-
-    socket.onclose = function() {
-        console.log('人物对比连接关闭')
-    }
 }
 
 function fetchBySocket(dispatch, param, KEY, step, type) {
@@ -333,6 +357,26 @@ function getPeopleStatus(people) {
 
     return peopleStatus;
 }
+
+function poll(param, resolve, reject){
+    let timer = setTimeout(function(){
+        axios.post('/are_you_ok_by_file_name/', param)
+            .then(res => {
+                if(res.statusText === 'OK' && res['data']['is_success'] === true) {
+                    if(res['data']['answer'] === null) {
+                        clearTimeout(timer);
+                        poll(param, resolve, reject);
+                    } else {
+                        resolve(res);
+                    }
+                }
+            })
+            .catch(err => {
+                reject(err)
+            })
+   }, 1500);
+ }
+
 /**
  * 
  * @param {*} param 请求topicd的参数 formData
@@ -344,13 +388,13 @@ function getPeopleStatus(people) {
  */
 export function fetchTopicData(param, KEY, step, type) {
 
-    let people = param.getAll('person_ids[]');
-    if(people.length > 200) {
-        // 使用socket通信
-        return dispatch => {
-            fetchBySocket(dispatch, people, KEY, step, type)
-        }
-    }
+    // let people = param.getAll('person_ids[]');
+    // if(people.length > 200) {
+    //     // 使用socket通信
+    //     return dispatch => {
+    //         fetchBySocket(dispatch, people, KEY, step, type)
+    //     }
+    // }
     // 加上其他参数
     param.append('populate_ratio', p_populate_ratio);
     param.append('max_topic', p_max_topic);
@@ -360,7 +404,23 @@ export function fetchTopicData(param, KEY, step, type) {
         axios.post('/search_topics_by_person_ids/', param)
             .then(res => {
                 // console.log(res)
-                handleTopicRes(dispatch, res, KEY, step, type)
+                if(res['statusText'] === 'OK') {
+                    let { data } = res;
+                    if(data['is_success'] === true) {
+                        new Promise((reslove, reject) => {
+                            let fileParam = new FormData();
+                            fileParam.append('file_name', data['file_name']);
+                            
+                            poll(fileParam, reslove, reject);
+
+                        }).then(res => {
+                            handleTopicRes(dispatch, res, KEY, step, type)
+                        }, err => console.log(err))
+                    }
+                } else {
+                    console.error(res)
+                }
+                
             })
             .catch(err => console.error(err))
         }

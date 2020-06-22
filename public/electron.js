@@ -1,22 +1,15 @@
-const { app, BrowserWindow, Menu, remote } = require('electron');
+const { app, BrowserWindow, Menu, globalShortcut } = require('electron');
 const path = require('path');
 const isDev = require("electron-is-dev");
 const net = require('net');
-const { spawn, exec } = require('child_process');
+const { spawn } = require('child_process');
+const find = require("find-process");
 
-let loader = spawn('python', [ 'manage.py', 'runserver', '127.0.0.1:8000'], {
-  cwd: path.join(__dirname, '../group_anaysis/'),
-  // detached: true,
-  // windowsHide: true
-});
-
-// let loader = exec('python manage.py runserver 127.0.0.1:8000', {
+// let loader = spawn('python', [ 'manage.py', 'runserver', '127.0.0.1:8000'], {
 //   cwd: path.join(__dirname, '../group_anaysis/'),
-//   detached: true
-// }, (err, data) => {
-//   console.log(err)
-//   console.log(data.toString());
 // });
+
+let loader = spawn('manage.exe', ['runserver']);
 
 let mainWindow, loading;
 
@@ -88,7 +81,6 @@ function createWindow() {
   //   // }, 2000);
   // })
 
-  mainWindow.webContents.openDevTools()
 
   // 关闭window时触发下列事件.
   mainWindow.on('closed', function () {
@@ -96,7 +88,14 @@ function createWindow() {
   })
 
   mainWindow.maximize();
-  // mainWindow.setFullScreen(true)
+
+  mainWindow.webContents.openDevTools()
+
+
+  // mainWindow.on('resize', function(event) {
+  //   event.preventDefault();
+  //   mainWindow.setFullScreen(true)
+  // });
   // 隐藏任务栏
   Menu.setApplicationMenu(null);
 }
@@ -119,10 +118,31 @@ function portInUse(port, callback) {
 
 app.on('ready', createWindowHelper)
 
+app.whenReady().then(() => {
+  globalShortcut.register('F11', () => {
+    let flag = mainWindow.isFullScreen();
+    mainWindow.setFullScreen(!flag);
+  })
+
+  globalShortcut.register('F12', () => {
+    mainWindow.webContents.openDevTools()
+  })
+})
+
 // 所有窗口关闭时退出应用.
-app.on('window-all-closed', function () {
+app.on('window-all-closed', async function () {
   // macOS中除非用户按下 `Cmd + Q` 显式退出,否则应用与菜单栏始终处于活动状态.
   if (process.platform !== 'darwin') {
+
+    try {
+      let list = await find('name', 'man  age.exe');
+      // console.log(list.length)
+      list.forEach(e => {
+        process.kill(e.pid)
+      })
+    } catch(err) {
+      console.log(err);
+    }
     app.quit()
   }
 })
@@ -135,9 +155,5 @@ app.on('activate', function () {
 })
 
 app.on('before-quit', function () {
-  try {
-    loader.kill();
-  } catch(err) {
-    console.error(err)
-  }
+  globalShortcut.unregisterAll();
 })         
