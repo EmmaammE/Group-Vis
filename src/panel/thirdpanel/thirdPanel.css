@@ -43,8 +43,10 @@
 
 .third-panel .topicView-panel {
   flex: 1;
+  max-height: 56vh;
 }
 
 .third-panel .third-footer-panel{
   height: 36vh;
+  min-height: 36vh;
 }

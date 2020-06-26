@@ -52,7 +52,7 @@ const btnData = [
 let addOrMinus = true;
 let margin={left:15,top:10,right:15,bottom:15}
 const WIDTH = 500;
-const HEIGHT = 530
+const HEIGHT = 470;
 
 // const apriori = require('simple-apriori');
 let brushPersons = {}
@@ -229,6 +229,16 @@ class TopicTreeMap extends React.Component{
         
       }
     })
+  }
+  
+  componentDidUpdate(prevProps) {
+    if(prevProps.step !== this.props.step) {
+      try {
+        this.handleClear()
+      } catch(e) {
+        console.log(e)
+      }
+    }
   }
 
   // 下面两个函数为hover之后弹出tooltip的事件处理函数

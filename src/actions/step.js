@@ -401,7 +401,8 @@ export function fetchTopicData(param, KEY, step, type) {
     param.append('min_sentence', p_min_sentence);
 
     return dispatch => {
-        axios.post('/search_topics_by_person_ids/', param)
+        return new Promise(resolveP => {
+            axios.post('/search_topics_by_person_ids/', param)
             .then(res => {
                 // console.log(res)
                 if(res['statusText'] === 'OK') {
@@ -411,10 +412,10 @@ export function fetchTopicData(param, KEY, step, type) {
                             let fileParam = new FormData();
                             fileParam.append('file_name', data['file_name']);
                             
-                            poll(fileParam, reslove, reject);
-
+                            poll(fileParam, reslove, reject)
                         }).then(res => {
-                            handleTopicRes(dispatch, res, KEY, step, type)
+                            handleTopicRes(dispatch, res, KEY, step, type);
+                            resolveP();
                         }, err => console.log(err))
                     }
                 } else {
@@ -423,6 +424,7 @@ export function fetchTopicData(param, KEY, step, type) {
                 
             })
             .catch(err => console.error(err))
+        })
         }
 }
 
@@ -846,17 +848,37 @@ export function updateFourViews(dispatch,people,res,temp,topicId2Name,step, addr
              dispatch(initDict(temp[DICT]))
             break;
         case 0:
-            // 更新降维图所需要的辅助数据 
-            dispatch(addHistoryData(historyData))
-            // 更新所有图
-            dispatch(updateTopicView(topicData));
-            dispatch(updateSelectList({selectListData}));
-            dispatch(updateMatrix(matrixViewData));
-            dispatch(updateTimeLine(timeLineData))
-            dispatch(initPeopleCommon(peopleToDiscriptions))
-            dispatch(initDict(temp[DICT]))
-        
-    // eslint-disable-next-line
+            batch(() => {
+                 // 更新降维图所需要的辅助数据 
+                 dispatch(addHistoryData(historyData))
+                 // 更新所有图
+                 dispatch(updateTopicView(topicData));
+                 dispatch(updateSelectList({selectListData}));
+                 dispatch(updateMatrix(matrixViewData));
+                 dispatch(updateTimeLine(timeLineData))
+                 dispatch(initPeopleCommon(peopleToDiscriptions))
+                 dispatch(initDict(temp[DICT]))
+
+                 dispatch(setGroup({[step]: {
+                    "mapView": {
+                        pos2sentence,
+                        addressNode: addressMap['addressNode'],
+                        sentence2pos
+                    },
+                    // "dict":nodeDictKey,
+                    [POSITIONS]: res.data[POSITIONS],
+                    [TOPICS]: _topics,
+                    "people": people,
+                    "topicView": topicData,
+                    "selectView": {selectListData},
+                    "matrixView": matrixViewData,
+                    "timelineView": timeLineData,
+                    "historyData":historyData
+                }}))
+                 dispatch(setStep(step))
+                 dispatch(setFlower(_topics.map(e => e['content'].join('-'))))
+            })
+            break;
         case 1:
             // 更新group, step
             updateGroupAndStep(step, 

@@ -104,7 +104,7 @@
 
 .dropdown__list-item {
   color: #444444;
-  padding: 0 10px;
+  padding: 0 0.1rem;
   transition: background-color 0.1s linear, color 0.1s linear;
   list-style-position: inside;
   white-space: nowrap;
@@ -129,7 +129,8 @@
   background: #444;
   top: 90%; */
   /* position: relative; */
-  width: 80%;
+  /* width: 80%; */
+  max-width: 10vw;
 }
 
 .person-dropdown.dropdown__list-item:hover,
@@ -153,7 +154,7 @@
 }
 .dropdown__selected {
   color: #444444;
-  margin-left: 25px;
+  margin-left: 2.5rem;
   list-style-position: inside;
   white-space: nowrap;
   overflow-x: auto;
@@ -222,7 +223,7 @@
 
 /* ---begin---: control panel的checkbox */
 .panel-content input[type=checkbox] {
-  margin-right: 10px;
+  margin-right: 1rem;
   cursor: pointer;
   position: relative;
 }

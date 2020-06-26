@@ -13,40 +13,42 @@ class MapContainer extends React.Component {
 
     componentDidUpdate(prevProps) {
         let {data} = this.props;
-        // console.log("mapView",data)
         if(JSON.stringify(prevProps.data)!==JSON.stringify(data)) {
-            let that = this;
-            if(Object.keys(data["pos2sentence"]).length!==0) {
-                let param = new FormData();
-                for(let _key in data["pos2sentence"]) {
-                    param.append("address_ids[]", _key);
-                }
+            if(data !== undefined && data["pos2sentence"]) {
+                let that = this;
+                if(Object.keys(data["pos2sentence"]).length!==0) {
+                    let param = new FormData();
+                    for(let _key in data["pos2sentence"]) {
+                        param.append("address_ids[]", _key);
+                    }
+        
+                    // console.log(data);
+                    axios.post('/search_address_by_address_ids/', param)
+                        .then(res => {
+                            if(res.data.is_success) {
+                                let addr = {};
+                                for(let _data in res.data["Addr"]) {
+                                    let curr  = res.data["Addr"][_data][0];
+                                    if(curr && curr['x_coord']!== null && curr['y_coord']!==null) {
+                                        addr[_data] = res.data["Addr"][_data][0];
+                                        addr[_data]['address_name'] = data["addressNode"][_data]
+                                    }
+                                }
     
-                // console.log(data);
-                axios.post('/search_address_by_address_ids/', param)
-                    .then(res => {
-                        if(res.data.is_success) {
-                            let addr = {};
-                            for(let _data in res.data["Addr"]) {
-                                let curr  = res.data["Addr"][_data][0];
-                                if(curr && curr['x_coord']!== null && curr['y_coord']!==null) {
-                                    addr[_data] = res.data["Addr"][_data][0];
-                                    addr[_data]['address_name'] = data["addressNode"][_data]
+                               
+    
+                                that.setState({
+                                    addr
+                                })
+                            } else {
+                                if(res.data.bug) {
+                                    console.error(res.data.bug);
                                 }
                             }
-
-                           
-
-                            that.setState({
-                                addr
-                            })
-                        } else {
-                            if(res.data.bug) {
-                                console.error(res.data.bug);
-                            }
-                        }
-                    })
+                        })
+                }
             }
+           
         }
     }
 
@@ -82,7 +84,7 @@ class MapContainer extends React.Component {
 
 const mapStateToProps = state => {
     let step = state.otherStep["9"];
-    // console.log(step);
+    console.log(step);
     return {
         // NOTE sentence2pos[---上面的sentence---] = [pos, pos...]
         // NOTE pos2sentence[pos] = [ {sentence: Number, type: 'string', topic: 'vKey'} ]

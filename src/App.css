@@ -170,8 +170,10 @@ circle {
 
 /* for brush area */
 .selection {
-  opacity: 0.6;
-  stroke-width: 3;
-  stroke: #555;
+  opacity: 0.4;
+  stroke-width: 2;
+  stroke: black;
   shape-rendering: auto;
+  fill: #eee;
+  fill-opacity: 1;
 }

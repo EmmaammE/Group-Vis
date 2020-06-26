@@ -22,11 +22,11 @@ class MatrixColumn extends React.Component{
       highColor:tempColor
     })
     // console.log("d3.event.layerX",v,v.target,v.clientX,v.target.clientX)
-    v.target.setAttribute("fill","yellow")
+    v.target.setAttribute("stroke","#000")
   }
 
   handleMouseout(v){
-    v.target.setAttribute("fill",this.state.highColor)
+    v.target.setAttribute("stroke",'none')
   }
 
   render(){

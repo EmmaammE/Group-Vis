@@ -6,7 +6,7 @@ import SelectedPanel from '../../component/selectedPanel/selectedPanel';
 import axios from '../../util/http';
 import { connect } from 'react-redux';
 import DatePanel from '../../component/selectedPanel/datePanel';
-import PathContainer from '../../component/pathContainer/PathContainer';
+// import PathContainer from '../../component/pathContainer/PathContainer';
 import { fetchTopicData, setOtherStep } from '../../actions/step';
 import order from '../../assets/data/name.json';
 import parent from '../../assets/data/parent.json'
@@ -20,6 +20,7 @@ class FirstPanel extends React.Component {
         super(props);
         this.state = {
             searchValue: "",
+            peopleValue: "",
             /* options：[[0,'All'],[id,data]] */
             dataSet: [
                 // 修改顺序需要修改init接口调用、append_param和render的地方
@@ -52,13 +53,17 @@ class FirstPanel extends React.Component {
             status: false,
         }
 
+        this.$text = React.createRef();
+
         this.onInputChange = this.onInputChange.bind(this);
+        this.onInputTextarea = this.onInputTextarea.bind(this);
         this.onClickSearch = this.onClickSearch.bind(this);
         this.setStatus = this.setStatus.bind(this);
         this.setStatusAll = this.setStatusAll.bind(this);
         this.setTimeRange = this.setTimeRange.bind(this);
         this._renderRow = this._renderRow.bind(this);
         this.setPersonStatus = this.setPersonStatus.bind(this);
+        this.fetchRangeByNames = this.fetchRangeByNames.bind(this);
     }
 
     tool_handleItem(data, type) {
@@ -173,6 +178,14 @@ class FirstPanel extends React.Component {
         // debounce(() => this.fetchRange(name), 1000)();
     }
 
+    onInputTextarea(event) {
+        let names = event.target.value;
+        this.setState({
+            peopleValue: names
+        })
+        this.$text.current.innerText = names;
+    }
+
     fetchRange() {
         let that = this;
         let { searchValue, clickStatus } = this.state;
@@ -180,7 +193,6 @@ class FirstPanel extends React.Component {
 
         let bdata = new FormData();
         bdata.append('name', searchValue);
-
 
         axios
             .post('/search_relation_person_by_name/', bdata)
@@ -228,7 +240,6 @@ class FirstPanel extends React.Component {
                                             'allStatus': false
                                         }
                                     }
-
 
                                     let op = { value: key, label: data[key][KEY], r: r[KEY] };
                                     if (r['address']) { op['address'] = r['address'][KEY]; }
@@ -349,7 +360,8 @@ class FirstPanel extends React.Component {
             console.info('setAnother', step)
         }
     }
-    onClickSearch() {
+
+    async onClickSearch() {
         let { KEY, groups, step, fetchTopicData, setOtherStep } = this.props;
         let { timeRange, _tabPanel } = this.state;
         // input[i].title = dataSet[i+1].key ~ clickStates{title}
@@ -374,11 +386,13 @@ class FirstPanel extends React.Component {
         this.addAnother(step + 1)
         switch (_tabPanel) {
             case 0:
+            case 2:
                 this.tool_appendPerson(param);
-                fetchTopicData(param, KEY, step + 1);
+                fetchTopicData(param, KEY, step + 1).then(() => {
+                    setOtherStep(6, step + 1)
+                    setOtherStep(9, step + 1)
+                });
 
-                setOtherStep(6)
-                setOtherStep(9)
                 break;
             case 1:
                 if (timeRange[0] !== 0 && timeRange[1] !== 0) {
@@ -414,39 +428,143 @@ class FirstPanel extends React.Component {
                         console.error(err);
                     })
                 break;
-            case 2:
-                let { cyphers } = this.state;
-                let _p = new FormData();
+            // case 2:
+            // let { cyphers } = this.state;
+            // let _p = new FormData();
 
-                // fetch
-                Promise.all(cyphers.map(cypher => {
-                    let param = new FormData();
-                    param.append('draws', cypher)
-                    return axios.post('/search_person_ids_by_draws/', param)
-                })).then(values => {
-                    values.forEach(res => {
-                        if (res.data.is_success) {
-                            res.data["person_ids"].forEach(id => {
-                                _p.append('person_ids[]', id);
-                            })
+            // // fetch
+            // Promise.all(cyphers.map(cypher => {
+            //     let param = new FormData();
+            //     param.append('draws', cypher)
+            //     return axios.post('/search_person_ids_by_draws/', param)
+            // })).then(values => {
+            //     values.forEach(res => {
+            //         if (res.data.is_success) {
+            //             res.data["person_ids"].forEach(id => {
+            //                 _p.append('person_ids[]', id);
+            //             })
 
-                        }
-                    })
-                }).then(() => {
-                    fetchTopicData(_p, KEY, step + 1);
-                    setOtherStep(6);
-                    setOtherStep(9);
-                })
-                break;
+            //         }
+            //     })
+            // }).then(() => {
+            //     fetchTopicData(_p, KEY, step + 1);
+            //     setOtherStep(6);
+            //     setOtherStep(9);
+            // })
+
+            // break;
             default:
                 console.log(_tabPanel);
         }
     }
 
+    // 根据一系列人名查询相关的人
+    async fetchRangeByNames() {
+        let { peopleValue, dataSet, clickStatus } = this.state;
+        if (peopleValue.length !== 0) {
+            // 将中文逗号替换为英文
+            let names = peopleValue.replace(/，/ig, ',').replace(/\s+/g, "").split(',')
+
+            let groupsArr = [];
+            let statusArr = [];
+            let { KEY } = this.props;
+
+            const starterPromise = Promise.resolve(null);
+
+            // const log = result => console.log(result);
+            await names.reduce(
+                (p, spec) => p.then(() => {
+                    let param = new FormData();
+                    param.append('name', spec);
+                    return axios.post('/search_relation_person_by_name/', param)
+                }).then(res => {
+                    res.data['Person'].forEach(data => {
+
+                        // let data = Object.values(datap)[0];
+                        if (Object.keys(data).length > 1) {
+                            let _status = { '0': false };
+
+                            // "Person", 有相关人的relation
+                            let groups = {};
+
+                            for (let key in data) {
+                                // console.log(data[key])
+                                data[key]["relation"].forEach(r => {
+                                    let _order = order[r["name"]];
+                                    if (_order === undefined) {
+                                        // 属于其他亲属类
+                                        _order = "1106"
+                                    }
+                                    let parentType = +(_order[0] + _order[1]);
+                                    if (groups[parentType] === undefined) {
+                                        groups[parentType] = {
+                                            'title': parent[parentType][KEY],
+                                            'group': {}
+                                        }
+                                    }
+                                    if (groups[parentType]['group'][_order] === undefined) {
+                                        groups[parentType]['group'][_order] = {
+                                            'title': parent2[_order][KEY],
+                                            'people': [],
+                                            'allStatus': false
+                                        }
+                                    }
+
+                                    let op = { value: key, label: data[key][KEY], r: r[KEY] };
+                                    if (r['address']) { op['address'] = r['address'][KEY]; }
+                                    if (r['dynasty']) { op['dynasty'] = r['dynasty'][KEY]; }
+                                    if (r['status']) { op['status'] = r['status'].map(e => e[KEY]) }
+
+                                    groups[parentType]['group'][_order]['people'].push(op)
+
+                                    _status[key] = false;
+                                })
+                            }
+
+                            statusArr.push(_status)
+
+                            for (let key in groups) {
+                                for (let inner in groups[key]['group']) {
+                                    groups[key]['group'][inner]['people'].sort((a, b) => {
+                                        return a['r'].localeCompare(b['r'])
+                                    })
+                                }
+                            }
+
+                            groupsArr.push(groups)
+                        }
+                    })
+
+                }),
+                starterPromise
+            );
+
+            dataSet[1]['groups'] = groupsArr;
+            clickStatus['Person'] = statusArr;
+            // console.log(statusArr)
+
+            this.setState({
+                dataSet,
+                clickStatus
+            })
+        }
+    }
+
     onSwitchPanel(index) {
-        this.setState({
-            _tabPanel: index
-        })
+        if (index !== 1) {
+            let { dataSet, clickStatus } = this.state;
+            dataSet[1] = { key: 'Person', title: 'Related People', options: [] };
+            clickStatus['Person'] = { '0': false };
+            this.setState({
+                _tabPanel: index,
+                dataSet,
+                clickStatus
+            })
+        } else {
+            this.setState({
+                _tabPanel: index
+            })
+        }
     }
 
     _renderRow(name) {
@@ -517,9 +635,10 @@ class FirstPanel extends React.Component {
     }
 
     _renderPanel() {
-        let { _tabPanel, searchValue, dataSet, clickStatus, timeRange, status } = this.state;
+        let { _tabPanel, searchValue, dataSet, clickStatus, timeRange, status, peopleValue } = this.state;
 
-        const _titles = ["Figure", "Condition", "Graph"];
+        // const _titles = ["Figure", "Condition", "Graph"];
+        const _titles = ["Figure", "Condition", "Figures"];
         let $titles = (
             <div className="panel-titles">
                 {
@@ -568,7 +687,7 @@ class FirstPanel extends React.Component {
                                                     onChange={(event) => cb(0, event.target.checked)}
                                                 />
                                                 <div className="item-container">
-                                                    Select all
+                                                    {this.props.KEY === 'en_name' ? 'Select all' : '选择全部'}
                                                 </div>
                                             </div>
 
@@ -586,16 +705,16 @@ class FirstPanel extends React.Component {
                                             </div>
                                             {myself['address'] && <div className="person-info two-column">
                                                 {/* <span className="first-item">Native Place</span> */}
-                                                <span>Address: </span>
+                                                <span>{this.props.KEY === 'en_name' ? 'Address: ' : '地址：'}</span>
                                                 <span>{myself['address']}</span>
                                             </div>}
                                             {myself['dynasty'] && <div className="person-info two-column">
-                                                <span>Dynasty: </span>
+                                                <span>{this.props.KEY === 'en_name' ? 'Dynasty: ' : '朝代：'} </span>
                                                 <span>{myself['dynasty']}</span>
                                             </div>}
                                             {myself['status'] && <div className="person-info two-column">
                                                 {/* <span className="first-item">Status</span> */}
-                                                <span>Status: </span>
+                                                <span>{this.props.KEY === 'en_name' ? 'Status: ' : '社会身份：'} </span>
                                                 <span>{myself['status'].slice(0, 1).join(',')}</span>
                                             </div>}
 
@@ -641,7 +760,8 @@ class FirstPanel extends React.Component {
                         {$titles}
                         <div className="panel-content">
                             {dataSet.map((datum, index) => {
-                                if (index === 1) {
+                                if (index === 1 || index === 7) {
+                                    // OfficeType没有英文
                                     return null;
                                 }
 
@@ -672,7 +792,104 @@ class FirstPanel extends React.Component {
                     <div className="switch-panel" style={{ overflow: 'hidden' }}>
                         {$titles}
                         <div className="panel-content border">
-                            <PathContainer modify_cypher={this.modify_cypher} />
+                            {/* <PathContainer modify_cypher={this.modify_cypher} /> */}
+                            <div className="textarea-container">
+                                <span id="text" className="text font-style"
+                                    // value = {peopleValue}
+                                    ref={this.$text}
+                                ></span>
+                                <textarea id="textarea" className="textarea font-style"
+                                    onChange={this.onInputTextarea}
+                                ></textarea>
+                                <div className='icon-container'>
+                                    <span className="search-icon" onClick={this.fetchRangeByNames}>
+                                        <img src={slogo} alt="search" />
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="person-lists">
+                                {
+                                    dataSet[1].groups && dataSet[1].groups.map((group, statusIndex) => {
+
+                                        let myself = group["0"]['group']["0000"]['people'][0];
+                                        let cb = this.setPersonStatus(statusIndex);
+                                        return (
+                                            <div className="person-dropdown-container"
+                                                key={'person-' + statusIndex}
+                                                style={{ overflow: 'hidden', flex: 1 }}>
+
+                                                <div className={"person-dropdown dropdown__list-item"}
+                                                    style={{ minHeight: '3.6rem' }}
+                                                >
+                                                    <input type="checkbox"
+                                                        checked={clickStatus['Person'][statusIndex][0]}
+                                                        onChange={(event) => cb(0, event.target.checked)}
+                                                    />
+                                                    <div className="item-container">
+                                                        {this.props.KEY === 'en_name' ? 'Select all' : '选择全部'}
+                                                    </div>
+                                                </div>
+
+                                                <div className={"person-dropdown dropdown__list-item"}
+                                                    style={{ minHeight: '3.6rem' }}
+                                                    onClick={() => cb([myself['value']])}
+                                                >
+                                                    <input type="checkbox"
+                                                        checked={clickStatus['Person'][statusIndex][myself['value']]}
+                                                        readOnly />
+                                                    <div className="two-column" style={{ width: '100%' }}>
+                                                        <span>{myself['label']}</span>
+                                                        <span>{myself['r']}</span>
+                                                    </div>
+                                                </div>
+                                                {myself['address'] && <div className="person-info two-column">
+                                                    {/* <span className="first-item">Native Place</span> */}
+                                                    <span>{this.props.KEY === 'en_name' ? 'Address: ' : '地址：'}</span>
+                                                    <span>{myself['address']}</span>
+                                                </div>}
+                                                {myself['dynasty'] && <div className="person-info two-column">
+                                                    <span>{this.props.KEY === 'en_name' ? 'Dynasty: ' : '朝代：'} </span>
+                                                    <span>{myself['dynasty']}</span>
+                                                </div>}
+                                                {myself['status'] && <div className="person-info two-column">
+                                                    {/* <span className="first-item">Status</span> */}
+                                                    <span>{this.props.KEY === 'en_name' ? 'Status: ' : '社会身份：'} </span>
+                                                    <span>{myself['status'].slice(0, 1).join(',')}</span>
+                                                </div>}
+
+                                                <div className="person-lists">
+                                                    {
+                                                        Object.keys(group).map((groupKey, index) => {
+                                                            if (groupKey !== "0") {
+                                                                let _group = group[groupKey];
+                                                                return Object.keys(_group['group']).map(innerKey => {
+                                                                    let inner = _group['group'][innerKey];
+                                                                    return (
+                                                                        <GroupPanel
+                                                                            key={'g-' + groupKey + innerKey + index}
+                                                                            title={inner['title']}
+                                                                            // startIndex={count}
+                                                                            status={clickStatus['Person'][statusIndex]}
+                                                                            options={inner['people']}
+                                                                            change={status}
+                                                                            cb={cb}
+                                                                            allStatus={inner['allStatus']}
+                                                                        // cb_all = {this.setStatusAll(groupKey, innerKey)}
+                                                                        >
+                                                                        </GroupPanel>
+                                                                    )
+                                                                })
+                                                            }
+                                                            return null;
+                                                        })
+                                                    }
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
                         </div>
                     </div>
                 )
@@ -711,7 +928,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchTopicData: (param, key, step) => dispatch(fetchTopicData(param, key, step, 0)),
+        fetchTopicData: (param, key, step, type = 0) => dispatch(fetchTopicData(param, key, step, type)),
         setOtherStep: (key, step = 1) => dispatch(setOtherStep(key, step))
     };
 };

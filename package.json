@@ -8,10 +8,18 @@
     "files": [
       "build/**/*"
     ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory":true,
+      "createDesktopShortcut": true,
+      "runAfterFinish": true
+    },
     "extraFiles": [
-      "dataset",
-      "services",
-      "manage.exe"
+      {
+        "from": "manage",
+        "to": "./",
+        "filter": ["**/*"]
+      }
     ]
   },
   "homepage": "./",

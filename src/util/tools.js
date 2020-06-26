@@ -118,23 +118,23 @@ export function titleTemplate(vKey,tempDict,nodeDict){
         nianHaoIndex.forEach(v=>{
             if((v-2)&&words[v-2]!=lastYear){
                 if(lastYear!="none"){
-                    result+=`),`
+                    result+=`)，`
                 }
                 lastYear = words[v-2]
                 result+=`${(v-2)?words[v-2]:"xxxx"}年(年号:${nianHaoIndex?words[v]:"xx"}`
             }else if(words[v-2]==lastYear){
-                result+=`,${nianHaoIndex?words[v]:"xx"}`
+                result+=`，${nianHaoIndex?words[v]:"xx"}`
             }else{
-                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号:${nianHaoIndex?words[v]:"xx"}),`
+                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号:${nianHaoIndex?words[v]:"xx"})， `
             }
             
         })
         if(lastYear!="none"){
-            result+=`),`
+            result+=`), `
         }
-        result+= `被授予${words[officeBelongIndex+1]}的${words[officeBelongIndex-1]}官职，`
-        result+= `${postWayIndex?words[postWayIndex]:""}${postWayIndex?words[postWayIndex+1]:""},`
-        result+= `${addressIndex?words[addressIndex]:""} ${(addressIndex+1)?words[addressIndex+1]:""},`
+        result+= `被授予${words[officeBelongIndex+1]}的${words[officeBelongIndex-1]}官职， `
+        result+= `${postWayIndex?words[postWayIndex]:""}${postWayIndex?words[postWayIndex+1]:""}, `
+        result+= `${addressIndex?words[addressIndex]:""} ${(addressIndex+1)?words[addressIndex+1]:""}, `
         result+= `${(words[addressIndex+2])?words[addressIndex+2]:""} ${(words[addressIndex+3])?words[addressIndex+3]:""}`
         return result 
     }
@@ -175,23 +175,23 @@ export function titleTemplateEn(vKey,tempDict,nodeDict){
         nianHaoIndex.forEach(v=>{
             if((v-2)&&words[v-2]!=lastYear){
                 if(lastYear!="none"){
-                    result+=`),`
+                    result+=`), `
                 }
                 lastYear = words[v-2]
                 result+=`${(v-2)?words[v-2]:"xxxx"} Year (Nianhao:${nianHaoIndex?words[v]:"xx"}`
             }else if(words[v-2]==lastYear){
-                result+=`,${nianHaoIndex?words[v]:"xx"}`
+                result+=`, ${nianHaoIndex?words[v]:"xx"}`
             }else{
-                result+=`${(v-2)?words[v-2]:"xxxx"} Year (Nianhao:${nianHaoIndex?words[v]:"xx"}),`
+                result+=`${(v-2)?words[v-2]:"xxxx"} Year (Nianhao:${nianHaoIndex?words[v]:"xx"}), `
             }
             
         })
         if(lastYear!="none"){
-            result+=`),`
+            result+=`), `
         }
         result+= `was granted the ${words[officeBelongIndex-1]} office position of ${words[officeBelongIndex+1]}，`
-        result+= `${postWayIndex?words[postWayIndex]:""} ${postWayIndex?words[postWayIndex+1]:""},`
-        result+= `${addressIndex?words[addressIndex]:""} in ${(addressIndex+1)?words[addressIndex+1]:""},`
+        result+= `${postWayIndex?words[postWayIndex]:""} ${postWayIndex?words[postWayIndex+1]:""}, `
+        result+= `${addressIndex?words[addressIndex]:""} in ${(addressIndex+1)?words[addressIndex+1]:""}, `
         result+= `${(words[addressIndex+2])?words[addressIndex+2]:""} to ${(words[addressIndex+3])?words[addressIndex+3]:""}`
         return result 
     }
@@ -215,7 +215,7 @@ export function relationTemplate(vKey,tempDict,nodeDict){
     if(words.length>13){
         result =  `${words[0]}和${words[12]}的关系是${words[6]}中的"${words[4]}", 属于${words[8]}`
         if(yearIndex!=-1){
-            result+=`,时间是: ${yearIndex?words[yearIndex]:""}年,${words[yearIndex+1]?words[yearIndex+1]:""}是${words[yearIndex+2]?words[yearIndex+2]:""}`
+            result+=`，时间是: ${yearIndex?words[yearIndex]:""}年，${words[yearIndex+1]?words[yearIndex+1]:""}是${words[yearIndex+2]?words[yearIndex+2]:""}`
         }
         return result
     }
@@ -239,7 +239,7 @@ export function relationTemplateEn(vKey,tempDict,nodeDict){
     if(words.length>13){
         result =  `${words[0]} and ${words[12]}'s relationship is "${words[4]}" in ${words[6]}, which belongs to ${words[8]}`
         if(yearIndex!=-1){
-            result+=`,time : ${yearIndex?words[yearIndex]:""} Year,${words[yearIndex+1]?words[yearIndex+1]:""} is ${words[yearIndex+2]?words[yearIndex+2]:""}`
+            result+=`, time : ${yearIndex?words[yearIndex]:""} Year, ${words[yearIndex+1]?words[yearIndex+1]:""} is ${words[yearIndex+2]?words[yearIndex+2]:""}`
         }
         return result
     }
@@ -310,7 +310,7 @@ export function beOfficeTemplate(vKey,tempDict,nodeDict){
             result+="官"
         }
         
-        result+=entryWay>-1? `,入仕方式是：${words[entryWay+1]}，` : ""
+        result+=entryWay>-1? `，入仕方式是：${words[entryWay+1]}，` : ""
         result+= entryWayBelong>-1 ? `属于：${words[entryWayBelong+1]}，`:""
 
         let lastYear = "none"
@@ -322,9 +322,9 @@ export function beOfficeTemplate(vKey,tempDict,nodeDict){
                 lastYear = words[v-2]
                 result+=`${(v-2)?words[v-2]:"xxxx"}年(年号：${nianHaoIndex?words[v]:"xx"}`
             }else if(words[v-2]==lastYear){
-                result+=`,${nianHaoIndex?words[v]:"xx"}`
+                result+=`, ${nianHaoIndex?words[v]:"xx"}`
             }else{
-                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号：${nianHaoIndex?words[v]:"xx"}),`
+                result+=`${(v-2)?words[v-2]:"xxxx"}年(年号：${nianHaoIndex?words[v]:"xx"})， `
             }  
         })
         if(lastYear!="none"){
@@ -375,7 +375,7 @@ export function beOfficeTemplateEn(vKey,tempDict,nodeDict){
         }
         
         result+=entryWay>-1? `, by means of ${words[entryWay+1]}，` : ""
-        result+= entryWayBelong>-1 ? `belong to ：${words[entryWayBelong+1]}，`:""
+        result+= entryWayBelong>-1 ? `belong to ：${words[entryWayBelong+1]}, `:""
 
         let lastYear = "none"
         nianHaoIndex.forEach(v=>{
@@ -386,9 +386,9 @@ export function beOfficeTemplateEn(vKey,tempDict,nodeDict){
                 lastYear = words[v-2]
                 result+=`${(v-2)?words[v-2]:"xxxx"} Year (Nianhao：${nianHaoIndex?words[v]:"xx"}`
             }else if(words[v-2]==lastYear){
-                result+=`,${nianHaoIndex?words[v]:"xx"}`
+                result+=`, ${nianHaoIndex?words[v]:"xx"}`
             }else{
-                result+=`${(v-2)?words[v-2]:"xxxx"} Year (Nianhao：${nianHaoIndex?words[v]:"xx"}),`
+                result+=`${(v-2)?words[v-2]:"xxxx"} Year (Nianhao：${nianHaoIndex?words[v]:"xx"}), `
             }  
         })
         if(lastYear!="none"){

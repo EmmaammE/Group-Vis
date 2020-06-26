@@ -325,9 +325,10 @@ class TimeLine extends React.Component{
                     className="brush"
                     width={this.state.brushWidth}
                     height={this.state.brushHeight}
-                    opacity="0.3"
+                    opacity="0.4"
                     strokeWidth="1.5"
                     stroke="black"
+                    fill="#eeeeee"
                   >
                   </rect>
                 </g>

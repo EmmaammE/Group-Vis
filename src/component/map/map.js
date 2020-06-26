@@ -59,7 +59,7 @@ class Map extends React.Component {
     this.handleMouseOut = this.handleMouseOut.bind(this)
     this.handleClear = this.handleClear.bind(this)
 
-    this.brushing = this.brushing.bind(this);
+    // this.brushing = this.brushing.bind(this);
     this.brushEnd = this.brushEnd.bind(this);
     this.brushStart = this.brushStart.bind(this);
   }
@@ -83,14 +83,15 @@ class Map extends React.Component {
     d3.select(container)
       .call(brush
         .on("start", this.brushStart)
-        .on("brush", this.brushing)
+        // .on("brush", this.brushing)
         .on("end", this.brushEnd));
   }
 
   componentDidUpdate(prevProps) {
     let { sentence2pos, pos2sentence, addr } = this.props;
     
-    if (JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
+    if (JSON.stringify(addr) !== JSON.stringify(prevProps.addr)
+    || JSON.stringify(pos2sentence) !== JSON.stringify(prevProps.pos2sentence)) {
       let drawData = figureDrawData(addr, pos2sentence, this.projection, sentence2pos)
     //   let { rangeScale } = this.state;
     //   if(addr) {
@@ -191,13 +192,13 @@ class Map extends React.Component {
   }
 
   brushStart() {
-    let {drawData} = this.state;
+    // let {drawData} = this.state;
     if (d3.event.sourceEvent.type === "end") return;
     // 清空之前刷选的
-    drawData.forEach(d => { d.isChoose = false});
+    // drawData && drawData.forEach(d => { d.isChoose = false});
   }
 
-  brushing() {
+  // brushing() {
     // let { drawData } = this.state;
     // 1if (d3.event.selection) {
     //   const [[x0, y0], [x1, y1]] = d3.event.selection;
@@ -210,27 +211,30 @@ class Map extends React.Component {
     //     drawData
     //   })
     // }
-  }
+  // }
 
   brushEnd() {
+    
     if (!d3.event.sourceEvent || d3.event.sourceEvent.type === "end") return;
     d3.select(this.$container.current).call(brush.clear);
     
     let { drawData } = this.state;
-    if (d3.event.selection) {
+      
+    if (drawData && d3.event.selection) {
       let people = {};
       const [[x0, y0], [x1, y1]] = d3.event.selection;
 
       drawData.forEach(d => {
-        d.isChoose =
+        let flag = 
           x0 <= d.xy[0] - d.r && d.xy[0] + d.r < x1 && y0 <= d.xy[1] - d.r && d.xy[1] + d.r < y1;
-        if (d.isChoose === true) {
+        if (flag === true) {
+          d.isChoose = true;
           d['people'] && d['people'].forEach(p => {
             p.forEach(id => {
               people[id] = true
             })
           })
-        }
+        } 
       })
 
       this.props.setPerson(people)
@@ -238,8 +242,6 @@ class Map extends React.Component {
         drawData
       })
     }
-    
-    
   }
 
 
@@ -324,6 +326,7 @@ class Map extends React.Component {
                     r={d.r}
                     fill="#277077"
                     stroke={d.isChoose ? '#111' : '#277077'}
+                    strokeWidth = {1.5}
                     fillOpacity={0.2}
                     onMouseOver={this.showTooltip}
                     onMouseOut={this.handleMouseOut}

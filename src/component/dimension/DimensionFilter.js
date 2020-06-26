@@ -28,7 +28,12 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
     )
     const _step = useSelector(state => state.step);
     const currentStep = useSelector(state => state.otherStep["6"])
-    const topicData = useSelector(state => state.group[currentStep]["topicView"])
+    const topicData = useSelector(state => {
+        // console.log(state.group);
+        // console.log(currentStep);
+
+        return state.group[currentStep] && state.group[currentStep]["topicView"]
+    })
 
     const [nextParam, setNextParam] = useState({})
 
@@ -60,7 +65,7 @@ export function DimensionFilter({ _width, _height, _margin, peopleStatus, select
                     })
                 
                 _setPeople(_people);
-                cb(_people.map(p => data[p][2]))
+                cb(_people.map(p => data[p][2]));
             });
 
         d3.select($container.current).call(_lasso)

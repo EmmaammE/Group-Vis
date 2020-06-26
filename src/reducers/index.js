@@ -10,7 +10,7 @@ import { people, vennstep} from './data'
 import { dict} from '../redux/dict.redux.js'
 
 // 设置语言， en_name对应接口中的数据键值
-function KEY(state="en_name") {
+function KEY(state="name") {
     return state;
 }
 

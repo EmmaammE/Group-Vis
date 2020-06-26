@@ -2,6 +2,9 @@ import React, { useState, useRef } from 'react';
 import './selectedPanel.css';
 import { List } from 'react-virtualized';
 
+const all_text = '选择全部';
+// const all_text = 'all';
+
 function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 	const [expanded, setExpanded] = useState(false);
 	const [value, setValue] = useState("");
@@ -78,7 +81,7 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 				onClick={() => clickAction(option['index'])}
 			>
 				<input type="checkbox" checked={clicked[option['index']]} readOnly />
-				{index === 0 && option['value'] === 'all' ? 'Selected all  ' : option['label']}
+				{index === 0 && option['label'] === 'all' ? all_text : option['label']}
 			</div>
 		)
 	}
@@ -109,7 +112,7 @@ function SelectedPanel({ title, setClicked, clicked = [], options = [] }) {
 						<div className="dropdown-icons">
 						{
 							hideIcons || options.map((val, i) => {
-								if (clicked[i]) {
+								if (clicked[i] && val['label']!=='all') {
 									return (
 									<span key={'icon-' + i} className="icon" onClick={(e) => clickEvent(e, i)}>{val['label']}</span>)
 								} else {

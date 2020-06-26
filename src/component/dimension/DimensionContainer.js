@@ -9,7 +9,7 @@ class DimensionContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: props.positions
+            data: props.positions ? Object.values(props.positions).map(d => d[2]) : []
         }
 
         this._modifyPeople = this._modifyPeople.bind(this);
@@ -17,16 +17,24 @@ class DimensionContainer extends React.Component {
 
     componentDidUpdate(prevProps) {
         if(JSON.stringify(prevProps.positions) !== JSON.stringify(this.props.positions)) {
-            this.setState({
-                data: Object.values(this.props.positions).map(d => d[2])
-            })
+            if(this.props.positions!==undefined) {
+                this.setState({
+                    data: Object.values(this.props.positions).map(d => d[2])
+                })
+            }
         }
     }
 
     _modifyPeople(data) {
-        this.setState({
-            data
-        })
+        if(data.length > 0) {
+            this.setState({
+                data
+            })
+        } else {
+            this.setState({
+                data: Object.values(this.props.positions).map(d => d[2])
+            })
+        }
     }
 
     render() {
@@ -38,7 +46,7 @@ class DimensionContainer extends React.Component {
                 <div className="dimension-wrapper">
                     
                     {
-                        data && <DimensionFilter 
+                        positions && <DimensionFilter 
                             _width={280}
                             _height={280}
                             _margin="translate(0,5)"
@@ -59,7 +67,7 @@ class DimensionContainer extends React.Component {
                         <div className='list-title'>Name List</div>
                         <div className="list-item-container g-legend-text">
                         {
-                            data && Object.values(data).map((d,i)=> (
+                            Object.values(data).map((d,i)=> (
                                 <div key={i} className='d-list-item'>
                                     {d}
                                 </div>

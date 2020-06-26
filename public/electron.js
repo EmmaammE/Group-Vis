@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, globalShortcut } = require('electron');
+const { app, BrowserWindow, Menu, globalShortcut} = require('electron');
 const path = require('path');
 const isDev = require("electron-is-dev");
 const net = require('net');
@@ -9,28 +9,28 @@ const find = require("find-process");
 //   cwd: path.join(__dirname, '../group_anaysis/'),
 // });
 
-let loader = spawn('manage.exe', ['runserver']);
-
 let mainWindow, loading;
 
 function createWindowHelper() {
   loading = new BrowserWindow({
-    width: 640, height: 500,
     show: false,
     // frame: false
   })
 
-  // global.sharedObject = {
-  //   establisted: false
-  // }
-
-  // remote.getGlobal('sharedObject').someProperty = 'new value';
+  if(isDev) {
+    spawn('manage.exe', ['runserver'], {
+      cwd: path.join(__dirname, '../manage/')
+    }) 
+  } else {
+    spawn('manage.exe', ['runserver'])
+  }
 
   loading.once('show', () => {
     mainWindow = new BrowserWindow({
-      // width: 1080, height: 960,
+      width: 1920, height: 1080,
       // webPreferences: { webSecurity: false },
       show: false,
+      resizable: false
     })
 
     mainWindow.webContents.once('dom-ready', () => {
@@ -51,11 +51,11 @@ function createWindowHelper() {
   // eslint-disable-next-line
   id = setTimeout(function tick() {
     portInUse(8000, function (value) {
-      console.log('testPort: ' + value);
+      console.log('testPort: ', value, count);
 
-      if (value === false && count < 50) {
+      if (value === false && count < 800) {
         count++;
-        id = setTimeout(tick, 1500);
+        id = setTimeout(tick, 3000);
       } else if (value === true) {
         clearTimeout(id);
 
@@ -63,9 +63,11 @@ function createWindowHelper() {
           establisted = true;
           createWindow();
         }
+      } else {
+        loading.close();
       }
     })
-  }, 1500)
+  }, 3000)
 }
 
 function createWindow() {
@@ -87,10 +89,9 @@ function createWindow() {
     mainWindow = null;
   })
 
-  mainWindow.maximize();
+  // mainWindow.maximize();
 
-  mainWindow.webContents.openDevTools()
-
+  // mainWindow.webContents.openDevTools()
 
   // mainWindow.on('resize', function(event) {
   //   event.preventDefault();
@@ -124,7 +125,7 @@ app.whenReady().then(() => {
     mainWindow.setFullScreen(!flag);
   })
 
-  globalShortcut.register('F12', () => {
+  globalShortcut.register('ctrl+shift+I', () => {
     mainWindow.webContents.openDevTools()
   })
 })
@@ -135,12 +136,12 @@ app.on('window-all-closed', async function () {
   if (process.platform !== 'darwin') {
 
     try {
-      let list = await find('name', 'man  age.exe');
-      // console.log(list.length)
+      let list = await find('name', 'manage.exe');
+      // console.log(list)
       list.forEach(e => {
         process.kill(e.pid)
       })
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
     app.quit()

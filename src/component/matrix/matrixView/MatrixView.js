@@ -185,6 +185,7 @@ class MatrixView extends React.Component{
       brushWidth:0,
       brushHeight:0
     })
+    sortedData = -1
     this.props.setPerson({})
     brushedPersons = []
   }
