@@ -10,7 +10,7 @@
     ],
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory":true,
+      "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "runAfterFinish": true
     },
@@ -18,13 +18,18 @@
       {
         "from": "manage",
         "to": "./",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
-    ]
+    ],
+    "win": {
+      "requestedExecutionLevel": "requireAdministrator"
+    }
   },
   "homepage": "./",
   "private": true,
-  "proxy": "http://localhost:8000",
+  "proxy": "http://localhost:23333",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",

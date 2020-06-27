@@ -84,7 +84,6 @@ class MapContainer extends React.Component {
 
 const mapStateToProps = state => {
     let step = state.otherStep["9"];
-    console.log(step);
     return {
         // NOTE sentence2pos[---上面的sentence---] = [pos, pos...]
         // NOTE pos2sentence[pos] = [ {sentence: Number, type: 'string', topic: 'vKey'} ]

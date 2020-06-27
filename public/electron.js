@@ -9,69 +9,87 @@ const find = require("find-process");
 //   cwd: path.join(__dirname, '../group_anaysis/'),
 // });
 
-let mainWindow, loading;
+let mainWindow, loading, port = 23333, host = '127.0.0.1';
+
+
 
 function createWindowHelper() {
+
   loading = new BrowserWindow({
     show: false,
     // frame: false
   })
 
-  if(isDev) {
-    spawn('manage.exe', ['runserver'], {
-      cwd: path.join(__dirname, '../manage/')
-    }) 
-  } else {
-    spawn('manage.exe', ['runserver'])
-  }
-
   loading.once('show', () => {
     mainWindow = new BrowserWindow({
       width: 1920, height: 1080,
-      // webPreferences: { webSecurity: false },
       show: false,
-      resizable: false
+      resizable: false,
+      webPreferences: { nodeIntegration: true }
     })
 
     mainWindow.webContents.once('dom-ready', () => {
-      console.log('main loaded')
+      // console.log('main loaded')
       mainWindow.show()
       loading.hide()
       loading.close()
     })
   })
 
-  loading.loadURL(`${path.join(__dirname, "../build/loading.html")}`)
-  loading.show()
+  loading.loadURL(`${path.join(__dirname, "../build/loading.html")}`);
+  loading.show();
 
-  let establisted = false;
-  let count = 0
-  let id;
-
-  // eslint-disable-next-line
-  id = setTimeout(function tick() {
-    portInUse(8000, function (value) {
-      console.log('testPort: ', value, count);
-
-      if (value === false && count < 800) {
-        count++;
-        id = setTimeout(tick, 3000);
-      } else if (value === true) {
-        clearTimeout(id);
-
-        if (establisted === false) {
-          establisted = true;
-          createWindow();
-        }
+  // find an avaliable port from 23333
+  portInUse(port, function findPort(value) {
+    if(value === true && port < 65534) {
+      port += 1;
+      portInUse(port, findPort);
+      // console.log('find port:', port);
+    } else {
+      // run backend
+      if(isDev) {
+        spawn('manage.exe', ['runserver', host+':'+port], {
+          cwd: path.join(__dirname, '../manage/')
+        }) 
       } else {
-        loading.close();
+        spawn('manage.exe', ['runserver', host+':'+port])
       }
-    })
-  }, 3000)
+
+      // console.log(port)
+
+      global.port = port;
+
+      let establisted = false;
+      let count = 0
+      let id;
+
+      // eslint-disable-next-line
+      id = setTimeout(function tick() {
+        portInUse(port, function (value) {
+          // console.log('testPort: ', count); 
+
+          if (value === false && count < 800) {
+            count++;
+            id = setTimeout(tick, 3000);
+          } else if (value === true) {
+            clearTimeout(id);
+
+            if (establisted === false) {
+              establisted = true;
+              createWindow();
+            }
+          } else {
+            loading.close();
+          }
+        })
+      }, 3000)
+    }
+  })
+  
 }
 
 function createWindow() {
-  console.log('invoke createWindow')
+  // console.log('invoke createWindow')
   mainWindow.loadURL(
     isDev ?
       "http://localhost:3000" :
@@ -91,7 +109,7 @@ function createWindow() {
 
   // mainWindow.maximize();
 
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // mainWindow.on('resize', function(event) {
   //   event.preventDefault();
@@ -107,7 +125,7 @@ function portInUse(port, callback) {
     socket.pipe(socket);
   });
 
-  server.listen(port, '127.0.0.1');
+  server.listen(port, host);
   server.on('error', function (e) {
     callback(true);
   });
