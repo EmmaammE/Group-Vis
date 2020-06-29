@@ -109,7 +109,7 @@ function createWindow() {
 
   // mainWindow.maximize();
 
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   // mainWindow.on('resize', function(event) {
   //   event.preventDefault();

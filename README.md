@@ -23,6 +23,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 ## 配置说明
 
 - .env文件: 设置不默认打开浏览器页面
+- .yarnrc文件： 在安装electron electron-builder过程中可能会出现网络问题，换一下yarn镜像
 
 ## 样式
 
