@@ -1,12 +1,18 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 、
-后端： http://localhost:8000
+后端端口说明： 默认为23333端口，
+
+开发模式和react分支，只代理了23333端口。
+
+打包后会从23333开始找未在使用的端口
 
 ## 命令说明
 
 ### `yarn react-start` 
 
-启动react项目<br />
+启动react项目<br /> 
+
+单独启动react项目会报错，需要切换到react分支
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
