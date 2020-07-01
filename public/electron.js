@@ -11,8 +11,6 @@ const find = require("find-process");
 
 let mainWindow, loading, port = 23333, host = '127.0.0.1';
 
-
-
 function createWindowHelper() {
 
   loading = new BrowserWindow({
@@ -49,10 +47,15 @@ function createWindowHelper() {
       // run backend
       if(isDev) {
         spawn('manage.exe', ['runserver', host+':'+port], {
-          cwd: path.join(__dirname, '../manage/')
+          cwd: path.join(__dirname, '../manage/'),
+          windowsHide: false,
+          detached: true,
         }) 
       } else {
-        spawn('manage.exe', ['runserver', host+':'+port])
+        spawn('manage.exe', ['runserver', host+':'+port], {
+          windowsHide: false,
+          detached: true,
+        })
       }
 
       // console.log(port)
@@ -100,7 +103,6 @@ function createWindow() {
   //     mainWindow.show()
   //   // }, 2000);
   // })
-
 
   // 关闭window时触发下列事件.
   mainWindow.on('closed', function () {
