@@ -1,6 +1,4 @@
 // 以免后面后端接口的名字变化或者要在别的地方使用，就定义一下
-const { remote } = window.require('electron');
-
 // [ [topicId, topicName] ]
 export const TOPICS = "all_topic_ids";
 // 人物降维的位置 {person_id: [x,y]}
@@ -24,4 +22,4 @@ export const TOPIC_SENTENCE_VECTOR = "topic_id2sentence_ids2vector"
 export const LENS = 50;
 
 // backend url
-export const HOST_URL = "://localhost:" + remote.getGlobal('port');
+export const HOST_URL = "://localhost:23333";
