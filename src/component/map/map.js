@@ -8,6 +8,7 @@ import { setPerson } from '../../actions/data';
 import { connect } from 'react-redux';
 import CircleBtn from '../button/circlebtn';
 import mapLogal from '../../assets/icon/mapLogal.svg'
+import { exportCSVFile } from '../../util/csv';
 
 const BOX_WIDTH = 260;
 const BOX_HEIGHT = 208;
@@ -62,6 +63,8 @@ class Map extends React.Component {
     // this.brushing = this.brushing.bind(this);
     this.brushEnd = this.brushEnd.bind(this);
     this.brushStart = this.brushStart.bind(this);
+
+    this.toDownload = this.toDownload.bind(this);
   }
 
   componentDidMount() {
@@ -253,6 +256,7 @@ class Map extends React.Component {
 
   handleClear() {
     let { drawData } = this.state;
+    if(!drawData) return;
     drawData.forEach(d => {
       d.isChoose = false
     })
@@ -262,9 +266,32 @@ class Map extends React.Component {
     })
   }
 
+toDownload() {
+    // 导出所有
+    let {addr, pos2sentence, sentence2pos} =  this.props;
+    let result = [];
+    for(let key in pos2sentence) {
+      if(addr[key]) {
+        if(pos2sentence[key]) {
+          let _addr = addr[key].address_name;
+
+          pos2sentence[key].forEach(d => {
+            let _pos = sentence2pos[d.sentence].words;
+            result.push([
+              _addr,
+              _pos,
+            ])
+          })
+        }
+      }
+    }
+
+    exportCSVFile(['地点', '描述'], result, 'FigureTraces')
+  }
+
   render() {
-    let path = this.path,
-      projection = this.projection;
+    let path = this.path;
+      // projection = this.projection;
 
     let { addr, sentence2pos, pos2sentence } = this.props;
     let { tooltip, $d, drawData } = this.state;
@@ -288,12 +315,18 @@ class Map extends React.Component {
             </svg>
           </div>
           <p className="mapView-label g-text">#Descriptions</p>
-        </div>
-        <div className="detail-clear" onClick={this.handleClear}>
+
+          <div className="detail-clear" onClick={this.handleClear}>
           <CircleBtn type={6} active={true} />
         </div>
 
-               <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
+        </div>
+
+        <div className="download-container">
+          <CircleBtn type={11} active={true} onClick={this.toDownload}/>
+        </div>
+
+        <svg viewBox={`0 0 ${2 * BOX_WIDTH} ${2 * BOX_HEIGHT}`} xmlns="http://www.w3.org/2000/svg"
           style={{ position: 'relative' }}
         // preserveAspectRatio="xMinYMin"
         >

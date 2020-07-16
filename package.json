@@ -40,6 +40,7 @@
     "electron-is-dev": "^1.2.0",
     "find-process": "^1.4.3",
     "louvain": "^1.2.0",
+    "memoize-one": "^5.1.1",
     "polybooljs": "^1.2.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",

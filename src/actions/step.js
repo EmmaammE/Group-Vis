@@ -374,7 +374,7 @@ function poll(param, resolve, reject){
             .catch(err => {
                 reject(err)
             })
-   }, 1500);
+   }, 3000);
  }
 
 /**

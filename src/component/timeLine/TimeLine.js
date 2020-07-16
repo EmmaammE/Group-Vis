@@ -10,6 +10,7 @@ import Tip from '../tooltip/Tip'
 import {setPerson} from '../../actions/data'
 import CircleBtn from '../button/circlebtn';
 import leaf from '../../assets/leaf/leaf.svg'
+import { exportCSVFile } from '../../util/csv';
 
 
 const WIDTH = 340;
@@ -62,6 +63,7 @@ class TimeLine extends React.Component{
 
     this.handleClear = this.handleClear.bind(this)
 
+    this.toDownload = this.toDownload.bind(this);
   }
 
   componentDidMount(){
@@ -174,6 +176,20 @@ class TimeLine extends React.Component{
 
   }
 
+  toDownload() {
+    let { timeLineView } = this.props;
+    let { tCircleData } = timeLineView;
+
+    let result = [];
+    tCircleData.forEach(tData => {
+      tData.forEach(d => {
+        result.push(d.discription);
+      })
+    })
+
+    exportCSVFile(null, result, 'FigureTimeline');
+  }
+
   handleClear(){ 
 
     timeLineData.tCircleData.forEach((d,i)=>{
@@ -232,6 +248,10 @@ class TimeLine extends React.Component{
         </div>
         <div className=" detail-clear timeline-clear" onClick={this.handleClear}>
           <CircleBtn  type={6} active={true}/>
+        </div>
+
+        <div className="download-container">
+          <CircleBtn type={11} active={true} onClick={this.toDownload}/>
         </div>
 
         <div className="timeLine-container">

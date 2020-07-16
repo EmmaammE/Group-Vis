@@ -177,3 +177,9 @@ circle {
   fill: #eee;
   fill-opacity: 1;
 }
+
+.download-container {
+  position: absolute;
+  right: 1rem;
+  top: 0.6rem;
+}

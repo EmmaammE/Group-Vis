@@ -1,32 +1,45 @@
 import React from 'react';
 import './list.css';
-import ListItem from './ListItem'
 import { connect } from 'react-redux';
-
-class SelectList extends React.Component{
-  constructor(props){
-    super(props)
-    this.state={
-
-    }
+import CircleBtn from '../button/circlebtn';
+import memoize from "memoize-one";
+import { exportCSVFile } from '../../util/csv';
+class SelectList extends React.PureComponent{
+  constructor(props) {
+    super(props);
+    this.toDownload = this.toDownload.bind(this);
   }
+
+  update = memoize(
+    (selectListData) => [...new Set(selectListData)]
+      .sort((a,b) => a.localeCompare(b))
+  )
+
+  toDownload() {
+    const title = "selectList";
+    exportCSVFile(null, this.update(this.props.selectListView.selectListData), title)
+  }
+
   render(){
-    let data = this.props.selectListView.selectListData
-    // 对selectList数据进行去重
-    data = [...new Set(data)]
-    data.sort((a,b)=>a.localeCompare(b))
-    
+    const listArr = this.update(this.props.selectListView.selectListData);
+
     return(
       <div className="chart-wrapper content-panel">
         <div className="g-chart-title">Select List</div>
+        <div className="download-container">
+          <CircleBtn type={11} active={true} onClick={this.toDownload}/>
+        </div>
         <div className="selectList-container"> 
           {
-            data&&data.map((v,i)=>(
-              <ListItem 
-                data={v}
-                key={`ListItem${i}`}
-              ></ListItem>
-             )
+            listArr && listArr.map((v,i)=>(
+              <div className="listItem-out" key={`ListItem${i}`}>
+                <div className="listItem-out-middle">
+                  <p className="listItem-line selectList-scrollbar"> 
+                    {v}
+                  </p >
+                </div>
+              </div>
+              )
             )
           }
         </div>
@@ -35,11 +48,8 @@ class SelectList extends React.Component{
   }
 }
 
-
 const mapStateToProps = (state)=>({
   selectListView:state.selectListView
 })
-
-
 
 export default connect(mapStateToProps)(SelectList);
