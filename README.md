@@ -1,9 +1,18 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<<<<<<< HEAD
 
 ## 后端端口说明： 
 - 默认为23333端口，
 - 开发模式和react分支，只代理了23333端口
 - 打包后会从23333开始找未在使用的端口
+=======
+、
+后端端口说明： 默认为23333端口，
+
+开发模式和react分支，只代理了23333端口。
+
+打包后会从23333开始找未在使用的端口
+>>>>>>> 4a69d5878e660ad2419fd5bffa3b1474382adb3a
 
 ## 命令说明
 
